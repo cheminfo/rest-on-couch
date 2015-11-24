@@ -4,6 +4,7 @@ Check a folder and import in couchDB
 
 * _id : uuid : unique code
 * id : sample code
+* owner: ['ab@cd.com']
 * parent : []
 * name : []
  * value
@@ -28,6 +29,8 @@ Check a folder and import in couchDB
 ### exists(id)
 ### getIDFromFilename(callback)
 ### getIDFromContent(callback)
+### getOwnerFromFilename(callback)
+### getOwnerFromContent(callback)
 ### document <- getDocument(id)
 ### document <- create(id, callback)
 Check if id exists. If yes "resolve with uuid". If no, create with result of callback and resolve with uuid.
