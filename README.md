@@ -19,10 +19,41 @@ Check a folder and import in couchDB
  * temperature
  * file : []
   * type : pdf, jcamp, ...
-  * name : filename
- 
+  * filename : filename
 
-```
 
-```
 
+
+## Node script
+### exists(id)
+### getIDFromFilename(callback)
+### getIDFromContent(callback)
+### document <- getDocument(id)
+### document <- create(id, callback)
+Check if id exists. If yes "resolve with uuid". If no, create with result of callback and resolve with uuid.
+### append(jpath, entry)
+
+## Project specifc
+### entry <- parseNMR(filename)
+Create the entry:
+* solvent
+* frequence
+* experiment
+* file : []
+ * type: jcamp
+ * filename: filename
+
+
+## Workflow
+* new file in checked folder
+* we need to retrieve the ID of the file
+ * id may be based on filename (getIDFromFilename)
+ * id may be inside the file (getIDFromContent)
+* document <- create(id, callback)
+* entry <- parseNMR(filepath)
+* document.append(jpath, entry, files)
+
+
+
+
+## CouchDB
