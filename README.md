@@ -45,13 +45,14 @@ Create the entry:
 
 
 ## Workflow
-* new file in checked folder
+* new files
 * we need to retrieve the ID of the file
  * id may be based on filename (getIDFromFilename)
  * id may be inside the file (getIDFromContent)
-* document <- create(id, callback)
 * entry <- parseNMR(filepath)
+* document <- create(id, callback)
 * document.append(jpath, entry, files)
+ * Deal with revision inconsistency
 
 
 
