@@ -1,0 +1,29 @@
+{
+  "name": "couch-import",
+  "version": "1.0.0",
+  "description": "Check a folder and import in couchDB",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheminfo/couch-import.git"
+  },
+  "keywords": [],
+  "author": "Michaël Zasso",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cheminfo/couch-import/issues"
+  },
+  "homepage": "https://github.com/cheminfo/couch-import#readme",
+  "private": true,
+  "dependencies": {
+    "commander": "^2.9.0",
+    "debug": "^2.2.0",
+    "nano": "^6.1.5"
+  }
+}

@@ -1,6 +1,20 @@
 # couch-import
 Check a folder and import in couchDB
 
+## Usage
+
+```
+./src/import --config=path/to/config path/to/file
+```
+
+You can specify the CouchDB information in the config file or using environment variables:
+
+* config.couchURL (COUCH_URL): URL of the database server
+* config.couchDB (COUCH_DB): Name of the database
+* config.couchUser (COUCH_USER): Username (needs admin access to the DB)
+* config.couchPassword (COUCH_PASSWORD): Password
+
+## Schema
 
 * _id : uuid : unique code
 * id : sample code
