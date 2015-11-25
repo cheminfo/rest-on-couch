@@ -20,6 +20,13 @@ module.exports = {
         };
     },
     parse: function (filename, contents) {
-        return {};
+        return {
+            jpath: 'nmr',
+            data: {
+                abc: 'test'
+            },
+            type: 'jcamp',
+            content_type: 'chemical/x-jcamp-dx'
+        };
     }
 };

@@ -24,6 +24,7 @@
   "dependencies": {
     "commander": "^2.9.0",
     "debug": "^2.2.0",
+    "email-validator": "^1.0.3",
     "nano": "^6.1.5"
   }
 }

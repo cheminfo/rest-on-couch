@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const debug = require('debug')('couch-import');
+const validateEmail = require('email-validator').validate;
 const program = require('commander');
 const pkg = require('../package.json');
 const constants = require('./constants');
@@ -37,10 +38,10 @@ const couchUser = verifyConfig('couchUser', process.env.COUCH_USER);
 const couchPassword = verifyConfig('couchPassword', process.env.COUCH_PASSWORD);
 
 // Callbacks
-const getID = verifyConfig('getID', true);
-const getOwner = verifyConfig('getOwner', true);
-const getEmpty = verifyConfig('getEmpty', true);
-const parse = verifyConfig('parse', true);
+const getID = verifyConfig('getID', null, true);
+const getOwner = verifyConfig('getOwner', null, true);
+const getEmpty = verifyConfig('getEmpty', null, true);
+const parse = verifyConfig('parse', null, true);
 
 let nano = require('nano')(couchURL);
 let db;
@@ -50,12 +51,15 @@ debug('start process');
 Promise.resolve()
     .then(authenticate)
     .then(checkDesignDoc)
-    // add steps here
+    .then(getMetadata)
+    .then(parseFile)
+    .then(checkDocumentExists)
+    .then(updateDocument)
     .then(function () {
         debug('finished');
     })
     .catch(function (err) {
-        console.error(err);
+        console.error(err.message || err);
         process.exit(1);
     });
 
@@ -104,7 +108,7 @@ function checkDesignDoc() {
                 return reject(err);
             }
             if (result.version !== designDoc.version) {
-                debug('design doc outdated');
+                debug('design doc does not match');
                 return resolve(createDesignDoc(result._rev));
             }
             resolve();
@@ -123,6 +127,117 @@ function createDesignDoc(revID) {
         db.insert(designDoc, function (err) {
             if (err) return reject(err);
             resolve();
+        });
+    });
+}
+
+function getMetadata() {
+    debug('get metadata');
+    const id = Promise.resolve(getID(filename, contents));
+    const owner = Promise.resolve(getOwner(filename, contents));
+    return Promise.all([id, owner]).then(function (result) {
+        debug('id: ' + result[0]);
+        debug('owner: ' + result[1]);
+        if (typeof result[0] !== 'string' || typeof result[1] !== 'string') {
+            throw new TypeError('id and owner must be strings');
+        }
+        if (!validateEmail(result[1])) {
+            throw new Error('owner must be a valid email address');
+        }
+        return {id: result[0], owner: result[1]};
+    });
+}
+
+function parseFile(info) {
+    debug('parse file contents');
+    return Promise.resolve(parse(filename, contents)).then(function (result) {
+        if (typeof result.jpath !== 'string') {
+            throw new Error('parse: jpath must be a string');
+        }
+        if (typeof result.data !== 'object' || result.data === null) {
+            throw new Error('parse: data must be an object');
+        }
+        if (typeof result.type !== 'string') {
+            throw new Error('parse: type must be a string');
+        }
+
+        debug('jpath: ' + result.jpath);
+        info.jpath = result.jpath.split('.');
+        info.data = result.data;
+        info.content_type = result.content_type || 'application/octet-stream';
+        info.type = result.type;
+        return info;
+    });
+}
+
+function checkDocumentExists(info) {
+    return new Promise(function (resolve, reject) {
+        debug('check that document exists');
+        db.view(constants.DESIGN_DOC_NAME, 'byId', {key: info.id}, function (err, result) {
+            if (err) return reject(err);
+            const length = result.rows.length;
+            if (length === 0) {
+                return resolve(createDocument(info));
+            }
+            /*
+             * TODO
+             * If there are multiple rows, it means the data is spread across
+             * multiple documents
+             */
+            debug(`found ${length} result(s)`);
+            info._id = result.rows[0].id;
+            resolve(info);
+        });
+    });
+}
+
+function createDocument(info) {
+    return new Promise(function (resolve, reject) {
+        debug('create document');
+        const emptyDoc = getEmpty();
+        emptyDoc.id = info.id;
+        emptyDoc.owner = [info.owner];
+        db.insert(emptyDoc, function (err, result) {
+            if (err) return reject(err);
+            info._id = result.id;
+            resolve(info);
+        });
+    });
+}
+
+function updateDocument(info) {
+    return new Promise(function (resolve, reject) {
+        debug('update document');
+        db.get(info._id, function (err, doc) {
+            if (err) return reject(err);
+            const jpath = info.jpath;
+            const newData = info.data;
+            let current = doc;
+            for (var i = 0; i < jpath.length; i++) {
+                current = current[jpath[i]];
+                if (!current) {
+                    return reject(new Error('jpath does not match document structure'));
+                }
+            }
+            if (!Array.isArray(current)) {
+                return reject(new Error('jpath must point to an array'));
+            }
+            current.push(newData);
+            if (!newData.file) {
+                newData.file = [];
+            }
+            newData.file.push({
+                type: info.type,
+                filename: filename
+            });
+            db.multipart.insert(doc, [{
+                name: filename,
+                data: contents,
+                content_type: info.content_type
+            }], doc._id, function (err) {
+                if (err) return reject(err);
+                resolve();
+            });
         });
     });
 }
