@@ -1,25 +1,29 @@
 {
-  "name": "couch-import",
-  "version": "1.0.0",
-  "description": "Check a folder and import in couchDB",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
+  "name": "rest-on-couch",
+  "version": "0.0.0",
+  "description": "Interface to CouchDB that allows the control of permissions on the documents",
+  "main": "src/index.js",
+  "files": [
+    "bin",
+    "src"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cheminfo/couch-import.git"
+    "url": "git+https://github.com/cheminfo/rest-on-couch.git"
   },
-  "keywords": [],
+  "keywords": [
+    "couch",
+    "couchdb"
+  ],
   "author": "Michaël Zasso",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cheminfo/couch-import/issues"
+    "url": "https://github.com/cheminfo/rest-on-couch/issues"
   },
-  "homepage": "https://github.com/cheminfo/couch-import#readme",
+  "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
   "private": true,
   "dependencies": {
     "commander": "^2.9.0",

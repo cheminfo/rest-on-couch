@@ -7,8 +7,8 @@ const debug = require('debug')('couch-import');
 const validateEmail = require('email-validator').validate;
 const program = require('commander');
 const pkg = require('../package.json');
-const constants = require('./constants');
-const designDoc = require('./design/app');
+const constants = require('../src/constants');
+const designDoc = require('../src/design/app');
 
 program
     .version(pkg.version)
