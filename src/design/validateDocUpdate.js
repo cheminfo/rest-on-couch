@@ -1,13 +1,12 @@
 'use strict';
 
 module.exports = function (newDoc, oldDoc) {
-    if (oldDoc) {
-        if (newDoc.$creationDate !== oldDoc.$creationDate) {
-            throw({forbidden: 'Cannot change creation date'})
+    if (newDoc.$type === 'entry') {
+        if (!oldDoc && !newDoc.$creationDate) {
+            throw({forbidden: 'Creation date is mandatory'});
         }
-    } else {
-        newDoc.$creationDate = Date.now();
+        if (oldDoc && newDoc.$creationDate !== oldDoc.$creationDate) {
+            throw({forbidden: 'Cannot change creation date'});
+        }
     }
-
-    newDoc.$modificationDate = Date.now();
 };
