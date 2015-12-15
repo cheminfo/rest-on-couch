@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "4"
+  - "stable"
+sudo: false
+services:
+  - couchdb
+env:
+  - REST_COUCH_USER=admin
+  - REST_COUCH_PASSWORD=admin
+before_script:
+  - curl -X PUT http://localhost:5984/_config/admins/admin -d '"admin"'

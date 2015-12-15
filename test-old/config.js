@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-    couchURL: 'http://visualizer.epfl.ch/',
-    couchDB: 'test-import',
+    couchUrl: 'http://visualizer.epfl.ch/',
+    couchDatabase: 'test-import',
     couchUser: null,
     couchPassword: null,
     getID: function (filename, contents) {
