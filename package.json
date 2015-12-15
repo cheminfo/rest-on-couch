@@ -30,5 +30,10 @@
     "debug": "^2.2.0",
     "email-validator": "^1.0.3",
     "nano": "^6.1.5"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.4",
+    "mocha-better-spec-reporter": "^3.0.1",
+    "should": "^8.0.1"
   }
 }
