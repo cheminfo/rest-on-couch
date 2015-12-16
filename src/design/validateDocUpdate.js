@@ -2,7 +2,9 @@
 
 module.exports = function (newDoc, oldDoc) {
     if (newDoc.$type === 'entry') {
-        // todo $id is mandatory
+        if (!newDoc.$id) {
+            throw({forbidden: 'ID is mandatory'});
+        }
         if (typeof newDoc.$creationDate !== 'number' || typeof newDoc.$modificationDate !== 'number') {
             throw({forbidden: 'Creation and modification dates are mandatory'});
         }
@@ -15,6 +17,9 @@ module.exports = function (newDoc, oldDoc) {
             }
             if (newDoc.$modificationDate < oldDoc.$modificationDate) {
                 throw({forbidden: 'Modification date cannot change to the past'});
+            }
+            if (newDoc.$id !== oldDoc.$id) {
+                throw({forbidden: 'Cannot change ID'});
             }
         }
     }
