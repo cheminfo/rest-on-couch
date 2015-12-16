@@ -1,12 +1,13 @@
 'use strict';
 
+const Couch = require('../..');
 const nanoPromise = require('../../src/util/nanoPromise');
 
-module.exports.destroy = function(nano, name) {
+function destroy(nano, name) {
     return nanoPromise.destroyDatabase(nano, name);
-};
+}
 
-module.exports.populate = function(db) {
+function populate(db) {
     const prom = [];
     prom.push(nanoPromise.insertDocument(db, {
         '$type': 'group',
@@ -24,4 +25,15 @@ module.exports.populate = function(db) {
     }));
 
     return Promise.all(prom);
-};
+}
+
+beforeEach(function () {
+    global.couch = new Couch({database: 'test'});
+    return global.couch._init()
+        .then(() => destroy(global.couch._nano, global.couch._databaseName))
+        .then(() => {
+            global.couch = new Couch({database: 'test'});
+            return global.couch._init();
+        })
+        .then(() => populate(global.couch._db));
+});
