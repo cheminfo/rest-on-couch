@@ -2,6 +2,8 @@
 
 const debug = require('debug')('couch:nano');
 
+const constants = require('../constants');
+
 exports.authenticate = function (nano, user, password) {
     return new Promise((resolve, reject) => {
         debug('auth ' + user);
@@ -75,6 +77,16 @@ exports.insertDocument = function (db, doc) {
         db.insert(doc, function (err) {
             if (err) return reject(err);
             resolve();
+        });
+    });
+};
+
+exports.queryView = function (db, view, params) {
+    return new Promise((resolve, reject) => {
+        debug('queryView', db, view);
+        db.view(constants.DESIGN_DOC_NAME, view, params, function (err, body) {
+            if (err) return reject(err);
+            resolve(body.rows[0]);
         });
     });
 };
