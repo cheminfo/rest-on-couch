@@ -137,7 +137,7 @@ function validateRight(owners, user, right) {
         if (isEmail(owners[i])) {
             continue;
         }
-        groups.push(getGroup(owners[i]));
+        groups.push(getGroup(this._db, owners[i]));
     }
     if (groups.length > 0) {
         return Promise.all(groups).then(function (result) {
@@ -156,6 +156,22 @@ function validateRight(owners, user, right) {
         });
     }
     return Promise.resolve(false);
+}
+
+function getGroup(db, name) {
+    debug('get group');
+    return nanoPromise.queryView(db, 'groupByName', {key: name})
+        .then(groups => {
+            if(groups.rows.length === 0) {
+                debug('group does not exist');
+                return null;
+            }
+            if(groups.rows.length > 1) {
+                debug('Getting more than one result for a group name')
+            }
+            debug('group exists');
+            return groups.rows[0];
+        });
 }
 
 
