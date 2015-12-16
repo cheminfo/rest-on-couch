@@ -6,6 +6,7 @@ const nano = require('nano');
 const constants = require('../src/constants');
 const designDoc = require('../src/design/app');
 const nanoPromise = require('./util/nanoPromise');
+const isEmail = require('./util/isEmail');
 
 class Couch {
     constructor(options) {
@@ -71,6 +72,29 @@ class Couch {
             this._db = this._nano.db.use(this._couchOptions.database);
         });
     }
+
+    getDocumentById(id, user) {
+        debug('getDocumentById', id, user);
+        return this._init()
+            .then(() => getOwnersById(this._db, id))
+            .then(owners => {
+                if (owners.length === 0) {
+                    debug('document not found');
+                    return null;
+                }
+                debug('check rights');
+                // TODO handle more than one result
+                return validateRight(owners[0].value, user, 'read')
+                    .then(ok => {
+                        if (ok) {
+                            debug('user has access');
+                            return nanoPromise.getDocument(this._db, owners[0].id);
+                        }
+                        debug('user has no access');
+                        return null;
+                    });
+            });
+    }
 }
 
 module.exports = Couch;
@@ -100,6 +124,41 @@ function createDesignDoc(db, revID) {
     return nanoPromise.insertDocument(db, designDoc);
 }
 
+function getOwnersById(db, id) {
+    return nanoPromise.queryView(db, 'ownersById', {key: id});
+}
+
+function validateRight(owners, user, right) {
+    var groups = [];
+    for (var i = 0; i < owners.length; i++) {
+        if (owners[i] === user) {
+            return Promise.resolve(true);
+        }
+        if (isEmail(owners[i])) {
+            continue;
+        }
+        groups.push(getGroup(owners[i]));
+    }
+    if (groups.length > 0) {
+        return Promise.all(groups).then(function (result) {
+            for (var i = 0; i < result.length; i++) {
+                var group = result[i];
+                // check that this group has the requested right
+                if (group.rights.indexOf(right) === -1) continue;
+                // check that the user is in this group
+                for (var j = 0; j < result[i].length; j++) {
+                    if (result[i][j] === user) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+    }
+    return Promise.resolve(false);
+}
+
+
 function checkRightsDoc(db) {
     debug('create rights doc');
     return nanoPromise.getDocument(db, constants.RIGHTS_DOC_ID)
@@ -114,11 +173,11 @@ function checkRightsDoc(db) {
 function createRightsDoc(db) {
     debug('create rights doc');
     const rightsDoc = {
-        _id: 'rights',
+        _id: constants.RIGHTS_DOC_ID,
         '$type': 'db',
         create: ['anonymous'],
         write: ['anonymous'],
-        erase: ['anonymous']
+        delete: ['anonymous']
     };
     return nanoPromise.insertDocument(db, rightsDoc);
 }

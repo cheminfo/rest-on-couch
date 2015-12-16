@@ -83,7 +83,7 @@ exports.insertDocument = function (db, doc) {
 
 exports.queryView = function (db, view, params) {
     return new Promise((resolve, reject) => {
-        debug('queryView', db, view);
+        debug('queryView ' + view);
         db.view(constants.DESIGN_DOC_NAME, view, params, function (err, body) {
             if (err) return reject(err);
             resolve(body.rows);
