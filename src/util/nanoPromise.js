@@ -74,9 +74,9 @@ exports.getDocument = function (db, docID) {
 exports.insertDocument = function (db, doc) {
     return new Promise((resolve, reject) => {
         debug('insertDocument ' + doc._id);
-        db.insert(doc, function (err) {
+        db.insert(doc, function (err, body) {
             if (err) return reject(err);
-            resolve();
+            resolve(body);
         });
     });
 };
@@ -104,4 +104,14 @@ exports.destroyDatabase = function (nano, dbName) {
             resolve(body);
         })
     })
+};
+
+exports.updateWithHandler = function(db, update, docId, body) {
+    return new Promise((resolve, reject) => {
+        debug('update with handler');
+        db.atomic(constants.DESIGN_DOC_NAME, update, docId, body, function(err, body) {
+            if(err) return reject(err);
+            resolve(body);
+        });
+    });
 };
