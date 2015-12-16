@@ -44,6 +44,7 @@ class Couch {
                 }
             })
             .then(() => checkDesignDoc(this._db))
+            .then(() => checkRightsDoc(this._db))
     }
 
     _authenticate() {
@@ -97,4 +98,27 @@ function createDesignDoc(db, revID) {
         delete designDoc._rev;
     }
     return nanoPromise.insertDocument(db, designDoc);
+}
+
+function checkRightsDoc(db) {
+    debug('create rights doc');
+    return nanoPromise.getDocument(db, constants.RIGHTS_DOC_ID)
+        .then(doc => {
+            if(doc === null) {
+                debug('create rights doc');
+                return createRightsDoc(db);
+            }
+        });
+}
+
+function createRightsDoc(db) {
+    debug('create rights doc');
+    const rightsDoc = {
+        _id: 'rights',
+        '$type': 'db',
+        create: ['anonymous'],
+        write: ['anonymous'],
+        erase: ['anonymous']
+    };
+    return nanoPromise.insertDocument(db, rightsDoc);
 }
