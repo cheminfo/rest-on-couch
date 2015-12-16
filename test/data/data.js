@@ -16,9 +16,17 @@ function populate(db) {
         rights: ['create', 'write', 'delete', 'read']
     }));
 
+
+    prom.push(nanoPromise.insertDocument(db, {
+        '$type': 'group',
+        name: 'groupB',
+        'users': ['a@a.com'],
+        rights: ['create']
+    }));
+
     prom.push(nanoPromise.insertDocument(db, {
         '$type': 'entry',
-        '$owners': ['b@b.com', 'groupA'],
+        '$owners': ['b@b.com', 'groupA', 'groupB'],
         '$id': 'A',
         '$creationDate': 0,
         '$modificationDate': 0

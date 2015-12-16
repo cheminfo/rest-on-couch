@@ -15,7 +15,7 @@ describe('basic initialization tests', function () {
 
 describe('basic tests on existing database', function () {
     before(data);
-    it('should grant read access to group member', function() {
+    it('should grant read access to read-group member', function() {
         return couch.getDocumentById('A', 'a@a.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });
@@ -27,9 +27,17 @@ describe('basic tests on existing database', function () {
         });
     });
 
-    it('should not grant read access to non-owner non-member', function() {
+    it('should not grant read access to inexistant user', function() {
         return couch.getDocumentById('A', 'z@z.com').then(doc => {
             (doc === null).should.be.true();
         });
     });
+
+    it('should not grant read access to non-owner non-read-group member', function() {
+        return couch.getDocumentById('A', 'z@z.com').then(doc => {
+            (doc === null).should.be.true();
+        });
+    });
+
+
 });
