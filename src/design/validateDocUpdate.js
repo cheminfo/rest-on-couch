@@ -1,6 +1,13 @@
 'use strict';
 
 module.exports = function (newDoc, oldDoc) {
+    var validTypes = ['entry', 'group', 'db'];
+    if (!newDoc.$type || validTypes.indexOf(newDoc.$type) === -1) {
+        throw({forbidden: 'Invalid type'});
+    }
+    if (oldDoc && newDoc.$type !== oldDoc.$type) {
+        throw({forbidden: 'Cannot change the type of document'});
+    }
     if (newDoc.$type === 'entry') {
         if (!newDoc.$id) {
             throw({forbidden: 'ID is mandatory'});
@@ -19,7 +26,7 @@ module.exports = function (newDoc, oldDoc) {
                 throw({forbidden: 'Modification date cannot change to the past'});
             }
             if (newDoc.$id !== oldDoc.$id) {
-                throw({forbidden: 'Cannot change ID'});
+                throw({forbidden: 'Cannot change the ID'});
             }
         }
     }
