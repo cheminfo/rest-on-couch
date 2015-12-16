@@ -17,6 +17,8 @@ class Couch {
             throw new Error('database option is mandatory');
         }
 
+        this._databaseName = database;
+
         this._couchOptions = {
             url: options.url || process.env.REST_COUCH_URL || 'http://localhost:5984',
             database,
@@ -84,7 +86,7 @@ class Couch {
                 }
                 debug('check rights');
                 // TODO handle more than one result
-                return validateRight(owners[0].value, user, 'read')
+                return validateRight(this._db, owners[0].value, user, 'read')
                     .then(ok => {
                         if (ok) {
                             debug('user has access');
@@ -128,7 +130,7 @@ function getOwnersById(db, id) {
     return nanoPromise.queryView(db, 'ownersById', {key: id});
 }
 
-function validateRight(owners, user, right) {
+function validateRight(db, owners, user, right) {
     var groups = [];
     for (var i = 0; i < owners.length; i++) {
         if (owners[i] === user) {
@@ -137,7 +139,7 @@ function validateRight(owners, user, right) {
         if (isEmail(owners[i])) {
             continue;
         }
-        groups.push(getGroup(owners[i]));
+        groups.push(getGroup(db, owners[i]));
     }
     if (groups.length > 0) {
         return Promise.all(groups).then(function (result) {
@@ -156,6 +158,23 @@ function validateRight(owners, user, right) {
         });
     }
     return Promise.resolve(false);
+}
+
+function getGroup(db, name) {
+    debug('get group');
+    return nanoPromise.queryView(db, 'groupByName', {key: name})
+        .then(groups => {
+            console.log(groups)
+            if(groups.rows.length === 0) {
+                debug('group does not exist');
+                return null;
+            }
+            if(groups.rows.length > 1) {
+                debug('Getting more than one result for a group name')
+            }
+            debug('group exists');
+            return groups.rows[0];
+        });
 }
 
 
