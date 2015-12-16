@@ -86,7 +86,7 @@ exports.queryView = function (db, view, params) {
         debug('queryView', db, view);
         db.view(constants.DESIGN_DOC_NAME, view, params, function (err, body) {
             if (err) return reject(err);
-            resolve(body.rows[0]);
+            resolve(body.rows);
         });
     });
 };
