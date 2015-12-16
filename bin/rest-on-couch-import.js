@@ -1,17 +1,15 @@
 #!/bin/env node
+
 'use strict';
 
+const program = require('commander');
+const Couch = require('..');
 const fs = require('fs');
 const path = require('path');
-const debug = require('debug')('couch-import');
-const validateEmail = require('email-validator').validate;
-const program = require('commander');
-const pkg = require('../package.json');
+const debug = require('debug')('couch:import');
 const constants = require('../src/constants');
-const designDoc = require('../src/design/app');
 
 program
-    .version(pkg.version)
     .usage('[options] <file>')
     .option('-c, --config <path>', 'Configuration file')
     .parse(process.argv);
@@ -21,7 +19,7 @@ if (!program.config) {
 }
 
 if (!program.args.length) {
-    throw new Error('you must provide a file');
+    throw new Error('you must provide a file argument');
 }
 
 debug('read and verify config');
@@ -31,11 +29,7 @@ const file = path.resolve(program.args[0]);
 const filename = path.parse(file).base;
 const contents = fs.readFileSync(file);
 
-// CouchDB configuration
-const couchURL = verifyConfig('couchURL', process.env.COUCH_URL);
-const couchDB = verifyConfig('couchDB', process.env.COUCH_DB);
-const couchUser = verifyConfig('couchUser', process.env.COUCH_USER);
-const couchPassword = verifyConfig('couchPassword', process.env.COUCH_PASSWORD);
+const couch = new Couch(config);
 
 // Callbacks
 const getID = verifyConfig('getID', null, true);
@@ -43,14 +37,9 @@ const getOwner = verifyConfig('getOwner', null, true);
 const getEmpty = verifyConfig('getEmpty', null, true);
 const parse = verifyConfig('parse', null, true);
 
-let nano = require('nano')(couchURL);
-let db;
-
 debug('start process');
 
 Promise.resolve()
-    .then(authenticate)
-    .then(checkDesignDoc)
     .then(getMetadata)
     .then(parseFile)
     .then(checkDocumentExists)
@@ -77,60 +66,6 @@ function verifyConfig(name, defaultValue, mustBeFunction) {
     return value;
 }
 
-function authenticate() {
-    return new Promise(function (resolve, reject) {
-        debug('authenticate');
-        nano.auth(couchUser, couchPassword, function (err, body, headers) {
-            if (err) return reject(err);
-            if (headers && headers['set-cookie']) {
-                nano = require('nano')({
-                    url: couchURL,
-                    cookie: headers['set-cookie']
-                });
-                db = nano.db.use(couchDB);
-                resolve();
-            } else {
-                reject(new Error('authentication failure'));
-            }
-        });
-    });
-}
-
-function checkDesignDoc() {
-    return new Promise(function (resolve, reject) {
-        debug('check design doc');
-        db.get(constants.DESIGN_DOC_ID, function (err, result) {
-            if (err) {
-                if (err.statusCode === 404 && (err.reason === 'missing' || err.reason === 'deleted')) {
-                    debug('design doc missing');
-                    return resolve(createDesignDoc());
-                }
-                return reject(err);
-            }
-            if (result.version !== designDoc.version) {
-                debug('design doc does not match');
-                return resolve(createDesignDoc(result._rev));
-            }
-            resolve();
-        });
-    });
-}
-
-function createDesignDoc(revID) {
-    return new Promise(function (resolve, reject) {
-        debug('create design doc');
-        if (revID) {
-            designDoc._rev = revID;
-        } else {
-            delete designDoc._rev;
-        }
-        db.insert(designDoc, function (err) {
-            if (err) return reject(err);
-            resolve();
-        });
-    });
-}
-
 function getMetadata() {
     debug('get metadata');
     const id = Promise.resolve(getID(filename, contents));
@@ -138,12 +73,6 @@ function getMetadata() {
     return Promise.all([id, owner]).then(function (result) {
         debug('id: ' + result[0]);
         debug('owner: ' + result[1]);
-        if (typeof result[0] !== 'string' || typeof result[1] !== 'string') {
-            throw new TypeError('id and owner must be strings');
-        }
-        if (!validateEmail(result[1])) {
-            throw new Error('owner must be a valid email address');
-        }
         return {id: result[0], owner: result[1]};
     });
 }
