@@ -2,6 +2,13 @@
 
 const views = module.exports = {};
 
+views.ownersById = {
+    map: function (doc) {
+        if (doc.$type !== 'entry') return;
+        emit(doc.$id, doc.$owners);
+    }
+};
+
 views.entryById = {
     map: function (doc) {
         if (doc.$type !== 'entry') return;
