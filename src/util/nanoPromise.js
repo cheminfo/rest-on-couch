@@ -90,3 +90,13 @@ exports.queryView = function (db, view, params) {
         });
     });
 };
+
+exports.destroyDatabase = function (nano, dbName) {
+    return new Promise((resolve, reject) => {
+        debug('destroy database ' + dbName);
+        nano.db.destroy(dbName, function (err, body) {
+            if (err) return reject(err);
+            resolve(body);
+        })
+    })
+};

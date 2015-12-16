@@ -1,6 +1,7 @@
 'use strict';
 
 const Couch = require('..');
+const data = require('./data/data');
 
 describe('basic initialization tests', function () {
     let couch;
@@ -15,4 +16,25 @@ describe('basic initialization tests', function () {
     //        doc.shoul
     //    });
     //});
+});
+
+describe('basic tests on existing database', function () {
+    let couch;
+    beforeEach(function () {
+        console.log('reset database')
+        couch = new Couch({database: 'test'});
+        return couch._init()
+            .then(() => data.destroy(couch._nano, couch._databaseName))
+            .then(() => {
+                couch = new Couch({database: 'test'});
+                return couch._init();
+            })
+            .then(() => data.populate(couch._db));
+    });
+
+    it.only('should ...', function() {
+        return couch.getDocumentById('A', 'a@a.com').then(doc => {
+            console.log(doc);
+        });
+    });
 });
