@@ -21,7 +21,6 @@ describe('basic initialization tests', function () {
 describe('basic tests on existing database', function () {
     let couch;
     beforeEach(function () {
-        console.log('reset database')
         couch = new Couch({database: 'test'});
         return couch._init()
             .then(() => data.destroy(couch._nano, couch._databaseName))
@@ -32,9 +31,21 @@ describe('basic tests on existing database', function () {
             .then(() => data.populate(couch._db));
     });
 
-    it.only('should ...', function() {
+    it('should grant read access to group member', function() {
         return couch.getDocumentById('A', 'a@a.com').then(doc => {
-            console.log(doc);
+            doc.should.be.an.instanceOf(Object);
+        });
+    });
+
+    it('should not grant read access to owner', function() {
+        return couch.getDocumentById('A', 'b@b.com').then(doc => {
+            doc.should.be.an.instanceOf(Object);
+        });
+    });
+
+    it('should not grant read access to non-owner non-member', function() {
+        return couch.getDocumentById('A', 'z@z.com').then(doc => {
+            (doc === null).should.be.true();
         });
     });
 });

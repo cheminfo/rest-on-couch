@@ -14,7 +14,7 @@ views.entryById = {
         if (doc.$type !== 'entry') return;
         emit(doc.$id, 1);
     },
-    reduce: 'sum'
+    reduce: '_sum'
 };
 
 views.entryByCreationDate = {
@@ -47,7 +47,7 @@ views.groupByName = {
         if (doc.$type !== 'group') return;
         emit(doc.name, 1);
     },
-    reduce: 'sum'
+    reduce: '_sum'
 };
 
 views.groupByUser = {
@@ -57,7 +57,7 @@ views.groupByUser = {
             emit(doc.users[i], 1);
         }
     },
-    reduce: 'sum'
+    reduce: '_sum'
 };
 
 

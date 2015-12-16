@@ -12,7 +12,7 @@ module.exports.populate = function(db) {
         '$type': 'group',
         name: 'groupA',
         'users': ['a@a.com'],
-        rights: ['create', 'write', 'delete']
+        rights: ['create', 'write', 'delete', 'read']
     }));
 
     prom.push(nanoPromise.insertDocument(db, {

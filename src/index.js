@@ -148,8 +148,8 @@ function validateRight(db, owners, user, right) {
                 // check that this group has the requested right
                 if (group.rights.indexOf(right) === -1) continue;
                 // check that the user is in this group
-                for (var j = 0; j < result[i].length; j++) {
-                    if (result[i][j] === user) {
+                for (var j = 0; j < group.users.length; j++) {
+                    if (group.users[j] === user) {
                         return true;
                     }
                 }
@@ -162,18 +162,17 @@ function validateRight(db, owners, user, right) {
 
 function getGroup(db, name) {
     debug('get group');
-    return nanoPromise.queryView(db, 'groupByName', {key: name})
+    return nanoPromise.queryView(db, 'groupByName', {key: name, reduce: false, include_docs: true})
         .then(groups => {
-            console.log(groups)
-            if(groups.rows.length === 0) {
+            if(!groups || groups.length === 0) {
                 debug('group does not exist');
                 return null;
             }
-            if(groups.rows.length > 1) {
+            if(groups.length > 1) {
                 debug('Getting more than one result for a group name')
             }
             debug('group exists');
-            return groups.rows[0];
+            return groups[0].doc;
         });
 }
 
