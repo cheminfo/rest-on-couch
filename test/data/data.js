@@ -27,7 +27,7 @@ function populate(db) {
     return Promise.all(prom);
 }
 
-beforeEach(function () {
+module.exports = function () {
     global.couch = new Couch({database: 'test'});
     return global.couch._init()
         .then(() => destroy(global.couch._nano, global.couch._databaseName))
@@ -36,4 +36,4 @@ beforeEach(function () {
             return global.couch._init();
         })
         .then(() => populate(global.couch._db));
-});
+};

@@ -1,6 +1,7 @@
 'use strict';
 
 const Couch = require('..');
+const data = require('./data/data');
 
 describe('basic initialization tests', function () {
     let couch;
@@ -13,6 +14,7 @@ describe('basic initialization tests', function () {
 });
 
 describe('basic tests on existing database', function () {
+    before(data);
     it('should grant read access to group member', function() {
         return couch.getDocumentById('A', 'a@a.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
