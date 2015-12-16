@@ -7,5 +7,6 @@ const ddoc = module.exports = {
     language: 'javascript',
     version: constants.DESIGN_DOC_VERSION,
     views: require('./views'),
-    validate_doc_update: require('./validateDocUpdate')
+    validate_doc_update: require('./validateDocUpdate'),
+    updates: require('./updates')
 };
