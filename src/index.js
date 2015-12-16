@@ -178,11 +178,11 @@ function getGroup(db, name) {
 
 
 function checkRightsDoc(db) {
-    debug('create rights doc');
+    debug('check rights doc');
     return nanoPromise.getDocument(db, constants.RIGHTS_DOC_ID)
         .then(doc => {
             if(doc === null) {
-                debug('create rights doc');
+                debug('rights doc does not exist');
                 return createRightsDoc(db);
             }
         });
