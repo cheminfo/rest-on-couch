@@ -60,7 +60,26 @@ views.groupByUser = {
     reduce: '_sum'
 };
 
+views.groupByUserAndRight = {
+    map: function (doc) {
+        if (doc.$type !== 'group') return;
+        for (var i = 0; i < doc.users.length; i++) {
+            for (var j = 0; j < doc.rights.length; j++) {
+                emit([doc.users[i], doc.rights[j]], doc.name);
+            }
+        }
+    }
+};
 
-
-
-
+views.globalRight = {
+    map: function (doc) {
+        if (doc._id !== 'rights') return;
+        for (var i in doc) {
+            if (Array.isArray(doc[i])) {
+                for (var j = 0; j < doc[i].length; j++) {
+                    emit(i, doc[i][j]);
+                }
+            }
+        }
+    }
+};

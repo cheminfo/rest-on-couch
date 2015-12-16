@@ -81,12 +81,17 @@ exports.insertDocument = function (db, doc) {
     });
 };
 
-exports.queryView = function (db, view, params) {
+exports.queryView = function (db, view, params, options) {
+    options = options || {};
     return new Promise((resolve, reject) => {
         debug('queryView ' + view);
         db.view(constants.DESIGN_DOC_NAME, view, params, function (err, body) {
             if (err) return reject(err);
-            resolve(body.rows);
+            if (options.onlyValue) {
+                resolve(body.rows.map(row => row.value));
+            } else {
+                resolve(body.rows);
+            }
         });
     });
 };

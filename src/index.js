@@ -97,6 +97,27 @@ class Couch {
                     });
             });
     }
+
+    createGroup(groupName, user, rights) {
+        debug('createGroup', groupName, user);
+        if (!Array.isArray(rights)) rights = ['read'];
+        return this._init()
+            .then(() => checkRightAnyGroup(this._db, user, 'createGroup'))
+            .then(hasRight => {
+                if (!hasRight) throw new Error(`user ${user} does not have createGroup right`);
+            })
+            .then(() => getGroup(this._db, groupName))
+            .then(group => {
+                if (group) throw new Error(`group ${groupName} already exists`);
+                return nanoPromise.insertDocument(this._db, {
+                    $type: 'group',
+                    $owners: [user],
+                    name: groupName,
+                    users: [],
+                    rights: rights
+                });
+            });
+    }
 }
 
 module.exports = Couch;
@@ -131,33 +152,20 @@ function getOwnersById(db, id) {
 }
 
 function validateRight(db, owners, user, right) {
-    var groups = [];
     for (var i = 0; i < owners.length; i++) {
-        if (owners[i] === user) {
-            return Promise.resolve(true);
-        }
-        if (isEmail(owners[i])) {
-            continue;
-        }
-        groups.push(getGroup(db, owners[i]));
+        if (owners[i] === user) return Promise.resolve(true);
     }
-    if (groups.length > 0) {
-        return Promise.all(groups).then(function (result) {
-            for (var i = 0; i < result.length; i++) {
-                var group = result[i];
-                // check that this group has the requested right
-                if (group.rights.indexOf(right) === -1) continue;
-                // check that the user is in this group
-                for (var j = 0; j < group.users.length; j++) {
-                    if (group.users[j] === user) {
-                        return true;
+    return checkGlobalRight(db, user, right)
+        .then(function (hasGlobal) {
+            if (hasGlobal) return true;
+            return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, right]}, {onlyValue: true})
+                .then(function (groups) {
+                    for (var i = 0; i < owners.length; i++) {
+                        if (groups.indexOf(owners[i]) > -1) return true;
                     }
-                }
-            }
-            return false;
+                    return false;
+                });
         });
-    }
-    return Promise.resolve(false);
 }
 
 function getGroup(db, name) {
@@ -193,9 +201,34 @@ function createRightsDoc(db) {
     const rightsDoc = {
         _id: constants.RIGHTS_DOC_ID,
         '$type': 'db',
+        createGroup: ['anonymous'],
         create: ['anonymous'],
-        write: ['anonymous'],
-        delete: ['anonymous']
+        read: ['anonymous']
     };
     return nanoPromise.insertDocument(db, rightsDoc);
+}
+
+function checkGlobalRight(db, user, right) {
+    debug('checkGlobalRight ', user, right);
+    return nanoPromise.queryView(db, 'globalRight', {key: right}, {onlyValue: true})
+        .then(function (result) {
+            for (var i = 0; i < result.length; i++) {
+                if (result[i] === 'anonymous' || result[i] === user) {
+                    debug('user has global right');
+                    return true;
+                }
+            }
+            debug('user does not have global right');
+            return false;
+        });
+}
+
+function checkRightAnyGroup(db, user, right) {
+    debug('checkRightAnyGroup', user, right);
+    return checkGlobalRight(db, user, right)
+        .then(hasGlobal => {
+            if (hasGlobal) return true;
+            return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, right]})
+                .then(result => result.length > 0);
+        });
 }

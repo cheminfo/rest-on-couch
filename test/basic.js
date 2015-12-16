@@ -38,6 +38,4 @@ describe('basic tests on existing database', function () {
             (doc === null).should.be.true();
         });
     });
-
-
 });
