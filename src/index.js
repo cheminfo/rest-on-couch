@@ -1,5 +1,4 @@
 'use strict';
-
 const debug = require('debug')('couch:rest');
 const nano = require('nano');
 
@@ -207,7 +206,7 @@ class Couch {
 
         return this.getEntryByUuidAndRights(entry._id, user, ['write'])
             .then(doc => {
-                console.log('got document');
+                debug('got document');
                 for(let key in entry) {
                     if(key[0] === '$') continue;
                     doc[key] = entry[key];
@@ -215,7 +214,6 @@ class Couch {
                 beforeSaveEntry(doc);
                 return nanoPromise.insertDocument(this._db, doc);
             }).catch(error => {
-                console.log(error);
                 if(error.reason === 'not found') {
                     debug('doc not found, create new');
                     beforeSaveEntry(entry);
@@ -227,6 +225,13 @@ class Couch {
             });
     }
 
+    deleteEntryByUuid(uuid, user) {
+        debug('deleteEntryByUuid');
+        return this.getEntryByUuidAndRights(uuid, user, ['delete'])
+            .then(doc => {
+                return nanoPromise.destroyDocument(this._db, uuid);
+            });
+    }
 }
 
 Couch.prototype.addAttachment = Couch.prototype.addAttachments;
