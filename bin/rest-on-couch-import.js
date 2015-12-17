@@ -34,7 +34,6 @@ const couch = new Couch(config);
 // Callbacks
 const getID = verifyConfig('getID', null, true);
 const getOwner = verifyConfig('getOwner', null, true);
-const getEmpty = verifyConfig('getEmpty', null, true);
 const parse = verifyConfig('parse', null, true);
 
 debug('start process');
@@ -100,73 +99,14 @@ function parseFile(info) {
 }
 
 function checkDocumentExists(info) {
-    return new Promise(function (resolve, reject) {
-        debug('check that document exists');
-        db.view(constants.DESIGN_DOC_NAME, 'byId', {key: info.id}, function (err, result) {
-            if (err) return reject(err);
-            const length = result.rows.length;
-            if (length === 0) {
-                return resolve(createDocument(info));
-            }
-            /*
-             * TODO
-             * If there are multiple rows, it means the data is spread across
-             * multiple documents
-             */
-            debug(`found ${length} result(s)`);
-            info._id = result.rows[0].id;
-            resolve(info);
-        });
-    });
-}
-
-function createDocument(info) {
-    return new Promise(function (resolve, reject) {
-        debug('create document');
-        const emptyDoc = getEmpty();
-        emptyDoc.id = info.id;
-        emptyDoc.owner = [info.owner];
-        db.insert(emptyDoc, function (err, result) {
-            if (err) return reject(err);
-            info._id = result.id;
-            resolve(info);
-        });
-    });
+    return couch.createEntry(info.id, info.owner).then(result => info);
 }
 
 function updateDocument(info) {
-    return new Promise(function (resolve, reject) {
-        debug('update document');
-        db.get(info._id, function (err, doc) {
-            if (err) return reject(err);
-            const jpath = info.jpath;
-            const newData = info.data;
-            let current = doc;
-            for (var i = 0; i < jpath.length; i++) {
-                current = current[jpath[i]];
-                if (!current) {
-                    return reject(new Error('jpath does not match document structure'));
-                }
-            }
-            if (!Array.isArray(current)) {
-                return reject(new Error('jpath must point to an array'));
-            }
-            current.push(newData);
-            if (!newData.file) {
-                newData.file = [];
-            }
-            newData.file.push({
-                type: info.type,
-                filename: filename
-            });
-            db.multipart.insert(doc, [{
-                name: filename,
-                data: contents,
-                content_type: info.content_type
-            }], doc._id, function (err) {
-                if (err) return reject(err);
-                resolve();
-            });
-        });
+    return couch.addFileToJpath(info.id, info.owner, info.jpath, info.data, {
+        type: info.type,
+        name: filename,
+        data: contents,
+        content_type: info.content_type
     });
 }

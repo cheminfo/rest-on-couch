@@ -195,6 +195,43 @@ class Couch {
             .then(entry => nanoPromise.attachFiles(this._db, entry, attachments));
     }
 
+    addFileToJpath(id, user, jpath, json, file) {
+        if (!Array.isArray(jpath)) {
+            throw new CouchError('jpath must be an array');
+        }
+        if (typeof json !== 'object') {
+            throw new CouchError('json must be an object');
+        }
+        if (typeof file !== 'object') {
+            throw new CouchError('file must be an object');
+        }
+        if (!file.type || !file.name || !file.data) {
+            throw new CouchError('file must have type, name and data properties');
+        }
+        return this.getEntryByIdAndRights(id, user, ['write'])
+            .then(entry => {
+                let current = entry;
+                for (var i = 0; i < jpath.length; i++) {
+                    current = current[jpath[i]];
+                    if (!current) {
+                        throw new CouchError('jpath does not match document structure');
+                    }
+                }
+                if (!Array.isArray(current)) {
+                    throw new CouchError('jpath must point to an array');
+                }
+                current.push(json);
+                if (!json.file) {
+                    json.file = [];
+                }
+                json.file.push({
+                    type: file.type,
+                    filename: file.name
+                });
+                return nanoPromise.attachFiles(this._db, entry, [file]);
+            });
+    }
+
     addGroupToEntry(id, user, group) {
         return this._doUpdateOnEntry(id, user, 'addGroupToEntry', {group: group});
     }
@@ -211,7 +248,7 @@ class Couch {
             .then(doc => {
                 if(!doc) {
                     debug('group does not exist');
-                    throw new Error('Group does not exist');
+                    throw new Error('group does not exist');
                 }
                 if(!isOwner(doc.$owners, user)) {
                     debug('not allowed to delete group');
@@ -246,7 +283,7 @@ class Couch {
 
     insertEntry(entry, user) {
         debug('insertEntry');
-        if(!entry._id) return Promise.reject(new CouchError('Entry has no uuid'));
+        if(!entry._id) return Promise.reject(new CouchError('entry has no uuid'));
 
         return this.getEntryByUuidAndRights(entry._id, user, ['write'])
             .then(doc => {
