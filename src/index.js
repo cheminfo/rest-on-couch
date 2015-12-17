@@ -227,10 +227,14 @@ class Couch {
 
     deleteEntryByUuid(uuid, user) {
         debug('deleteEntryByUuid');
-        return this.getEntryByUuidAndRights(uuid, user, ['delete'])
-            .then(doc => {
-                return nanoPromise.destroyDocument(this._db, uuid);
-            });
+        return this.getEntryByUuidAndRights(uuid, user, 'delete')
+            .then(() => nanoPromise.destroyDocument(this._db, uuid));
+    }
+
+    deleteEntryById(id, user) {
+        debug('deleteEntry');
+        return this.getEntryByIdAndRights(id, user, 'delete')
+            .then(doc => nanoPromise.destroyDocument(this._db, doc._id));
     }
 }
 

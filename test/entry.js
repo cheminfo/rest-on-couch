@@ -49,6 +49,13 @@ describe('entry writes', function () {
         });
     });
 
+    it('should delete an entry by id', function () {
+        return couch.deleteEntryById('A', 'a@a.com')
+            .then(() => {
+                return couch.getEntryById('A', 'a@a.com').should.be.rejectedWith(/not found/);
+            });
+    });
+
     it('should add group to entry', function () {
         return couch.addGroupToEntry('A', 'b@b.com', 'groupD')
             .then(() => couch.getEntryById('A', 'b@b.com'))
