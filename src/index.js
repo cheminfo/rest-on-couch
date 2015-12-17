@@ -3,8 +3,9 @@
 const debug = require('debug')('couch:rest');
 const nano = require('nano');
 
-const constants = require('../src/constants');
-const designDoc = require('../src/design/app');
+const CouchError = require('./util/CouchError');
+const constants = require('./constants');
+const designDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
 const isEmail = require('./util/isEmail');
 
@@ -82,7 +83,7 @@ class Couch {
             .then(owners => {
                 if (owners.length === 0) {
                     debug('document not found');
-                    return null;
+                    throw new CouchError('document not found');
                 }
                 debug('check rights');
                 // TODO handle more than one result
@@ -93,7 +94,7 @@ class Couch {
                             return nanoPromise.getDocument(this._db, owners[0].id);
                         }
                         debug('user has no access');
-                        return null;
+                        throw new CouchError('user has no access');
                     });
             });
     }
@@ -105,11 +106,11 @@ class Couch {
             .then(doc => {
                 if (!doc) {
                     debug('document not found');
-                    return null;
+                    throw new CouchError('document not found');
                 }
                 if (doc.$type !== 'entry') {
                     debug('document is not an entry');
-                    return null;
+                    throw new CouchError('document is not an entry');
                 }
                 debug('check rights');
                 return validateRights(this._db, doc.$owners, user, rights)
@@ -119,7 +120,7 @@ class Couch {
                             return doc;
                         }
                         debug('user has no access');
-                        return null;
+                        throw new CouchError('user has no access');
                     });
             });
     }
@@ -137,16 +138,17 @@ class Couch {
         return this._init()
             .then(() => this.getEntryById(id, user))
             .then(doc => {
-                if(!doc) throw new Error('Document does not exist');
                 const hasRight = isOwner(doc.$owners, user);
-                if(!hasRight) throw new Error('Unauthorized to edit group (only owner can)');
+                if(!hasRight) throw new CouchError('unauthorized to edit group (only owner can)');
                 return nanoPromise.updateWithHandler(this._db, update, doc._id, updateBody);
             });
     }
 
     addAttachments(id, user, attachments) {
-        return this._init()
-            .then()
+        //return this.getEntryByIdAndRights(id, user, ['write', 'addAttachment'])
+        //    .then(entry => {
+        //        if (entry)
+        //    });
     }
 
     addGroupToEntry(id, user, group) {
