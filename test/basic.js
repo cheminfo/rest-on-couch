@@ -13,30 +13,43 @@ describe('basic initialization tests', function () {
     });
 });
 
-describe('basic tests on existing database', function () {
+describe('basic reads on existing database', function () {
     before(data);
-    it('should grant read access to read-group member', function() {
+    it('should grant read access to read-group member', function () {
         return couch.getDocumentById('A', 'a@a.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });
     });
 
-    it('should not grant read access to owner', function() {
+    it('should not grant read access to owner', function () {
         return couch.getDocumentById('A', 'b@b.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });
     });
 
     // todo allow to personalize default rights
-    it.skip('should not grant read access to inexistant user', function() {
+    it.skip('should not grant read access to inexistant user', function () {
         return couch.getDocumentById('A', 'z@z.com').then(doc => {
             (doc === null).should.be.true();
         });
     });
 
-    it.skip('should not grant read access to non-owner non-read-group member', function() {
+    it.skip('should not grant read access to non-owner non-read-group member', function () {
         return couch.getDocumentById('A', 'z@z.com').then(doc => {
             (doc === null).should.be.true();
         });
     });
 });
+
+describe('basic editions on existing database', function () {
+    beforeEach(data);
+
+    it('should fail to add group', function() {
+        return couch.addGroup('A', 'b@b.com', 'groupC').should.be.fulfilled();
+    });
+
+    it('should add group', function () {
+        return couch.addGroup('A', 'a@a.com', 'groupC').should.be.rejected();
+    });
+});
+

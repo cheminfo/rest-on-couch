@@ -98,6 +98,19 @@ class Couch {
             });
     }
 
+    addGroup(id, user, group) {
+        debug('add group');
+        return this._init()
+            .then(() => this.getDocumentById(id, user))
+
+            .then(doc => {
+                if(!doc) throw new Error('Document does not exist');
+                const hasRight = isOwner(doc.$owners, user);
+                if(!hasRight) throw new Error('Unathorized to edit group (only owner can)');
+                return nanoPromise.updateWithHandler(this._db, 'addGroup', doc._id, {group: group});
+            });
+    }
+
     createGroup(groupName, user, rights) {
         debug('createGroup', groupName, user);
         if (!Array.isArray(rights)) rights = ['read'];
@@ -151,9 +164,16 @@ function getOwnersById(db, id) {
     return nanoPromise.queryView(db, 'ownersById', {key: id});
 }
 
-function validateRight(db, owners, user, right) {
+function isOwner(owners, user) {
     for (var i = 0; i < owners.length; i++) {
-        if (owners[i] === user) return Promise.resolve(true);
+        if (owners[i] === user) return true;
+    }
+    return false;
+}
+
+function validateRight(db, owners, user, right) {
+    if(isOwner(owners, user)) {
+        return Promise.resolve(true);
     }
     return checkGlobalRight(db, user, right)
         .then(function (hasGlobal) {

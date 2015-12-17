@@ -26,7 +26,7 @@ function populate(db) {
 
     prom.push(nanoPromise.insertDocument(db, {
         '$type': 'entry',
-        '$owners': ['b@b.com', 'groupA', 'groupB'],
+        '$owners': ['b@b.com', 'groupA', 'groupB', 'groupC'],
         '$id': 'A',
         '$creationDate': 0,
         '$modificationDate': 0
