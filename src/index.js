@@ -13,7 +13,7 @@ class Couch {
     constructor(options) {
         options = options || {};
 
-        const database = options.database || process.env.REST_COUCH_DATABASE;
+        const database = options.database || constants.REST_COUCH_DATABASE;
         if (!database) {
             throw new Error('database option is mandatory');
         }
@@ -21,10 +21,10 @@ class Couch {
         this._databaseName = database;
 
         this._couchOptions = {
-            url: options.url || process.env.REST_COUCH_URL || 'http://localhost:5984',
+            url: options.url || constants.REST_COUCH_URL,
             database,
-            user: options.user || process.env.REST_COUCH_USER,
-            password: options.password || process.env.REST_COUCH_PASSWORD
+            user: options.user || constants.REST_COUCH_USER,
+            password: options.password || constants.REST_COUCH_PASSWORD
         };
 
         this._defaultEntry = options.defaultEntry || getDefaultEntry;

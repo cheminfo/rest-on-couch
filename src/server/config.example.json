@@ -1,0 +1,41 @@
+{
+  "firstLoginClone": {
+    "sourceFlavor": "workshop",
+    "targetFlavor": "default",
+    "sourceUser": "admin@cheminfo.org",
+    "targetSubFolder": "workshop/2015"
+  },
+  "auth": {
+    "google": {
+      "oauth2": {
+        "clientID": "",
+        "clientSecret": "",
+        "successRedirect": "http://www.cheminfo.org/static/index.html",
+        "failureRedirect": "/login",
+        "callbackURL": "/auth/google/oauth2callback",
+        "loginURL":"/auth/google"
+      }
+    },
+    "facebook": {
+      "oauth2": {
+        "appId": "",
+        "appSecret": "",
+        "callbackURL": "/auth/facebook/callback",
+        "failureRedirect": "/login",
+        "successRedirect": "http://www.cheminfo.org/static/index.html",
+        "loginURL":"/auth/facebook"
+      }
+    },
+    "github": {
+      "oauth2": {
+        "clientID": "",
+        "clientSecret": "",
+        "successRedirect": "http://www.cheminfo.org/static/index.html",
+        "failureRedirect": "/login",
+        "callbackURL": "/auth/github/callback",
+        "loginURL":"/auth/github"
+      }
+    },
+    "couchdb": {}
+  }
+}
