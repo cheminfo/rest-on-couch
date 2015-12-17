@@ -75,8 +75,8 @@ class Couch {
         });
     }
 
-    getDocumentById(id, user) {
-        debug('getDocumentById', id, user);
+    getEntryById(id, user) {
+        debug('getEntryById', id, user);
         return this._init()
             .then(() => getOwnersById(this._db, id))
             .then(owners => {
@@ -101,7 +101,7 @@ class Couch {
     doUpdateOnEntry(id, user, update, updateBody) {
         // Call update handler
         return this._init()
-            .then(() => this.getDocumentById(id, user))
+            .then(() => this.getEntryById(id, user))
             .then(doc => {
                 if(!doc) throw new Error('Document does not exist');
                 const hasRight = isOwner(doc.$owners, user);

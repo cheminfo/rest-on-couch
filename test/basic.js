@@ -16,26 +16,26 @@ describe('basic initialization tests', function () {
 describe('basic reads on existing database', function () {
     before(data);
     it('should grant read access to read-group member', function () {
-        return couch.getDocumentById('A', 'a@a.com').then(doc => {
+        return couch.getEntryById('A', 'a@a.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });
     });
 
     it('should not grant read access to owner', function () {
-        return couch.getDocumentById('A', 'b@b.com').then(doc => {
+        return couch.getEntryById('A', 'b@b.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });
     });
 
     // todo allow to personalize default rights
     it.skip('should not grant read access to inexistant user', function () {
-        return couch.getDocumentById('A', 'z@z.com').then(doc => {
+        return couch.getEntryById('A', 'z@z.com').then(doc => {
             (doc === null).should.be.true();
         });
     });
 
     it.skip('should not grant read access to non-owner non-read-group member', function () {
-        return couch.getDocumentById('A', 'z@z.com').then(doc => {
+        return couch.getEntryById('A', 'z@z.com').then(doc => {
             (doc === null).should.be.true();
         });
     });
@@ -46,7 +46,7 @@ describe('basic editions on existing database', function () {
 
     it('should add group to entry', function () {
         return couch.addGroupToEntry('A', 'b@b.com', 'groupD')
-            .then(() => couch.getDocumentById('A', 'b@b.com'))
+            .then(() => couch.getEntryById('A', 'b@b.com'))
             .then(doc => {
                 doc.$owners.indexOf('groupD').should.be.above(0);
             });
@@ -58,7 +58,7 @@ describe('basic editions on existing database', function () {
 
     it('should remove group from entry', function () {
         return couch.removeGroupFromEntry('A', 'b@b.com', 'groupB')
-            .then(() => couch.getDocumentById('A', 'b@b.com'))
+            .then(() => couch.getEntryById('A', 'b@b.com'))
             .then(doc => {
                 doc.$owners.indexOf('groupB').should.be.equal(-1);
             });
