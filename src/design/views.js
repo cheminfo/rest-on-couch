@@ -41,16 +41,6 @@ views.entryByOwner = {
     }
 };
 
-views.entryByParent = {
-    map: function (doc) {
-        if (doc.$type !== 'entry' || !doc.$parents) return;
-
-        for (var i = 0; i < doc.$parents.length; i++) {
-            emit(doc.$parents[i]);
-        }
-    }
-};
-
 
 views.groupByName = {
     map: function (doc) {
