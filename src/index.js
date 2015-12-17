@@ -1,4 +1,5 @@
 'use strict';
+
 const debug = require('debug')('couch:rest');
 const nano = require('nano');
 
@@ -25,6 +26,9 @@ class Couch {
             user: options.user || process.env.REST_COUCH_USER,
             password: options.password || process.env.REST_COUCH_PASSWORD
         };
+
+        this._defaultEntry = options.defaultEntry || getDefaultEntry;
+
         this._nano = nano(this._couchOptions.url);
         this._db = null;
         this._lastAuth = 0;
@@ -73,6 +77,40 @@ class Couch {
         return this._currentAuth = prom.then(() => {
             this._db = this._nano.db.use(this._couchOptions.database);
         });
+    }
+
+    createEntry(id, user, kind, throwIfExists) {
+        debug('createEntry', id, user, kind);
+        return this._init()
+            .then(() => checkRightAnyGroup(this._db, user, 'create'))
+            .then(hasRight => {
+                if (!hasRight) {
+                    debug('user is missing create right');
+                    throw new CouchError('user is missing create right');
+                }
+                return nanoPromise.queryView(this._db, 'entryById', {key: id})
+                    .then(result => {
+                        if (result.length === 0) {
+                            let newEntry;
+                            const defaultEntry = this._defaultEntry;
+                            if (typeof defaultEntry === 'function') {
+                                newEntry = defaultEntry();
+                            } else if (typeof defaultEntry[kind] === 'function') {
+                                newEntry = defaultEntry[kind]();
+                            } else {
+                                throw new CouchError('unexpected type for default entry');
+                            }
+                            return Promise.resolve(newEntry)
+                                .then(entry => nanoPromise.insertDocument(this._db, entry))
+                                .then(info => info.id);
+                        }
+                        debug('entry already exists');
+                        if (throwIfExists) {
+                            throw new CouchError('entry already exists');
+                        }
+                        return result[0].id;
+                    });
+            });
     }
 
     getEntryByIdAndRights(id, user, rights) {
@@ -371,6 +409,10 @@ function checkRightAnyGroup(db, user, right) {
             return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, right]})
                 .then(result => result.length > 0);
         });
+}
+
+function getDefaultEntry() {
+    return {};
 }
 
 function beforeSaveEntry(entry) {

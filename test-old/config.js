@@ -11,7 +11,7 @@ module.exports = {
     getOwner: function (filename, contents) {
         return 'abc@xyz.com';
     },
-    getEmpty: function () {
+    defaultEntry: function () {
         return {
             parent: [],
             name: [],
