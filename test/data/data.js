@@ -10,26 +10,28 @@ function destroy(nano, name) {
 function populate(db) {
     const prom = [];
     prom.push(nanoPromise.insertDocument(db, {
-        '$type': 'group',
+        $type: 'group',
+        $owners: ['a@a.com'],
         name: 'groupA',
-        'users': ['a@a.com'],
+        users: ['a@a.com'],
         rights: ['create', 'write', 'delete', 'read']
     }));
 
 
     prom.push(nanoPromise.insertDocument(db, {
-        '$type': 'group',
+        $type: 'group',
+        $owners: ['a@a.com'],
         name: 'groupB',
-        'users': ['a@a.com'],
+        users: ['a@a.com'],
         rights: ['create']
     }));
 
     prom.push(nanoPromise.insertDocument(db, {
-        '$type': 'entry',
-        '$owners': ['b@b.com', 'groupA', 'groupB', 'groupC'],
-        '$id': 'A',
-        '$creationDate': 0,
-        '$modificationDate': 0
+        $type: 'entry',
+        $owners: ['b@b.com', 'groupA', 'groupB', 'groupC'],
+        $id: 'A',
+        $creationDate: 0,
+        $modificationDate: 0
     }));
 
     return Promise.all(prom);
