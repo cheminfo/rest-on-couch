@@ -75,8 +75,8 @@ class Couch {
         });
     }
 
-    getEntryById(id, user) {
-        debug('getEntryById', id, user);
+    getEntryByIdAndRights(id, user, rights) {
+        debug('getEntryByIdAndRights', id, user, rights);
         return this._init()
             .then(() => getOwnersById(this._db, id))
             .then(owners => {
@@ -86,7 +86,7 @@ class Couch {
                 }
                 debug('check rights');
                 // TODO handle more than one result
-                return validateRight(this._db, owners[0].value, user, 'read')
+                return validateRights(this._db, owners[0].value, user, rights)
                     .then(ok => {
                         if (ok) {
                             debug('user has access');
@@ -98,7 +98,41 @@ class Couch {
             });
     }
 
-    doUpdateOnEntry(id, user, update, updateBody) {
+    getEntryByUuidAndRights(uuid, user, rights) {
+        debug('getEntryByUuidAndRights', uuid, user, rights);
+        return this._init()
+            .then(() => nanoPromise.getDocument(this._db, uuid))
+            .then(doc => {
+                if (!doc) {
+                    debug('document not found');
+                    return null;
+                }
+                if (doc.$type !== 'entry') {
+                    debug('document is not an entry');
+                    return null;
+                }
+                debug('check rights');
+                return validateRights(this._db, doc.$owners, user, rights)
+                    .then(ok => {
+                        if (ok) {
+                            debug('user has access');
+                            return doc;
+                        }
+                        debug('user has no access');
+                        return null;
+                    });
+            });
+    }
+
+    getEntryByUuid(uuid, user) {
+        return this.getEntryByUuidAndRights(uuid, user, 'read');
+    }
+
+    getEntryById(id, user) {
+        return this.getEntryByIdAndRights(id, user, 'read');
+    }
+
+    _doUpdateOnEntry(id, user, update, updateBody) {
         // Call update handler
         return this._init()
             .then(() => this.getEntryById(id, user))
@@ -110,13 +144,18 @@ class Couch {
             });
     }
 
+    addAttachments(id, user, attachments) {
+        return this._init()
+            .then()
+    }
+
     addGroupToEntry(id, user, group) {
-        return this.doUpdateOnEntry(id, user, 'addGroupToEntry', {group: group});
+        return this._doUpdateOnEntry(id, user, 'addGroupToEntry', {group: group});
     }
 
     removeGroupFromEntry(id, user, group) {
         debug('remove group from entry');
-        return this.doUpdateOnEntry(id, user, 'removeGroupFromEntry', {group: group});
+        return this._doUpdateOnEntry(id, user, 'removeGroupFromEntry', {group: group});
     }
 
     createGroup(groupName, user, rights) {
@@ -140,6 +179,8 @@ class Couch {
             });
     }
 }
+
+Couch.prototype.addAttachment = Couch.prototype.addAttachments;
 
 module.exports = Couch;
 
@@ -179,21 +220,34 @@ function isOwner(owners, user) {
     return false;
 }
 
-function validateRight(db, owners, user, right) {
+function validateRights(db, owners, user, rights) {
+    // owner has all the rights
     if(isOwner(owners, user)) {
         return Promise.resolve(true);
     }
-    return checkGlobalRight(db, user, right)
-        .then(function (hasGlobal) {
-            if (hasGlobal) return true;
-            return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, right]}, {onlyValue: true})
-                .then(function (groups) {
-                    for (var i = 0; i < owners.length; i++) {
-                        if (groups.indexOf(owners[i]) > -1) return true;
-                    }
-                    return false;
-                });
-        });
+
+    if (typeof rights === 'string') {
+        rights = [rights];
+    }
+    if (!Array.isArray(rights)) {
+        throw new TypeError('rights must be an array or a string');
+    }
+
+    var checks = [];
+    for (let i = 0; i < rights.length; i++) {
+        checks.push(checkGlobalRight(db, user, rights[i])
+            .then(function (hasGlobal) {
+                if (hasGlobal) return true;
+                return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})
+                    .then(function (groups) {
+                        for (var i = 0; i < owners.length; i++) {
+                            if (groups.indexOf(owners[i]) > -1) return true;
+                        }
+                        return false;
+                    });
+            }));
+    }
+    return Promise.all(checks).then(result => result.some(value => value === true));
 }
 
 function getGroup(db, name) {
