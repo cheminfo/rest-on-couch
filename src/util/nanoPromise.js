@@ -102,8 +102,8 @@ exports.destroyDatabase = function (nano, dbName) {
         nano.db.destroy(dbName, function (err, body) {
             if (err) return reject(err);
             resolve(body);
-        })
-    })
+        });
+    });
 };
 
 exports.updateWithHandler = function(db, update, docId, body) {

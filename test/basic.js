@@ -45,7 +45,11 @@ describe('basic editions on existing database', function () {
     beforeEach(data);
 
     it('should add group to entry', function () {
-        return couch.addGroupToEntry('A', 'b@b.com', 'groupC').should.be.fulfilled();
+        return couch.addGroupToEntry('A', 'b@b.com', 'groupD')
+            .then(() => couch.getDocumentById('A', 'b@b.com'))
+            .then(doc => {
+                doc.$owners.indexOf('groupD').should.be.above(0);
+            });
     });
 
     it('should fail to add group to entry', function () {
@@ -53,7 +57,11 @@ describe('basic editions on existing database', function () {
     });
 
     it('should remove group from entry', function () {
-        return couch.removeGroupFromEntry('A', 'b@b.com', 'groupB').should.be.fulfilled();
+        return couch.removeGroupFromEntry('A', 'b@b.com', 'groupB')
+            .then(() => couch.getDocumentById('A', 'b@b.com'))
+            .then(doc => {
+                doc.$owners.indexOf('groupB').should.be.equal(-1);
+            });
     });
 
     it('should fail to remove group from entry', function () {

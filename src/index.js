@@ -105,7 +105,7 @@ class Couch {
             .then(doc => {
                 if(!doc) throw new Error('Document does not exist');
                 const hasRight = isOwner(doc.$owners, user);
-                if(!hasRight) throw new Error('Unathorized to edit group (only owner can)');
+                if(!hasRight) throw new Error('Unauthorized to edit group (only owner can)');
                 return nanoPromise.updateWithHandler(this._db, 'addGroupToEntry', doc._id, {group: group});
             });
     }
@@ -117,7 +117,7 @@ class Couch {
             .then(doc => {
                 if(!doc) throw new Error('Document does not exist');
                 const hasRight = isOwner(doc.$owners, user);
-                if(!hasRight) throw new Error('Unathorized to edit group (only owner can)');
+                if(!hasRight) throw new Error('Unauthorized to edit group (only owner can)');
                 return nanoPromise.updateWithHandler(this._db, 'removeGroupFromEntry', doc._id, {group: group});
             });
     }
