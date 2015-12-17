@@ -106,6 +106,21 @@ exports.destroyDatabase = function (nano, dbName) {
     });
 };
 
+exports.destroyDocument = function(db, docId, revId) {
+    if(!revId) {
+        return exports.getDocument(db, docId).then(doc => {
+            if(!doc || !doc._rev) return null;
+            return exports.destroyDocument(db, docId, doc._rev);
+        });
+    }
+    return new Promise(function(resolve, reject) {
+        db.destroy(docId, revId, function(err, body) {
+            if(err) return reject(err);
+            resolve(body);
+        });
+    });
+};
+
 exports.updateWithHandler = function(db, update, docId, body) {
     return new Promise((resolve, reject) => {
         debug('update with handler');

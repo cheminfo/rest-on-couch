@@ -161,6 +161,25 @@ class Couch {
         return this._doUpdateOnEntry(id, user, 'removeGroupFromEntry', {group: group});
     }
 
+    deleteGroup(groupName, user) {
+        debug('remove group');
+        return this._init()
+            .then(() => getGroup(this._db, groupName))
+            .then(doc => {
+                if(!doc) {
+                    debug('group does not exist');
+                    throw new Error('Group does not exist');
+                }
+                if(!isOwner(doc.$owners, user)) {
+                    debug('not allowed to delete group');
+                    throw new Error(`user ${user} is not an owner of the group`);
+                }
+
+                // TODO Change entries which have this group
+                return nanoPromise.destroyDocument(this._db, doc._id);
+            });
+    }
+
     createGroup(groupName, user, rights) {
         debug('createGroup', groupName, user);
         if (!Array.isArray(rights)) rights = ['read'];
