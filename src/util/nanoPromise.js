@@ -115,3 +115,13 @@ exports.updateWithHandler = function(db, update, docId, body) {
         });
     });
 };
+
+exports.attachFiles = function (db, doc, files) {
+    return new Promise((resolve, reject) => {
+        debug('attach files');
+        db.multipart.insert(doc, files, doc._id, function (err) {
+            if (err) return reject(err);
+            resolve();
+        });
+    });
+};
