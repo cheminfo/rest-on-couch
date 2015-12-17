@@ -30,6 +30,10 @@ describe('validate_doc_update', function () {
             assert(addDate(addTypeID({$owners: ['abc']})), null, /must be an email/);
             assert(addDate(addTypeID({})), null, /Missing owners/);
         });
+        it('group', function () {
+            addGroup({name: 'abc'});
+            assert(addGroup({name: 'a@a.com'}), null, /cannot be an email/);
+        });
     });
 });
 
@@ -48,6 +52,11 @@ function addDate(doc) {
 function addTypeID(doc) {
     doc.$type = 'entry';
     doc.$id = 'abc';
+    return doc;
+}
+
+function addGroup(doc) {
+    doc.$type = 'group';
     return doc;
 }
 

@@ -102,7 +102,6 @@ class Couch {
         debug('add group');
         return this._init()
             .then(() => this.getDocumentById(id, user))
-
             .then(doc => {
                 if(!doc) throw new Error('Document does not exist');
                 const hasRight = isOwner(doc.$owners, user);

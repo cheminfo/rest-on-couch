@@ -14,6 +14,16 @@ module.exports = function (newDoc, oldDoc) {
     if (oldDoc && newDoc.$type !== oldDoc.$type) {
         throw({forbidden: 'Cannot change the type of document'});
     }
+
+    if(newDoc.$type === 'group') {
+        if(!newDoc.name) {
+            throw({forbidden: 'group must have a name'});
+        }
+        if(validEmail.test(newDoc.name)) {
+            throw({forbidden: 'group cannot be an email'});
+        }
+    }
+
     if (newDoc.$type === 'entry') {
         if (!newDoc.$id) {
             throw({forbidden: 'ID is mandatory'});
