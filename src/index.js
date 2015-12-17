@@ -101,7 +101,13 @@ class Couch {
                                 throw new CouchError('unexpected type for default entry');
                             }
                             return Promise.resolve(newEntry)
-                                .then(entry => nanoPromise.insertDocument(this._db, entry))
+                                .then(entry => {
+                                    entry.$id = id;
+                                    entry.$type = 'entry';
+                                    entry.$owners = [user];
+                                    beforeSaveEntry(entry);
+                                    return nanoPromise.insertDocument(this._db, entry);
+                                })
                                 .then(info => info.id);
                         }
                         debug('entry already exists');
