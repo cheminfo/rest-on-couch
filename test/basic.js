@@ -44,12 +44,20 @@ describe('basic reads on existing database', function () {
 describe('basic editions on existing database', function () {
     beforeEach(data);
 
-    it('should fail to add group', function() {
-        return couch.addGroup('A', 'b@b.com', 'groupC').should.be.fulfilled();
+    it('should add group to entry', function () {
+        return couch.addGroupToEntry('A', 'b@b.com', 'groupC').should.be.fulfilled();
     });
 
-    it('should add group', function () {
-        return couch.addGroup('A', 'a@a.com', 'groupC').should.be.rejected();
+    it('should fail to add group to entry', function () {
+        return couch.addGroupToEntry('A', 'a@a.com', 'groupC').should.be.rejected();
+    });
+
+    it('should remove group from entry', function () {
+        return couch.removeGroupFromEntry('A', 'b@b.com', 'groupB').should.be.fulfilled();
+    });
+
+    it('should fail to remove group from entry', function () {
+        return couch.removeGroupFromEntry('A', 'a@a.com', 'groupB').should.be.rejected();
     });
 });
 
