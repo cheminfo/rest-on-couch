@@ -8,6 +8,16 @@ module.exports = function (newDoc, oldDoc) {
     var validTypes = ['entry', 'group', 'db'];
     // see http://emailregex.com/
     var validEmail = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
+
+    function validateOwners(doc) {
+        if (!Array.isArray(doc.$owners)) {
+            throw({forbidden: 'Missing owners array'});
+        }
+        if (!validEmail.test(doc.$owners[0])) {
+            throw({forbidden: 'First owner must be an email'});
+        }
+    }
+
     if (!newDoc.$type || validTypes.indexOf(newDoc.$type) === -1) {
         throw({forbidden: 'Invalid type'});
     }
@@ -22,6 +32,7 @@ module.exports = function (newDoc, oldDoc) {
         if(validEmail.test(newDoc.name)) {
             throw({forbidden: 'group cannot be an email'});
         }
+        validateOwners(newDoc);
     }
 
     if (newDoc.$type === 'entry') {
@@ -34,12 +45,7 @@ module.exports = function (newDoc, oldDoc) {
         if (newDoc.$modificationDate < newDoc.$creationDate) {
             throw({forbidden: 'Modification date cannot be before creation date'});
         }
-        if (!Array.isArray(newDoc.$owners)) {
-            throw({forbidden: 'Missing owners array'});
-        }
-        if (!validEmail.test(newDoc.$owners[0])) {
-            throw({forbidden: 'First owner must be an email'});
-        }
+        validateOwners(newDoc);
         if (oldDoc) {
             if (newDoc.$creationDate !== oldDoc.$creationDate) {
                 throw({forbidden: 'Cannot change creation date'});
