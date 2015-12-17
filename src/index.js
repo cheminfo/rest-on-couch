@@ -145,10 +145,11 @@ class Couch {
     }
 
     addAttachments(id, user, attachments) {
-        //return this.getEntryByIdAndRights(id, user, ['write', 'addAttachment'])
-        //    .then(entry => {
-        //        if (entry)
-        //    });
+        if (!Array.isArray(attachments)) {
+            attachments = [attachments];
+        }
+        return this.getEntryByIdAndRights(id, user, ['write', 'addAttachment'])
+            .then(entry => nanoPromise.attachFiles(this._db, entry, attachments));
     }
 
     addGroupToEntry(id, user, group) {
