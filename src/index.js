@@ -98,28 +98,25 @@ class Couch {
             });
     }
 
-    addGroupToEntry(id, user, group) {
-        debug('add group to entry');
+    doUpdateOnEntry(id, user, update, updateBody) {
+        // Call update handler
         return this._init()
             .then(() => this.getDocumentById(id, user))
             .then(doc => {
                 if(!doc) throw new Error('Document does not exist');
                 const hasRight = isOwner(doc.$owners, user);
                 if(!hasRight) throw new Error('Unauthorized to edit group (only owner can)');
-                return nanoPromise.updateWithHandler(this._db, 'addGroupToEntry', doc._id, {group: group});
+                return nanoPromise.updateWithHandler(this._db, update, doc._id, updateBody);
             });
+    }
+
+    addGroupToEntry(id, user, group) {
+        return this.doUpdateOnEntry(id, user, 'addGroupToEntry', {group: group});
     }
 
     removeGroupFromEntry(id, user, group) {
         debug('remove group from entry');
-        return this._init()
-            .then(() => this.getDocumentById(id, user))
-            .then(doc => {
-                if(!doc) throw new Error('Document does not exist');
-                const hasRight = isOwner(doc.$owners, user);
-                if(!hasRight) throw new Error('Unauthorized to edit group (only owner can)');
-                return nanoPromise.updateWithHandler(this._db, 'removeGroupFromEntry', doc._id, {group: group});
-            });
+        return this.doUpdateOnEntry(id, user, 'removeGroupFromEntry', {group: group});
     }
 
     createGroup(groupName, user, rights) {
