@@ -44,6 +44,13 @@ describe('basic reads on existing database', function () {
 describe('basic editions on existing database', function () {
     beforeEach(data);
 
+    it.only('should modify an entry', function () {
+        return couch.getEntryById('A', 'a@a.com').then(doc => {
+            doc.abc = 'abc';
+            return couch.insertEntry(doc, 'a@a.com');
+        });
+    });
+
     it('should add group to entry', function () {
         return couch.addGroupToEntry('A', 'b@b.com', 'groupD')
             .then(() => couch.getEntryById('A', 'b@b.com'))

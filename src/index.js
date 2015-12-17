@@ -200,6 +200,33 @@ class Couch {
                 });
             });
     }
+
+    insertEntry(entry, user) {
+        debug('insertEntry');
+        if(!entry._id) return Promise.reject(new CouchError('Entry has no uuid'));
+
+        return this.getEntryByUuidAndRights(entry._id, user, ['write'])
+            .then(doc => {
+                console.log('got document');
+                for(let key in entry) {
+                    if(key[0] === '$') continue;
+                    doc[key] = entry[key];
+                }
+                beforeSaveEntry(doc);
+                return nanoPromise.insertDocument(this._db, doc);
+            }).catch(error => {
+                console.log(error);
+                if(error.reason === 'not found') {
+                    debug('doc not found, create new');
+                    beforeSaveEntry(entry);
+                    return nanoPromise.insertDocument(this._db, entry);
+                } else {
+                    debug('error getting document');
+                    throw error;
+                }
+            });
+    }
+
 }
 
 Couch.prototype.addAttachment = Couch.prototype.addAttachments;
@@ -335,4 +362,12 @@ function checkRightAnyGroup(db, user, right) {
             return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, right]})
                 .then(result => result.length > 0);
         });
+}
+
+function beforeSaveEntry(entry) {
+    const now = Date.now();
+    entry.$modificationDate = now;
+    if(entry.$creationDate === undefined) {
+        entry.$creationDate = now;
+    }
 }
