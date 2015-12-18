@@ -36,7 +36,7 @@ exp.init = function(router, config) {
     }
 
     // Get a document
-    router.get('/:database/:id', auth.ensureAuthenticated, couch.getDocumentByUuid);
+    router.get('/:database/:id', couch.getDocumentByUuid);
 
     //// Create new document. No need to check that email matches.
     //router.put('/:database/:id', auth.ensureAuthenticated, getDocument(false), changeHost, addAuthCookie, proxy({

@@ -128,7 +128,7 @@ exp.ensureAuthenticated = function *(next) {
 
 exp.getUserEmail = function(ctx) {
     var user = ctx.session.passport.user;
-    if(!user) return null;
+    if(!user) return 'anonymous';
     var email;
     switch(user.provider) {
         case 'github':
@@ -158,7 +158,7 @@ exp.getUserEmail = function(ctx) {
             email = null;
             break;
     }
-    return email;
+    return email || 'anonymous';
 };
 
 exp.emailMatches = function(ctx, email) {
