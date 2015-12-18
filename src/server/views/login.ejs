@@ -10,7 +10,7 @@ function configExists(conf) {
 }
 for(var i=0; i<authPlugins.length; i++){
     var conf;
-    if(conf = configExists(authPlugins[i])) { %> <p><a href="<%= config.proxy %><%= conf.loginURL %>">Login with <%= authPlugins[i][0] %>  </a></p> <%
+    if(conf = configExists(authPlugins[i])) { %> <p><a href="<%= config.publicAddress %><%= conf.loginURL %>">Login with <%= authPlugins[i][0] %>  </a></p> <%
 
     }
 }

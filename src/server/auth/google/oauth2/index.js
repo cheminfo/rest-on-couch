@@ -41,7 +41,7 @@ exp.init = function(passport, router, config) {
     passport.use(new GoogleStrategy({
             clientID: config.clientID,
             clientSecret: config.clientSecret,
-            callbackURL: config.proxy + config.callbackURL
+            callbackURL: config.publicAddress + config.callbackURL
         },
         function(accessToken, refreshToken, profile, done) {
             done(null, profile);

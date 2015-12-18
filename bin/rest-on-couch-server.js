@@ -13,7 +13,6 @@ var path       = require('path'),
     render     = require('koa-ejs'),
     cors       = require('kcors');
 
-console.log(path.join(__dirname, '../src/server/views'))
 render(app, {
     root: path.join(__dirname, '../src/server/views'),
     layout: 'template',
@@ -62,7 +61,7 @@ app.use(router.routes());
 
 app.listen(3000);
 
-
+app.on('error', handleError);
 
 function handleError(err) {
     console.log('Error', err.stack);

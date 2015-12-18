@@ -54,7 +54,7 @@ module.exports.init = function (passport, router, config) {
     passport.use(new GitHubStrategy({
             clientID: config.clientID,
             clientSecret: config.clientSecret,
-            callbackURL: config.proxy + config.callbackURL
+            callbackURL: config.publicAddress + config.callbackURL
         },
         function (accessToken, refreshToken, profile, done) {
             // Get the user's email

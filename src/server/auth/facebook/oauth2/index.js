@@ -37,7 +37,7 @@ module.exports.init = function (passport, router, config) {
     passport.use(new FacebookStrategy({
             clientID: config.appId,
             clientSecret: config.appSecret,
-            callbackURL: config.proxy + config.callbackURL,
+            callbackURL: config.publicAddress + config.callbackURL,
             enableProof: false
         },
         function (accessToken, refreshToken, profile, done) {

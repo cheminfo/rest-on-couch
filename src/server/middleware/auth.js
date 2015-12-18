@@ -42,7 +42,7 @@ exp.init = function(passport, router, config) {
         for(var j=0; j<conf.length; j++) {
             if(!last[conf[j]]) return null;
             last = last[conf[j]];
-            last.proxy = config.proxy;
+            last.publicAddress = config.publicAddress;
             last.couchUrl = config.couchUrl;
         }
         return last;
