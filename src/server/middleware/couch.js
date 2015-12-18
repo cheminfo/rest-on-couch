@@ -21,10 +21,35 @@ module.exports.getDocumentByUuid = function * (next) {
             default:
                 this.status = 500;
                 this.body = 'internal server error';
+                break;
         }
     }
     yield next;
 };
+
+module.exports.newEntry = function * (next) {
+    const database = this.params.database;
+    const userEmail = auth.getUserEmail(this);
+    const couch = getCouch(database);
+    const body = this.request.body;
+    if(body) body._id = this.params.id;
+    try {
+        yield couch.insertEntry(this.request.body, userEmail);
+    } catch(e) {
+        switch(e.reason) {
+            case 'unauthorized':
+            this.status = 401;
+            this.body = 'unauthorized';
+            break;
+            default:
+                this.status = 500;
+                this.body = 'internal server error';
+                break;
+        }
+    }
+    yield next;
+};
+
 
 function getCouch(database) {
     if(!couchMap[database]) {
@@ -33,4 +58,8 @@ function getCouch(database) {
         });
     }
     return couchMap[database];
+}
+
+function onError(ctx, error) {
+
 }

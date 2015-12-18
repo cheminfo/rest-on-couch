@@ -1,13 +1,12 @@
 "use strict";
-var proxy          = require('koa-proxy'),
+const proxy          = require('koa-proxy'),
     _              = require('lodash'),
-    routesNoAuth    = ['/','/_uuids'],
-    routesWithAuth  = [],
-    auth           = require('./middleware/auth'),
-    error          = require('./error'),
-    constants      = require('../constants'),
-    couch          = require('./middleware/couch');
+    auth           = require('./../middleware/auth'),
+    error          = require('./../error'),
+    constants      = require('../../constants'),
+    couch          = require('./../middleware/couch');
 
+const routesNoAuth    = ['/','/_uuids'];
 
 var exp = module.exports = {};
 
@@ -18,25 +17,16 @@ exp.init = function(router, config) {
         }))
     }
 
-    for(i=0; i<routesWithAuth.length; i++) {
-        router.get(routesWithAuth[i], addAuthCookie, proxy({
-            url: constants.REST_COUCH_URL + routesWithAuth[i]
-        }))
-    }
-
     function *changeHost(next) {
         this.headers.host = config.couchHost;
         yield next;
     }
 
-    function *addAuthCookie(next) {
-        this.headers.host = config.couchHost;
-        this.headers.cookie = couchdb.authCookie;
-        yield next;
-    }
-
     // Get a document
     router.get('/:database/:id', couch.getDocumentByUuid);
+
+    // Create new document
+    router.put('/:database/:id', couch.newEntry);
 
     //// Create new document. No need to check that email matches.
     //router.put('/:database/:id', auth.ensureAuthenticated, getDocument(false), changeHost, addAuthCookie, proxy({
