@@ -16,6 +16,12 @@ describe('entry reads', function () {
         });
     });
 
+    it('should grant read access to entry with anonymous read', function () {
+        return couch.getEntryById('anonymousEntry', 'anonymous').then(doc => {
+            doc.should.be.an.instanceOf(Object);
+        });
+    });
+
     // todo allow to personalize default rights
     it.skip('should not grant read access to inexistant user', function () {
         return couch.getEntryById('A', 'z@z.com').then(doc => {
