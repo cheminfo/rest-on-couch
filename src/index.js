@@ -301,13 +301,22 @@ class Couch {
                 return nanoPromise.insertDocument(this._db, doc);
             }).catch(error => {
                 if(error.reason === 'not found') {
-                    debug('doc not found, create new');
-                    const newEntry = {
-                        $type: 'entry',
-                        $content: entry.$content
-                    };
-                    beforeSaveEntry(newEntry);
-                    return nanoPromise.insertDocument(this._db, newEntry);
+                    debug('doc not found, check create right');
+                    return checkGlobalRight(this._db, user, 'create').then(ok => {
+                        if(ok) {
+                            debug('has right, create new');
+                            const newEntry = {
+                                $type: 'entry',
+                                $content: entry.$content
+                            };
+                            beforeSaveEntry(newEntry);
+                            return nanoPromise.insertDocument(this._db, newEntry);
+                        } else {
+                            let msg = `${user} not allowed to create`;
+                            debug(msg);
+                            throw new CouchError(msg, 'unauthorized');
+                        }
+                    });
                 } else {
                     debug('error getting document');
                     throw error;

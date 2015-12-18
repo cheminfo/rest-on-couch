@@ -4,7 +4,7 @@
 
 var path       = require('path'),
     config     = require('./../src/server/config.json'),
-    proxy      = require('./../src/server/proxy'),
+    proxy      = require('./../src/server/routes/proxy'),
     auth       = require('./../src/server/middleware/auth'),
     app        = require('koa')(),
     router     = require('koa-router')(),
