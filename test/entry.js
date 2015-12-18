@@ -36,8 +36,23 @@ describe('entry reads', function () {
     });
 });
 
-describe('entry writes', function () {
+var newEntry = {
+    $id: 'C',
+    $content: {
+        test: true
+    }
+};
+
+describe('entry editons', function () {
     beforeEach(data);
+
+    it('anonymous cannot insert a new entry', function () {
+        return couch.insertEntry(newEntry, 'anonymous').should.be.rejectedWith(/must be an email/);
+    });
+
+    it('anybody not anonymous can insert a new entry', function () {
+        return couch.insertEntry(newEntry, 'z@z.com');
+    });
 
     it('should modify an entry', function () {
         return couch.getEntryById('A', 'a@a.com').then(doc => {

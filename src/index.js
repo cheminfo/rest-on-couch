@@ -290,39 +290,31 @@ class Couch {
         debug('insertEntry');
         if (!entry.$content) return Promise.reject(new CouchError('entry has no content'));
 
-        return this.getEntryByUuidAndRights(entry._id, user, ['write'])
-            .then(doc => {
-                debug('got document');
-                if (doc._rev !== entry._rev) {
-                    debug('document and entry _rev differ');
-                    throw new CouchError('document and entry _rev differ');
-                }
-                doc.$content = entry.$content;
-                beforeSaveEntry(doc);
-                return nanoPromise.insertDocument(this._db, doc);
-            }).catch(error => {
-                if(error.reason === 'not found') {
-                    debug('doc not found, check create right');
-                    return checkGlobalRight(this._db, user, 'create').then(ok => {
-                        if(ok) {
-                            debug('has right, create new');
-                            const newEntry = {
-                                $type: 'entry',
-                                $content: entry.$content
-                            };
-                            beforeSaveEntry(newEntry);
-                            return nanoPromise.insertDocument(this._db, newEntry);
-                        } else {
-                            let msg = `${user} not allowed to create`;
-                            debug(msg);
-                            throw new CouchError(msg, 'unauthorized');
-                        }
-                    });
-                } else {
-                    debug('error getting document');
-                    throw error;
-                }
-            });
+        if(entry._id) {
+            return this.getEntryByUuidAndRights(entry._id, user, ['write'])
+                .then(doc => {
+                    debug('got document');
+                    if (doc._rev !== entry._rev) {
+                        debug('document and entry _rev differ');
+                        throw new CouchError('document and entry _rev differ');
+                    }
+                    doc.$content = entry.$content;
+                    beforeSaveEntry(doc);
+                    return nanoPromise.insertDocument(this._db, doc);
+                }).catch(error => {
+                    if(error.reason === 'not found') {
+                        debug('doc not found');
+                        return createNew(this, entry, user);
+                    } else {
+                        debug('error getting document');
+                        throw error;
+                    }
+                });
+        } else {
+            debug('entry has no _id');
+            return createNew(this, entry, user);
+        }
+
     }
 
     deleteEntryByUuid(uuid, user) {
@@ -424,6 +416,27 @@ function getGroup(db, name) {
             debug('group exists');
             return groups[0].doc;
         });
+}
+
+function createNew(ctx, entry, user) {
+    debug('check create right');
+    return checkGlobalRight(ctx._db, user, 'create').then(ok => {
+        if(ok) {
+            debug('has right, create new');
+            const newEntry = {
+                $type: 'entry',
+                $id: entry.$id,
+                $owners: [user],
+                $content: entry.$content
+            };
+            beforeSaveEntry(newEntry);
+            return nanoPromise.insertDocument(ctx._db, newEntry);
+        } else {
+            let msg = `${user} not allowed to create`;
+            debug(msg);
+            throw new CouchError(msg, 'unauthorized');
+        }
+    });
 }
 
 

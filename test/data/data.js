@@ -22,7 +22,7 @@ function populate(db) {
         $type: 'group',
         $owners: ['a@a.com'],
         name: 'groupB',
-        users: ['a@a.com', 'anonymous'],
+        users: ['a@a.com'],
         rights: ['create']
     }));
 
