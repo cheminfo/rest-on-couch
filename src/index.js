@@ -5,7 +5,7 @@ const nano = require('nano');
 
 const CouchError = require('./util/CouchError');
 const constants = require('./constants');
-const designDoc = require('./design/app');
+const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
 const isEmail = require('./util/isEmail');
 
@@ -27,6 +27,7 @@ class Couch {
             password: options.password || process.env.REST_COUCH_PASSWORD
         };
 
+        this._customDesign = options.customDesign || {};
         this._defaultEntry = options.defaultEntry || getDefaultEntry;
 
         this._nano = nano(this._couchOptions.url);
@@ -50,7 +51,7 @@ class Couch {
                     return nanoPromise.createDatabase(this._nano, this._couchOptions.database);
                 }
             })
-            .then(() => checkDesignDoc(this._db))
+            .then(() => checkDesignDoc(this._db, this._customDesign))
             .then(() => checkRightsDoc(this._db))
     }
 
@@ -323,7 +324,7 @@ Couch.prototype.addAttachment = Couch.prototype.addAttachments;
 
 module.exports = Couch;
 
-function checkDesignDoc(db) {
+function checkDesignDoc(db, custom) {
     debug('check design doc');
     return nanoPromise.getDocument(db, constants.DESIGN_DOC_ID)
         .then(doc => {
@@ -331,19 +332,21 @@ function checkDesignDoc(db) {
                 debug('design doc missing');
                 return createDesignDoc(db);
             }
-            if (doc.version !== designDoc.version) {
+            if (
+                doc.version !== constants.DESIGN_DOC_VERSION ||
+                (custom && doc.customVersion !== custom.version)
+            ) {
                 debug('design doc needs update');
-                return createDesignDoc(db, doc._rev);
+                return createDesignDoc(db, doc._rev, custom);
             }
         });
 }
 
-function createDesignDoc(db, revID) {
+function createDesignDoc(db, revID, custom) {
     debug('create design doc');
+    const designDoc = getDesignDoc(custom);
     if (revID) {
         designDoc._rev = revID;
-    } else {
-        delete designDoc._rev;
     }
     return nanoPromise.insertDocument(db, designDoc);
 }

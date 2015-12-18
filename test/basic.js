@@ -2,6 +2,8 @@
 
 const Couch = require('..');
 const data = require('./data/data');
+const testConfig = require('../test-old/config');
+
 process.on('unhandledRejection', function(err) {
     throw err;
 });
@@ -9,7 +11,10 @@ process.on('unhandledRejection', function(err) {
 describe('basic initialization tests', function () {
     let couch;
     beforeEach(function () {
-        couch = new Couch({database: 'test'});
+        var db = testConfig.database;
+        testConfig.database = 'test2';
+        couch = new Couch(testConfig);
+        testConfig.database = db;
     });
     it('should init', function () {
         return couch._init();
