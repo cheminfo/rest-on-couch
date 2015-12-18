@@ -29,6 +29,7 @@ class Couch {
 
         this._customDesign = options.customDesign || {};
         this._defaultEntry = options.defaultEntry || getDefaultEntry;
+        this._rights = options.rights || getDefaultRights();
 
         this._nano = nano(this._couchOptions.url);
         this._db = null;
@@ -52,7 +53,7 @@ class Couch {
                 }
             })
             .then(() => checkDesignDoc(this._db, this._customDesign))
-            .then(() => checkRightsDoc(this._db))
+            .then(() => checkRightsDoc(this._db, this._rights))
     }
 
     _authenticate() {
@@ -426,26 +427,19 @@ function getGroup(db, name) {
 }
 
 
-function checkRightsDoc(db) {
+function checkRightsDoc(db, rights) {
     debug('check rights doc');
     return nanoPromise.getDocument(db, constants.RIGHTS_DOC_ID)
         .then(doc => {
             if(doc === null) {
                 debug('rights doc does not exist');
-                return createRightsDoc(db);
+                return createRightsDoc(db, rights);
             }
         });
 }
 
-function createRightsDoc(db) {
+function createRightsDoc(db, rightsDoc) {
     debug('create rights doc');
-    const rightsDoc = {
-        _id: constants.RIGHTS_DOC_ID,
-        '$type': 'db',
-        createGroup: ['anonymous'],
-        create: ['anonymous'],
-        read: ['anonymous']
-    };
     return nanoPromise.insertDocument(db, rightsDoc);
 }
 
@@ -476,6 +470,16 @@ function checkRightAnyGroup(db, user, right) {
 
 function getDefaultEntry() {
     return {};
+}
+
+function getDefaultRights () {
+    return {
+        _id: constants.RIGHTS_DOC_ID,
+        '$type': 'db',
+        createGroup: ['anonymous'],
+        create: ['anonymous'],
+        read: ['anonymous']
+    };
 }
 
 function beforeSaveEntry(entry) {
