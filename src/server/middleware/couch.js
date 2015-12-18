@@ -8,10 +8,22 @@ module.exports.getDocumentByUuid = function * (next) {
     const database = this.params.database;
     const userEmail = auth.getUserEmail(this);
     const couch = getCouch(database);
-    console.log(couch)
-    const doc = yield couch.getEntryByUuid(this.params.id, userEmail);
-    this.status = 200;
-    this.body = doc;
+    try {
+        const doc = yield couch.getEntryByUuid(this.params.id, userEmail);
+        this.status = 200;
+        this.body = doc;
+    } catch(e) {
+        switch(e.reason) {
+            case 'not found': case 'unauthorized':
+                this.status = 404;
+                this.body = 'not found';
+                break;
+            default:
+                this.status = 500;
+                this.body = 'internal server error';
+        }
+    }
+    yield next;
 };
 
 function getCouch(database) {

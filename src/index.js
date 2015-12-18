@@ -86,7 +86,7 @@ class Couch {
             .then(hasRight => {
                 if (!hasRight) {
                     debug('user is missing create right');
-                    throw new CouchError('user is missing create right');
+                    throw new CouchError('user is missing create right', 'unauthorized');
                 }
                 return nanoPromise.queryView(this._db, 'entryById', {key: id})
                     .then(result => {
@@ -112,7 +112,7 @@ class Couch {
                         }
                         debug('entry already exists');
                         if (throwIfExists) {
-                            throw new CouchError('entry already exists');
+                            throw new CouchError('entry already exists', 'exists');
                         }
                         return result[0].id;
                     });
@@ -126,7 +126,7 @@ class Couch {
             .then(owners => {
                 if (owners.length === 0) {
                     debug('document not found');
-                    throw new CouchError('document not found');
+                    throw new CouchError('document not found', 'not found');
                 }
                 debug('check rights');
                 // TODO handle more than one result
@@ -137,7 +137,7 @@ class Couch {
                             return nanoPromise.getDocument(this._db, owners[0].id);
                         }
                         debug('user has no access');
-                        throw new CouchError('user has no access');
+                        throw new CouchError('user has no access', 'unauthorized');
                     });
             });
     }
@@ -149,11 +149,11 @@ class Couch {
             .then(doc => {
                 if (!doc) {
                     debug('document not found');
-                    throw new CouchError('document not found');
+                    throw new CouchError('document not found', 'not found');
                 }
                 if (doc.$type !== 'entry') {
                     debug('document is not an entry');
-                    throw new CouchError('document is not an entry');
+                    throw new CouchError('document is not an entry', 'not entry');
                 }
                 debug('check rights');
                 return validateRights(this._db, doc.$owners, user, rights)
@@ -163,7 +163,7 @@ class Couch {
                             return doc;
                         }
                         debug('user has no access');
-                        throw new CouchError('user has no access');
+                        throw new CouchError('user has no access', 'unauthorized');
                     });
             });
     }
@@ -182,7 +182,7 @@ class Couch {
             .then(() => this.getEntryById(id, user))
             .then(doc => {
                 const hasRight = isOwner(doc.$owners, user);
-                if(!hasRight) throw new CouchError('unauthorized to edit group (only owner can)');
+                if(!hasRight) throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
                 return nanoPromise.updateWithHandler(this._db, update, doc._id, updateBody);
             });
     }
@@ -248,11 +248,11 @@ class Couch {
             .then(doc => {
                 if(!doc) {
                     debug('group does not exist');
-                    throw new Error('group does not exist');
+                    throw new Error('group does not exist', 'not found');
                 }
                 if(!isOwner(doc.$owners, user)) {
                     debug('not allowed to delete group');
-                    throw new Error(`user ${user} is not an owner of the group`);
+                    throw new Error(`user ${user} is not an owner of the group`, 'unauthorized');
                 }
 
                 // TODO Change entries which have this group
@@ -270,7 +270,7 @@ class Couch {
             })
             .then(() => getGroup(this._db, groupName))
             .then(group => {
-                if (group) throw new Error(`group ${groupName} already exists`);
+                if (group) throw new Error(`group ${groupName} already exists`, 'exists');
                 return nanoPromise.insertDocument(this._db, {
                     $type: 'group',
                     $owners: [user],
