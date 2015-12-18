@@ -31,7 +31,8 @@ function populate(db) {
         $owners: ['b@b.com', 'groupA', 'groupB', 'groupC'],
         $id: 'A',
         $creationDate: 0,
-        $modificationDate: 0
+        $modificationDate: 0,
+        $content: {}
     }));
 
     return Promise.all(prom);
