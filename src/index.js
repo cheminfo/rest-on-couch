@@ -330,7 +330,7 @@ function checkDesignDoc(db, custom) {
         .then(doc => {
             if (doc === null) {
                 debug('design doc missing');
-                return createDesignDoc(db);
+                return createDesignDoc(db, null, custom);
             }
             if (
                 doc.version !== constants.DESIGN_DOC_VERSION ||

@@ -20,4 +20,3 @@ describe('basic initialization tests', function () {
         return couch._init();
     });
 });
-

@@ -28,10 +28,7 @@ module.exports = {
     },
     customDesign: {
         version: 1,
-        views: {
-            test: function () {
-                
-            }
-        }
+        views: {},
+        updates: {}
     }
 };
