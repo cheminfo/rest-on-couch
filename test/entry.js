@@ -41,7 +41,7 @@ describe('entry writes', function () {
 
     it('should modify an entry', function () {
         return couch.getEntryById('A', 'a@a.com').then(doc => {
-            doc.abc = 'abc';
+            doc.$content.abc = 'abc';
             return couch.insertEntry(doc, 'a@a.com');
         });
     });

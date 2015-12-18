@@ -5,7 +5,7 @@ const nano = require('nano');
 
 const CouchError = require('./util/CouchError');
 const constants = require('./constants');
-const designDoc = require('./design/app');
+const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
 const isEmail = require('./util/isEmail');
 
@@ -27,6 +27,7 @@ class Couch {
             password: options.password || constants.REST_COUCH_PASSWORD
         };
 
+        this._customDesign = options.customDesign || {};
         this._defaultEntry = options.defaultEntry || getDefaultEntry;
 
         this._nano = nano(this._couchOptions.url);
@@ -50,7 +51,7 @@ class Couch {
                     return nanoPromise.createDatabase(this._nano, this._couchOptions.database);
                 }
             })
-            .then(() => checkDesignDoc(this._db))
+            .then(() => checkDesignDoc(this._db, this._customDesign))
             .then(() => checkRightsDoc(this._db))
     }
 
@@ -102,11 +103,14 @@ class Couch {
                             }
                             return Promise.resolve(newEntry)
                                 .then(entry => {
-                                    entry.$id = id;
-                                    entry.$type = 'entry';
-                                    entry.$owners = [user];
-                                    beforeSaveEntry(entry);
-                                    return nanoPromise.insertDocument(this._db, entry);
+                                    const toInsert = {
+                                        $id: id,
+                                        $type: 'entry',
+                                        $owners: [user],
+                                        $content: entry
+                                    };
+                                    beforeSaveEntry(toInsert);
+                                    return nanoPromise.insertDocument(this._db, toInsert);
                                 })
                                 .then(info => info.id);
                         }
@@ -210,7 +214,7 @@ class Couch {
         }
         return this.getEntryByIdAndRights(id, user, ['write'])
             .then(entry => {
-                let current = entry;
+                let current = entry.$content || {};
                 for (var i = 0; i < jpath.length; i++) {
                     current = current[jpath[i]];
                     if (!current) {
@@ -283,22 +287,27 @@ class Couch {
 
     insertEntry(entry, user) {
         debug('insertEntry');
-        if(!entry._id) return Promise.reject(new CouchError('entry has no uuid'));
+        if (!entry.$content) return Promise.reject(new CouchError('entry has no content'));
 
         return this.getEntryByUuidAndRights(entry._id, user, ['write'])
             .then(doc => {
                 debug('got document');
-                for(let key in entry) {
-                    if(key[0] === '$') continue;
-                    doc[key] = entry[key];
+                if (doc._rev !== entry._rev) {
+                    debug('document and entry _rev differ');
+                    throw new CouchError('document and entry _rev differ');
                 }
+                doc.$content = entry.$content;
                 beforeSaveEntry(doc);
                 return nanoPromise.insertDocument(this._db, doc);
             }).catch(error => {
                 if(error.reason === 'not found') {
                     debug('doc not found, create new');
-                    beforeSaveEntry(entry);
-                    return nanoPromise.insertDocument(this._db, entry);
+                    const newEntry = {
+                        $type: 'entry',
+                        $content: entry.$content
+                    };
+                    beforeSaveEntry(newEntry);
+                    return nanoPromise.insertDocument(this._db, newEntry);
                 } else {
                     debug('error getting document');
                     throw error;
@@ -323,27 +332,29 @@ Couch.prototype.addAttachment = Couch.prototype.addAttachments;
 
 module.exports = Couch;
 
-function checkDesignDoc(db) {
+function checkDesignDoc(db, custom) {
     debug('check design doc');
     return nanoPromise.getDocument(db, constants.DESIGN_DOC_ID)
         .then(doc => {
             if (doc === null) {
                 debug('design doc missing');
-                return createDesignDoc(db);
+                return createDesignDoc(db, null, custom);
             }
-            if (doc.version !== designDoc.version) {
+            if (
+                doc.version !== constants.DESIGN_DOC_VERSION ||
+                (custom && doc.customVersion !== custom.version)
+            ) {
                 debug('design doc needs update');
-                return createDesignDoc(db, doc._rev);
+                return createDesignDoc(db, doc._rev, custom);
             }
         });
 }
 
-function createDesignDoc(db, revID) {
+function createDesignDoc(db, revID, custom) {
     debug('create design doc');
+    const designDoc = getDesignDoc(custom);
     if (revID) {
         designDoc._rev = revID;
-    } else {
-        delete designDoc._rev;
     }
     return nanoPromise.insertDocument(db, designDoc);
 }

@@ -39,7 +39,8 @@ function populate(db) {
         $owners: ['b@b.com', 'groupA', 'groupB'],
         $id: 'A',
         $creationDate: 0,
-        $modificationDate: 0
+        $modificationDate: 0,
+        $content: {}
     }));
 
     prom.push(nanoPromise.insertDocument(db, {
