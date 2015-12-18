@@ -4,7 +4,8 @@
   "description": "Interface to CouchDB that allows the control of permissions on the documents",
   "main": "src/index.js",
   "bin": {
-    "rest-on-couch": "./bin/rest-on-couch.js"
+    "rest-on-couch": "./bin/rest-on-couch.js",
+    "rest-on-couch-server": "./bin/rest-on-couch-server.js"
   },
   "files": [
     "bin",
