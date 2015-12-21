@@ -51,7 +51,10 @@ describe('entry editons', function () {
     });
 
     it('anybody not anonymous can insert a new entry', function () {
-        return couch.insertEntry(newEntry, 'z@z.com');
+        return couch.insertEntry(newEntry, 'z@z.com').then(() => {
+            return couch.getEntryById('C', 'z@z.com').should.be.fulfilled();
+        });
+
     });
 
     it('should modify an entry', function () {
