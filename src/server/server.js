@@ -65,8 +65,9 @@ function handleError(err) {
 module.exports.start = function () {
     if (_started) return _started;
     _started = new Promise(function(resolve) {
-        http.createServer(app.callback()).listen(3000, function () {
-            resolve();
+        let _app = http.createServer(app.callback());
+        _app.listen(3000, function () {
+            resolve(_app);
         });
     });
     return _started;
