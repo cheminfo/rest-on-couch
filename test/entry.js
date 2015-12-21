@@ -60,7 +60,11 @@ describe('entry editons', function () {
     it('should modify an entry', function () {
         return couch.getEntryById('A', 'a@a.com').then(doc => {
             doc.$content.abc = 'abc';
-            return couch.insertEntry(doc, 'a@a.com');
+            return couch.insertEntry(doc, 'a@a.com').then(() => {
+                return couch.getEntryById('A', 'a@a.com').then(entry => {
+                    entry.$content.abc.should.equal('abc');
+                })
+            });
         });
     });
 
