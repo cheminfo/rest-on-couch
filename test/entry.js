@@ -93,7 +93,7 @@ describe('entry editons', function () {
     });
 
     it('should fail to add group to entry', function () {
-        return couch.addGroupToEntry('A', 'a@a.com', 'groupC').should.be.rejected();
+        return couch.addGroupToEntry('A', 'a@a.com', 'groupC').should.be.rejectedWith(/unauthorized/);
     });
 
     it('should remove group from entry', function () {
@@ -105,6 +105,6 @@ describe('entry editons', function () {
     });
 
     it('should fail to remove group from entry', function () {
-        return couch.removeGroupFromEntry('A', 'a@a.com', 'groupB').should.be.rejected();
+        return couch.removeGroupFromEntry('A', 'a@a.com', 'groupB').should.be.rejectedWith(/unauthorized/);
     });
 });
