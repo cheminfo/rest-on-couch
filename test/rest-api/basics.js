@@ -30,7 +30,7 @@ describe('basic rest-api as a@a.com', function () {
         return data().then(authenticateAs('b@b.com'))
     });
 
-    it.only('basic', function () {
+    it('basic', function () {
         return couch.getEntryById('A', 'b@b.com').then(entry => {
             return request
                 .get(`/test/${entry._id}`)
