@@ -9,6 +9,20 @@ const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
 const isEmail = require('./util/isEmail');
 
+const basicRights = {
+    $type: 'db',
+    _id: constants.RIGHTS_DOC_ID,
+    createGroup: [],
+    create: [],
+    read: []
+};
+
+const defaultRights = {
+    createGroup: ['anonymous'],
+    create: ['anonymous'],
+    read: ['anonymous']
+};
+
 class Couch {
     constructor(options) {
         options = options || {};
@@ -29,7 +43,7 @@ class Couch {
 
         this._customDesign = options.customDesign || {};
         this._defaultEntry = options.defaultEntry || getDefaultEntry;
-        this._rights = options.rights || getDefaultRights();
+        this._rights = Object.assign({}, basicRights, options.rights || defaultRights);
 
         this._nano = nano(this._couchOptions.url);
         this._db = null;
@@ -485,15 +499,6 @@ function getDefaultEntry() {
     return {};
 }
 
-function getDefaultRights () {
-    return {
-        _id: constants.RIGHTS_DOC_ID,
-        '$type': 'db',
-        createGroup: ['anonymous'],
-        create: ['anonymous'],
-        read: ['anonymous']
-    };
-}
 
 function beforeSaveEntry(entry) {
     const now = Date.now();

@@ -21,19 +21,6 @@ describe('entry reads', function () {
             doc.should.be.an.instanceOf(Object);
         });
     });
-
-    // todo allow to personalize default rights
-    it.skip('should not grant read access to inexistant user', function () {
-        return couch.getEntryById('A', 'z@z.com').then(doc => {
-            (doc === null).should.be.true();
-        });
-    });
-
-    it.skip('should not grant read access to non-owner non-read-group member', function () {
-        return couch.getEntryById('A', 'z@z.com').then(doc => {
-            (doc === null).should.be.true();
-        });
-    });
 });
 
 var newEntry = {
