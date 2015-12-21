@@ -2,7 +2,7 @@
 
 const data = require('./data/noRights');
 
-describe('entry reads', function () {
+describe('entry reads, database without any default rights', function () {
     before(data);
 
     it('should grant read access to group member with read access', function () {
