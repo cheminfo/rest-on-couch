@@ -19,7 +19,7 @@ exp.init = function(passport, router, config) {
                 auths.push(auth);
             }
             else {
-                console.log('Auth plugin does not exist', authPlugins[i]);
+                console.log('Auth plugin not configured', authPlugins[i]);
             }
         } catch(e) {
             console.log('Could not init auth middleware...', e.message);

@@ -3,24 +3,31 @@
 module.exports = {};
 
 var LocalStrategy = require('passport-local').Strategy,
-    request       = require('co-request'),
-    co            = require('co'),
-    error         = require('../../error'),
-    auth          = require('../../middleware/auth')
+    request = require('co-request'),
+    co = require('co'),
+    error = require('../../error'),
+    constants = require('../../../constants'),
+    auth = require('../../middleware/auth')
 
-module.exports.init = function(passport, router, config) {
+module.exports.init = function (passport, router, config) {
     passport.use(new LocalStrategy({
-            usernameField: 'name'
+            usernameField: 'name',
+            passwordField: 'password'
         },
         function (username, password, done) {
             co(function*() {
-                var res = yield request.post(config.couchUrl + '/' + '_session', {form: {name: username, password: password}});
-                if(res[0] instanceof Error) {
+                var res = yield request.post(constants.REST_COUCH_URL+ '/' + '_session', {
+                    form: {
+                        name: username,
+                        password: password
+                    }
+                });
+                if (res[0] instanceof Error) {
                     return done(res[0]);
                 }
                 res = JSON.parse(res.body);
 
-                if(res.error) {
+                if (res.error) {
                     return done(null, false, res.reason);
                 }
                 done(null, {
@@ -29,7 +36,7 @@ module.exports.init = function(passport, router, config) {
                 });
             });
             //done(null, false, errMessage);
-    }));
+        }));
 
     router.post('/_session', passport.authenticate('local', {}), function*() {
         var that = this;

@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path'),
-    config = require('./config.json'),
+    config = require('./default.config.json'),
     proxy = require('./routes/proxy'),
     auth = require('./middleware/auth'),
     app = require('koa')(),
