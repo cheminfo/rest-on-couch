@@ -8,6 +8,7 @@ const pkg = require('../package.json');
 program.version(pkg.version);
 
 program
-    .command('import', 'import a file in a database');
+    .command('import', 'import a file in a database')
+    .command('server', 'start a server for the REST API');
 
 program.parse(process.argv);
