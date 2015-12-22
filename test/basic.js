@@ -22,7 +22,7 @@ describe('basic initialization tests', function () {
 
     it('should throw if no database given', function () {
         return Promise.resolve().then(() => {
-            new Couch({})
+            new Couch()
         }).should.be.rejectedWith('database option is mandatory')
     });
 });

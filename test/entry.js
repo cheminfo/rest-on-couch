@@ -1,6 +1,7 @@
 'use strict';
 
 const data = require('./data/data');
+const constants = require('./data/constants');
 
 describe('entry reads', function () {
     before(data);
@@ -35,24 +36,11 @@ describe('entry reads', function () {
     });
 });
 
-const newEntry = {
-    $id: 'C',
-    $content: {
-        test: true
-    }
-};
-
-const newEntryWithId = {
-    $id: 'D',
-    $content: { test: true},
-    _id: 'D'
-};
-
 describe('entry editons', function () {
     beforeEach(data);
 
     it('anonymous cannot insert a new entry', function () {
-        return couch.insertEntry(newEntry, 'anonymous').should.be.rejectedWith(/must be an email/);
+        return couch.insertEntry(constants.newEntry, 'anonymous').should.be.rejectedWith(/must be an email/);
     });
 
     it('entry should have content', function () {
@@ -62,13 +50,13 @@ describe('entry editons', function () {
     });
 
     it('anybody not anonymous can insert a new entry (without _id)', function () {
-        return couch.insertEntry(newEntry, 'z@z.com').then(() => {
+        return couch.insertEntry(constants.newEntry, 'z@z.com').then(() => {
             return couch.getEntryById('C', 'z@z.com').should.be.fulfilled();
         });
     });
 
     it('anybody not anonymous can insert a new entry (with _id)', function () {
-        return couch.insertEntry(newEntryWithId, 'z@z.com').then(() => {
+        return couch.insertEntry(constants.newEntryWithId, 'z@z.com').then(() => {
             return couch.getEntryById('D', 'z@z.com').should.eventually.be.an.instanceOf(Object);
         })
     });

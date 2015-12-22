@@ -1,6 +1,7 @@
 'use strict';
 
 const data = require('./data/noRights');
+const constants = require('./data/constants');
 
 describe('entry reads, database without any default rights', function () {
     before(data);
@@ -25,5 +26,13 @@ describe('entry reads, database without any default rights', function () {
         return couch.getEntryById('A', 'b@b.com').then(doc => {
             return couch.getEntryByUuid(doc._id, 'c@c.com').should.be.rejectedWith(/no access/);
         });
+    });
+});
+
+describe('entry editions, database without any default rights', function () {
+    before(data);
+
+    it('any user is not allowed to create entry', function () {
+        return couch.insertEntry(constants.newEntry, 'z@z.com').should.be.rejectedWith(/not allowed to create/);
     });
 });
