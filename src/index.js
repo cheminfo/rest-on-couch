@@ -95,8 +95,9 @@ class Couch {
         });
     }
 
-    createEntry(id, user, kind, throwIfExists) {
-        debug('createEntry', id, user, kind);
+    createEntry(id, user, options) {
+        options = options || {};
+        debug('createEntry', id, user, options.kind);
         return this._init()
             .then(() => checkRightAnyGroup(this._db, user, 'create'))
             .then(hasRight => {
@@ -110,9 +111,9 @@ class Couch {
                             let newEntry;
                             const defaultEntry = this._defaultEntry;
                             if (typeof defaultEntry === 'function') {
-                                newEntry = defaultEntry();
-                            } else if (typeof defaultEntry[kind] === 'function') {
-                                newEntry = defaultEntry[kind]();
+                                newEntry = defaultEntry.apply(null, options.createParameters || []);
+                            } else if (typeof defaultEntry[options.kind] === 'function') {
+                                newEntry = defaultEntry[options.kind].apply(null, options.createParameters || []);
                             } else {
                                 throw new CouchError('unexpected type for default entry');
                             }
@@ -130,7 +131,7 @@ class Couch {
                                 .then(info => info.id);
                         }
                         debug('entry already exists');
-                        if (throwIfExists) {
+                        if (options.throwIfExists) {
                             throw new CouchError('entry already exists', 'exists');
                         }
                         return result[0].id;

@@ -99,7 +99,9 @@ function parseFile(info) {
 }
 
 function checkDocumentExists(info) {
-    return couch.createEntry(info.id, info.owner).then(result => info);
+    return couch.createEntry(info.id, info.owner, {
+        createParameters: [filename, contents]
+    }).then(result => info);
 }
 
 function updateDocument(info) {
