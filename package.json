@@ -11,7 +11,8 @@
     "src"
   ],
   "scripts": {
-    "test": "mocha --require should --reporter mocha-better-spec-reporter --recursive"
+    "test": "mocha --require should --reporter mocha-better-spec-reporter --recursive",
+    "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should"
   },
   "repository": {
     "type": "git",
@@ -52,6 +53,7 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "istanbul": "^0.4.1",
     "mocha": "^2.3.4",
     "mocha-better-spec-reporter": "^3.0.1",
     "should": "^8.0.1",
