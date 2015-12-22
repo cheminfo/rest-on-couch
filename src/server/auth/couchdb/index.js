@@ -1,15 +1,13 @@
 'use strict';
 
-module.exports = {};
+const LocalStrategy = require('passport-local').Strategy;
+const request = require('co-request');
+const co = require('co');
+const error = require('../../error');
+const constants = require('../../../constants');
+const auth = require('../../middleware/auth');
 
-var LocalStrategy = require('passport-local').Strategy,
-    request = require('co-request'),
-    co = require('co'),
-    error = require('../../error'),
-    constants = require('../../../constants'),
-    auth = require('../../middleware/auth')
-
-module.exports.init = function (passport, router, config) {
+exports.init = function (passport, router, config) {
     passport.use(new LocalStrategy({
             usernameField: 'name',
             passwordField: 'password'

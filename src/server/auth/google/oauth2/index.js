@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 // provided by passport-google-oauth2
 
 //{
@@ -30,12 +30,7 @@
 //}
 //}
 
-
-module.exports = {};
-
-var exp = module.exports;
-
-exp.init = function(passport, router, config) {
+exports.init = function(passport, router, config) {
     var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
     passport.use(new GoogleStrategy({

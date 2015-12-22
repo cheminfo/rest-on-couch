@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 // Github profile info
 //{
 //    provider: 'github',
@@ -43,14 +43,11 @@
 //    }
 //}
 
-var GitHubStrategy = require('passport-github').Strategy,
-    co = require('co'),
-    request = require('co-request');
+const GitHubStrategy = require('passport-github').Strategy;
+const co = require('co');
+const request = require('co-request');
 
-
-module.exports = {};
-
-module.exports.init = function (passport, router, config) {
+exports.init = function (passport, router, config) {
     passport.use(new GitHubStrategy({
             clientID: config.clientID,
             clientSecret: config.clientSecret,

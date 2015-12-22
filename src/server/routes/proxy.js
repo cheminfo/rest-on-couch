@@ -1,16 +1,14 @@
 "use strict";
-const proxy          = require('koa-proxy'),
-    _              = require('lodash'),
-    auth           = require('./../middleware/auth'),
-    error          = require('./../error'),
-    constants      = require('../../constants'),
-    couch          = require('./../middleware/couch');
+const proxy = require('koa-proxy');
+const _ = require('lodash');
+const auth = require('./../middleware/auth');
+const error = require('../error');
+const constants = require('../../constants');
+const couch = require('../middleware/couch');
 
 const routesNoAuth    = ['/','/_uuids'];
 
-var exp = module.exports = {};
-
-exp.init = function(router, config) {
+exports.init = function(router, config) {
     for(var i=0; i<routesNoAuth.length; i++) {
         router.get(routesNoAuth[i], changeHost, proxy({
             url: constants.REST_COUCH_URL + routesNoAuth[i]

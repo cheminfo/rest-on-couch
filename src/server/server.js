@@ -1,17 +1,17 @@
 'use strict';
 
-const path = require('path'),
-    config = require('./default.config.json'),
-    proxy = require('./routes/proxy'),
-    auth = require('./middleware/auth'),
-    app = require('koa')(),
-    router = require('koa-router')(),
-    passport = require('koa-passport'),
-    bodyParser = require('koa-bodyparser'),
-    session = require('koa-session'),
-    render = require('koa-ejs'),
-    cors = require('kcors'),
-    http = require('http');
+const path = require('path');
+const config = require('./default.config.json');
+const proxy = require('./routes/proxy');
+const auth = require('./middleware/auth');
+const app = require('koa')();
+const router = require('koa-router')();
+const passport = require('koa-passport');
+const bodyParser = require('koa-bodyparser');
+const session = require('koa-session');
+const render = require('koa-ejs');
+const cors = require('kcors');
+const http = require('http');
 
 var _started;
 
@@ -23,7 +23,7 @@ render(app, {
     debug: true
 });
 
-var ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
+const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
 app.use(bodyParser({
     jsonLimit: '100mb'
 }));

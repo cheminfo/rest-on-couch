@@ -1,13 +1,11 @@
 'use strict';
-var error = require('../error');
-var FlavorUtils = require('flavor-utils');
-var authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['github','oauth2']];
-var auths = [];
-var url = require('url');
+const error = require('../error');
+const FlavorUtils = require('flavor-utils');
+const authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['github','oauth2']];
+const auths = [];
+const url = require('url');
 
-var exp = module.exports = {};
-
-exp.init = function(passport, router, config) {
+exports.init = function(passport, router, config) {
     for (var i = 0; i < authPlugins.length; i++) {
         try {
             // check that parameter exists
@@ -63,7 +61,7 @@ exp.init = function(passport, router, config) {
     router.get('/_session', function*(next){
         var that = this;
         // Check if session exists
-        var email = exp.getUserEmail(that);
+        var email = exports.getUserEmail(that);
         this.body = JSON.stringify({
             ok: true,
             userCtx: {
@@ -118,7 +116,7 @@ exp.init = function(passport, router, config) {
     });
 };
 
-exp.ensureAuthenticated = function *(next) {
+exports.ensureAuthenticated = function *(next) {
     if (this.isAuthenticated()) {
         yield next;
         return;
@@ -126,7 +124,7 @@ exp.ensureAuthenticated = function *(next) {
     this.status = 401;
 };
 
-exp.getUserEmail = function(ctx) {
+exports.getUserEmail = function(ctx) {
     if (!ctx.session.passport) return 'anonymous';
     var user = ctx.session.passport.user;
     if(!user) {
@@ -164,12 +162,12 @@ exp.getUserEmail = function(ctx) {
     return email || 'anonymous';
 };
 
-exp.emailMatches = function(ctx, email) {
+exports.emailMatches = function(ctx, email) {
     var sessionEmail = this.getUserEmail(ctx);
     return email.toLowerCase() === sessionEmail.toLowerCase();
 };
 
-exp.ensureEmailMatches = function*(next) {
+exports.ensureEmailMatches = function*(next) {
     try{
         var name = this.state.couchdb.document.name;
 
@@ -177,14 +175,14 @@ exp.ensureEmailMatches = function*(next) {
     catch(e) {
         return this.statusCode(500);
     }
-    var sessionEmail = exp.getUserEmail(this);
+    var sessionEmail = exports.getUserEmail(this);
     if(compareEmails(sessionEmail, name))
         yield next;
     else
         error.handleError('private');
 };
 
-exp.ensureIsPublic = function*(next) {
+exports.ensureIsPublic = function*(next) {
     try{
         var isPublic = this.state.couchdb.document.public;
     }
@@ -199,10 +197,10 @@ exp.ensureIsPublic = function*(next) {
     }
 };
 
-exp.ensureIsPublicOrEmailMatches = function*(next) {
+exports.ensureIsPublicOrEmailMatches = function*(next) {
     var isPublic = this.state.couchdb.document.public;
     var name = this.state.couchdb.document.name;
-    var sessionEmail = exp.getUserEmail(this);
+    var sessionEmail = exports.getUserEmail(this);
     if(isPublic || compareEmails(sessionEmail, name))
         yield next;
     else {
@@ -210,7 +208,7 @@ exp.ensureIsPublicOrEmailMatches = function*(next) {
     }
 };
 
-exp.ensureDocIsSafe = function*(next) {
+exports.ensureDocIsSafe = function*(next) {
     if(this.request.body._attachments) {
         try {
             // Go through all the attachments and parse them as json
@@ -227,7 +225,7 @@ exp.ensureDocIsSafe = function*(next) {
     yield next;
 };
 
-exp.ensureAttachmentIsJson = function*(next) {
+exports.ensureAttachmentIsJson = function*(next) {
     if(typeof this.request.body === 'object' && this.request.body !== null) {
         return yield next;
     }

@@ -4,7 +4,7 @@ const auth = require('./auth');
 const Couch = require('../..');
 const couchMap = {};
 
-module.exports.getDocumentByUuid = function * (next) {
+exports.getDocumentByUuid = function * (next) {
     const database = this.params.database;
     const userEmail = auth.getUserEmail(this);
     const couch = getCouch(database);
@@ -27,7 +27,7 @@ module.exports.getDocumentByUuid = function * (next) {
     yield next;
 };
 
-module.exports.newEntry = function * (next) {
+exports.newEntry = function * (next) {
     const database = this.params.database;
     const userEmail = auth.getUserEmail(this);
     const couch = getCouch(database);
@@ -49,7 +49,6 @@ module.exports.newEntry = function * (next) {
     }
     yield next;
 };
-
 
 function getCouch(database) {
     if(!couchMap[database]) {

@@ -30,10 +30,9 @@
 //        verified: true
 //    }
 //}
-var FacebookStrategy = require('passport-facebook');
-module.exports = {};
+const FacebookStrategy = require('passport-facebook');
 
-module.exports.init = function (passport, router, config) {
+exports.init = function (passport, router, config) {
     passport.use(new FacebookStrategy({
             clientID: config.appId,
             clientSecret: config.appSecret,
@@ -62,4 +61,3 @@ module.exports.init = function (passport, router, config) {
             }
         });
 };
-
