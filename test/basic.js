@@ -19,4 +19,10 @@ describe('basic initialization tests', function () {
     it('should init', function () {
         return couch._init();
     });
+
+    it('should throw if no database given', function () {
+        return Promise.resolve().then(() => {
+            new Couch({})
+        }).should.be.rejectedWith('database option is mandatory')
+    });
 });

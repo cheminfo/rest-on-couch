@@ -19,4 +19,8 @@ describe('group methods', function () {
     it('should delete a group', function () {
         return couch.deleteGroup('groupA', 'a@a.com').should.be.fulfilled();
     });
+
+    it('should throw if deleting non-existant group', function () {
+        return couch.deleteGroup('inexistant', 'a@a.com').should.be.rejectedWith(/group does not exist/);
+    });
 });

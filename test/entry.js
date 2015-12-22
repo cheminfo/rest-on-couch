@@ -21,6 +21,18 @@ describe('entry reads', function () {
             doc.should.be.an.instanceOf(Object);
         });
     });
+
+    it('should get entry by uuid', function () {
+        return couch.getEntryById('A', 'b@b.com').then(doc => {
+            return couch.getEntryByUuid(doc._id, 'b@b.com').then(doc => {
+                doc.should.be.an.instanceOf(Object);
+            })
+        }) ;
+    });
+
+    it('should not find document', function () {
+        return couch.getEntryByUuid('inexistant', 'b@b.com').should.be.rejectedWith(/not found/);
+    });
 });
 
 var newEntry = {

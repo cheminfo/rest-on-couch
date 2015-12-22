@@ -20,4 +20,10 @@ describe('entry reads, database without any default rights', function () {
     it('non-read member should not have access to entry', function () {
         return couch.getEntryById('A', 'c@c.com').should.be.rejectedWith(/no access/);
     });
+
+    it('non-read member should not have access to entry (by uuid)', function () {
+        return couch.getEntryById('A', 'b@b.com').then(doc => {
+            return couch.getEntryByUuid(doc._id, 'c@c.com').should.be.rejectedWith(/no access/);
+        });
+    });
 });
