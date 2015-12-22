@@ -310,7 +310,7 @@ class Couch {
                     debug('got document');
                     if (doc._rev !== entry._rev) {
                         debug('document and entry _rev differ');
-                        throw new CouchError('document and entry _rev differ');
+                        throw new CouchError('document and entry _rev differ', 'conflict');
                     }
                     doc.$content = entry.$content;
                     beforeSaveEntry(doc);

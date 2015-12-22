@@ -35,11 +35,17 @@ describe('entry reads', function () {
     });
 });
 
-var newEntry = {
+const newEntry = {
     $id: 'C',
     $content: {
         test: true
     }
+};
+
+const newEntryWithId = {
+    $id: 'D',
+    $content: { test: true},
+    _id: 'D'
 };
 
 describe('entry editons', function () {
@@ -49,11 +55,30 @@ describe('entry editons', function () {
         return couch.insertEntry(newEntry, 'anonymous').should.be.rejectedWith(/must be an email/);
     });
 
-    it('anybody not anonymous can insert a new entry', function () {
+    it('entry should have content', function () {
+        return couch.insertEntry({
+            $id: 'D'
+        }, 'z@z.com').should.be.rejectedWith(/has no content/);
+    });
+
+    it('anybody not anonymous can insert a new entry (without _id)', function () {
         return couch.insertEntry(newEntry, 'z@z.com').then(() => {
             return couch.getEntryById('C', 'z@z.com').should.be.fulfilled();
         });
+    });
 
+    it('anybody not anonymous can insert a new entry (with _id)', function () {
+        return couch.insertEntry(newEntryWithId, 'z@z.com').then(() => {
+            return couch.getEntryById('D', 'z@z.com').should.eventually.be.an.instanceOf(Object);
+        })
+    });
+
+    it('should throw a conflict error', function () {
+        return couch.getEntryById('A', 'b@b.com').then(doc => {
+            return couch.insertEntry(doc, 'b@b.com').then(() => {
+                return couch.insertEntry(doc, 'b@b.com').should.be.rejectedWith(/_rev differ/);
+            });
+        })
     });
 
     it('should modify an entry', function () {

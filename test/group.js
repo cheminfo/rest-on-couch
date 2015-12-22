@@ -1,6 +1,7 @@
 'use strict';
 
 const data = require('./data/data');
+const noRights  = require('./data/noRights');
 
 describe('group methods', function () {
     before(data);
@@ -22,5 +23,13 @@ describe('group methods', function () {
 
     it('should throw if deleting non-existant group', function () {
         return couch.deleteGroup('inexistant', 'a@a.com').should.be.rejectedWith(/group does not exist/);
+    });
+});
+
+describe('group methods (no default rights)', function () {
+    before(noRights);
+
+    it('anyone cannot create group', function () {
+        return couch.createGroup('groupX', 'a@a.com').should.be.rejectedWith(/does not have createGroup right/);
     });
 });
