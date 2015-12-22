@@ -125,7 +125,7 @@ class Couch {
                                         $owners: [user],
                                         $content: entry
                                     };
-                                    beforeSaveEntry(toInsert);
+                                    beforeSaveEntry(toInsert, user);
                                     return nanoPromise.insertDocument(this._db, toInsert);
                                 })
                                 .then(info => info.id);
@@ -314,7 +314,7 @@ class Couch {
                         throw new CouchError('document and entry _rev differ', 'conflict');
                     }
                     doc.$content = entry.$content;
-                    beforeSaveEntry(doc);
+                    beforeSaveEntry(doc, user);
                     return nanoPromise.insertDocument(this._db, doc);
                 }).catch(error => {
                     if(error.reason === 'not found') {
@@ -444,7 +444,7 @@ function createNew(ctx, entry, user) {
                 $owners: [user],
                 $content: entry.$content
             };
-            beforeSaveEntry(newEntry);
+            beforeSaveEntry(newEntry, user);
             return nanoPromise.insertDocument(ctx._db, newEntry);
         } else {
             let msg = `${user} not allowed to create`;
@@ -501,8 +501,9 @@ function getDefaultEntry() {
 }
 
 
-function beforeSaveEntry(entry) {
+function beforeSaveEntry(entry, user) {
     const now = Date.now();
+    entry.$lastModification = user;
     entry.$modificationDate = now;
     if(entry.$creationDate === undefined) {
         entry.$creationDate = now;
