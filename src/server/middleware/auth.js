@@ -127,8 +127,11 @@ exp.ensureAuthenticated = function *(next) {
 };
 
 exp.getUserEmail = function(ctx) {
+    if (!ctx.session.passport) return 'anonymous';
     var user = ctx.session.passport.user;
-    if(!user) return 'anonymous';
+    if(!user) {
+        throw new Error('UNREACHABLE');
+    }
     var email;
     switch(user.provider) {
         case 'github':
