@@ -29,7 +29,7 @@ class Couch {
 
         const database = options.database || constants.REST_COUCH_DATABASE;
         if (!database) {
-            throw new Error('database option is mandatory');
+            throw new CouchError('database option is mandatory');
         }
 
         this._databaseName = database;
@@ -288,11 +288,11 @@ class Couch {
             .then(doc => {
                 if (!doc) {
                     debug('group does not exist');
-                    throw new Error('group does not exist', 'not found');
+                    throw new CouchError('group does not exist', 'not found');
                 }
                 if (!isOwner(doc.$owners, user)) {
                     debug('not allowed to delete group');
-                    throw new Error(`user ${user} is not an owner of the group`, 'unauthorized');
+                    throw new CouchError(`user ${user} is not an owner of the group`, 'unauthorized');
                 }
 
                 // TODO Change entries which have this group
@@ -306,11 +306,11 @@ class Couch {
         return this._init()
             .then(() => checkRightAnyGroup(this._db, user, 'createGroup'))
             .then(hasRight => {
-                if (!hasRight) throw new Error(`user ${user} does not have createGroup right`);
+                if (!hasRight) throw new CouchError(`user ${user} does not have createGroup right`);
             })
             .then(() => getGroup(this._db, groupName))
             .then(group => {
-                if (group) throw new Error(`group ${groupName} already exists`, 'exists');
+                if (group) throw new CouchError(`group ${groupName} already exists`, 'exists');
                 return nanoPromise.insertDocument(this._db, {
                     $type: 'group',
                     $owners: [user],

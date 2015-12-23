@@ -3,7 +3,7 @@
 class CouchError extends Error {
     constructor(message, reason) {
         super(message);
-        this.reason = reason;
+        this.reason = reason || '';
     }
 }
 
