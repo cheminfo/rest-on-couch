@@ -339,11 +339,11 @@ class Couch {
                     }
                     doc.$content = entry.$content;
                     beforeSaveEntry(doc, user);
-                    return nanoPromise.insertDocument(this._db, doc).then(addGroups(doc.$id));
+                    return nanoPromise.insertDocument(this._db, doc).then(addGroups(this, doc.$id, user, groups));
                 }).catch(error => {
                     if (error.reason === 'not found') {
                         debug('doc not found');
-                        return createNew(this, entry, user).then(addGroups(entry.$id));
+                        return createNew(this, entry, user).then(addGroups(this, entry.$id, user, groups));
                     } else {
                         debug('error getting document');
                         throw error;
@@ -351,18 +351,9 @@ class Couch {
                 });
         } else {
             debug('entry has no _id');
-            prom = createNew(this, entry, user).then(addGroups(entry.$id));
+            prom = createNew(this, entry, user).then(addGroups(this, entry.$id, user, groups));
         }
 
-        function addGroups(entryId) {
-            return () => {
-                let prom = Promise.resolve();
-                for (let i = 0; i < groups.length; i++) {
-                    prom = prom.then(() => that.addGroupToEntry(entryId, user, groups[i]));
-                }
-                return prom;
-            }
-        }
         return prom;
     }
 
@@ -525,6 +516,16 @@ function createNew(ctx, entry, user) {
             throw new CouchError(msg, 'unauthorized');
         }
     });
+}
+
+function addGroups(ctx, entryId, user, groups) {
+    return () => {
+        let prom = Promise.resolve();
+        for (let i = 0; i < groups.length; i++) {
+            prom = prom.then(() => ctx.addGroupToEntry(entryId, user, groups[i]));
+        }
+        return prom;
+    }
 }
 
 

@@ -2,7 +2,8 @@
 
 const path = require('path');
 const config = require('./default.config.json');
-const couchApi = require('./routes/couch-api');
+const proxy = require('./routes/proxy');
+const api = require('./routes/api');
 const auth = require('./middleware/auth');
 const app = require('koa')();
 const router = require('koa-router')();
@@ -37,16 +38,18 @@ app.use(cors());
 
 
 router.use(auth.init(passport, config).routes());
-router.use('/couch-api', couchApi.init(config).routes());
+router.use(proxy.init(config).routes());
+router.use(api.init(config).routes());
 
 //Unhandled errors
 if (process.env.DEBUG) {
+    // In debug mode, show unhandled errors to the user
     app.use(function *(next) {
         try {
             yield next;
         } catch (err) {
             this.status = err.status || 500;
-            this.body = err.message;
+            this.body = err.message + err.stack;
             console.error('Unexpected error', err.message, err.stack);
         }
     });
