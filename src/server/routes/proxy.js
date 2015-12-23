@@ -140,22 +140,22 @@ exports.init = function(router, config) {
     //}));
 };
 
-function getDocument(treatMissingAsError) {
-    return function *(next) {
-        try{
-            this.state.couchdb = {};
-            var res = yield couchdb.db.get(this.params.id);
-            this.state.couchdb.document = res[0];
-            this.state.couchdb.headers = res[1];
-        }
-        catch(e) {
-            if(!treatMissingAsError && e.reason === 'missing') {
-                this.state.couchdb.document = null;
-            }
-            else {
-                return error.handleError(this, e);
-            }
-        }
-        yield next;
-    }
-}
+//function getDocument(treatMissingAsError) {
+//    return function *(next) {
+//        try{
+//            this.state.couchdb = {};
+//            var res = yield couchdb.db.get(this.params.id);
+//            this.state.couchdb.document = res[0];
+//            this.state.couchdb.headers = res[1];
+//        }
+//        catch(e) {
+//            if(!treatMissingAsError && e.reason === 'missing') {
+//                this.state.couchdb.document = null;
+//            }
+//            else {
+//                return error.handleError(this, e);
+//            }
+//        }
+//        yield next;
+//    }
+//}

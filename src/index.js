@@ -149,7 +149,9 @@ class Couch {
                 return validateRights(this._db, owners, user, rights)
                     .then(ok => {
                         entries = entries.map(entries => entries.doc);
-                        return entries.filter((entry, idx) => { return ok[idx]});
+                        return entries.filter((entry, idx) => {
+                            return ok[idx]
+                        });
                     });
             })
     }
@@ -221,7 +223,7 @@ class Couch {
             .then(() => this.getEntryById(id, user))
             .then(doc => {
                 const hasRight = isOwner(doc.$owners, user);
-                if(!hasRight) throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
+                if (!hasRight) throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
                 return nanoPromise.updateWithHandler(this._db, update, doc._id, updateBody);
             });
     }
@@ -272,11 +274,12 @@ class Couch {
     }
 
     addGroupToEntry(id, user, group) {
+        debug(`addGroupToEntry id:${id}, user: ${user}, group: ${group}`);
         return this._doUpdateOnEntry(id, user, 'addGroupToEntry', {group: group});
     }
 
     removeGroupFromEntry(id, user, group) {
-        debug('remove group from entry');
+        debug(`remove group from entry id:${id}, user: ${user}, group: ${group}`);
         return this._doUpdateOnEntry(id, user, 'removeGroupFromEntry', {group: group});
     }
 
@@ -285,11 +288,11 @@ class Couch {
         return this._init()
             .then(() => getGroup(this._db, groupName))
             .then(doc => {
-                if(!doc) {
+                if (!doc) {
                     debug('group does not exist');
                     throw new Error('group does not exist', 'not found');
                 }
-                if(!isOwner(doc.$owners, user)) {
+                if (!isOwner(doc.$owners, user)) {
                     debug('not allowed to delete group');
                     throw new Error(`user ${user} is not an owner of the group`, 'unauthorized');
                 }
@@ -320,12 +323,16 @@ class Couch {
             });
     }
 
-    insertEntry(entry, user) {
+    insertEntry(entry, user, groups) {
         debug('insertEntry');
+        let that = this;
+        groups = groups || [];
         if (!entry.$content) return Promise.reject(new CouchError('entry has no content'));
+        if (groups !== undefined && !Array.isArray(groups)) return Promise.reject(new CouchError('groups should an arary if defined', 'invalid argument'));
 
-        if(entry._id) {
-            return this.getEntryByUuidAndRights(entry._id, user, ['write'])
+        let prom;
+        if (entry._id) {
+            prom = this.getEntryByUuidAndRights(entry._id, user, ['write'])
                 .then(doc => {
                     debug('got document');
                     if (doc._rev !== entry._rev) {
@@ -334,11 +341,11 @@ class Couch {
                     }
                     doc.$content = entry.$content;
                     beforeSaveEntry(doc, user);
-                    return nanoPromise.insertDocument(this._db, doc);
+                    return nanoPromise.insertDocument(this._db, doc).then(addGroups(doc.$id));
                 }).catch(error => {
-                    if(error.reason === 'not found') {
+                    if (error.reason === 'not found') {
                         debug('doc not found');
-                        return createNew(this, entry, user);
+                        return createNew(this, entry, user).then(addGroups(entry.$id));
                     } else {
                         debug('error getting document');
                         throw error;
@@ -346,9 +353,19 @@ class Couch {
                 });
         } else {
             debug('entry has no _id');
-            return createNew(this, entry, user);
+            prom = createNew(this, entry, user).then(addGroups(entry.$id));
         }
 
+        function addGroups(entryId) {
+            return () => {
+                let prom = Promise.resolve();
+                for (let i = 0; i < groups.length; i++) {
+                    prom = prom.then(() => that.addGroupToEntry(entryId, user, groups[i]));
+                }
+                return prom;
+            }
+        }
+        return prom;
     }
 
     deleteEntryByUuid(uuid, user) {
@@ -408,13 +425,13 @@ function isOwner(owners, user) {
 
 function validateRights(db, owners, user, rights) {
     // owner has all the rights
-    if(!Array.isArray(owners[0])) {
+    if (!Array.isArray(owners[0])) {
         owners = [owners];
     }
 
     let areOwners = owners.map(owner => isOwner(owner, user));
 
-    if(areOwners.every(value => value === true)) {
+    if (areOwners.every(value => value === true)) {
         return Promise.resolve(areOwners);
     }
 
@@ -433,7 +450,7 @@ function validateRights(db, owners, user, rights) {
                 return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})
                     .then(function (groups) {
                         return owners.map((owners, idx) => {
-                            if(areOwners[idx]) return true;
+                            if (areOwners[idx]) return true;
                             for (var i = 0; i < owners.length; i++) {
                                 if (groups.indexOf(owners[i]) > -1) return true;
                             }
@@ -443,13 +460,19 @@ function validateRights(db, owners, user, rights) {
             }));
     }
 
+    // Promise resolves with for each right an array of true/false for each passed owner
+    // For example
+    //         read                 write
+    //   doc1  doc2  doc3    doc1   doc2  doc3
+    // [[true, true, false],[false, true, false]]
+
     return Promise.all(checks).then(result => {
-        if(result.length === 0) {
+        if (result.length === 0) {
             return areOwners;
         }
         return result[0].map((value, idx) => {
-            for(let i=0; i<result.length; i++) {
-                if(result[i][idx] === true) {
+            for (let i = 0; i < result.length; i++) {
+                if (result[i][idx] === true) {
                     return true;
                 }
             }
@@ -464,11 +487,11 @@ function getGroup(db, name) {
     debug('get group');
     return nanoPromise.queryView(db, 'groupByName', {key: name, reduce: false, include_docs: true})
         .then(groups => {
-            if(!groups || groups.length === 0) {
+            if (!groups || groups.length === 0) {
                 debug('group does not exist');
                 return null;
             }
-            if(groups.length > 1) {
+            if (groups.length > 1) {
                 debug('Getting more than one result for a group name')
             }
             debug('group exists');
@@ -479,7 +502,7 @@ function getGroup(db, name) {
 function createNew(ctx, entry, user) {
     debug('check create right');
     return checkGlobalRight(ctx._db, user, 'create').then(ok => {
-        if(ok) {
+        if (ok) {
             debug('has right, create new');
             const newEntry = {
                 $type: 'entry',
@@ -502,7 +525,7 @@ function checkRightsDoc(db, rights) {
     debug('check rights doc');
     return nanoPromise.getDocument(db, constants.RIGHTS_DOC_ID)
         .then(doc => {
-            if(doc === null) {
+            if (doc === null) {
                 debug('rights doc does not exist');
                 return createRightsDoc(db, rights);
             }
@@ -548,7 +571,7 @@ function beforeSaveEntry(entry, user) {
     const now = Date.now();
     entry.$lastModification = user;
     entry.$modificationDate = now;
-    if(entry.$creationDate === undefined) {
+    if (entry.$creationDate === undefined) {
         entry.$creationDate = now;
     }
 }

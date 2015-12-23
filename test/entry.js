@@ -67,6 +67,14 @@ describe('entry editons', function () {
         })
     });
 
+    it.only('insert new entry with groups', function () {
+        return couch.insertEntry(constants.newEntry, 'z@z.com', ['groupX', 'groupY'])
+            .then(() => couch.getEntryById('C', 'z@z.com'))
+            .then(entry => {
+                entry.$owners.should.have.length(3);
+        });
+    });
+
     it('should throw a conflict error', function () {
         return couch.getEntryById('A', 'b@b.com').then(doc => {
             return couch.insertEntry(doc, 'b@b.com').then(() => {
