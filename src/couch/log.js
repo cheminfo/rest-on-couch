@@ -40,14 +40,14 @@ exports.log = function (db, currentLevel, message, level) {
     checkLevel(level);
     level = levels[level];
     if (level > currentLevel) {
-        return Promise.resolve();
+        return Promise.resolve(false);
     }
     return nanoPromise.insertDocument(db, {
         $type: 'log',
         epoch: Date.now(),
         level,
         message
-    });
+    }).then(() => true);
 };
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
