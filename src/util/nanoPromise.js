@@ -89,6 +89,8 @@ exports.queryView = function (db, view, params, options) {
             if (err) return reject(err);
             if (options.onlyValue) {
                 resolve(body.rows.map(row => row.value));
+            } else if (options.onlyDoc) {
+                resolve(body.rows.map(row => row.doc));
             } else {
                 resolve(body.rows);
             }

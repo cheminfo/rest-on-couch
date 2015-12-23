@@ -9,6 +9,7 @@ program.version(pkg.version);
 
 program
     .command('import', 'import a file in a database')
-    .command('server', 'start a server for the REST API');
+    .command('server', 'start a server for the REST API')
+    .command('log', 'view logs');
 
 program.parse(process.argv);

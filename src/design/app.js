@@ -1,6 +1,7 @@
 'use strict';
 
 const constants = require('../constants');
+const filters = require('./filters');
 const updates = require('./updates');
 const views = require('./views');
 const validate_doc_update = require('./validateDocUpdate');
@@ -12,6 +13,7 @@ module.exports = function getDesignDoc(custom) {
         language: 'javascript',
         version: constants.DESIGN_DOC_VERSION,
         customVersion: custom.version,
+        filters: Object.assign({}, custom.filters, filters),
         updates: Object.assign({}, custom.updates, updates),
         views: Object.assign({}, custom.views, views),
         validate_doc_update

@@ -7,7 +7,7 @@ const CouchError = require('./util/CouchError');
 const constants = require('./constants');
 const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
-const isEmail = require('./util/isEmail');
+const log = require('./couch/log');
 
 const basicRights = {
     $type: 'db',
@@ -40,6 +40,8 @@ class Couch {
             user: options.user || constants.REST_COUCH_USER,
             password: options.password || constants.REST_COUCH_PASSWORD
         };
+
+        this._logLevel = log.getLevel(options.logLevel || 'WARN');
 
         this._customDesign = options.customDesign || {};
         this._defaultEntry = options.defaultEntry || getDefaultEntry;
@@ -375,6 +377,15 @@ class Couch {
         return this.getEntryByIdAndRights(id, user, 'delete')
             .then(doc => nanoPromise.destroyDocument(this._db, doc._id));
     }
+
+    log(message, level) {
+        debug('log', message, level);
+        return this._init().then(() => log.log(this._db, this._logLevel, message, level));
+    }
+
+    getLogs() {
+        return this._init().then(() => log.getLogs(this._db));
+    }
 }
 
 Couch.prototype.addAttachment = Couch.prototype.addAttachments;
@@ -561,7 +572,6 @@ function checkRightAnyGroup(db, user, right) {
 function getDefaultEntry() {
     return {};
 }
-
 
 function beforeSaveEntry(entry, user) {
     const now = Date.now();

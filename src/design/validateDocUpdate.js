@@ -5,7 +5,7 @@ module.exports = function (newDoc, oldDoc) {
     if (newDoc._deleted) {
         return;
     }
-    var validTypes = ['entry', 'group', 'db'];
+    var validTypes = ['entry', 'group', 'db', 'log'];
     // see http://emailregex.com/
     var validEmail = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
 
@@ -33,9 +33,7 @@ module.exports = function (newDoc, oldDoc) {
             throw({forbidden: 'group cannot be an email'});
         }
         validateOwners(newDoc);
-    }
-
-    if (newDoc.$type === 'entry') {
+    } else if (newDoc.$type === 'entry') {
         if (!newDoc.$id) {
             throw({forbidden: 'ID is mandatory'});
         }
@@ -57,5 +55,7 @@ module.exports = function (newDoc, oldDoc) {
                 throw({forbidden: 'Cannot change the ID'});
             }
         }
+    } else if (newDoc.$type === 'log' && oldDoc) {
+        throw({forbidden: 'Logs cannot be changed'});
     }
 };

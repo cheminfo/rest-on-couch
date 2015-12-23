@@ -8,15 +8,12 @@ const fs = require('fs');
 const path = require('path');
 const debug = require('debug')('couch:import');
 const constants = require('../src/constants');
+const binutil = require('../src/util/binutil');
 
 program
     .usage('[options] <file>')
     .option('-c, --config <path>', 'Configuration file')
     .parse(process.argv);
-
-if (!program.config) {
-    throw new Error('config option is mandatory');
-}
 
 if (!program.args.length) {
     throw new Error('you must provide a file argument');
@@ -24,7 +21,7 @@ if (!program.args.length) {
 
 debug('read and verify config');
 
-const config = require(path.resolve(program.config));
+const config = binutil.loadConfig(program);
 const file = path.resolve(program.args[0]);
 const filename = path.parse(file).base;
 const contents = fs.readFileSync(file);

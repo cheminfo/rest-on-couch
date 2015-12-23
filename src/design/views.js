@@ -83,3 +83,10 @@ views.globalRight = {
         }
     }
 };
+
+views.logsByEpoch = {
+    map: function (doc) {
+        if (doc.$type !== 'log') return;
+        emit(doc.epoch);
+    }
+};
