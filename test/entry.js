@@ -34,6 +34,12 @@ describe('entry reads', function () {
     it('should not find document', function () {
         return couch.getEntryByUuid('inexistant', 'b@b.com').should.be.rejectedWith(/not found/);
     });
+
+    it('should get all readable entries for a user', function () {
+        return couch.getEntriesByUserAndRights('b@b.com', 'read').then(entries => {
+            entries.should.have.length(2);
+        })
+    });
 });
 
 describe('entry editons', function () {

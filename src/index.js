@@ -139,8 +139,23 @@ class Couch {
             });
     }
 
+    getEntriesByUserAndRights(user, rights) {
+        debug(`getEntriesByUserAndRights (user: ${user}, rights: ${rights}`);
+        return this._init()
+            .then(() =>  nanoPromise.queryView(this._db, 'entryById', {reduce: false, include_docs: true}))
+            .then(entries => {
+                const owners = entries.map(entry => entry.doc.$owners);
+                debug('validate rights');
+                return validateRights(this._db, owners, user, rights)
+                    .then(ok => {
+                        entries = entries.map(entries => entries.doc);
+                        return entries.filter((entry, idx) => { return ok[idx]});
+                    });
+            })
+    }
+
     getEntryByIdAndRights(id, user, rights) {
-        debug('getEntryByIdAndRights', id, user, rights);
+        debug(`getEntryByIdAndRights (id: ${id}, user: ${user}, rights: ${rights}`);
         return this._init()
             .then(() => getOwnersById(this._db, id))
             .then(owners => {
@@ -152,7 +167,7 @@ class Couch {
                 // TODO handle more than one result
                 return validateRights(this._db, owners[0].value, user, rights)
                     .then(ok => {
-                        if (ok) {
+                        if (ok[0]) {
                             debug('user has access');
                             return nanoPromise.getDocument(this._db, owners[0].id);
                         }
@@ -160,6 +175,10 @@ class Couch {
                         throw new CouchError('user has no access', 'unauthorized');
                     });
             });
+    }
+
+    filterViewResultByRights(viewResult, rights) {
+
     }
 
     getEntryByUuidAndRights(uuid, user, rights) {
@@ -178,7 +197,7 @@ class Couch {
                 debug('check rights');
                 return validateRights(this._db, doc.$owners, user, rights)
                     .then(ok => {
-                        if (ok) {
+                        if (ok[0]) {
                             debug('user has access');
                             return doc;
                         }
@@ -389,8 +408,14 @@ function isOwner(owners, user) {
 
 function validateRights(db, owners, user, rights) {
     // owner has all the rights
-    if(isOwner(owners, user)) {
-        return Promise.resolve(true);
+    if(!Array.isArray(owners[0])) {
+        owners = [owners];
+    }
+
+    let areOwners = owners.map(owner => isOwner(owner, user));
+
+    if(areOwners.every(value => value === true)) {
+        return Promise.resolve(areOwners);
     }
 
     if (typeof rights === 'string') {
@@ -404,17 +429,35 @@ function validateRights(db, owners, user, rights) {
     for (let i = 0; i < rights.length; i++) {
         checks.push(checkGlobalRight(db, user, rights[i])
             .then(function (hasGlobal) {
-                if (hasGlobal) return true;
+                if (hasGlobal) return owners.map(() => true);
                 return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})
                     .then(function (groups) {
-                        for (var i = 0; i < owners.length; i++) {
-                            if (groups.indexOf(owners[i]) > -1) return true;
-                        }
-                        return false;
+                        return owners.map((owners, idx) => {
+                            if(areOwners[idx]) return true;
+                            for (var i = 0; i < owners.length; i++) {
+                                if (groups.indexOf(owners[i]) > -1) return true;
+                            }
+                            return false;
+                        });
                     });
             }));
     }
-    return Promise.all(checks).then(result => result.some(value => value === true));
+
+    return Promise.all(checks).then(result => {
+        if(result.length === 0) {
+            return areOwners;
+        }
+        return result[0].map((value, idx) => {
+            for(let i=0; i<result.length; i++) {
+                if(result[i][idx] === true) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    });
+
+    //return Promise.all(checks).then(result => result.some(value => value === true));
 }
 
 function getGroup(db, name) {
