@@ -179,10 +179,6 @@ class Couch {
             });
     }
 
-    filterViewResultByRights(viewResult, rights) {
-
-    }
-
     getEntryByUuidAndRights(uuid, user, rights) {
         debug('getEntryByUuidAndRights', uuid, user, rights);
         return this._init()

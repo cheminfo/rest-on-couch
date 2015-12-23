@@ -7,8 +7,9 @@ const constants = require('../../constants');
 const couch = require('../middleware/couch');
 
 const routesNoAuth    = ['/','/_uuids'];
+const router = require('koa-router')();
 
-exports.init = function(router, config) {
+exports.init = function(config) {
     for(var i=0; i<routesNoAuth.length; i++) {
         router.get(routesNoAuth[i], changeHost, proxy({
             url: constants.REST_COUCH_URL + routesNoAuth[i]
@@ -138,6 +139,8 @@ exports.init = function(router, config) {
     //router.put('/:database/:id/:attachment+', auth.ensureAuthenticated, getDocument(true), auth.ensureEmailMatches, changeHost, addAuthCookie, proxy({
     //    host: constants.REST_COUCH_URL
     //}));
+
+    return router;
 };
 
 //function getDocument(treatMissingAsError) {

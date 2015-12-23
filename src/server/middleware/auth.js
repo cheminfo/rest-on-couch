@@ -5,7 +5,9 @@ const authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['
 const auths = [];
 const url = require('url');
 
-exports.init = function(passport, router, config) {
+const router = require('koa-router')();
+
+exports.init = function(passport, config) {
     for (var i = 0; i < authPlugins.length; i++) {
         try {
             // check that parameter exists
@@ -114,6 +116,8 @@ exports.init = function(passport, router, config) {
             ok: true
         });
     });
+
+    return router;
 };
 
 exports.ensureAuthenticated = function *(next) {

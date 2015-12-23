@@ -19,7 +19,7 @@ describe('basic rest-api as anonymous', function () {
     before(data);
     it('basic', function () {
         return couch.getEntryById('A', 'b@b.com').then(entry => {
-            return request.get(`/test/${entry._id}`)
+            return request.get(`/couch-api/test/${entry._id}`)
                 .expect(404);
         })
     });
@@ -33,7 +33,7 @@ describe('basic rest-api as a@a.com', function () {
     it('basic', function () {
         return couch.getEntryById('A', 'b@b.com').then(entry => {
             return request
-                .get(`/test/${entry._id}`)
+                .get(`/couch-api/test/${entry._id}`)
                 .expect(200);
         })
     });
