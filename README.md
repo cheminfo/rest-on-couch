@@ -13,12 +13,13 @@ Interface to CouchDB that allows the control of permissions on the documents.
 
 ## Documentation
 
-You can specify the CouchDB information in the config file or using environment variables:
+You can specify some options in the config file or using environment variables:
 
 * config.url (REST_COUCH_URL): URL of the database server
 * config.database (REST_COUCH_DATABASE): Name of the database
 * config.username (REST_COUCH_USERNAME): Username (needs admin access to the DB)
 * config.password (REST_COUCH_PASSWORD): Password
+* config.logLevel (REST_LOG_LEVEL)
 
 ### Configuration file
  

@@ -41,7 +41,7 @@ class Couch {
             password: options.password || constants.REST_COUCH_PASSWORD
         };
 
-        this._logLevel = log.getLevel(options.logLevel || 'WARN');
+        this._logLevel = log.getLevel(options.logLevel || process.env.REST_LOG_LEVEL || 'WARN');
 
         this._customDesign = options.customDesign || {};
         this._defaultEntry = options.defaultEntry || getDefaultEntry;
