@@ -27,6 +27,13 @@ describe('entry reads, database without any default rights', function () {
             return couch.getEntryByUuid(doc._id, 'c@c.com').should.be.rejectedWith(/no access/);
         });
     });
+
+    it('should only get entries for which user has read access', function () {
+        return couch.getEntriesByUserAndRights('a@a.com', 'read').then(entries => {
+            entries.should.have.length(1);
+            entries[0].$id.should.equal('A');
+        });
+    });
 });
 
 describe('entry editions, database without any default rights', function () {

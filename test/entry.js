@@ -11,7 +11,7 @@ describe('entry reads', function () {
         });
     });
 
-    it('should not grant read access to owner', function () {
+    it('should grant read access to owner', function () {
         return couch.getEntryById('A', 'b@b.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });

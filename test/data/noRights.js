@@ -36,6 +36,15 @@ function populate(db) {
         $content: {}
     }));
 
+    prom.push(nanoPromise.insertDocument(db, {
+        $type: 'entry',
+        $owners: ['b@b.com'],
+        $id: 'B',
+        $creationDate: 0,
+        $modificationDate: 0,
+        $content: {}
+    }));
+
     return Promise.all(prom);
 }
 
