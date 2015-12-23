@@ -12,6 +12,7 @@ program
     .option('-c, --config <path>', 'Configuration file')
     .option('-i, --insert <message>', 'Insert a new log entry')
     .option('-l, --level <level>', 'Log level')
+    .option('-e, --epoch <epoch>', 'Return results from epoch (default: 1 day ago)')
     .option('-w, --watch', 'Watch for new logs')
     .parse(process.argv);
 
@@ -29,7 +30,7 @@ if (program.insert) {
         console.error(e);
     });
 } else {
-    couch.getLogs().then(function (logs) {
+    couch.getLogs(parseInt(program.epoch)).then(function (logs) {
         for (var i = 0; i < logs.length; i++) {
             write(logs[i]);
         }

@@ -53,7 +53,7 @@ exports.log = function (db, currentLevel, message, level) {
 const ONE_DAY = 1000 * 60 * 60 * 24;
 exports.getLogs = function (db, epoch) {
     if (epoch === undefined) epoch = Date.now() - ONE_DAY;
-    return nanoPromise.queryView(db, 'logsByEpoch', {startKey: epoch, include_docs: true}, {onlyDoc: true});
+    return nanoPromise.queryView(db, 'logsByEpoch', {startkey: epoch, include_docs: true}, {onlyDoc: true});
 };
 
 exports.format = function (log) {

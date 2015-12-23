@@ -383,8 +383,8 @@ class Couch {
         return this._init().then(() => log.log(this._db, this._logLevel, message, level));
     }
 
-    getLogs() {
-        return this._init().then(() => log.getLogs(this._db));
+    getLogs(epoch) {
+        return this._init().then(() => log.getLogs(this._db, epoch));
     }
 }
 
