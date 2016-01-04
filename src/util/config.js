@@ -33,3 +33,5 @@ exports.set = function (key, value) {
     config[key] = value;
     fs.writeFileSync(CONFIG_FILE, JSON.stringify(config));
 };
+
+exports.CONFIG_FILE = CONFIG_FILE;
