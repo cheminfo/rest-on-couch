@@ -8,6 +8,7 @@ const constants = require('./constants');
 const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
 const log = require('./couch/log');
+const dbconfig = require('./util/dbconfig');
 
 const basicRights = {
     $type: 'db',
@@ -25,6 +26,9 @@ const defaultRights = {
 
 class Couch {
     constructor(options) {
+        if(typeof options === 'string') {
+            options = dbconfig.database(options);
+        }
         options = options || {};
 
         const database = options.database || constants.REST_COUCH_DATABASE;

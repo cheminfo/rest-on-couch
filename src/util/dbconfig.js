@@ -6,13 +6,26 @@ const config = require('./config');
 const escapeReg = require('escape-string-regexp');
 
 exports.global = function () {
-    return require(path.join(getHomeDir(), 'config.js'));
+    try {
+        var glob = require(path.join(getHomeDir(), 'config.js'));
+    } catch(e) {
+        if(e.code !== 'MODULE_NOT_FOUND') throw e;
+        glob = {};
+    }
+
+    return glob;
 };
 
 exports.database = function (dbname) {
     let global = exports.global();
     let homeDir = getHomeDir();
-    let database = require(path.resolve(homeDir, path.join(dbname, 'config.js')));
+    try {
+        var database = require(path.resolve(homeDir, path.join(dbname, 'config.js')));
+    } catch(e) {
+        if(e.code !== 'MODULE_NOT_FOUND') throw e;
+        database = {};
+    }
+    database.database = dbname;
     return Object.assign({}, global, database);
 };
 
