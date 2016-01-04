@@ -50,8 +50,6 @@ exports.init = function(passport, config) {
 
 
     router.get('/login', function*() {
-        console.log('get login')
-
         yield this.render('login', { user: this.session.passport.user , config:config, authPlugins: authPlugins});
     });
 

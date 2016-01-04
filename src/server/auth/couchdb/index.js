@@ -43,22 +43,4 @@ exports.init = function (passport, router, config) {
             name: auth.getUserEmail(that)
         })
     });
-
-    //router.post('/_session', function*() {
-    //    var res = yield request.post(config.couchUrl + '/' + '_session', {form: {name: this.request.body.name, password: this.request.body.password}});
-    //    res = JSON.parse(res.body);
-    //    console.log(res);
-    //    if(!res.error) {
-    //        this.session.passport.user = {
-    //            email: res.name,
-    //            provider: 'couchdb'
-    //        };
-    //        console.log(this.session);
-    //        this.body = JSON.stringify(res);
-    //    }
-    //    else {
-    //        error.handleError(this, res);
-    //    }
-    //    console.log(this.request.body);
-    //});
 };
