@@ -267,7 +267,11 @@ class Couch {
                     type: file.type,
                     filename: file.name
                 });
-                return nanoPromise.attachFiles(this._db, entry, [file]);
+                return nanoPromise.attachFiles(this._db, entry, [file])
+                    .then(body => {
+                        entry._rev = body.rev;
+                        return this.insertEntry(entry, user)
+                    });
             });
     }
 
