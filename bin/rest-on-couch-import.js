@@ -6,20 +6,89 @@ const program = require('commander');
 const path = require('path');
 const dbconfig = require('../src/util/dbconfig');
 const imp = require('../src/import/import');
+const fs = require('fs-extra');
+const exec = require('child_process').exec;
+const config = require('../src/util/config');
+const log = require('../src/couch/log');
 
 program
-    .usage('[options] <file>')
+    .usage('<file> <config>')
     .option('-c, --config <path>', 'Configuration file')
     .parse(process.argv);
 
-if (!program.args.length) {
-    throw new Error('you must provide a file argument');
+
+let prom = Promise.resolve();
+if (program.args[0] && program.args[1]) {
+    const config = dbconfig.import(program.args[1]);
+    const file = path.resolve(program.args[0]);
+
+    prom = prom.then(() => {
+        return imp.import(config, file);
+    });
+} else if(!program.args[0] && !program.args[1]) {
+    // import all
+    let homeDir = config.get('homeDir');
+    if (!homeDir) {
+        console.error('homeDir must be set to import all');
+        process.exit(1);
+    }
+
+    prom = prom.then(() => findFiles(homeDir))
+        .then(paths => {
+            var p = Promise.resolve();
+            for(let i=0; i<paths.length; i++) {
+                let filepath = path.join(homeDir, paths[i].dir, paths[i].base);
+                p = p.then(() => {
+                    let config = dbconfig.import(path.join(paths[i].dir, 'config.js'));
+                    return imp.import(config, filepath);
+                }).then(() => {
+                    // mv to processed
+                    return new Promise(function(resolve, reject) {
+                        fs.rename(filepath, path.join(homeDir, paths[i].dir, 'processed', paths[i].base), function(err) {
+                            if(err) return reject(err);
+                            resolve();
+                        });
+                    });
+                }).catch(() => {
+                    // mv to errored
+                    return new Promise(function(resolve, reject) {
+                        fs.rename(filepath, path.join(homeDir, paths[i].dir, 'errored', paths[i].base), function(err) {
+                            if(err) return reject(err);
+                            resolve();
+                        });
+                    });
+                });
+            }
+            return p;
+        });
+} else {
+    console.error('Import command should be called either with 2 arguments or with none');
+    process.exit(1);
 }
 
-const config = dbconfig.import(program.config);
-const file = path.resolve(program.args[0]);
-
-imp.import(config, file).catch(function (err) {
+prom.catch(function (err) {
     console.error(err.message || err);
     process.exit(1);
 });
+
+function findFiles(homeDir) {
+    return new Promise(function (resolve, reject) {
+        exec('find . -maxdepth 3 -mindepth 3 -type f', {cwd: homeDir}, function (err, stdout) {
+            let dirs = new Map();
+            if(err) return reject(err);
+            let paths = stdout.split('\n');
+            paths = paths.filter(path => path);
+            let parsedPaths = paths.map(path.parse);
+            parsedPaths = parsedPaths.filter(parsedPath => parsedPath.base !== 'config.js');
+            parsedPaths.forEach(parsedPath => {
+                dirs.set(parsedPath.dir, true);
+            });
+
+            dirs.forEach((val, key) => {
+                fs.mkdirpSync(path.join(homeDir, key, 'processed'));
+                fs.mkdirpSync(path.join(homeDir, key, 'errored'));
+            });
+            resolve(parsedPaths);
+        });
+    });
+}

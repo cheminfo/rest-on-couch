@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const debug = require('debug')('couch:import');
 const constants = require('../constants');
+const log = require('../couch/log');
 
 
 debug('start process');
@@ -26,7 +27,12 @@ exports.import = function (config, file) {
         .then(checkDocumentExists)
         .then(updateDocument)
         .then(function () {
-            debug('finished');
+            debug(`import ${file} success`);
+            couch.log(`Import ${file} ok`, 'WARN');
+        }).catch(function (e) {
+            debug(`import ${file} failure: ${e.message}, ${e.stack}`);
+            couch.log(`Import ${file} failed: ${e.message}`, 'ERROR');
+            throw e;
         });
 
     function verifyConfig(name, defaultValue, mustBeFunction) {

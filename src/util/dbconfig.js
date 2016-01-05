@@ -41,7 +41,7 @@ exports.import = function (importFile) {
     let reg = new RegExp(`^(${escHomeDir})([^/]+)/`);
     let match = reg.exec(importFile);
     if (!match) {
-        throw new Error(`Invalid import file. Import file should be in ${homeDir}`);
+        throw new Error(`Invalid import file ${importFile}. Import file should be in ${homeDir}`);
     }
 
     let database = exports.database(match[2]);
