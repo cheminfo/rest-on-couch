@@ -14,6 +14,7 @@ const cors = require('kcors');
 const http = require('http');
 
 var _started;
+var _init;
 
 render(app, {
     root: path.join(__dirname, '../src/server/views'),
@@ -42,9 +43,9 @@ function handleError(err) {
     console.log('Error', err.stack);
 }
 
-module.exports.start = function (config) {
-    if (_started) return _started;
-
+module.exports.init = function(config) {
+    if(_init) return;
+    _init = true;
     if(!config) config = require('./default.config.json');
     else if(typeof config === 'string') config = require(path.resolve(config));
 
@@ -69,6 +70,10 @@ module.exports.start = function (config) {
     }
 
     app.use(router.routes());
+};
+
+module.exports.start = function (config) {
+    if (_started) return _started;
     _started = new Promise(function (resolve) {
         http.createServer(app.callback()).listen(3000, function () {
             resolve(app);

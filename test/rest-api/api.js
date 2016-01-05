@@ -4,6 +4,7 @@ const server = require('../../src/server/server');
 const data = require('../data/noRights');
 const supertest = require('supertest-as-promised')(Promise);
 
+server.init();
 let request = supertest.agent(server.app.callback());
 
 function noop () {}

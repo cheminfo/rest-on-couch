@@ -8,6 +8,7 @@ program
     .option('-c, --config <path>', 'Configuration file')
     .parse(process.argv);
 
-server.start(program.config).then(() => {
+server.init(program.config);
+server.start().then(() => {
     console.log('Server started successfully');
 });
