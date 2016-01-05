@@ -19,8 +19,6 @@ const basicRights = {
 };
 
 const defaultRights = {
-    createGroup: ['anonymous'],
-    create: ['anonymous'],
     read: ['anonymous']
 };
 

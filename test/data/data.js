@@ -59,7 +59,14 @@ module.exports = function () {
     return global.couch._init()
         .then(() => destroy(global.couch._nano, global.couch._databaseName))
         .then(() => {
-            global.couch = new Couch({database: 'test'});
+            global.couch = new Couch({
+                database: 'test',
+                rights: {
+                    read: ['anonymous'],
+                    createGroup: ['anonymous'],
+                    create: ['anonymous']
+                }
+            });
             return global.couch._init();
         })
         .then(() => populate(global.couch._db));
