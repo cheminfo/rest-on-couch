@@ -13,7 +13,7 @@ const log = require('../src/couch/log');
 
 program
     .usage('<file> <config>')
-    .option('-c, --config <path>', 'Configuration file')
+    .option('-l, --limit <number>', 'Limit of files to import')
     .parse(process.argv);
 
 
@@ -35,8 +35,9 @@ if (program.args[0] && program.args[1]) {
 
     prom = prom.then(() => findFiles(homeDir))
         .then(paths => {
-            var p = Promise.resolve();
-            for(let i=0; i<paths.length; i++) {
+            let p = Promise.resolve();
+            const limit = +program.limit || paths.length;
+            for(let i=0; i<limit ; i++) {
                 let filepath = path.join(homeDir, paths[i].dir, paths[i].base);
                 p = p.then(() => {
                     let config = dbconfig.import(path.join(paths[i].dir, 'config.js'));
