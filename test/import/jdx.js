@@ -6,8 +6,8 @@ const path = require('path');
 
 describe('import', function () {
     it('import jdx file', function () {
-        var config = dbconfig.import('jdx/import.js');
-        var file = path.resolve(__dirname, '../homedir/jdx/data/104-55-2_zg.jdx');
+        var config = dbconfig.import('test-import-db/jdx/config.js');
+        var file = path.resolve(__dirname, '../homedir/test-import-db/jdx/104-55-2_zg.jdx');
         return imp.import(config, file);
     });
 });
