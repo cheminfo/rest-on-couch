@@ -14,5 +14,10 @@ module.exports = {
         version: 1,
         views: {},
         updates: {}
+    },
+    rights: {
+        read: ['anonymous'],
+        createGroup: ['anonymous'],
+        create: ['anonymous']
     }
 };
