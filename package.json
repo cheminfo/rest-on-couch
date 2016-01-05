@@ -28,7 +28,6 @@
     "url": "https://github.com/cheminfo/rest-on-couch/issues"
   },
   "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
-  "private": true,
   "dependencies": {
     "co": "^4.4.0",
     "co-request": "^1.0.0",
