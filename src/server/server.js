@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const config = require('./default.config.json');
 const proxy = require('./routes/proxy');
 const api = require('./routes/api');
 const auth = require('./middleware/auth');
@@ -37,34 +36,39 @@ app.use(passport.session());
 app.use(cors());
 
 
-router.use(auth.init(passport, config).routes());
-router.use(proxy.init(config).routes());
-router.use(api.init(config).routes());
-
-//Unhandled errors
-if (process.env.DEBUG) {
-    // In debug mode, show unhandled errors to the user
-    app.use(function *(next) {
-        try {
-            yield next;
-        } catch (err) {
-            this.status = err.status || 500;
-            this.body = err.message + err.stack;
-            console.error('Unexpected error', err.message, err.stack);
-        }
-    });
-}
-
-app.use(router.routes());
-
 app.on('error', handleError);
 
 function handleError(err) {
     console.log('Error', err.stack);
 }
 
-module.exports.start = function () {
+module.exports.start = function (config) {
     if (_started) return _started;
+
+    if(!config) config = require('./default.config.json');
+    else if(typeof config === 'string') config = require(path.resolve(config));
+
+    console.log(JSON.stringify(config));
+
+    router.use(auth.init(passport, config).routes());
+    router.use(proxy.init(config).routes());
+    router.use(api.init(config).routes());
+
+    //Unhandled errors
+    if (process.env.DEBUG) {
+        // In debug mode, show unhandled errors to the user
+        app.use(function *(next) {
+            try {
+                yield next;
+            } catch (err) {
+                this.status = err.status || 500;
+                this.body = err.message + err.stack;
+                console.error('Unexpected error', err.message, err.stack);
+            }
+        });
+    }
+
+    app.use(router.routes());
     _started = new Promise(function (resolve) {
         http.createServer(app.callback()).listen(3000, function () {
             resolve(app);
