@@ -143,6 +143,23 @@ class Couch {
             });
     }
 
+    queryViewByUser(user, view, options) {
+        debug(`queryViewByUser (user: ${user}, view: ${view}`);
+        options = options || {};
+        options.include_docs = true;
+        options.reduce = false;
+        return this._init()
+            .then(() => nanoPromise.queryView(this._db, view, options))
+            .then(rows => {
+                let owners = rows.map(r => r.doc.$owners);
+                return validateRights(this._db, owners, user, 'read')
+                    .then(hasRights => {
+                        return rows.filter((r, idx) => hasRights[idx]);
+                    });
+
+            });
+    }
+
     getEntriesByUserAndRights(user, rights) {
         debug(`getEntriesByUserAndRights (user: ${user}, rights: ${rights}`);
         return this._init()
@@ -153,9 +170,7 @@ class Couch {
                 return validateRights(this._db, owners, user, rights)
                     .then(ok => {
                         entries = entries.map(entries => entries.doc);
-                        return entries.filter((entry, idx) => {
-                            return ok[idx]
-                        });
+                        return entries.filter((entry, idx) => ok[idx]);
                     });
             })
     }
