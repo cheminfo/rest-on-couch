@@ -37,10 +37,10 @@ exports.init = function (passport, router, config) {
         }));
 
     router.post('/_session', passport.authenticate('local', {}), function*() {
-        var that = this;
+        var name = yield auth.getUserEmail(this);
         this.body = JSON.stringify({
             ok: true,
-            name: auth.getUserEmail(that)
-        })
+            name
+        });
     });
 };

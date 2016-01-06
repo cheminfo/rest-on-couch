@@ -23,7 +23,7 @@ describe('Query default data', function () {
 describe('Query no rights data', function () {
     before(noRights);
 
-    it.only('Should not grant access to all entries', function () {
+    it('Should not grant access to all entries', function () {
         return couch.queryViewByUser('a@a.com', 'entryById')
             .then(rows => {
                 rows.length.should.equal(1);

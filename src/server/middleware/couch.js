@@ -7,7 +7,7 @@ const couchToProcess = ['key', 'startkey', 'endkey'];
 
 exports.getDocumentByUuid = function * (next) {
     const database = this.params.database;
-    const userEmail = auth.getUserEmail(this);
+    const userEmail = yield auth.getUserEmail(this);
     const couch = getCouch(database);
     try {
         const doc = yield couch.getEntryByUuid(this.params.id, userEmail);
@@ -21,7 +21,7 @@ exports.getDocumentByUuid = function * (next) {
 
 exports.newEntry = function * (next) {
     const database = this.params.database;
-    const userEmail = auth.getUserEmail(this);
+    const userEmail = yield auth.getUserEmail(this);
     const couch = getCouch(database);
     const body = this.request.body;
     if (body) body._id = this.params.id;
@@ -45,7 +45,7 @@ exports.newEntry = function * (next) {
 
 exports.allEntries = function * (next) {
     const database = this.params.database;
-    const userEmail = auth.getUserEmail(this);
+    const userEmail = yield auth.getUserEmail(this);
     const couch = getCouch(database);
 
     try {
@@ -61,7 +61,7 @@ exports.allEntries = function * (next) {
 
 exports.queryViewByUser = function * (next) {
     const database = this.params.database;
-    const userEmail = auth.getUserEmail(this);
+    const userEmail = yield auth.getUserEmail(this);
     const couch = getCouch(database);
 
 

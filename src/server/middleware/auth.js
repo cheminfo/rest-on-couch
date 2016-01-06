@@ -4,10 +4,13 @@ const FlavorUtils = require('flavor-utils');
 const authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['github','oauth2']];
 const auths = [];
 const url = require('url');
+const superagent = require('superagent-promise')(require('superagent'), Promise);
 
 const router = require('koa-router')();
+var config;
 
-exports.init = function(passport, config) {
+exports.init = function(passport, _config) {
+    config = _config;
     for (var i = 0; i < authPlugins.length; i++) {
         try {
             // check that parameter exists
@@ -48,20 +51,10 @@ exports.init = function(passport, config) {
         return last;
     }
 
-
-    router.get('/login', function*() {
-        yield this.render('login', { user: this.session.passport.user , config:config, authPlugins: authPlugins});
-    });
-
-
-    router.get('/account', this.ensureAuthenticated, function*(){
-        yield this.render('account', { user: this.session.passport.user });
-    });
-
-    router.get('/_session', function*(next){
+    router.get('/_session', function * (next){
         var that = this;
         // Check if session exists
-        var email = exports.getUserEmail(that);
+        var email = yield exports.getUserEmail(that);
         this.body = JSON.stringify({
             ok: true,
             userCtx: {
@@ -126,8 +119,40 @@ exports.ensureAuthenticated = function *(next) {
     this.status = 401;
 };
 
+function getUserEmailFromToken(ctx) {
+    if(!config.authServers.length) return Promise.resolve('anonymous');
+    const token = ctx.headers['x-auth-session'];
+
+    let res = {
+        ok: true,
+        userCtx: null
+    };
+
+    let prom = Promise.resolve(res);
+
+    for(let i=0; i<config.authServers.length; i++) {
+        prom = prom.then(res => {
+            if(res.userCtx !== null && res.userCtx !== 'anonymous') {
+                return res;
+            }
+            return superagent
+                .get(`${config.authServers[i].replace(/\/$/, '')}/_session`)
+                .set('cookie', token)
+                .end().then(res => {
+                    return JSON.parse(res.text)
+                });
+        });
+    }
+
+    return prom.then(res => res.userCtx ? res.userCtx : 'anonymous');
+}
+
+
 exports.getUserEmail = function(ctx) {
-    if (!ctx.session.passport) return 'anonymous';
+    if(ctx.headers['x-auth-session']) {
+        return getUserEmailFromToken(ctx);
+    }
+    if (!ctx.session.passport) return Promise.resolve('anonymous');
     var user = ctx.session.passport.user;
     if(!user) {
         throw new Error('UNREACHABLE');
@@ -161,88 +186,5 @@ exports.getUserEmail = function(ctx) {
             email = null;
             break;
     }
-    return email || 'anonymous';
+    return Promise.resolve(email || 'anonymous');
 };
-
-exports.emailMatches = function(ctx, email) {
-    var sessionEmail = this.getUserEmail(ctx);
-    return email.toLowerCase() === sessionEmail.toLowerCase();
-};
-
-exports.ensureEmailMatches = function*(next) {
-    try{
-        var name = this.state.couchdb.document.name;
-
-    }
-    catch(e) {
-        return this.statusCode(500);
-    }
-    var sessionEmail = exports.getUserEmail(this);
-    if(compareEmails(sessionEmail, name))
-        yield next;
-    else
-        error.handleError('private');
-};
-
-exports.ensureIsPublic = function*(next) {
-    try{
-        var isPublic = this.state.couchdb.document.public;
-    }
-    catch(e) {
-        return this.statusCode(500);
-    }
-    if(isPublic === true) {
-        yield next;
-    }
-    else {
-        error.handleError(this, 'private');
-    }
-};
-
-exports.ensureIsPublicOrEmailMatches = function*(next) {
-    var isPublic = this.state.couchdb.document.public;
-    var name = this.state.couchdb.document.name;
-    var sessionEmail = exports.getUserEmail(this);
-    if(isPublic || compareEmails(sessionEmail, name))
-        yield next;
-    else {
-        error.handleError(this, 'private');
-    }
-};
-
-exports.ensureDocIsSafe = function*(next) {
-    if(this.request.body._attachments) {
-        try {
-            // Go through all the attachments and parse them as json
-            for (var key in this.request.body._attachments) {
-                var data = this.request.body._attachments[key].data;
-                if(data === undefined) continue;
-                JSON.parse((new Buffer(data, 'base64')).toString());
-            }
-        } catch(e) {
-            this.status = 400;
-            return;
-        }
-    }
-    yield next;
-};
-
-exports.ensureAttachmentIsJson = function*(next) {
-    if(typeof this.request.body === 'object' && this.request.body !== null) {
-        return yield next;
-    }
-    try {
-        var parsed = JSON.parse(this.request.body);
-        if(typeof parsed !== 'object') {
-            this.status = 400; return;
-        }
-    } catch(e) {
-        this.status = 400;
-        return;
-    }
-    yield next;
-};
-
-function compareEmails(a, b) {
-    return a.toLowerCase() === b.toLowerCase();
-}
