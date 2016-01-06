@@ -46,7 +46,8 @@ function handleError(err) {
 module.exports.init = function(config) {
     if(_init) return;
     _init = true;
-    if(!config) config = require('./default.config.json');
+
+    if(!config) config = require('./config.default.json');
     else if(typeof config === 'string') config = require(path.resolve(config));
 
     console.log(JSON.stringify(config));
