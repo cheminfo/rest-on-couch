@@ -54,4 +54,12 @@ describe('basic rest-api as a@a.com', function () {
             entries.should.have.length(2);
         });
     });
+
+    it.only('query view', function () {
+        return request.get(`/test/_design/app/_view/entryById?key=%22A%22`)
+            .expect(200).then(rows => {
+                rows = JSON.parse(rows.text);
+                rows.should.have.length(1);
+            });
+    })
 });

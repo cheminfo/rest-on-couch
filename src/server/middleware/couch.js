@@ -3,6 +3,7 @@
 const auth = require('./auth');
 const Couch = require('../..');
 const couchMap = {};
+const couchToProcess = ['key', 'startkey', 'endkey'];
 
 exports.getDocumentByUuid = function * (next) {
     const database = this.params.database;
@@ -51,11 +52,26 @@ exports.allEntries = function * (next) {
         const entries = yield couch.getEntriesByUserAndRights(userEmail, 'read');
         this.status = 200;
         this.body = entries;
-    } catch(e) {
-        onGetError(e);
+    } catch (e) {
+        onGetError(this, e);
     }
 
     yield next;
+};
+
+exports.queryViewByUser = function * (next) {
+    const database = this.params.database;
+    const userEmail = auth.getUserEmail(this);
+    const couch = getCouch(database);
+
+
+    try {
+        processCouchQuery(this);
+        this.body = yield couch.queryViewByUser(userEmail, this.params.view, this.query);
+        this.status = 200;
+    } catch(e) {
+        onGetError(this, e);
+    }
 };
 
 function getCouch(database) {
@@ -78,5 +94,13 @@ function onGetError(ctx, e) {
             ctx.status = 500;
             ctx.body = 'internal server error';
             break;
+    }
+}
+
+function processCouchQuery(ctx) {
+    for (let i = 0; i < couchToProcess.length; i++) {
+        if (ctx.query[couchToProcess[i]]) {
+            ctx.query[couchToProcess[i]] = JSON.parse(ctx.query[couchToProcess[i]])
+        }
     }
 }
