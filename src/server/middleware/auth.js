@@ -144,7 +144,7 @@ function getUserEmailFromToken(ctx) {
         });
     }
 
-    return prom.then(res => res.userCtx ? res.userCtx : 'anonymous');
+    return prom.then(res => res.userCtx ? res.userCtx.name : 'anonymous');
 }
 
 
