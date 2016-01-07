@@ -143,3 +143,18 @@ exports.attachFiles = function (db, doc, files) {
         });
     });
 };
+
+exports.getAttachment = function (db, doc, name, asStream) {
+    return new Promise((resolve, reject) => {
+        debug(`get attachment ${doc}/${name}`);
+        if (asStream) {
+            const stream = db.attachment.get(doc, name);
+            resolve(stream);
+        } else {
+            db.attachment.get(doc, name, function (err, body) {
+                if (err) return reject(err);
+                resolve(body);
+            });
+        }
+    });
+};
