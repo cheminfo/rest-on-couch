@@ -28,7 +28,7 @@ describe('basic rest-api as anonymous', function () {
     });
 
     it('get all entries', function () {
-        return request.get(`/db/test/entries/all`).expect(200).then(entries => {
+        return request.get(`/db/test/get/all/entries`).expect(200).then(entries => {
             entries = JSON.parse(entries.text);
             entries.should.have.length(0);
         });
@@ -50,7 +50,7 @@ describe('basic rest-api as a@a.com', function () {
     });
 
     it('get all entries', function () {
-        return request.get(`/db/test/entries/all`).expect(200).then(entries => {
+        return request.get(`/db/test/get/all/entries`).expect(200).then(entries => {
             entries = JSON.parse(entries.text);
             entries.should.have.length(2);
         });

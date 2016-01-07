@@ -6,9 +6,9 @@ const couchMap = {};
 const couchToProcess = ['key', 'startkey', 'endkey'];
 
 exports.getDocumentByUuid = function * (next) {
-    const database = this.params.database;
+    const dbname = this.params.dbname;
     const userEmail = yield auth.getUserEmail(this);
-    const couch = getCouch(database);
+    const couch = getCouch(dbname);
     try {
         const doc = yield couch.getEntryByUuid(this.params.id, userEmail);
         this.status = 200;
@@ -20,9 +20,9 @@ exports.getDocumentByUuid = function * (next) {
 };
 
 exports.newEntry = function * (next) {
-    const database = this.params.database;
+    const dbname = this.params.dbname;
     const userEmail = yield auth.getUserEmail(this);
-    const couch = getCouch(database);
+    const couch = getCouch(dbname);
     const body = this.request.body;
     if (body) body._id = this.params.id;
     try {
@@ -36,6 +36,7 @@ exports.newEntry = function * (next) {
                 break;
             default:
                 this.status = 500;
+                console.error(e);
                 this.body = 'internal server error';
                 break;
         }
@@ -43,10 +44,26 @@ exports.newEntry = function * (next) {
     yield next;
 };
 
-exports.allEntries = function * (next) {
-    const database = this.params.database;
+exports.getAttachment = function * (next) {
+    const dbname = this.params.dbname;
     const userEmail = yield auth.getUserEmail(this);
-    const couch = getCouch(database);
+    const couch = getCouch(dbname);
+
+    try {
+        const entries = yield couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, userEmail, true);
+        this.status = 200;
+        this.body = entries;
+    } catch (e) {
+        onGetError(this, e);
+    }
+
+    yield next;
+};
+
+exports.allEntries = function * (next) {
+    const dbname = this.params.dbname;
+    const userEmail = yield auth.getUserEmail(this);
+    const couch = getCouch(dbname);
 
     try {
         const entries = yield couch.getEntriesByUserAndRights(userEmail, 'read');
@@ -60,9 +77,9 @@ exports.allEntries = function * (next) {
 };
 
 exports.queryViewByUser = function * (next) {
-    const database = this.params.database;
+    const dbname = this.params.dbname;
     const userEmail = yield auth.getUserEmail(this);
-    const couch = getCouch(database);
+    const couch = getCouch(dbname);
 
 
     try {
@@ -74,13 +91,13 @@ exports.queryViewByUser = function * (next) {
     }
 };
 
-function getCouch(database) {
-    if (!couchMap[database]) {
-        couchMap[database] = new Couch({
-            database
+function getCouch(dbname) {
+    if (!couchMap[dbname]) {
+        couchMap[dbname] = new Couch({
+            database: dbname
         });
     }
-    return couchMap[database];
+    return couchMap[dbname];
 }
 
 function onGetError(ctx, e) {

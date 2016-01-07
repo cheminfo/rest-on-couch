@@ -10,16 +10,19 @@ const router = require('koa-router')({
 
 exports.init = function(config) {
     // Get all entries by user
-    router.get('/:database/entries/all', couch.allEntries);
+    router.get('/:dbname/get/all/entries', couch.allEntries);
 
     // Get a document
-    router.get('/:database/:id', couch.getDocumentByUuid);
+    router.get('/:dbname/:id', couch.getDocumentByUuid);
 
     // Get a view
-    router.get('/:database/_view/:view', couch.queryViewByUser);
+    router.get('/:dbname/_view/:view', couch.queryViewByUser);
+
+    // Get an attachment
+    router.get('/:dbname/:id/:attachment', couch.getAttachment);
 
     // Modify a document
-    router.put('/:database/:id', couch.newEntry);
+    router.put('/:dbname/:id', couch.newEntry);
 
     return router;
 };
