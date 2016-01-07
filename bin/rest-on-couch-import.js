@@ -74,7 +74,8 @@ prom.catch(function (err) {
 
 function findFiles(homeDir) {
     return new Promise(function (resolve, reject) {
-        exec('find . -maxdepth 3 -mindepth 3 -type f', {cwd: homeDir}, function (err, stdout) {
+        exec('find . -maxdepth 3 -mindepth 3 -type f', {cwd: homeDir, maxBuffer: 10*1000*1024}, function (err, stdout) {
+            console.log(stdout);
             let dirs = new Map();
             if(err) return reject(err);
             let paths = stdout.split('\n');
