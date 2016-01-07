@@ -5,6 +5,7 @@ const authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['
 const auths = [];
 const url = require('url');
 const superagent = require('superagent-promise')(require('superagent'), Promise);
+const debug = require('debug')('middleware:auth');
 
 const router = require('koa-router')();
 var config;
