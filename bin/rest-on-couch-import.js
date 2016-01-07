@@ -40,12 +40,12 @@ if (program.args[0] && program.args[1]) {
             for(let i=0; i<limit ; i++) {
                 let filepath = path.join(homeDir, paths[i].dir, paths[i].base);
                 p = p.then(() => {
-                    let config = dbconfig.import(path.join(paths[i].dir, 'import.js'));
+                    let config = dbconfig.import(path.join(paths[i].dir, '../import.js'));
                     return imp.import(config, filepath);
                 }).then(() => {
                     // mv to processed
                     return new Promise(function(resolve, reject) {
-                        fs.rename(filepath, path.join(homeDir, paths[i].dir, 'processed', paths[i].base), function(err) {
+                        fs.rename(filepath, path.join(homeDir, paths[i].dir, '../processed', paths[i].base), function(err) {
                             if(err) return reject(err);
                             resolve();
                         });
@@ -53,7 +53,7 @@ if (program.args[0] && program.args[1]) {
                 }).catch(() => {
                     // mv to errored
                     return new Promise(function(resolve, reject) {
-                        fs.rename(filepath, path.join(homeDir, paths[i].dir, 'errored', paths[i].base), function(err) {
+                        fs.rename(filepath, path.join(homeDir, paths[i].dir, '../errored', paths[i].base), function(err) {
                             if(err) return reject(err);
                             resolve();
                         });
@@ -74,20 +74,19 @@ prom.catch(function (err) {
 
 function findFiles(homeDir) {
     return new Promise(function (resolve, reject) {
-        exec('find . -not -path \'*/\.*\' -maxdepth 3 -mindepth 3 -type f', {cwd: homeDir, maxBuffer: 10*1000*1024}, function (err, stdout) {
+        exec('find . -not -path \'*/\.*\' -maxdepth 4 -mindepth 4 -type f', {cwd: homeDir, maxBuffer: 10*1000*1024}, function (err, stdout) {
             let dirs = new Map();
             if(err) return reject(err);
             let paths = stdout.split('\n');
             paths = paths.filter(path => path);
             let parsedPaths = paths.map(path.parse);
-            parsedPaths = parsedPaths.filter(parsedPath => parsedPath.base !== 'import.js');
             parsedPaths.forEach(parsedPath => {
                 dirs.set(parsedPath.dir, true);
             });
 
             dirs.forEach((val, key) => {
-                fs.mkdirpSync(path.join(homeDir, key, 'processed'));
-                fs.mkdirpSync(path.join(homeDir, key, 'errored'));
+                fs.mkdirpSync(path.join(homeDir, key, '../processed'));
+                fs.mkdirpSync(path.join(homeDir, key, '../errored'));
             });
             resolve(parsedPaths);
         });
