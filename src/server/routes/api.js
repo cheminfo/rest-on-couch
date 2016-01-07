@@ -21,7 +21,7 @@ exports.init = function(config) {
     router.get('/:dbname/_view/:view', couch.queryViewByUser);
 
     // Get an attachment
-    router.get('/:dbname/:id/:attachment', couch.getAttachment);
+    router.get('/:dbname/:id/:attachment', couch.getAttachmentById);
 
     // Modify a document
     router.put('/:dbname/:id', couch.newEntry);
