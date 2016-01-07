@@ -143,7 +143,7 @@ class Couch {
             });
     }
 
-    queryViewByUser(user, view, options) {
+    queryViewByUser(user, view, options, rights) {
         debug(`queryViewByUser (user: ${user}, view: ${view}`);
         options = options || {};
         options.include_docs = true;
@@ -152,8 +152,9 @@ class Couch {
             .then(() => nanoPromise.queryView(this._db, view, options))
             .then(rows => {
                 let owners = rows.map(r => r.doc.$owners);
-                return validateRights(this._db, owners, user, 'read')
+                return validateRights(this._db, owners, user, rights || 'read')
                     .then(hasRights => {
+                        rows = rows.map(entry => entry.doc);
                         return rows.filter((r, idx) => hasRights[idx]);
                     });
 
@@ -161,18 +162,7 @@ class Couch {
     }
 
     getEntriesByUserAndRights(user, rights) {
-        debug(`getEntriesByUserAndRights (user: ${user}, rights: ${rights}`);
-        return this._init()
-            .then(() =>  nanoPromise.queryView(this._db, 'entryById', {reduce: false, include_docs: true}))
-            .then(entries => {
-                const owners = entries.map(entry => entry.doc.$owners);
-                debug('validate rights');
-                return validateRights(this._db, owners, user, rights)
-                    .then(ok => {
-                        entries = entries.map(entries => entries.doc);
-                        return entries.filter((entry, idx) => ok[idx]);
-                    });
-            })
+        return this.queryViewByUser(user, 'entryById', {}, rights);
     }
 
     getEntryByIdAndRights(id, user, rights) {
