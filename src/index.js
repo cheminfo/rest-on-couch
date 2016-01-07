@@ -251,6 +251,16 @@ class Couch {
             .then(entry => nanoPromise.attachFiles(this._db, entry, attachments));
     }
 
+    getAttachmentByIdAndName(id, name, user, asStream) {
+        return this.getEntryById(id, user)
+            .then(getAttachmentFromEntry(this._db, name, asStream));
+    }
+
+    getAttachmentByUuidAndName(uuid, name, user, asStream) {
+        return this.getEntryByUuid(uuid, user)
+            .then(getAttachmentFromEntry(this._db, name, asStream));
+    }
+
     addFileToJpath(id, user, jpath, json, file) {
         if (!Array.isArray(jpath)) {
             throw new CouchError('jpath must be an array');
@@ -602,4 +612,14 @@ function beforeSaveEntry(entry, user) {
     if (entry.$creationDate === undefined) {
         entry.$creationDate = now;
     }
+}
+
+function getAttachmentFromEntry(db, name, asStream) {
+    return function (entry) {
+        if (entry._attachments && entry._attachments[name]) {
+            return nanoPromise.getAttachment(db, entry._id, name, asStream);
+        } else {
+            throw new CouchError(`attachment ${name} not found`);
+        }
+    };
 }
