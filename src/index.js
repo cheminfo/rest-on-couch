@@ -277,13 +277,12 @@ class Couch {
                     throw new CouchError('jpath must point to an array');
                 }
                 current.push(json);
-                if (!json.file) {
-                    json.file = [];
-                }
-                json.file.push({
+
+                json.file = {
                     type: file.type,
                     filename: file.name
-                });
+                };
+
                 return nanoPromise.attachFiles(this._db, entry, [file])
                     .then(body => {
                         entry._rev = body.rev;
