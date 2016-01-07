@@ -155,6 +155,7 @@ exports.getUserEmail = function(ctx) {
     if (!ctx.session.passport) return Promise.resolve('anonymous');
     var user = ctx.session.passport.user;
     if(!user) {
+        debug('passport without user: ', ctx.session.passport);
         return Promise.resolve('anonymous');
         //throw new Error('UNREACHABLE');
     }

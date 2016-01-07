@@ -144,7 +144,7 @@ class Couch {
     }
 
     queryViewByUser(user, view, options, rights) {
-        debug(`queryViewByUser (user: ${user}, view: ${view}`);
+        debug(`queryViewByUser (user: ${user}, view: ${view})`);
         options = options || {};
         options.include_docs = true;
         options.reduce = false;

@@ -8,9 +8,11 @@ const router = require('koa-router')({
     prefix: '/db'
 });
 
+router.use(couch.setupCouch);
+
 exports.init = function(config) {
     // Get all entries by user
-    router.get('/:dbname/get/all/entries', couch.allEntries);
+    router.get('/:dbname/_all/entries', couch.allEntries);
 
     // Get a document
     router.get('/:dbname/:id', couch.getDocumentByUuid);
