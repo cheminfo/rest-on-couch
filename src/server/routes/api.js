@@ -18,7 +18,7 @@ exports.init = function(config) {
     // Get a view
     router.get('/:database/_design/app/_view/:view', couch.queryViewByUser);
 
-    // Create new document
+    // Modify a document
     router.put('/:database/:id', couch.newEntry);
 
     return router;
