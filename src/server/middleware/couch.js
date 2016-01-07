@@ -93,6 +93,7 @@ function onGetError(ctx, e) {
         default:
             ctx.status = 500;
             ctx.body = 'internal server error';
+            console.error(e);
             break;
     }
 }
