@@ -11,8 +11,8 @@
     "src"
   ],
   "scripts": {
-    "test": "mocha --require should --reporter mocha-better-spec-reporter --recursive",
-    "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should"
+    "test": "mocha --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive",
+    "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup"
   },
   "repository": {
     "type": "git",

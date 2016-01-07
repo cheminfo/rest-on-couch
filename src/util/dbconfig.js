@@ -55,5 +55,5 @@ function getHomeDir() {
     if (!homeDir) {
         throw new Error('homeDir is not set');
     }
-    return homeDir;
+    return path.resolve(config.CONFIG_FILE, '..', homeDir);
 }

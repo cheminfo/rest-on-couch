@@ -22,13 +22,13 @@ describe('basic rest-api as anonymous', function () {
 
     it('get an entry', function () {
         return couch.getEntryById('A', 'b@b.com').then(entry => {
-            return request.get(`/test/${entry._id}`)
+            return request.get(`/db/test/${entry._id}`)
                 .expect(404);
         })
     });
 
     it('get all entries', function () {
-        return request.get(`/test/entries/all`).expect(200).then(entries => {
+        return request.get(`/db/test/entries/all`).expect(200).then(entries => {
             entries = JSON.parse(entries.text);
             entries.should.have.length(0);
         });
@@ -44,20 +44,20 @@ describe('basic rest-api as a@a.com', function () {
     it('get an entry', function () {
         return couch.getEntryById('A', 'b@b.com').then(entry => {
             return request
-                .get(`/test/${entry._id}`)
+                .get(`/db/test/${entry._id}`)
                 .expect(200);
         })
     });
 
     it('get all entries', function () {
-        return request.get(`/test/entries/all`).expect(200).then(entries => {
+        return request.get(`/db/test/entries/all`).expect(200).then(entries => {
             entries = JSON.parse(entries.text);
             entries.should.have.length(2);
         });
     });
 
     it('query view', function () {
-        return request.get(`/test/_design/app/_view/entryById?key=%22A%22`)
+        return request.get(`/db/test/_view/entryById?key=%22A%22`)
             .expect(200).then(rows => {
                 rows = JSON.parse(rows.text);
                 rows.should.have.length(1);
