@@ -51,6 +51,20 @@ function populate(db) {
         $modificationDate: 0
     }));
 
+    prom.push(nanoPromise.insertDocument(db, {
+        $type: 'entry',
+        $owners: ['c@c.com'],
+        $id: 'entryWithAttachment',
+        $creationDate: 0,
+        $modificationDate: 0,
+        _attachments: {
+            "test.txt": {
+                "content_type": "text\/plain",
+                "data": "VEhJUyBJUyBBIFRFU1Q="
+            }
+        }
+    }));
+
     return Promise.all(prom);
 }
 

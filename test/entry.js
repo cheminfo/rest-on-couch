@@ -37,7 +37,7 @@ describe('entry reads', function () {
 
     it('should get all readable entries for a user', function () {
         return couch.getEntriesByUserAndRights('b@b.com', 'read').then(entries => {
-            entries.should.have.length(2);
+            entries.should.have.length(3);
         })
     });
 });

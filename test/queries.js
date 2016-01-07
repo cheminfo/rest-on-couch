@@ -8,7 +8,7 @@ describe('Query default data', function () {
     it('Should query by user id', function () {
         return couch.queryViewByUser('a@a.com', 'entryById')
             .then(rows => {
-                rows.length.should.equal(2);
+                rows.length.should.equal(3);
             });
     });
 
