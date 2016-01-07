@@ -4,7 +4,9 @@ const _ = require('lodash');
 const error = require('../error');
 const couch = require('../middleware/couch');
 
-const router = require('koa-router')();
+const router = require('koa-router')({
+    prefix: '/db'
+});
 
 exports.init = function(config) {
     // Get all entries by user
