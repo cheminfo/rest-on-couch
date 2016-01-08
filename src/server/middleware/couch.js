@@ -46,7 +46,6 @@ exports.newEntry = function*() {
 
 exports.getAttachmentById = function*() {
     try {
-        console.log('get att by id')
         const entries = yield this.state.couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, this.state.userEmail, true);
         this.status = 200;
         this.body = entries;
