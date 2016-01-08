@@ -570,7 +570,7 @@ function checkGlobalRight(db, user, right) {
     return nanoPromise.queryView(db, 'globalRight', {key: right}, {onlyValue: true})
         .then(function (result) {
             for (var i = 0; i < result.length; i++) {
-                if (result[i] === 'anonymous' || result[i] === user) {
+                if (result[i] === 'anonymous' || result[i] === user || result[i] === 'anyuser' && user !== 'anonymous') {
                     debug('user has global right');
                     return true;
                 }
