@@ -36,11 +36,14 @@ if (program.args[0] && program.args[1]) {
     prom = prom.then(() => findFiles(homeDir))
         .then(paths => {
             const limit = +program.limit || paths.length;
+            var i = 0, count = 0;
             var p = Promise.resolve();
-            for (let i = 0; i < limit; i++) {
+            while(count < limit && i < paths.length) {
                 if(checkFile(homeDir, paths[i])) {
+                    count++;
                     p = processFile(homeDir, paths[i]);
                 }
+                i++;
             }
             return p;
         });
