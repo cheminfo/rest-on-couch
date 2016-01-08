@@ -28,13 +28,14 @@ const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
 app.use(bodyParser({
     jsonLimit: '100mb'
 }));
+app.use(cors());
+
 app.keys = ['some secret'];
 app.use(session({
     maxAge: 100 * ONE_YEAR
 }, app));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors());
 
 
 app.on('error', handleError);
