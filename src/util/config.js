@@ -4,15 +4,20 @@ const fs = require('fs');
 const debug = require('debug')('config');
 const path = require('path');
 
+var configCache;
+
 const CONFIG_FILE = path.join(process.env.HOME, '.rest-on-couch-config');
 exports.get = function (key) {
     debug(`get ${key}`);
-    let content = fs.readFileSync(CONFIG_FILE);
-    content = JSON.parse(content);
-    if(key === undefined) {
-        return content;
+    if(!configCache) {
+        let content = fs.readFileSync(CONFIG_FILE);
+        configCache = JSON.parse(content);
     }
-    return content[key];
+
+    if(key === undefined) {
+        return configCache;
+    }
+    return configCache[key];
 };
 
 exports.set = function (key, value) {
