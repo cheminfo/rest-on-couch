@@ -10,6 +10,7 @@ exports.setupCouch = function*(next) {
     const dbname = this.params.dbname;
     this.state.userEmail = yield auth.getUserEmail(this);
     this.state.couch = getCouch(dbname);
+    processCouchQuery(this);
     yield next;
 };
 
@@ -66,7 +67,7 @@ exports.getAttachmentByUuid = function*() {
 
 exports.allEntries = function*() {
     try {
-        const entries = yield this.state.couch.getEntriesByUserAndRights(this.state.userEmail, 'read');
+        const entries = yield this.state.couch.getEntriesByUserAndRights(this.state.userEmail, 'read', this.query);
         this.status = 200;
         this.body = entries;
     } catch (e) {
@@ -77,7 +78,6 @@ exports.allEntries = function*() {
 
 exports.queryViewByUser = function*() {
     try {
-        processCouchQuery(this);
         this.body = yield this.state.couch.queryViewByUser(this.state.userEmail, this.params.view, this.query);
         this.status = 200;
     } catch (e) {
@@ -110,7 +110,11 @@ function onGetError(ctx, e) {
 function processCouchQuery(ctx) {
     for (let i = 0; i < couchToProcess.length; i++) {
         if (ctx.query[couchToProcess[i]]) {
-            ctx.query[couchToProcess[i]] = JSON.parse(ctx.query[couchToProcess[i]])
+            try {
+                ctx.query[couchToProcess[i]] = JSON.parse(ctx.query[couchToProcess[i]])
+            } catch(e) {
+
+            }
         }
     }
 }

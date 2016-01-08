@@ -161,8 +161,8 @@ class Couch {
             });
     }
 
-    getEntriesByUserAndRights(user, rights) {
-        return this.queryViewByUser(user, 'entryById', {}, rights);
+    getEntriesByUserAndRights(user, rights, options) {
+        return this.queryViewByUser(user, 'entryById', options, rights);
     }
 
     getEntryByIdAndRights(id, user, rights) {
