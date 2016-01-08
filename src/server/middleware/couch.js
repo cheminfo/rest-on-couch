@@ -15,7 +15,7 @@ exports.setupCouch = function*(next) {
 
 exports.getDocumentByUuid = function*() {
     try {
-        const doc = yield this.state.couch.getEntryByUuid(this.params.id, this.state.userEmail);
+        const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail);
         this.status = 200;
         this.body = doc;
     } catch (e) {
@@ -25,7 +25,7 @@ exports.getDocumentByUuid = function*() {
 
 exports.newEntry = function*() {
     const body = this.request.body;
-    if (body) body._id = this.params.id;
+    if (body) body._id = this.params.uuid;
     try {
         yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
         this.status = 200;
@@ -46,9 +46,19 @@ exports.newEntry = function*() {
 
 exports.getAttachmentById = function*() {
     try {
-        const entries = yield this.state.couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, this.state.userEmail, true);
+        const stream = yield this.state.couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, this.state.userEmail, true);
         this.status = 200;
-        this.body = entries;
+        this.body = stream;
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.getAttachmentByUuid = function*() {
+    try {
+        const stream = yield this.state.couch.getAttachmentByUuidAndName(this.params.uuid, this.params.attachment, this.state.userEmail, true);
+        this.status = 200;
+        this.body = stream;
     } catch (e) {
         onGetError(this, e);
     }
