@@ -5,7 +5,7 @@ const path = require('path');
 const die = require('../die');
 
 const dbConfig = module.exports = {};
-const homeDir = require('./home').homeDir;
+const homeDir = require('./home').config.homeDir;
 
 if (!homeDir) {
     return;

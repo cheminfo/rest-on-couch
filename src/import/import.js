@@ -6,15 +6,22 @@ const path = require('path');
 const debug = require('debug')('couch:import');
 const constants = require('../constants');
 const log = require('../couch/log');
+const getConfig = require('../util/config/config').getConfig;
 
 
 debug('start process');
 
-exports.import = function (config, file) {
+exports.import = function (database, importName, file) {
     const filename = path.parse(file).base;
     const contents = fs.readFileSync(file);
 
-    const couch = new Couch(config);
+    let config = getConfig(database);
+    if (!config.import[importName]) {
+        throw new Error(`no import config for ${database}/${importName}`);
+    }
+    config = config.import[importName];
+
+    const couch = new Couch(database);
 
     // Callbacks
     const getID = verifyConfig('getID', null, true);

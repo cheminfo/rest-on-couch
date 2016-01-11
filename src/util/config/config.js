@@ -1,7 +1,7 @@
 'use strict';
 
 const defaultConfig = require('./default');
-const homeConfig = require('./home');
+const homeConfig = require('./home').config;
 const mainConfig = require('./main');
 const dbConfig = require('./db');
 const envConfig = require('./env');

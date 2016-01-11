@@ -17,21 +17,22 @@ const importFiles = {};
 const createdDirs = {};
 
 program
-    .usage('<file> <config>')
+    .usage('<file>')
     .option('-l, --limit <number>', 'Limit of files to import')
     .option('-w, --watch', 'Watch files')
     .parse(process.argv);
 
 
 let prom = Promise.resolve();
-if (program.args[0] && program.args[1]) {
-    const config = dbconfig.import(program.args[1]);
+if (program.args[0]) {
+    // TODO add 2 arguments: db and import names
+    throw new Error('not ready');
     const file = path.resolve(program.args[0]);
 
     prom = prom.then(() => {
         return imp.import(config, file);
     });
-} else if (!program.args[0] && !program.args[1] && !program.watch) {
+} else if (!program.watch) {
     // import all
     let homeDir = getHomeDir();
 
@@ -41,29 +42,31 @@ if (program.args[0] && program.args[1]) {
             var i = 0, count = 0;
             var p = Promise.resolve();
             while(count < limit && i < paths.length) {
-                if(checkFile(homeDir, paths[i])) {
+                let file;
+                if(file = checkFile(homeDir, paths[i])) {
                     count++;
-                    p = processFile(homeDir, paths[i]);
+                    p = processFile(file.database, file.importName, homeDir, paths[i]);
                 }
                 i++;
             }
             return p;
         });
-} else if (!program.args[0] && !program.args[1] && program.watch) {
+} else if (program.watch) {
     // watch files to import
     let homeDir = getHomeDir();
     chokidar.watch(homeDir, {
         ignored: /[\/\\]\./,
         persistent: true
     }).on('all', function (event, p) {
-        if (event !== 'add' && event !== 'change' || !checkFile(homeDir, p)) {
+        let file = checkFile(homeDir, p);
+        if (event !== 'add' && event !== 'change' || !file) {
             return;
         }
-        processFile(homeDir, p);
+        processFile(file.database, file.importName, homeDir, p);
     });
 
 } else {
-    console.error('Import command should be called either with 2 arguments or with none');
+    console.error('UNREACHABLE');
     process.exit(1);
 }
 
@@ -102,16 +105,20 @@ function checkFile(homeDir, p) {
     if (elements.length !== 4) return false;
     if(elements[2] !== 'to_process') return false;
 
-    return hasImportFile(p);
+    if (hasImportFile(p)) {
+        return {
+            database: elements[0],
+            importName: elements[1]
+        };
+    }
 }
 
-function processFile(homeDir, p) {
+function processFile(database, importName, homeDir, p) {
     p = path.resolve(homeDir, p);
     let parsedPath = path.parse(p);
 
     processChain = processChain.then(() => {
-        let config = dbconfig.import(path.join(parsedPath.dir, '../import.js'));
-        return imp.import(config, p);
+        return imp.import(database, importName, p);
     }).then(() => {
         // mv to processed
         return new Promise(function (resolve, reject) {

@@ -7,7 +7,8 @@ const mainConfigPath =
     process.env.REST_ON_COUCH_CONFIG ||
     path.resolve(require('os').homedir(), '.rest-on-couch-config');
 
-module.exports = getHomeConfig();
+exports.CONFIG_FILE = mainConfigPath;
+exports.config = getHomeConfig();
 
 function getHomeConfig() {
     try {
@@ -20,3 +21,17 @@ function getHomeConfig() {
         return {};
     }
 }
+
+exports.get = function (key) {
+    return exports.config[key];
+};
+
+exports.set = function (key, value) {
+    if (!key) {
+        throw new Error('key is mandatory');
+    }
+    const currentConfig = getHomeConfig();
+    currentConfig[key] = value;
+    fs.writeFileSync(mainConfigPath, JSON.stringify(currentConfig));
+    exports.config = currentConfig;
+};
