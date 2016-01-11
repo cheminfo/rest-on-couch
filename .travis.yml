@@ -6,7 +6,7 @@ sudo: false
 services:
   - couchdb
 env:
-  - REST_COUCH_USER=admin REST_COUCH_PASSWORD=admin
+  - REST_ON_COUCH_USERNAME=admin REST_ON_COUCH_PASSWORD=admin
 before_script:
   - curl -X PUT http://localhost:5984/_config/admins/admin -d '"admin"'
   - "curl -X PUT http://admin:admin@localhost:5984/_users/org.couchdb.user:a@a.com  -d '{\"password\": \"123\", \"type\": \"user\", \"name\": \"a@a.com\", \"roles\":[]}'"
