@@ -2,7 +2,7 @@
 const proxy = require('koa-proxy');
 const _ = require('lodash');
 const auth = require('./../middleware/auth');
-const couchUrl = require('../../util/config/config').globalConfig.url;
+const couchUrl = require('../../config/config').globalConfig.url;
 const couch = require('../middleware/couch');
 
 const routesNoAuth    = ['/','/_uuids'];

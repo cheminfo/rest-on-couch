@@ -3,11 +3,10 @@
 'use strict';
 
 const program = require('commander');
-const dbconfig = require('../src/util/dbconfig');
 const imp = require('../src/import/import');
 const fs = require('fs-extra');
 const exec = require('child_process').exec;
-const config = require('../src/util/config');
+const home = require('../src/config/home');
 const log = require('../src/couch/log');
 const chokidar = require('chokidar');
 const path = require('path');
@@ -27,11 +26,11 @@ let prom = Promise.resolve();
 if (program.args[0]) {
     // TODO add 2 arguments: db and import names
     throw new Error('not ready');
-    const file = path.resolve(program.args[0]);
-
-    prom = prom.then(() => {
-        return imp.import(config, file);
-    });
+    //const file = path.resolve(program.args[0]);
+    //
+    //prom = prom.then(() => {
+    //    return imp.import(config, file);
+    //});
 } else if (!program.watch) {
     // import all
     let homeDir = getHomeDir();
@@ -90,7 +89,7 @@ function findFiles(homeDir) {
 }
 
 function getHomeDir() {
-    let homeDir = config.get('homeDir');
+    let homeDir = home.get('homeDir');
     if (!homeDir) {
         console.error('homeDir must be set to import all');
         process.exit(1);

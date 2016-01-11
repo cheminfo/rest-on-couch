@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const die = require('../die');
+const die = require('../util/die');
 
 // Get optional --config (or -c) CLI option
 const cliArguments = require('minimist')(process.argv.slice(2));

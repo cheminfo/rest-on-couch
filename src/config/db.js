@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const die = require('../die');
+const die = require('../util/die');
 
 const dbConfig = module.exports = {};
 const homeDir = require('./home').config.homeDir;

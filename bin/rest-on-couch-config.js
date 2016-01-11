@@ -3,7 +3,7 @@
 'use strict';
 
 const program = require('commander');
-const config = require('../src/util/config/home');
+const config = require('../src/config/config');
 
 program.usage('<key>[=<value>]');
 program.parse(process.argv);

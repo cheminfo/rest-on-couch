@@ -8,7 +8,7 @@ const constants = require('./constants');
 const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
 const log = require('./couch/log');
-const getConfig = require('./util/config/config').getConfig;
+const getConfig = require('./config/config').getConfig;
 
 const basicRights = {
     $type: 'db',
