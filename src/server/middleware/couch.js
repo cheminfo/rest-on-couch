@@ -4,7 +4,6 @@ const auth = require('./auth');
 const Couch = require('../..');
 const couchMap = {};
 const couchToProcess = ['key', 'startkey', 'endkey'];
-const dbconfig = require('../../util/dbconfig');
 
 exports.setupCouch = function*(next) {
     const dbname = this.params.dbname;
@@ -87,7 +86,7 @@ exports.queryViewByUser = function*() {
 
 function getCouch(dbname) {
     if (!couchMap[dbname]) {
-        couchMap[dbname] = new Couch(dbconfig.database(dbname));
+        couchMap[dbname] = new Couch(dbname);
     }
     return couchMap[dbname];
 }
