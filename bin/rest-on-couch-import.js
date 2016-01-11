@@ -14,6 +14,7 @@ const path = require('path');
 
 var processChain = Promise.resolve();
 const importFiles = {};
+const createdDirs = {};
 
 program
     .usage('<file> <config>')
@@ -40,9 +41,7 @@ if (program.args[0] && program.args[1]) {
             var i = 0, count = 0;
             var p = Promise.resolve();
             while(count < limit && i < paths.length) {
-                console.log('check file', paths[i]);
                 if(checkFile(homeDir, paths[i])) {
-                    console.log('process file', paths[i])
                     count++;
                     p = processFile(homeDir, paths[i]);
                 }
@@ -60,6 +59,7 @@ if (program.args[0] && program.args[1]) {
         if (event !== 'add' && event !== 'change' || !checkFile(homeDir, p)) {
             return;
         }
+        createDirs(homeDir, [p]);
         processFile(homeDir, p);
     });
 
@@ -79,19 +79,10 @@ function findFiles(homeDir) {
             cwd: homeDir,
             maxBuffer: 10 * 1000 * 1024
         }, function (err, stdout) {
-            let dirs = new Map();
             if (err) return reject(err);
             let paths = stdout.split('\n');
             paths = paths.filter(path => path);
-            let parsedPaths = paths.map(path.parse);
-            parsedPaths.forEach(parsedPath => {
-                dirs.set(parsedPath.dir, true);
-            });
-
-            dirs.forEach((val, key) => {
-                fs.mkdirpSync(path.join(homeDir, key, '../processed'));
-                fs.mkdirpSync(path.join(homeDir, key, '../errored'));
-            });
+            createDirs(homeDir, paths);
             resolve(paths);
         });
     });
@@ -133,7 +124,6 @@ function processFile(homeDir, p) {
         });
     }).catch(() => {
         // mv to errored
-
         return new Promise(function (resolve, reject) {
             fs.rename(p, path.join(parsedPath.dir, '../errored', parsedPath.base), function (err) {
                 if (err) return reject(err);
@@ -155,4 +145,24 @@ function hasImportFile(p) {
     } catch (e) {
         return false;
     }
+}
+
+function createDirs(homeDir, paths) {
+    let dirs = new Map();
+    let parsedPaths = paths.map(p => {
+        p = path.resolve(homeDir, p);
+        return path.parse(p);
+    });
+    parsedPaths.forEach(parsedPath => {
+        dirs.set(parsedPath.dir, true);
+    });
+
+    dirs.forEach((val, key) => {
+        if(createdDirs[key]) return;
+
+        console.log('creating processed and errored dirs in ' +  key);
+        fs.mkdirpSync(path.join(key, '../processed'));
+        fs.mkdirpSync(path.join(key, '../errored'));
+        createdDirs[key] = true;
+    });
 }
