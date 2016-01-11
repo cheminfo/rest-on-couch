@@ -42,7 +42,7 @@ class Couch {
         this._couchOptions = {
             url: config.url,
             database,
-            user: config.user,
+            username: config.username,
             password: config.password
         };
 
@@ -82,11 +82,11 @@ class Couch {
             return this._currentAuth;
         }
         let prom = Promise.resolve();
-        if (this._couchOptions.user) {
+        if (this._couchOptions.username) {
             debug('authenticate to CouchDB');
             prom = nanoPromise.authenticate(
                 this._nano,
-                this._couchOptions.user,
+                this._couchOptions.username,
                 this._couchOptions.password
             ).then(cookie => {
                 this._nano = nano({
