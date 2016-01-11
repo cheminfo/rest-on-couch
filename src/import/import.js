@@ -1,6 +1,6 @@
 'use strict';
 
-const Couch = require('../..');
+const Couch = require('../index');
 const fs = require('fs');
 const path = require('path');
 const debug = require('debug')('couch:import');
