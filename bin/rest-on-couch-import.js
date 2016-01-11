@@ -13,6 +13,7 @@ const chokidar = require('chokidar');
 const path = require('path');
 
 var processChain = Promise.resolve();
+const importFiles = {};
 
 program
     .usage('<file> <config>')
@@ -39,7 +40,9 @@ if (program.args[0] && program.args[1]) {
             var i = 0, count = 0;
             var p = Promise.resolve();
             while(count < limit && i < paths.length) {
+                console.log('check file', paths[i]);
                 if(checkFile(homeDir, paths[i])) {
+                    console.log('process file', paths[i])
                     count++;
                     p = processFile(homeDir, paths[i]);
                 }
@@ -105,12 +108,12 @@ function getHomeDir() {
 
 function checkFile(homeDir, p) {
     p = path.resolve(homeDir, p);
-
     const relpath = path.relative(homeDir, p);
     const elements = relpath.split('/');
     if (elements.length !== 4) return false;
+    if(elements[2] !== 'to_process') return false;
 
-    return elements[2] === 'to_process';
+    return hasImportFile(p);
 }
 
 function processFile(homeDir, p) {
@@ -130,6 +133,7 @@ function processFile(homeDir, p) {
         });
     }).catch(() => {
         // mv to errored
+
         return new Promise(function (resolve, reject) {
             fs.rename(p, path.join(parsedPath.dir, '../errored', parsedPath.base), function (err) {
                 if (err) return reject(err);
@@ -139,4 +143,16 @@ function processFile(homeDir, p) {
     });
 
     return processChain;
+}
+
+function hasImportFile(p) {
+    const importFile = path.resolve(p, '../../import.js');
+    if(importFiles[p]) return true;
+
+    try {
+        fs.readFileSync(importFile);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
