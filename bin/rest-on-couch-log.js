@@ -4,20 +4,18 @@
 
 const program = require('commander');
 const Couch = require('..');
-const binutil = require('../src/util/binutil');
 const constants = require('../src/constants');
 const log = require('../src/couch/log');
 
 program
-    .option('-c, --config <path>', 'Configuration file')
+    .option('-d, --database <db>', 'Database name')
     .option('-i, --insert <message>', 'Insert a new log entry')
-    .option('-l, --level <level>', 'Log level')
+    .option('-l, --level <level>', 'Log level (default: WARN)')
     .option('-e, --epoch <epoch>', 'Return results from epoch (default: 1 day ago)')
     .option('-w, --watch', 'Watch for new logs')
     .parse(process.argv);
 
-const config = binutil.loadConfig(program);
-const couch = new Couch(config);
+const couch = new Couch(program.database);
 
 if (program.insert) {
     couch.log(program.insert, program.level).then(function (done) {
