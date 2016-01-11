@@ -59,7 +59,6 @@ if (program.args[0] && program.args[1]) {
         if (event !== 'add' && event !== 'change' || !checkFile(homeDir, p)) {
             return;
         }
-        createDirs(homeDir, [p]);
         processFile(homeDir, p);
     });
 
@@ -82,7 +81,6 @@ function findFiles(homeDir) {
             if (err) return reject(err);
             let paths = stdout.split('\n');
             paths = paths.filter(path => path);
-            createDirs(homeDir, paths);
             resolve(paths);
         });
     });
@@ -117,7 +115,9 @@ function processFile(homeDir, p) {
     }).then(() => {
         // mv to processed
         return new Promise(function (resolve, reject) {
-            fs.rename(p, path.join(parsedPath.dir, '../processed', parsedPath.base), function (err) {
+            let dir = path.join(parsedPath.dir, '../processed/' + getMonth());
+            createDir(dir);
+            fs.rename(p, path.join(dir, parsedPath.base), function (err) {
                 if (err) return reject(err);
                 resolve();
             });
@@ -125,7 +125,9 @@ function processFile(homeDir, p) {
     }).catch(() => {
         // mv to errored
         return new Promise(function (resolve, reject) {
-            fs.rename(p, path.join(parsedPath.dir, '../errored', parsedPath.base), function (err) {
+            let dir = path.join(parsedPath.dir, '../errored/' + getMonth());
+            createDir(dir);
+            fs.rename(p, path.join(dir, parsedPath.base), function (err) {
                 if (err) return reject(err);
                 resolve();
             });
@@ -147,22 +149,14 @@ function hasImportFile(p) {
     }
 }
 
-function createDirs(homeDir, paths) {
-    let dirs = new Map();
-    let parsedPaths = paths.map(p => {
-        p = path.resolve(homeDir, p);
-        return path.parse(p);
-    });
-    parsedPaths.forEach(parsedPath => {
-        dirs.set(parsedPath.dir, true);
-    });
+function createDir(dir) {
+    if(createdDirs[dir]) return;
 
-    dirs.forEach((val, key) => {
-        if(createdDirs[key]) return;
+    fs.mkdirpSync(dir);
+    createdDirs[dir] = true;
+}
 
-        console.log('creating processed and errored dirs in ' +  key);
-        fs.mkdirpSync(path.join(key, '../processed'));
-        fs.mkdirpSync(path.join(key, '../errored'));
-        createdDirs[key] = true;
-    });
+function getMonth() {
+    var now = new Date();
+    return now.getFullYear() + ("0" + (new Date().getMonth() + 1)).slice(-2);
 }
