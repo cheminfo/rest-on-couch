@@ -8,7 +8,7 @@ const constants = require('./constants');
 const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
 const log = require('./couch/log');
-const dbconfig = require('./util/dbconfig');
+const getConfig = require('./util/config/config').getConfig;
 
 const basicRights = {
     $type: 'db',
@@ -24,30 +24,33 @@ const defaultRights = {
 
 class Couch {
     constructor(options) {
-        if(typeof options === 'string') {
-            options = dbconfig.database(options);
+        let database;
+        if (typeof options === 'string') {
+            database = options;
+        } else if (options != null) {
+            database = options.database;
         }
-        options = options || {};
 
-        const database = options.database || constants.REST_COUCH_DATABASE;
         if (!database) {
             throw new CouchError('database option is mandatory');
         }
 
         this._databaseName = database;
 
+        const config = getConfig(database, options);
+
         this._couchOptions = {
-            url: options.url || constants.REST_COUCH_URL,
+            url: config.url,
             database,
-            user: options.user || constants.REST_COUCH_USER,
-            password: options.password || constants.REST_COUCH_PASSWORD
+            user: config.user,
+            password: config.password
         };
 
-        this._logLevel = log.getLevel(options.logLevel || process.env.REST_LOG_LEVEL || 'WARN');
+        this._logLevel = log.getLevel(config.logLevel);
 
-        this._customDesign = options.customDesign || {};
-        this._defaultEntry = options.defaultEntry || getDefaultEntry;
-        this._rights = Object.assign({}, basicRights, options.rights || defaultRights);
+        this._customDesign = config.customDesign || {};
+        this._defaultEntry = config.defaultEntry || getDefaultEntry;
+        this._rights = Object.assign({}, basicRights, config.rights || defaultRights);
 
         this._nano = nano(this._couchOptions.url);
         this._db = null;

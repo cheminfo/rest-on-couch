@@ -4,7 +4,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const request = require('co-request');
 const co = require('co');
 const error = require('../../error');
-const constants = require('../../../constants');
+const couchUrl = require('../../../util/config/config').globalConfig.url;
 const auth = require('../../middleware/auth');
 
 exports.init = function (passport, router, config) {
@@ -14,7 +14,7 @@ exports.init = function (passport, router, config) {
         },
         function (username, password, done) {
             co(function*() {
-                var res = yield request.post(constants.REST_COUCH_URL+ '/' + '_session', {
+                var res = yield request.post(couchUrl + '/' + '_session', {
                     form: {
                         name: username,
                         password: password

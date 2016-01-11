@@ -1,18 +1,16 @@
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
+const homeConfig = require('./home');
 
-const mainConfigPath =
-    process.env.REST_ON_COUCH_CONFIG ||
-    path.resolve(require('os').homedir(), '.rest-on-couch-config');
+module.exports = getMainConfig(homeConfig.homeDir);
 
-module.exports = getMainConfig();
-
-function getMainConfig() {
+function getMainConfig(homeDir) {
+    if (!homeDir) {
+        return {};
+    }
     try {
-        const data = fs.readFileSync(mainConfigPath);
-        return JSON.parse(data);
+        return require(path.join(homeDir, 'config'));
     } catch (e) {
         return {};
     }
