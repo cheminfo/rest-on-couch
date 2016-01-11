@@ -150,7 +150,7 @@ function hasImportFile(p) {
     if(importFiles[p]) return true;
 
     try {
-        fs.readFileSync(importFile);
+        fs.accessSync(importFile);
         return true;
     } catch (e) {
         return false;
