@@ -8,6 +8,8 @@ const debug = require('../util/debug')('import');
 const getConfig = require('../config/config').getConfig;
 
 exports.import = function (database, importName, file) {
+    debug(`import ${file} (${database}, ${importName})`);
+
     const filename = path.parse(file).base;
     const contents = fs.readFileSync(file);
 
@@ -30,10 +32,10 @@ exports.import = function (database, importName, file) {
         .then(checkDocumentExists)
         .then(updateDocument)
         .then(function () {
-            debug(`import ${file} success`);
+            debug.trace(`import ${file} success`);
             couch.log(`Import ${file} ok`, 'WARN');
         }).catch(function (e) {
-            debug(`import ${file} failure: ${e.message}, ${e.stack}`);
+            debug.error(`import ${file} failure: ${e.message}, ${e.stack}`);
             couch.log(`Import ${file} failed: ${e.message}`, 'ERROR');
             throw e;
         });
@@ -53,18 +55,17 @@ exports.import = function (database, importName, file) {
     }
 
     function getMetadata() {
-        debug('get metadata');
+        debug.trace('get metadata');
         const id = Promise.resolve(getID(filename, contents));
         const owner = Promise.resolve(getOwner(filename, contents));
         return Promise.all([id, owner]).then(function (result) {
-            debug('id: ' + result[0]);
-            debug('owner: ' + result[1]);
+            debug.trace(`id: ${result[0]}, owner: ${result[1]}`);
             return {id: result[0], owner: result[1]};
         });
     }
 
     function parseFile(info) {
-        debug('parse file contents');
+        debug.trace('parse file contents');
         return Promise.resolve(parse(filename, contents)).then(function (result) {
             if (typeof result.jpath !== 'string') {
                 throw new Error('parse: jpath must be a string');
@@ -76,7 +77,7 @@ exports.import = function (database, importName, file) {
                 throw new Error('parse: type must be a string');
             }
 
-            debug('jpath: ' + result.jpath);
+            debug.trace(`jpath: ${result.jpath}`);
             info.jpath = result.jpath.split('.');
             info.data = result.data;
             info.content_type = result.content_type || 'application/octet-stream';
