@@ -1,9 +1,10 @@
-"use strict";
-const couch = require('../middleware/couch');
+'use strict';
 
 const router = require('koa-router')({
     prefix: '/db'
 });
+
+const couch = require('../middleware/couch');
 
 router.use(couch.setupCouch);
 

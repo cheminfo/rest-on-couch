@@ -1,6 +1,7 @@
 'use strict';
 
 const util = require('util');
+
 const nanoPromise = require('../util/nanoPromise');
 
 const levels = {

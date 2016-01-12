@@ -1,9 +1,10 @@
 'use strict';
 
 const path = require('path');
-const homeConfig = require('./home').config;
+
 const debug = require('../util/debug')('config:main');
 
+const homeConfig = require('./home').config;
 module.exports = getMainConfig(homeConfig.homeDir);
 
 function getMainConfig(homeDir) {

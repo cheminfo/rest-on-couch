@@ -1,8 +1,9 @@
 'use strict';
 
-const Couch = require('../index');
 const fs = require('fs');
 const path = require('path');
+
+const Couch = require('../index');
 const debug = require('../util/debug')('import');
 const getConfig = require('../config/config').getConfig;
 

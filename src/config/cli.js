@@ -1,8 +1,9 @@
 'use strict';
 
 const path = require('path');
-const die = require('../util/die');
+
 const debug = require('../util/debug')('config:cli');
+const die = require('../util/die');
 
 // Get optional --config (or -c) CLI option
 const cliArguments = require('minimist')(process.argv.slice(2));

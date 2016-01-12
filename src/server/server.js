@@ -1,14 +1,14 @@
 'use strict';
 
-const http = require('http');
-const cors = require('kcors');
 const app = require('koa')();
 const bodyParser = require('koa-bodyparser');
-const render = require('koa-ejs');
+const cors = require('kcors');
+const http = require('http');
 const passport = require('koa-passport');
+const path = require('path');
+const render = require('koa-ejs');
 const router = require('koa-router')();
 const session = require('koa-session');
-const path = require('path');
 
 const api = require('./routes/api');
 const auth = require('./middleware/auth');

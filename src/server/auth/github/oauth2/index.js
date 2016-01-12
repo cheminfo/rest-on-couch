@@ -43,8 +43,8 @@
 //    }
 //}
 
-const GitHubStrategy = require('passport-github').Strategy;
 const co = require('co');
+const GitHubStrategy = require('passport-github').Strategy;
 const request = require('co-request');
 
 exports.init = function (passport, router, config) {

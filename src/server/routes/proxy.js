@@ -1,9 +1,10 @@
-"use strict";
-const proxy = require('koa-proxy');
-const couchUrl = require('../../config/config').globalConfig.url;
+'use strict';
 
-const routesNoAuth    = ['/','/_uuids'];
+const proxy = require('koa-proxy');
 const router = require('koa-router')();
+
+const couchUrl = require('../../config/config').globalConfig.url;
+const routesNoAuth = ['/', '/_uuids'];
 
 exports.init = function(config) {
     for(var i=0; i<routesNoAuth.length; i++) {

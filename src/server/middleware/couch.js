@@ -1,11 +1,12 @@
 'use strict';
 
 const auth = require('./auth');
-const Couch = require('../..');
+const config = require('../../config/config');
+const Couch = require('../../index');
+const debug = require('../../util/debug')('middleware:couch');
+
 const couchMap = {};
 const couchToProcess = ['key', 'startkey', 'endkey'];
-const config = require('../../config/config');
-const debug = require('../../util/debug')('middleware:couch');
 
 exports.setupCouch = function*(next) {
     const dbname = this.params.dbname;

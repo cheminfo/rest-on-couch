@@ -3,8 +3,8 @@
 const constants = require('../constants');
 const filters = require('./filters');
 const updates = require('./updates');
-const views = require('./views');
 const validate_doc_update = require('./validateDocUpdate');
+const views = require('./views');
 
 module.exports = function getDesignDoc(custom) {
     custom = custom || {};

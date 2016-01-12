@@ -1,8 +1,7 @@
 'use strict';
 
-const debug = require('./debug')('nano');
-
 const constants = require('../constants');
+const debug = require('./debug')('nano');
 
 exports.authenticate = function (nano, user, password) {
     return new Promise((resolve, reject) => {
