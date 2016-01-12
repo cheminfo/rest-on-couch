@@ -1,7 +1,7 @@
 'use strict';
 
 const auth = require('./auth');
-const config = require('../../config/config');
+const config = require('../../config/config').globalConfig;
 const Couch = require('../../index');
 const debug = require('../../util/debug')('middleware:couch');
 
@@ -89,7 +89,7 @@ function onGetError(ctx, e) {
             break;
     }
     if (config.debugrest) {
-        ctx.body += e + e.stack;
+        ctx.body += '\n\n' + e + '\n' + e.stack;
     }
 }
 
