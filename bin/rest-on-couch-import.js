@@ -2,14 +2,16 @@
 
 'use strict';
 
-const program = require('commander');
-const imp = require('../src/import/import');
-const fs = require('fs-extra');
-const exec = require('child_process').exec;
-const home = require('../src/config/home');
-const log = require('../src/couch/log');
 const chokidar = require('chokidar');
+const exec = require('child_process').exec;
+const fs = require('fs-extra');
 const path = require('path');
+const program = require('commander');
+
+const debug = require('../src/util/debug')('bin:import');
+const home = require('../src/config/home');
+const imp = require('../src/import/import');
+const log = require('../src/couch/log');
 
 var processChain = Promise.resolve();
 const importFiles = {};
@@ -24,6 +26,7 @@ program
 
 let prom = Promise.resolve();
 if (program.args[0]) {
+    debug(`file argument: ${program.args[0]}`);
     // TODO add 2 arguments: db and import names
     throw new Error('not ready');
     //const file = path.resolve(program.args[0]);
@@ -32,18 +35,21 @@ if (program.args[0]) {
     //    return imp.import(config, file);
     //});
 } else if (!program.watch) {
+    debug('no watch');
     // import all
     let homeDir = getHomeDir();
 
     prom = prom.then(() => findFiles(homeDir))
         .then(paths => {
             const limit = +program.limit || paths.length;
+            debug(`limit is ${limit}`);
             var i = 0, count = 0;
             var p = Promise.resolve();
             while(count < limit && i < paths.length) {
                 let file;
                 if(file = checkFile(homeDir, paths[i])) {
                     count++;
+                    debug.trace(`import ${paths[i]}`);
                     p = processFile(file.database, file.importName, homeDir, paths[i]);
                 }
                 i++;
@@ -52,6 +58,7 @@ if (program.args[0]) {
         });
 } else if (program.watch) {
     // watch files to import
+    debug('watch');
     let homeDir = getHomeDir();
     chokidar.watch(homeDir, {
         ignored: /[\/\\]\./,
@@ -61,9 +68,9 @@ if (program.args[0]) {
         if (event !== 'add' && event !== 'change' || !file) {
             return;
         }
+        debug.trace(`watch (${event}) - ${p}`);
         processFile(file.database, file.importName, homeDir, p);
     });
-
 } else {
     console.error('UNREACHABLE');
     process.exit(1);
@@ -83,6 +90,7 @@ function findFiles(homeDir) {
             if (err) return reject(err);
             let paths = stdout.split('\n');
             paths = paths.filter(path => path);
+            debug(`findFiles found ${paths.length} files`);
             resolve(paths);
         });
     });

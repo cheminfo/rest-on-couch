@@ -8,9 +8,6 @@ const constants = require('../constants');
 const log = require('../couch/log');
 const getConfig = require('../config/config').getConfig;
 
-
-debug('start process');
-
 exports.import = function (database, importName, file) {
     const filename = path.parse(file).base;
     const contents = fs.readFileSync(file);
@@ -104,5 +101,3 @@ exports.import = function (database, importName, file) {
         });
     }
 };
-
-
