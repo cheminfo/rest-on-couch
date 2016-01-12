@@ -12,7 +12,6 @@ const debug = require('../src/util/debug')('bin:import');
 const die = require('../src/util/die');
 const home = require('../src/config/home');
 const imp = require('../src/import/import');
-const log = require('../src/couch/log');
 
 var processChain = Promise.resolve();
 const importFiles = {};
@@ -47,8 +46,8 @@ if (program.args[0]) {
             var i = 0, count = 0;
             var p = Promise.resolve();
             while(count < limit && i < paths.length) {
-                let file;
-                if(file = checkFile(homeDir, paths[i])) {
+                let file = checkFile(homeDir, paths[i]);
+                if(file) {
                     count++;
                     p = processFile(file.database, file.importName, homeDir, paths[i]);
                 }
@@ -72,13 +71,11 @@ if (program.args[0]) {
         processFile(file.database, file.importName, homeDir, p);
     });
 } else {
-    console.error('UNREACHABLE');
-    process.exit(1);
+    die('UNREACHABLE');
 }
 
 prom.catch(function (err) {
-    console.error(err.message || err);
-    process.exit(1);
+    die(err.message || err);
 });
 
 function findFiles(homeDir) {

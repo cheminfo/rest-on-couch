@@ -3,8 +3,10 @@
 'use strict';
 
 const program = require('commander');
-const Couch = require('..');
+
 const constants = require('../src/constants');
+const Couch = require('../src/index');
+const debug = require('../src/util/debug')('bin:log');
 const log = require('../src/couch/log');
 
 program
@@ -20,12 +22,12 @@ const couch = new Couch(program.database);
 if (program.insert) {
     couch.log(program.insert, program.level).then(function (done) {
         if (done) {
-            console.log('Log successfully inserted');
+            debug('log inserted successfully');
         } else {
-            console.log('Log ignored by current level');
+            debug.warn('log ignored by current level');
         }
     }, function (e) {
-        console.error(e);
+        debug.error(e);
     });
 } else {
     couch.getLogs(parseInt(program.epoch)).then(function (logs) {
@@ -44,7 +46,7 @@ if (program.insert) {
             feed.follow();
         }
     }).catch(function (e) {
-        console.error(e);
+        debug.error(e);
     });
 }
 
