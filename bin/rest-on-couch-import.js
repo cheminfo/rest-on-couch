@@ -83,7 +83,7 @@ prom.catch(function (err) {
 
 function findFiles(homeDir) {
     return new Promise(function (resolve, reject) {
-        exec("find . -maxdepth 4 -mindepth 4 -type f -not -regex '.*/\\(processed\\|node_modules\\|\\.\\).*'", {
+        exec("find . -maxdepth 4 -mindepth 4 -type f -not -regex '.*/\\(processed\\|errored\\|node_modules\\|\\.\\).*'", {
             cwd: homeDir,
             maxBuffer: 10 * 1000 * 1024
         }, function (err, stdout) {
