@@ -119,7 +119,7 @@ function processCouchQuery(ctx) {
             try {
                 ctx.query[couchToProcess[i]] = JSON.parse(ctx.query[couchToProcess[i]])
             } catch(e) {
-
+                // Keep original value if parsing failed
             }
         }
     }
