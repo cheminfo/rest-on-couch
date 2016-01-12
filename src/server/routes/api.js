@@ -1,7 +1,4 @@
 "use strict";
-const proxy = require('koa-proxy');
-const _ = require('lodash');
-const error = require('../error');
 const couch = require('../middleware/couch');
 
 const router = require('koa-router')({
@@ -10,7 +7,7 @@ const router = require('koa-router')({
 
 router.use(couch.setupCouch);
 
-exports.init = function(config) {
+exports.init = function() {
     // Get all entries by user
     router.get('/:dbname/_all/entries', couch.allEntries);
 

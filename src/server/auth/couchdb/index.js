@@ -3,11 +3,10 @@
 const LocalStrategy = require('passport-local').Strategy;
 const request = require('co-request');
 const co = require('co');
-const error = require('../../error');
 const couchUrl = require('../../../config/config').globalConfig.url;
 const auth = require('../../middleware/auth');
 
-exports.init = function (passport, router, config) {
+exports.init = function (passport, router) {
     passport.use(new LocalStrategy({
             usernameField: 'name',
             passwordField: 'password'

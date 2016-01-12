@@ -1,18 +1,19 @@
 'use strict';
 
+const http = require('http');
+const cors = require('kcors');
+const app = require('koa')();
+const bodyParser = require('koa-bodyparser');
+const render = require('koa-ejs');
+const passport = require('koa-passport');
+const router = require('koa-router')();
+const session = require('koa-session');
 const path = require('path');
-const proxy = require('./routes/proxy');
+
 const api = require('./routes/api');
 const auth = require('./middleware/auth');
-const app = require('koa')();
-const router = require('koa-router')();
-const passport = require('koa-passport');
-const bodyParser = require('koa-bodyparser');
-const session = require('koa-session');
-const render = require('koa-ejs');
-const cors = require('kcors');
-const http = require('http');
-const config = require('../config/config');
+const debug = require('../util/debug')('server');
+const proxy = require('./routes/proxy');
 
 var _started;
 var _init;
@@ -39,11 +40,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.on('error', handleError);
-
-function handleError(err) {
-    console.log('Error', err.stack);
-}
+app.on('error', printError);
 
 module.exports.init = function(config) {
     if(_init) return;
@@ -51,8 +48,6 @@ module.exports.init = function(config) {
 
     if(!config) config = require('./config.default.json');
     else if(typeof config === 'string') config = require(path.resolve(config));
-
-    console.log(JSON.stringify(config));
 
     router.use(auth.init(passport, config).routes());
     router.use(proxy.init(config).routes());
@@ -66,15 +61,15 @@ module.exports.init = function(config) {
                 yield next;
             } catch (err) {
                 this.status = err.status || 500;
-                this.body = err.message + err.stack;
-                console.error('Unexpected error', err.message, err.stack);
+                this.body = err.message + '\n' + err.stack;
+                printError(err);
             }
         });
     }
     app.use(router.routes());
 };
 
-module.exports.start = function (config) {
+module.exports.start = function () {
     if (_started) return _started;
     _started = new Promise(function (resolve) {
         http.createServer(app.callback()).listen(3000, function () {
@@ -85,3 +80,7 @@ module.exports.start = function (config) {
 };
 
 module.exports.app = app;
+
+function printError(err) {
+    debug.error('unexpected error: ' + (err.stack || err));
+}

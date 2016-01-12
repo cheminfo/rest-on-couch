@@ -1,9 +1,6 @@
 "use strict";
 const proxy = require('koa-proxy');
-const _ = require('lodash');
-const auth = require('./../middleware/auth');
 const couchUrl = require('../../config/config').globalConfig.url;
-const couch = require('../middleware/couch');
 
 const routesNoAuth    = ['/','/_uuids'];
 const router = require('koa-router')();

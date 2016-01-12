@@ -355,7 +355,6 @@ class Couch {
 
     insertEntry(entry, user, groups) {
         debug('insertEntry');
-        let that = this;
         groups = groups || [];
         if (!entry.$content) return Promise.reject(new CouchError('entry has no content'));
         if (groups !== undefined && !Array.isArray(groups)) return Promise.reject(new CouchError('groups should an arary if defined', 'invalid argument'));

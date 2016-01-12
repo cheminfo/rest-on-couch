@@ -11,6 +11,7 @@
     "src"
   ],
   "scripts": {
+    "eslint": "eslint src",
     "test": "mocha --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive",
     "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup"
   },
@@ -58,6 +59,7 @@
     "superagent-promise": "^1.1.0"
   },
   "devDependencies": {
+    "eslint": "^2.0.0-beta.1",
     "istanbul": "^0.4.1",
     "mocha": "^2.3.4",
     "mocha-better-spec-reporter": "^3.0.1",

@@ -4,8 +4,6 @@ const Couch = require('../index');
 const fs = require('fs');
 const path = require('path');
 const debug = require('../util/debug')('import');
-const constants = require('../constants');
-const log = require('../couch/log');
 const getConfig = require('../config/config').getConfig;
 
 exports.import = function (database, importName, file) {

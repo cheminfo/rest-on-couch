@@ -5,6 +5,7 @@ const Couch = require('../..');
 const couchMap = {};
 const couchToProcess = ['key', 'startkey', 'endkey'];
 const config = require('../../config/config');
+const debug = require('../../util/debug')('middleware:couch');
 
 exports.setupCouch = function*(next) {
     const dbname = this.params.dbname;
@@ -31,20 +32,7 @@ exports.newEntry = function*() {
         yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
         this.status = 200;
     } catch (e) {
-        switch (e.reason) {
-            case 'unauthorized':
-                this.status = 401;
-                this.body = 'unauthorized';
-                break;
-            default:
-                this.status = 500;
-                console.error(e);
-                this.body = 'internal server error';
-                break;
-        }
-        if(config.debugrest) {
-            this.body += e + e.stack;
-        }
+        onGetError(this, e);
     }
 };
 
@@ -74,7 +62,6 @@ exports.allEntries = function*() {
         this.status = 200;
         this.body = entries;
     } catch (e) {
-        console.log(e);
         onGetError(this, e);
     }
 };
@@ -105,7 +92,7 @@ function onGetError(ctx, e) {
         default:
             ctx.status = 500;
             ctx.body = 'internal server error';
-            console.error(e);
+            debug.error(e);
             break;
     }
     if(config.debugrest) {

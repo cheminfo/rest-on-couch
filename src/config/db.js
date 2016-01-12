@@ -20,7 +20,9 @@ try {
             let databaseConfig = {};
             try {
                 databaseConfig = require(path.join(databasePath, 'config'));
-            } catch (e) {}
+            } catch (e) {
+                // database config is not mandatory
+            }
             if (!databaseConfig.import) {
                 databaseConfig.import = {};
             }
@@ -29,7 +31,7 @@ try {
         }
     }
 } catch (e) {
-    console.error(e);
+    debug.error(e);
     die(`could not read databases from ${homeDir}`);
 }
 

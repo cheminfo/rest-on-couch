@@ -1,13 +1,15 @@
 'use strict';
-const error = require('../error');
+
 const FlavorUtils = require('flavor-utils');
+const router = require('koa-router')();
+const superagent = require('superagent-promise')(require('superagent'), Promise);
+const url = require('url');
+
+const debug = require('../../util/debug')('auth');
+const die = require('../../util/die');
+
 const authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['github','oauth2']];
 const auths = [];
-const url = require('url');
-const superagent = require('superagent-promise')(require('superagent'), Promise);
-const debug = require('../../util/debug')('auth');
-
-const router = require('koa-router')();
 var config;
 
 exports.init = function(passport, _config) {
@@ -15,19 +17,18 @@ exports.init = function(passport, _config) {
     for (var i = 0; i < authPlugins.length; i++) {
         try {
             // check that parameter exists
-            var conf;
-            if(conf = configExists(authPlugins[i])) {
-                console.log('loading auth plugin', authPlugins[i]);
+            var conf = configExists(authPlugins[i]);
+            if(conf) {
+                debug('loading auth plugin: ' + authPlugins[i]);
                 var auth = require('../auth/' + authPlugins[i].join('/') + '/index.js');
                 auth.init(passport, router, conf);
                 auths.push(auth);
+            } else {
+                debug('auth plugin not configured: ' + authPlugins[i]);
             }
-            else {
-                console.log('Auth plugin not configured', authPlugins[i]);
-            }
-        } catch(e) {
-            console.log('Could not init auth middleware...', e.message);
-            console.log(e.stack);
+        } catch (e) {
+            debug.error(e);
+            die('Could not init auth middleware: ' + e.message);
         }
     }
 
