@@ -64,7 +64,7 @@ exports.init = function (passport, router, config) {
                 });
                 var answer = JSON.parse(res.body);
                 var email = answer.filter(function (val) {
-                    return val.primary === true
+                    return val.primary === true;
                 });
                 if (email.length === 0 && answer[0] && answer[0].email) profile.email = answer[0].email;
                 if (email[0]) profile.email = email[0].email;

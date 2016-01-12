@@ -74,7 +74,7 @@ class Couch {
                 }
             })
             .then(() => checkDesignDoc(this._db, this._customDesign))
-            .then(() => checkRightsDoc(this._db, this._rights))
+            .then(() => checkRightsDoc(this._db, this._rights));
     }
 
     _authenticate() {
@@ -298,7 +298,7 @@ class Couch {
                 return nanoPromise.attachFiles(this._db, entry, [file])
                     .then(body => {
                         entry._rev = body.rev;
-                        return this.insertEntry(entry, user)
+                        return this.insertEntry(entry, user);
                     });
             });
     }
@@ -521,7 +521,7 @@ function getGroup(db, name) {
                 return null;
             }
             if (groups.length > 1) {
-                debug('Getting more than one result for a group name')
+                debug('Getting more than one result for a group name');
             }
             debug('group exists');
             return groups[0].doc;
@@ -556,7 +556,7 @@ function addGroups(ctx, entryId, user, groups) {
             prom = prom.then(() => ctx.addGroupToEntry(entryId, user, groups[i]));
         }
         return prom;
-    }
+    };
 }
 
 

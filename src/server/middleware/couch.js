@@ -105,7 +105,7 @@ function processCouchQuery(ctx) {
     for (let i = 0; i < couchToProcess.length; i++) {
         if (ctx.query[couchToProcess[i]]) {
             try {
-                ctx.query[couchToProcess[i]] = JSON.parse(ctx.query[couchToProcess[i]])
+                ctx.query[couchToProcess[i]] = JSON.parse(ctx.query[couchToProcess[i]]);
             } catch (e) {
                 // Keep original value if parsing failed
             }

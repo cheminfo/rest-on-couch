@@ -16,7 +16,7 @@ exports.authenticate = function (nano, user, password) {
                 return resolve(headers['set-cookie']);
             }
             reject(new Error('cookie auth not supported'));
-        })
+        });
     });
 };
 

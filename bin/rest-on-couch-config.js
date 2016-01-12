@@ -20,5 +20,5 @@ if (cmd.length === 1) {
     process.stdout.write(config.get(cmd[0]) + '\n');
 } else {
     config.set(cmd[0], cmd[1]);
-    debug(`successfully set ${cmd[0]} to ${cmd[1]} in ${config.CONFIG_FILE}`)
+    debug(`successfully set ${cmd[0]} to ${cmd[1]} in ${config.CONFIG_FILE}`);
 }

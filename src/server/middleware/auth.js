@@ -141,7 +141,7 @@ function getUserEmailFromToken(ctx) {
                 .get(`${config.authServers[i].replace(/\/$/, '')}/_session`)
                 .set('cookie', token)
                 .end().then(res => {
-                    return JSON.parse(res.text)
+                    return JSON.parse(res.text);
                 });
         });
     }
