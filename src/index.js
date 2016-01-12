@@ -410,6 +410,21 @@ class Couch {
     }
 }
 
+const databaseCache = new Map();
+
+Couch.get = function (databaseName) {
+    if (typeof databaseName !== 'string') {
+        throw new TypeError('database name must be a string');
+    }
+    if (databaseCache.has(databaseName)) {
+        return databaseCache.get(databaseName);
+    } else {
+        const db = new Couch(databaseName);
+        databaseCache.set(databaseName, db);
+        return db;
+    }
+};
+
 Couch.prototype.addAttachment = Couch.prototype.addAttachments;
 
 module.exports = Couch;

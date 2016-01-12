@@ -5,13 +5,12 @@ const config = require('../../config/config');
 const Couch = require('../../index');
 const debug = require('../../util/debug')('middleware:couch');
 
-const couchMap = {};
 const couchToProcess = ['key', 'startkey', 'endkey'];
 
 exports.setupCouch = function*(next) {
     const dbname = this.params.dbname;
     this.state.userEmail = yield auth.getUserEmail(this);
-    this.state.couch = getCouch(dbname);
+    this.state.couch = Couch.get(dbname);
     processCouchQuery(this);
     yield next;
 };
@@ -75,13 +74,6 @@ exports.queryViewByUser = function*() {
         onGetError(this, e);
     }
 };
-
-function getCouch(dbname) {
-    if (!couchMap[dbname]) {
-        couchMap[dbname] = new Couch(dbname);
-    }
-    return couchMap[dbname];
-}
 
 function onGetError(ctx, e) {
     switch (e.reason) {

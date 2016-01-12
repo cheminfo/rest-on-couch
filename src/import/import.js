@@ -17,7 +17,7 @@ exports.import = function (database, importName, file) {
     }
     config = config.import[importName];
 
-    const couch = new Couch(database);
+    const couch = Couch.get(database);
 
     // Callbacks
     const getID = verifyConfig('getID', null, true);
