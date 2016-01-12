@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "eslint": "eslint src bin",
+    "eslint-fix": "npm run eslint -- --fix",
     "test": "npm run eslint && npm run test-mocha",
     "test-mocha": "mocha --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive",
     "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup"
