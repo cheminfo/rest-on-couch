@@ -4,6 +4,7 @@ const auth = require('./auth');
 const Couch = require('../..');
 const couchMap = {};
 const couchToProcess = ['key', 'startkey', 'endkey'];
+const config = require('../../config/config');
 
 exports.setupCouch = function*(next) {
     const dbname = this.params.dbname;
@@ -40,6 +41,9 @@ exports.newEntry = function*() {
                 console.error(e);
                 this.body = 'internal server error';
                 break;
+        }
+        if(config.debugrest) {
+            this.body += e + e.stack;
         }
     }
 };
@@ -103,6 +107,9 @@ function onGetError(ctx, e) {
             ctx.body = 'internal server error';
             console.error(e);
             break;
+    }
+    if(config.debugrest) {
+        ctx.body += e + e.stack;
     }
 }
 

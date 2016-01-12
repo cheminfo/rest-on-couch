@@ -12,6 +12,7 @@ const session = require('koa-session');
 const render = require('koa-ejs');
 const cors = require('kcors');
 const http = require('http');
+const config = require('../config/config');
 
 var _started;
 var _init;
@@ -58,7 +59,7 @@ module.exports.init = function(config) {
     router.use(api.init(config).routes());
 
     //Unhandled errors
-    if (process.env.DEBUG) {
+    if (config.debugrest) {
         // In debug mode, show unhandled errors to the user
         app.use(function *(next) {
             try {
@@ -70,7 +71,6 @@ module.exports.init = function(config) {
             }
         });
     }
-
     app.use(router.routes());
 };
 
