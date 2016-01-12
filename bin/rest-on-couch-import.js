@@ -23,7 +23,6 @@ program
     .option('-w, --watch', 'Watch files')
     .parse(process.argv);
 
-
 let prom = Promise.resolve();
 if (program.args[0]) {
     debug(`file argument: ${program.args[0]}`);
@@ -74,7 +73,9 @@ if (program.args[0]) {
     die('UNREACHABLE');
 }
 
-prom.catch(function (err) {
+prom.then(function () {
+    debug(`finished`);
+}, function (err) {
     die(err.message || err);
 });
 
