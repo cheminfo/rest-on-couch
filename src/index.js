@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('couch:rest');
+const debug = require('./util/debug')('main');
 const nano = require('nano');
 
 const CouchError = require('./util/CouchError');

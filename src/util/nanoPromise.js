@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('couch:nano');
+const debug = require('./debug')('nano');
 
 const constants = require('../constants');
 
