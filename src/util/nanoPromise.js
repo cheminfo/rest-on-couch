@@ -8,7 +8,7 @@ exports.authenticate = function (nano, user, password) {
         debug('auth ' + user);
         nano.auth(user, password, function (err, body, headers) {
             if (err) {
-                debug('auth failed');
+                debug.warn('auth failed');
                 return reject(err);
             }
             if (headers && headers['set-cookie']) {
@@ -22,17 +22,17 @@ exports.authenticate = function (nano, user, password) {
 
 exports.getDatabase = function (nano, database) {
     return new Promise((resolve, reject) => {
-        debug('getDatabase ' + database);
+        debug.trace('getDatabase ' + database);
         nano.db.get(database, function (err) {
             if (err) {
                 if (err.reason === 'no_db_file') {
-                    debug('database not found');
+                    debug.trace('database not found');
                     return resolve(false);
                 }
-                debug('getDatabase failed');
+                debug.warn('getDatabase failed');
                 return reject(err);
             }
-            debug('database exists');
+            debug.trace('database exists');
             resolve(true);
         });
     });
@@ -40,10 +40,10 @@ exports.getDatabase = function (nano, database) {
 
 exports.createDatabase = function (nano, database) {
     return new Promise((resolve, reject) => {
-        debug('createDatabase ' + database);
+        debug.trace('createDatabase ' + database);
         nano.db.create(database, function (err) {
             if (err) {
-                debug('create failed');
+                debug.warn('create failed');
                 return reject(err);
             }
             debug('database created');
@@ -54,17 +54,17 @@ exports.createDatabase = function (nano, database) {
 
 exports.getDocument = function (db, docID) {
     return new Promise((resolve, reject) => {
-        debug('getDocument ' + docID);
+        debug.trace(`getDocument ${docID}`);
         db.get(docID, function (err, result) {
             if (err) {
                 if (err.statusCode === 404 && (err.reason === 'missing' || err.reason === 'deleted')) {
-                    debug('document missing');
+                    debug.trace('document missing');
                     return resolve(null);
                 }
-                debug('getDocument failed');
+                debug.warn('getDocument failed');
                 return reject(err);
             }
-            debug('found document');
+            debug.trace('found document');
             resolve(result);
         });
     });
@@ -72,9 +72,10 @@ exports.getDocument = function (db, docID) {
 
 exports.insertDocument = function (db, doc) {
     return new Promise((resolve, reject) => {
-        debug('insertDocument ' + doc._id);
+        debug.trace('insertDocument ' + doc._id);
         db.insert(doc, function (err, body) {
             if (err) return reject(err);
+            debug.trace('document inserted');
             resolve(body);
         });
     });
@@ -83,7 +84,7 @@ exports.insertDocument = function (db, doc) {
 exports.queryView = function (db, view, params, options) {
     options = options || {};
     return new Promise((resolve, reject) => {
-        debug('queryView ' + view);
+        debug.trace(`queryView ${view}`);
         db.view(constants.DESIGN_DOC_NAME, view, params, function (err, body) {
             if (err) return reject(err);
             if (options.onlyValue) {
@@ -108,7 +109,7 @@ exports.destroyDatabase = function (nano, dbName) {
 };
 
 exports.destroyDocument = function(db, docId, revId) {
-    debug('destroy document');
+    debug.trace('destroy document');
     if (!revId) {
         return exports.getDocument(db, docId).then(doc => {
             if (!doc || !doc._rev) return null;
@@ -125,7 +126,7 @@ exports.destroyDocument = function(db, docId, revId) {
 
 exports.updateWithHandler = function(db, update, docId, body) {
     return new Promise((resolve, reject) => {
-        debug(`update with handler ${JSON.stringify(body)}`);
+        debug.trace(`update with handler ${JSON.stringify(body)}`);
         db.atomic(constants.DESIGN_DOC_NAME, update, docId, body, function(err, body) {
             if (err) return reject(err);
             resolve(body);
@@ -135,7 +136,7 @@ exports.updateWithHandler = function(db, update, docId, body) {
 
 exports.attachFiles = function (db, doc, files) {
     return new Promise((resolve, reject) => {
-        debug('attach files');
+        debug.trace('attach files');
         db.multipart.insert(doc, files, doc._id, function (err, body) {
             if (err) return reject(err);
             resolve(body);
@@ -145,7 +146,7 @@ exports.attachFiles = function (db, doc, files) {
 
 exports.getAttachment = function (db, doc, name, asStream) {
     return new Promise((resolve, reject) => {
-        debug(`get attachment ${doc}/${name}`);
+        debug.trace(`get attachment ${doc}/${name}`);
         if (asStream) {
             const stream = db.attachment.get(doc, name);
             resolve(stream);
