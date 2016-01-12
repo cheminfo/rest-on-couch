@@ -169,5 +169,5 @@ function createDir(dir) {
 
 function getMonth() {
     var now = new Date();
-    return now.getFullYear() + ("0" + (new Date().getMonth() + 1)).slice(-2);
+    return now.getFullYear() + ('0' + (new Date().getMonth() + 1)).slice(-2);
 }

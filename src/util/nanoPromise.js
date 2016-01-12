@@ -125,7 +125,7 @@ exports.destroyDocument = function(db, docId, revId) {
 
 exports.updateWithHandler = function(db, update, docId, body) {
     return new Promise((resolve, reject) => {
-        debug(`update with handler` + JSON.stringify(body));
+        debug(`update with handler ${JSON.stringify(body)}`);
         db.atomic(constants.DESIGN_DOC_NAME, update, docId, body, function(err, body) {
             if(err) return reject(err);
             resolve(body);

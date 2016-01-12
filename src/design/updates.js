@@ -6,7 +6,7 @@ updates.addGroupToEntry = function(doc, req) {
     var group = JSON.parse(req.body).group || req.query.group;
     var resp = {
         headers: {
-            'Content-Type': "application/json"
+            'Content-Type': 'application/json'
         }
     };
 
@@ -39,7 +39,7 @@ updates.removeGroupFromEntry = function(doc, req) {
     var group = JSON.parse(req.body).group || req.query.group;
     var resp = {
         headers: {
-            'Content-Type': "application/json"
+            'Content-Type': 'application/json'
         }
     };
 
