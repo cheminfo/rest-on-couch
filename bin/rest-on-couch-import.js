@@ -74,7 +74,7 @@ if (program.args[0]) {
 }
 
 prom.then(function () {
-    debug(`finished`);
+    debug('finished');
 }, function (err) {
     die(err.message || err);
 });
