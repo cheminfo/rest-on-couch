@@ -10,23 +10,23 @@ updates.addGroupToEntry = function(doc, req) {
         }
     };
 
-    if(!doc) {
+    if (!doc) {
         resp.code = 404;
         resp.body = '"document does not exist"';
         return [null, resp];
     }
-    if(doc.$type !== 'entry') {
+    if (doc.$type !== 'entry') {
         resp.code = 400;
         resp.body = '"Document is not of type entry"';
         return [null, resp];
     }
-    if(!group) {
+    if (!group) {
         resp.body = '"no group in request"';
         resp.code = 400;
         return [null, resp];
     }
     var idx = doc.$owners.indexOf(group);
-    if(idx > 1) {
+    if (idx > 1) {
         resp.body = '"group already exists for this entry"';
         return [null, resp];
     }
@@ -43,24 +43,24 @@ updates.removeGroupFromEntry = function(doc, req) {
         }
     };
 
-    if(!doc) {
+    if (!doc) {
         resp.code = 404;
         resp.body = '"document does not exist"';
         return [null, resp];
     }
-    if(doc.$type !== 'entry') {
+    if (doc.$type !== 'entry') {
         resp.code = 400;
         resp.body = '"Document is not of type entry"';
         return [null, resp];
     }
-    if(!group) {
+    if (!group) {
         resp.body = '"no group in request"';
         resp.code = 400;
         return [null, resp];
     }
 
     var idx = doc.$owners.indexOf(group);
-    if(idx === -1) {
+    if (idx === -1) {
         resp.body = '"group does not exist for this entry"';
         return [null, resp];
     }

@@ -96,7 +96,7 @@ function onGetError(ctx, e) {
             debug.error(e);
             break;
     }
-    if(config.debugrest) {
+    if (config.debugrest) {
         ctx.body += e + e.stack;
     }
 }
@@ -106,7 +106,7 @@ function processCouchQuery(ctx) {
         if (ctx.query[couchToProcess[i]]) {
             try {
                 ctx.query[couchToProcess[i]] = JSON.parse(ctx.query[couchToProcess[i]])
-            } catch(e) {
+            } catch (e) {
                 // Keep original value if parsing failed
             }
         }

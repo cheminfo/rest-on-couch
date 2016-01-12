@@ -283,7 +283,7 @@ class Couch {
                 // Find element(s) with the same file name and remove them
                 let filenames = current.map(el => el.file.filename);
                 let idx;
-                while(( idx = filenames.findIndex(filename => filename === file.name) ) > -1) {
+                while (( idx = filenames.findIndex(filename => filename === file.name) ) > -1) {
                     filenames.splice(idx, 1);
                     current.splice(idx, 1);
                 }

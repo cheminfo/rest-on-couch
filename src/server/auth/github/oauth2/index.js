@@ -83,7 +83,7 @@ exports.init = function (passport, router, config) {
         passport.authenticate('github', {failureRedirect: config.failureRedirect}),
         function*() {
             // Successful authentication, redirect home.
-            if(this.session.redirect) {
+            if (this.session.redirect) {
                 this.response.redirect(this.session.redirect);
             }
             else {

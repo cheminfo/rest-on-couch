@@ -18,7 +18,7 @@ exports.init = function(passport, _config) {
         try {
             // check that parameter exists
             var conf = configExists(authPlugins[i]);
-            if(conf) {
+            if (conf) {
                 debug('loading auth plugin: ' + authPlugins[i]);
                 var auth = require('../auth/' + authPlugins[i].join('/') + '/index.js');
                 auth.init(passport, router, conf);
@@ -42,10 +42,10 @@ exports.init = function(passport, _config) {
     });
 
     function configExists(conf) {
-        if(!config.auth) return null;
+        if (!config.auth) return null;
         var last = config.auth;
-        for(var j=0; j<conf.length; j++) {
-            if(!last[conf[j]]) return null;
+        for (var j=0; j<conf.length; j++) {
+            if (!last[conf[j]]) return null;
             last = last[conf[j]];
             last.publicAddress = config.publicAddress;
             last.couchUrl = config.couchUrl;
@@ -63,11 +63,11 @@ exports.init = function(passport, _config) {
                 name: email
             }
         });
-        try{
+        try {
             var parsedPath = url.parse(config.couchUrl);
             parsedPath.auth = config.couchUsername + ':' + config.couchPassword;
             var fullUrl = url.format(parsedPath);
-            if(!config.firstLoginClone || !email){
+            if (!config.firstLoginClone || !email){
                 return yield next;
             }
 
@@ -77,7 +77,7 @@ exports.init = function(passport, _config) {
                 username: email,
                 flavor: config.firstLoginClone.targetFlavor
             });
-            if(hasViews) {
+            if (hasViews) {
                 return yield next;
             }
 
@@ -96,7 +96,7 @@ exports.init = function(passport, _config) {
                     subFolder: config.firstLoginClone.targetSubFolder
                 }
             });
-        } catch(e) {
+        } catch (e) {
             yield next;
         }
 
@@ -122,7 +122,7 @@ exports.ensureAuthenticated = function *(next) {
 };
 
 function getUserEmailFromToken(ctx) {
-    if(!config.authServers.length) return Promise.resolve('anonymous');
+    if (!config.authServers.length) return Promise.resolve('anonymous');
     const token = ctx.headers['x-auth-session'];
 
     let res = {
@@ -132,9 +132,9 @@ function getUserEmailFromToken(ctx) {
 
     let prom = Promise.resolve(res);
 
-    for(let i=0; i<config.authServers.length; i++) {
+    for (let i=0; i<config.authServers.length; i++) {
         prom = prom.then(res => {
-            if(res.userCtx !== null && res.userCtx !== 'anonymous') {
+            if (res.userCtx !== null && res.userCtx !== 'anonymous') {
                 return res;
             }
             return superagent
@@ -151,29 +151,29 @@ function getUserEmailFromToken(ctx) {
 
 
 exports.getUserEmail = function(ctx) {
-    if(ctx.headers['x-auth-session']) {
+    if (ctx.headers['x-auth-session']) {
         return getUserEmailFromToken(ctx);
     }
     if (!ctx.session.passport) return Promise.resolve('anonymous');
     var user = ctx.session.passport.user;
-    if(!user) {
+    if (!user) {
         debug('passport without user: ', ctx.session.passport);
         return Promise.resolve('anonymous');
         //throw new Error('UNREACHABLE');
     }
     var email;
-    switch(user.provider) {
+    switch (user.provider) {
         case 'github':
             email = user.email || null;
             break;
         case 'google':
-            if(user._json.verified_email === true)
+            if (user._json.verified_email === true)
                 email = user._json.email;
             else
                 email = null;
             break;
         case 'facebook':
-            if(user._json.verified === true) {
+            if (user._json.verified === true) {
                 email = user._json.email;
             }
             else {

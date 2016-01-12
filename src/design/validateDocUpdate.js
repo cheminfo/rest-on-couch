@@ -25,11 +25,11 @@ module.exports = function (newDoc, oldDoc) {
         throw({forbidden: 'Cannot change the type of document'});
     }
 
-    if(newDoc.$type === 'group') {
-        if(!newDoc.name) {
+    if (newDoc.$type === 'group') {
+        if (!newDoc.name) {
             throw({forbidden: 'group must have a name'});
         }
-        if(validEmail.test(newDoc.name)) {
+        if (validEmail.test(newDoc.name)) {
             throw({forbidden: 'group cannot be an email'});
         }
         validateOwners(newDoc);

@@ -36,8 +36,8 @@ views.entryByModificationDate = {
 
 views.entryByOwner = {
     map: function (doc) {
-        if(doc.$type !== 'entry') return;
-        for(var i=0; i<doc.$owners.length; i++) {
+        if (doc.$type !== 'entry') return;
+        for (var i=0; i<doc.$owners.length; i++) {
             emit(doc.$owners[i]);
         }
     }

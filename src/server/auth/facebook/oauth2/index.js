@@ -53,7 +53,7 @@ exports.init = function (passport, router, config) {
         passport.authenticate('facebook', {failureRedirect: config.failureRedirect}),
         function*() {
             // Successful authentication, redirect home.
-            if(this.session.redirect) {
+            if (this.session.redirect) {
                 this.response.redirect(this.session.redirect);
             }
             else {

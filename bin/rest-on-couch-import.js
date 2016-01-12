@@ -45,9 +45,9 @@ if (program.args[0]) {
             debug(`limit is ${limit}`);
             var i = 0, count = 0;
             var p = Promise.resolve();
-            while(count < limit && i < paths.length) {
+            while (count < limit && i < paths.length) {
                 let file = checkFile(homeDir, paths[i]);
-                if(file) {
+                if (file) {
                     count++;
                     p = processFile(file.database, file.importName, homeDir, paths[i]);
                 }
@@ -106,7 +106,7 @@ function checkFile(homeDir, p) {
     const relpath = path.relative(homeDir, p);
     const elements = relpath.split('/');
     if (elements.length !== 4) return false;
-    if(elements[2] !== 'to_process') return false;
+    if (elements[2] !== 'to_process') return false;
 
     if (hasImportFile(p)) {
         return {
@@ -150,7 +150,7 @@ function processFile(database, importName, homeDir, p) {
 
 function hasImportFile(p) {
     const importFile = path.resolve(p, '../../import.js');
-    if(importFiles[p]) return true;
+    if (importFiles[p]) return true;
 
     try {
         fs.accessSync(importFile);
@@ -161,7 +161,7 @@ function hasImportFile(p) {
 }
 
 function createDir(dir) {
-    if(createdDirs[dir]) return;
+    if (createdDirs[dir]) return;
 
     fs.mkdirpSync(dir);
     createdDirs[dir] = true;

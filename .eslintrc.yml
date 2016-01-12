@@ -7,3 +7,4 @@ extends: eslint:recommended
 rules:
   eol-last: 2
   quotes: [2, single, avoid-escape]
+  space-after-keywords: 2

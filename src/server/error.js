@@ -1,14 +1,14 @@
 'use strict';
 
 exports.handleError = function (ctx, code, error) {
-    if(code instanceof Error) {
+    if (code instanceof Error) {
         error = code;
         code = null;
     }
     error = error || {};
     var err;
     var errCode;
-    switch(code) {
+    switch (code) {
         case 'private':
             err =  {
                 error: 'unauthorized',

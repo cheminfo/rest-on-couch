@@ -52,7 +52,7 @@ exports.init = function(passport, router, config) {
         passport.authenticate('google', {
             failureRedirect: config.failureRedirect
         }), function*() {
-            if(this.session.redirect) {
+            if (this.session.redirect) {
                 this.response.redirect(this.session.redirect);
             }
             else {
