@@ -9,6 +9,7 @@ const path = require('path');
 const program = require('commander');
 
 const debug = require('../src/util/debug')('bin:import');
+const die = require('../src/util/die');
 const home = require('../src/config/home');
 const imp = require('../src/import/import');
 const log = require('../src/couch/log');
@@ -49,7 +50,6 @@ if (program.args[0]) {
                 let file;
                 if(file = checkFile(homeDir, paths[i])) {
                     count++;
-                    debug.trace(`import ${paths[i]}`);
                     p = processFile(file.database, file.importName, homeDir, paths[i]);
                 }
                 i++;
@@ -58,17 +58,17 @@ if (program.args[0]) {
         });
 } else if (program.watch) {
     // watch files to import
-    debug('watch');
     let homeDir = getHomeDir();
+    debug(`watch ${homeDir}`);
     chokidar.watch(homeDir, {
         ignored: /[\/\\]\./,
         persistent: true
     }).on('all', function (event, p) {
+        debug.trace(`watch event: ${event} - ${p}`);
         let file = checkFile(homeDir, p);
         if (event !== 'add' && event !== 'change' || !file) {
             return;
         }
-        debug.trace(`watch (${event}) - ${p}`);
         processFile(file.database, file.importName, homeDir, p);
     });
 } else {
@@ -99,8 +99,7 @@ function findFiles(homeDir) {
 function getHomeDir() {
     let homeDir = home.get('homeDir');
     if (!homeDir) {
-        console.error('homeDir must be set to import all');
-        process.exit(1);
+        die('homeDir must be set to import all');
     }
     return homeDir;
 }
@@ -121,6 +120,7 @@ function checkFile(homeDir, p) {
 }
 
 function processFile(database, importName, homeDir, p) {
+    debug.trace(`process file ${p}`);
     p = path.resolve(homeDir, p);
     let parsedPath = path.parse(p);
 
