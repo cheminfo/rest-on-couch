@@ -109,7 +109,7 @@ function processCouchQuery(ctx) {
 }
 
 function processQuery(ctx) {
-    if(!ctx.params.view || !ctx.query.query) return;
+    if (!ctx.params.view || !ctx.query.query) return;
 
     var query = ctx.query;
     var q = query.query;
@@ -137,11 +137,11 @@ function processQuery(ctx) {
         } else if (match[1] === '==' || match[1] === '=') {
             query.key = match[2];
         }
-    } else if(match = q.match(/^(.+)\.\.(.+)$/)) {
+    } else if (match = q.match(/^(.+)\.\.(.+)$/)) {
         query.startkey = match[1];
         query.endkey = match[2];
     } else {
-        if(type === 'string') {
+        if (type === 'string') {
             query.startkey = q;
             query.endkey = q + '\ufff0';
         } else {
@@ -149,21 +149,19 @@ function processQuery(ctx) {
         }
     }
 
-
-
     try {
-        if(type) {
+        if (type) {
             applyType(query, type);
         }
-    } catch(e) {
+    } catch (e) {
         debug.warn('Could not apply type to query');
     }
 }
 
 function applyType(query, type) {
-    for(var i=0; i<couchToProcess.length; i++) {
-        if(query[couchToProcess[i]] !== undefined) {
-            switch(type) {
+    for (var i = 0; i < couchToProcess.length; i++) {
+        if (query[couchToProcess[i]] !== undefined) {
+            switch (type) {
                 case 'string':
                     query[couchToProcess[i]] = String(query[couchToProcess[i]]);
                     break;
@@ -177,9 +175,9 @@ function applyType(query, type) {
 
 function getViewType(ctx) {
     var view = views[ctx.params.view];
-    if(view && view.type) {
+    if (view && view.type) {
         return view.type;
-    } else if(config[ctx.params.database] && config[ctx.params.database].customDesign[ctx.params.view]) {
+    } else if (config[ctx.params.database] && config[ctx.params.database].customDesign[ctx.params.view]) {
         return config[ctx.params.database].customDesign[ctx.params.view];
     }
 }

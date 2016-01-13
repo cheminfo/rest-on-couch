@@ -9,6 +9,7 @@ const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
 const log = require('./couch/log');
 const getConfig = require('./config/config').getConfig;
+const co = require('co');
 
 const basicRights = {
     $type: 'db',
@@ -147,21 +148,39 @@ class Couch {
     }
 
     queryViewByUser(user, view, options, rights) {
+        var that = this;
         debug(`queryViewByUser (${user}, ${view})`);
         options = options || {};
         options.include_docs = true;
         options.reduce = false;
-        return this._init()
-            .then(() => nanoPromise.queryView(this._db, view, options))
-            .then(rows => {
-                let owners = rows.map(r => r.doc.$owners);
-                return validateRights(this._db, owners, user, rights || 'read')
-                    .then(hasRights => {
-                        rows = rows.map(entry => entry.doc);
-                        return rows.filter((r, idx) => hasRights[idx]);
-                    });
+        options.skip = 0;
+        var limit = options.limit || 1;
 
-            });
+        return co(function * () {
+            var cumRows = [];
+            yield that._init();
+            while (cumRows.length < limit) {
+                let rows = yield nanoPromise.queryView(that._db, view, options);
+                // No more results
+                if (!rows.length) break;
+
+                let owners = rows.map(r => r.doc.$owners);
+                let hasRights = yield validateRights(that._db, owners, user, rights || 'read');
+                rows = rows.map(entry => entry.doc);
+                rows = rows.filter((r, idx) => hasRights[idx]);
+
+                // Return everything
+                if (!options.limit) return rows;
+
+                // Concatenate
+                limit = options.limit;
+                options.skip += limit;
+                cumRows.concat(rows);
+            }
+
+            // Get rid of extra rows
+            return cumRows.filter((r, idx) => idx >= options.limit);
+        });
     }
 
     getEntriesByUserAndRights(user, rights, options) {

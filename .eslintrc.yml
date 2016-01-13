@@ -9,3 +9,4 @@ rules:
   quotes: [2, single, avoid-escape]
   space-after-keywords: 2
   semi: 2
+  no-cond-assign: 0
