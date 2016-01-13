@@ -34,7 +34,11 @@ app.use(cors());
 
 app.keys = ['some secret'];
 app.use(session({
-    maxAge: 100 * ONE_YEAR
+    maxAge: ONE_YEAR,
+    path: '/',
+    domain: '.cheminfo.org',
+    secure: false,
+    httpOnly: true
 }, app));
 app.use(passport.initialize());
 app.use(passport.session());
