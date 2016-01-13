@@ -116,9 +116,11 @@ function processQuery(ctx) {
     query.key = undefined;
     query.startkey = undefined;
     query.endkey = undefined;
+    var match;
 
-    var match = q.match(/^([<>=]{1,2})([^<>=]+)$/);
-    if (match) {
+    var type = getViewType(ctx);
+
+    if (match = q.match(/^([<>=]{1,2})([^<>=]+)$/)) {
         if (match[1] === '<') {
             query.startkey = '';
             query.endkey = match[2];
@@ -135,20 +137,23 @@ function processQuery(ctx) {
         } else if (match[1] === '==' || match[1] === '=') {
             query.key = match[2];
         }
-    }
-
-    match = q.match(/^(.+)\.\.(.+)$/);
-    if (match) {
+    } else if(match = q.match(/^(.+)\.\.(.+)$/)) {
         query.startkey = match[1];
         query.endkey = match[2];
+    } else {
+        if(type === 'string') {
+            query.startkey = q;
+            query.endkey = q + '\ufff0';
+        } else {
+            query.key = q;
+        }
     }
 
+
+
     try {
-        var view = views[ctx.params.view];
-        if(view && view.type) {
-            applyType(query, view.type);
-        } else if(config[ctx.params.database].customDesign[ctx.params.view]) {
-            applyType(query, config[ctx.params.database].customDesign[ctx.params.view]);
+        if(type) {
+            applyType(query, type);
         }
     } catch(e) {
         debug.warn('Could not apply type to query');
@@ -167,5 +172,14 @@ function applyType(query, type) {
                     break;
             }
         }
+    }
+}
+
+function getViewType(ctx) {
+    var view = views[ctx.params.view];
+    if(view && view.type) {
+        return view.type;
+    } else if(config[ctx.params.database] && config[ctx.params.database].customDesign[ctx.params.view]) {
+        return config[ctx.params.database].customDesign[ctx.params.view];
     }
 }
