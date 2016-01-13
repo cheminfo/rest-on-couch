@@ -134,9 +134,10 @@ function processFile(database, importName, homeDir, p) {
                 resolve();
             });
         });
-    }).catch(() => {
+    }).catch(e => {
         // mv to errored
         return new Promise(function (resolve, reject) {
+            debug.error(e + '\n' + e.stack);
             let dir = path.join(parsedPath.dir, '../errored/' + getMonth());
             createDir(dir);
             fs.rename(p, path.join(dir, parsedPath.base), function (err) {
