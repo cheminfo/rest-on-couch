@@ -175,11 +175,11 @@ class Couch {
                 // Concatenate
                 limit = options.limit;
                 options.skip += limit;
-                cumRows.concat(rows);
+                cumRows = cumRows.concat(rows);
             }
 
             // Get rid of extra rows
-            return cumRows.filter((r, idx) => idx >= options.limit);
+            return cumRows.filter((r, idx) => idx < options.limit);
         });
     }
 
