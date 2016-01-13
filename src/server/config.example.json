@@ -12,18 +12,18 @@
         "clientSecret": "",
         "successRedirect": "http://www.cheminfo.org/static/index.html",
         "failureRedirect": "/login",
-        "callbackURL": "/auth/google/oauth2callback",
-        "loginURL":"/auth/google"
+        "callbackURL": "/login/google/oauth2callback",
+        "loginURL":"/login/google"
       }
     },
     "facebook": {
       "oauth2": {
         "appId": "",
         "appSecret": "",
-        "callbackURL": "/auth/facebook/callback",
+        "callbackURL": "/loginlogin/facebook/callback",
         "failureRedirect": "/login",
         "successRedirect": "http://www.cheminfo.org/static/index.html",
-        "loginURL":"/auth/facebook"
+        "loginURL":"/login/facebook"
       }
     },
     "github": {
@@ -32,8 +32,8 @@
         "clientSecret": "",
         "successRedirect": "http://www.cheminfo.org/static/index.html",
         "failureRedirect": "/login",
-        "callbackURL": "/auth/github/callback",
-        "loginURL":"/auth/github"
+        "callbackURL": "/login/github/callback",
+        "loginURL":"/login/github"
       }
     },
     "couchdb": {}

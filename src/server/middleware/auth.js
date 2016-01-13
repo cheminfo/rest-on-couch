@@ -1,7 +1,9 @@
 'use strict';
 
 const FlavorUtils = require('flavor-utils');
-const router = require('koa-router')();
+const router = require('koa-router')({
+    prefix: '/auth'
+});
 const superagent = require('superagent-promise')(require('superagent'), Promise);
 const url = require('url');
 
@@ -53,7 +55,7 @@ exports.init = function(passport, _config) {
         return last;
     }
 
-    router.get('/_session', function * (next){
+    router.get('/session', function * (next){
         var that = this;
         // Check if session exists
         var email = yield exports.getUserEmail(that);
@@ -103,11 +105,12 @@ exports.init = function(passport, _config) {
         yield next;
     });
 
-    router.delete('/_session', function*(){
+    router.get('/logout', function*(){
         this.logout();
-        this.body = JSON.stringify({
-            ok: true
-        });
+        this.body = {
+            ok: true,
+            action: 'logout'
+        };
     });
 
     return router;

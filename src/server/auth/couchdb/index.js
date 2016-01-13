@@ -36,7 +36,7 @@ exports.init = function (passport, router) {
             //done(null, false, errMessage);
         }));
 
-    router.post('/_session', passport.authenticate('local', {}), function*() {
+    router.post('/login/couchdb', passport.authenticate('local', {}), function*() {
         var name = yield auth.getUserEmail(this);
         this.body = JSON.stringify({
             ok: true,

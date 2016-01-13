@@ -11,7 +11,7 @@ let request = supertest.agent(server.app.callback());
 function noop () {}
 
 function authenticateAs(user) {
-    return request.post('/_session')
+    return request.post('/auth/login/couchdb')
         .type('form')
         .send({name: user, password: '123'})
         .then(noop);
