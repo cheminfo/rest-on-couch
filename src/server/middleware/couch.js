@@ -4,6 +4,7 @@ const auth = require('./auth');
 const config = require('../../config/config').globalConfig;
 const Couch = require('../../index');
 const debug = require('../../util/debug')('middleware:couch');
+const views = require('../../design/views');
 
 const couchToProcess = ['key', 'startkey', 'endkey'];
 
@@ -100,6 +101,70 @@ function processCouchQuery(ctx) {
                 ctx.query[couchToProcess[i]] = JSON.parse(ctx.query[couchToProcess[i]]);
             } catch (e) {
                 // Keep original value if parsing failed
+            }
+        }
+    }
+    processQuery(ctx);
+
+}
+
+function processQuery(ctx) {
+    if(!ctx.params.view || !ctx.query.query) return;
+
+    var query = ctx.query;
+    var q = query.query;
+    query.key = undefined;
+    query.startkey = undefined;
+    query.endkey = undefined;
+
+    var match = q.match(/^([<>=]{1,2})([^<>=]+)$/);
+    if (match) {
+        if (match[1] === '<') {
+            query.startkey = '';
+            query.endkey = match[2];
+            query.inclusive_end = false;
+        } else if (match[1] === '<=' || match[1] === '=<') {
+            query.startkey = '';
+            query.endkey = match[2];
+        } else if (match[1] === '>') {
+            query.startkey = match[2];
+            query.endkey = '\ufff0';
+        } else if (match[1] === '>=' || match[1] === '=>') {
+            query.startkey = match[2];
+            query.endkey = '\ufff0';
+        } else if (match[1] === '==' || match[1] === '=') {
+            query.key = match[2];
+        }
+    }
+
+    match = q.match(/^(.+)\.\.(.+)$/);
+    if (match) {
+        query.startkey = match[1];
+        query.endkey = match[2];
+    }
+
+    try {
+        var view = views[ctx.params.view];
+        if(view && view.type) {
+            applyType(query, view.type);
+        } else if(config[ctx.params.database].customDesign[ctx.params.view]) {
+            applyType(query, config[ctx.params.database].customDesign[ctx.params.view]);
+        }
+    } catch(e) {
+        debug.warn('Could not apply type to query');
+    }
+}
+
+function applyType(query, type) {
+    for(var i=0; i<couchToProcess.length; i++) {
+        if(query[couchToProcess[i]] !== undefined) {
+            switch(type) {
+                case 'string':
+                    query[couchToProcess[i]] = String(query[couchToProcess[i]]);
+                    break;
+                case 'number':
+                    query[couchToProcess[i]] = +query[couchToProcess[i]];
+                    break;
             }
         }
     }

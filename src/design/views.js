@@ -16,7 +16,8 @@ views.entryById = {
         if (doc.$type !== 'entry') return;
         emit(doc.$id, 1);
     },
-    reduce: '_sum'
+    reduce: '_sum',
+    type: 'string'
 };
 
 
