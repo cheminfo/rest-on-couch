@@ -4,8 +4,9 @@
 
 | Method | Route | Action | Description |
 | ------ | ----- | ------ | ----------- |
-| GET | `/login/:method` | login | Creates a session.<br>Method can be `couch`, `github`, `google`, ... |
-| GET | `/logout` | logout |
+| GET | `/auth/login/:method` | login | Creates a session.<br>Method can be `couch`, `github`, `google`, ... |
+| GET | `/auth/logout` | logout |
+| GET | `/auth/session` | get info on current session |
 
 ## Database
 
