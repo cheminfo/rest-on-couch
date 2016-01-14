@@ -12,6 +12,7 @@ const session = require('koa-session');
 
 const api = require('./routes/api');
 const auth = require('./middleware/auth');
+const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
 const proxy = require('./routes/proxy');
 
@@ -36,9 +37,11 @@ app.keys = ['some secret'];
 app.use(session({
     maxAge: ONE_YEAR,
     path: '/',
-    domain: '.cheminfo.org',
-    secure: false,
-    httpOnly: true
+    domain: config.sessionDomain,
+    secure: config.sessionSecure,
+    secureProxy: config.sessionSecureProxy, // true if SSL is handled by Apache
+    httpOnly: true,
+    signed: true
 }, app));
 app.use(passport.initialize());
 app.use(passport.session());
