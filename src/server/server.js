@@ -77,7 +77,7 @@ module.exports.start = function () {
     if (_started) return _started;
     _started = new Promise(function (resolve) {
         http.createServer(app.callback()).listen(config.port, function () {
-            console.log('Server running on localhost:' + config.port);
+            debug.warn('running on localhost:' + config.port);
             resolve(app);
         });
     });

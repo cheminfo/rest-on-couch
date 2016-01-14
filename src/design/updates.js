@@ -68,5 +68,3 @@ updates.removeGroupFromEntry = function(doc, req) {
     doc.$owners.splice(idx, 1);
     return [doc, 'Group removed'];
 };
-
-

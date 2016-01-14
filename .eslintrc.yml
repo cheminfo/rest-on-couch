@@ -6,7 +6,9 @@ parserOptions:
 extends: eslint:recommended
 rules:
   eol-last: 2
-  quotes: [2, single, avoid-escape]
+  no-cond-assign: 0
+  no-multiple-empty-lines: [2, {max: 2, maxEOF: 1}]
+  no-trailing-spaces: 2
   space-after-keywords: 2
   semi: 2
-  no-cond-assign: 0
+  quotes: [2, single, avoid-escape]
