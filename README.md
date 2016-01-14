@@ -38,13 +38,6 @@ TODO
 | ```rest-on-couch config``` | get/set home configuration |
 | ```rest-on-couch log``` | get/set log entries |
 
-```
-rest-on-couch import --help
-rest-on-couch server
-rest-on-couch config
-rest-on-couch log
-```
-
 ```rest-on-couch <command> --help``` for more details
 
 ## License
