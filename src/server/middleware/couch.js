@@ -105,6 +105,12 @@ function processCouchQuery(ctx) {
             }
         }
     }
+    if(ctx.query.limit !== undefined) {
+        ctx.query.limit = +ctx.query.limit;
+        if(Number.isNaN(ctx.query.limit)) {
+            ctx.query.limit = undefined;
+        }
+    }
     processQuery(ctx);
 
 }
