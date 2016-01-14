@@ -23,7 +23,11 @@ function getHomeConfig() {
         }
         return config;
     } catch (e) {
-        debug('no main config found');
+        if(e.code === 'ENOENT') {
+            debug('no main config found');
+        } else {
+            debug.error('Error while reading and parsing config file' + '\n' + e);
+        }
         return {};
     }
 }
