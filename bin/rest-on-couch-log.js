@@ -15,6 +15,7 @@ program
     .option('-l, --level <level>', 'Log level (default: WARN)')
     .option('-e, --epoch <epoch>', 'Return results from epoch (default: 1 day ago)')
     .option('-w, --watch', 'Watch for new logs')
+    .option('-c --config <path>', 'Path to custom config file')
     .parse(process.argv);
 
 const couch = new Couch(program.database);

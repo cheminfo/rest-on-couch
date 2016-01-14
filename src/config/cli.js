@@ -21,3 +21,4 @@ function loadCliConfig(source) {
         die(`could not load custom config from ${source}`);
     }
 }
+

@@ -21,6 +21,7 @@ program
     .usage('<file>')
     .option('-l, --limit <number>', 'Limit of files to import')
     .option('-w, --watch', 'Watch files')
+    .option('-c --config <path>', 'Path to custom config file')
     .parse(process.argv);
 
 let prom = Promise.resolve();
