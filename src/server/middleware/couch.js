@@ -181,7 +181,7 @@ function getViewType(ctx) {
     } else {
         var customDesign = getConfig(ctx.params.dbname).customDesign;
         if(customDesign && customDesign.views && customDesign.views[ctx.params.view]) {
-            return customDesign[ctx.params.view].type;
+            return customDesign.views[ctx.params.view].type;
         }
     }
 }
