@@ -129,12 +129,11 @@ function processQuery(ctx) {
         } else if (match[1] === '<=' || match[1] === '=<') {
             query.startkey = '';
             query.endkey = match[2];
-        } else if (match[1] === '>') {
+        } else if (match[1] === '>' || match[1] === '>=' || match[1] === '=>') {
             query.startkey = match[2];
-            query.endkey = '\ufff0';
-        } else if (match[1] === '>=' || match[1] === '=>') {
-            query.startkey = match[2];
-            query.endkey = '\ufff0';
+            if(type !== 'number') {
+                query.endkey = '\ufff0';
+            }
         } else if (match[1] === '==' || match[1] === '=') {
             query.key = match[2];
         }
