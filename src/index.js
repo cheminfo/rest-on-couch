@@ -147,6 +147,16 @@ class Couch {
             });
     }
 
+    /*
+        Like queryViewByUser but only entries are returned
+        Since custom design views might emit for non-entries we
+        need to ensure those are not returned to non-admin users
+     */
+    queryEntriesByUser(user, view, options, rights) {
+        return this.queryViewByUser(user, view, options, rights)
+            .then(docs => docs.filter(doc => doc.$type === 'entry'));
+    }
+
     queryViewByUser(user, view, options, rights) {
         var that = this;
         debug(`queryViewByUser (${user}, ${view})`);

@@ -68,9 +68,9 @@ exports.allEntries = function*() {
     }
 };
 
-exports.queryViewByUser = function*() {
+exports.queryEntriesByUser = function*() {
     try {
-        this.body = yield this.state.couch.queryViewByUser(this.state.userEmail, this.params.view, this.query);
+        this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, this.params.view, this.query);
         this.status = 200;
     } catch (e) {
         onGetError(this, e);
