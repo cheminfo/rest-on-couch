@@ -56,7 +56,9 @@ describe('entry editons', function () {
     });
 
     it('anybody not anonymous can insert a new entry (without _id)', function () {
-        return couch.insertEntry(constants.newEntry, 'z@z.com').then(() => {
+        return couch.insertEntry(constants.newEntry, 'z@z.com').then(res => {
+            res.id.should.be.an.instanceOf(String);
+            res.rev.should.be.an.instanceOf(String);
             return couch.getEntryById('C', 'z@z.com').should.be.fulfilled();
         });
     });

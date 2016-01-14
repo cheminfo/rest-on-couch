@@ -388,7 +388,7 @@ class Couch {
         if (!entry.$content) return Promise.reject(new CouchError('entry has no content'));
         if (groups !== undefined && !Array.isArray(groups)) return Promise.reject(new CouchError('groups should an arary if defined', 'invalid argument'));
 
-        let prom;
+        let prom, res;
         if (entry._id) {
             prom = this.getEntryByUuidAndRights(entry._id, user, ['write'])
                 .then(doc => {
@@ -399,11 +399,15 @@ class Couch {
                     }
                     doc.$content = entry.$content;
                     beforeSaveEntry(doc, user);
-                    return nanoPromise.insertDocument(this._db, doc).then(addGroups(this, doc.$id, user, groups));
+                    return nanoPromise.insertDocument(this._db, doc)
+                        .then(r => res = r)
+                        .then(addGroups(this, doc.$id, user, groups));
                 }).catch(error => {
                     if (error.reason === 'not found') {
                         debug.trace('doc not found');
-                        return createNew(this, entry, user).then(addGroups(this, entry.$id, user, groups));
+                        return createNew(this, entry, user)
+                            .then(r => res = r)
+                            .then(addGroups(this, entry.$id, user, groups));
                     } else {
                         debug.warn('error getting document');
                         throw error;
@@ -411,10 +415,12 @@ class Couch {
                 });
         } else {
             debug.trace('entry has no _id');
-            prom = createNew(this, entry, user).then(addGroups(this, entry.$id, user, groups));
+            prom = createNew(this, entry, user)
+                .then(r => res = r)
+                .then(addGroups(this, entry.$id, user, groups));
         }
 
-        return prom;
+        return prom.then(() => res);
     }
 
     deleteEntryByUuid(uuid, user) {
