@@ -39,7 +39,10 @@ exports.init = function(passport, router, config) {
             callbackURL: config.publicAddress + config.callbackURL
         },
         function(accessToken, refreshToken, profile, done) {
-            done(null, profile);
+            done(null, {
+                provider: 'google',
+                email: profile.email
+            });
         }
     ));
 

@@ -40,7 +40,10 @@ exports.init = function (passport, router, config) {
             enableProof: false
         },
         function (accessToken, refreshToken, profile, done) {
-            done(null, profile);
+            done(null, {
+                provider: 'facebook',
+                email: profile._json.email
+            });
         }
     ));
 

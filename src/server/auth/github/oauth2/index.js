@@ -68,7 +68,10 @@ exports.init = function (passport, router, config) {
                 });
                 if (email.length === 0 && answer[0] && answer[0].email) profile.email = answer[0].email;
                 if (email[0]) profile.email = email[0].email;
-                done(null, profile);
+                done(null, {
+                    provider: 'github',
+                    email: profile.email
+                });
             });
 
         }
