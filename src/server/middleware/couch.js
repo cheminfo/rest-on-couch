@@ -2,6 +2,7 @@
 
 const auth = require('./auth');
 const config = require('../../config/config').globalConfig;
+const getConfig = require('../../config/config').getConfig;
 const Couch = require('../../index');
 const debug = require('../../util/debug')('middleware:couch');
 const views = require('../../design/views');
@@ -177,7 +178,10 @@ function getViewType(ctx) {
     var view = views[ctx.params.view];
     if (view && view.type) {
         return view.type;
-    } else if (config[ctx.params.database] && config[ctx.params.database].customDesign[ctx.params.view]) {
-        return config[ctx.params.database].customDesign[ctx.params.view];
+    } else {
+        var customDesign = getConfig(ctx.params.database).customDesign;
+        if(customDesign && customDesign[ctx.params.view]) {
+            return customDesign[ctx.params.view].type;
+        }
     }
 }
