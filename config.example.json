@@ -40,6 +40,11 @@
         "loginURL":"/login/github"
       }
     },
+    "ldap": {
+      "url": "ldaps://ldap.epfl.ch",
+      "searchBase": "c=ch",
+      "searchFilter": "uid={{username}}"
+    },
     "couchdb": {}
   },
   "authServers": ["http://www.cheminfo.org/clp"]

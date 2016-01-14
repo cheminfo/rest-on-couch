@@ -33,14 +33,12 @@ exports.init = function (passport, router) {
                     provider: 'local'
                 });
             });
-            //done(null, false, errMessage);
         }));
 
-    router.post('/login/couchdb', passport.authenticate('local', {}), function*() {
-        var name = yield auth.getUserEmail(this);
-        this.body = JSON.stringify({
+    router.post('/login/couchdb', passport.authenticate('local'), function*() {
+        this.body = {
             ok: true,
-            name
-        });
+            name: yield auth.getUserEmail(this)
+        };
     });
 };

@@ -10,7 +10,7 @@ const url = require('url');
 const debug = require('../../util/debug')('auth');
 const die = require('../../util/die');
 
-const authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['github','oauth2']];
+const authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['github','oauth2'], ['ldap']];
 const auths = [];
 var config;
 

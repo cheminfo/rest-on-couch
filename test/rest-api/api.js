@@ -8,13 +8,15 @@ server.init('src/server/config.test.json');
 
 let request = supertest.agent(server.app.callback());
 
-function noop () {}
-
 function authenticateAs(user) {
     return request.post('/auth/login/couchdb')
         .type('form')
         .send({name: user, password: '123'})
-        .then(noop);
+        .then(function (response) {
+            if (response.statusCode !== 200) {
+                throw new Error('Authentication to CouchDB failed');
+            }
+        });
 }
 
 describe('basic rest-api as anonymous', function () {
