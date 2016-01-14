@@ -2,5 +2,8 @@
 
 module.exports = {
     url: 'http://localhost:5984',
-    logLevel: 'WARN'
+    logLevel: 'WARN',
+    auth: {
+        couchdb: {}
+    }
 };

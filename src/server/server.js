@@ -49,12 +49,9 @@ app.use(passport.session());
 
 app.on('error', printError);
 
-module.exports.init = function(config) {
+module.exports.init = function() {
     if (_init) return;
     _init = true;
-
-    if (!config) config = require('./config.default.json');
-    else if (typeof config === 'string') config = require(path.resolve(config));
 
     router.use(auth.init(passport, config).routes());
     router.use(proxy.init(config).routes());

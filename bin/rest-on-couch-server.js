@@ -8,10 +8,9 @@ const debug = require('../src/util/debug')('bin:server');
 const server = require('../src/server/server');
 
 program
-    .option('-c, --config <path>', 'Configuration file')
     .parse(process.argv);
 
-server.init(program.config);
+server.init();
 server.start().then(() => {
     debug('server started successfully');
 });
