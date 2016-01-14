@@ -41,7 +41,8 @@ app.use(session({
     secure: config.sessionSecure,
     secureProxy: config.sessionSecureProxy, // true if SSL is handled by Apache
     httpOnly: true,
-    signed: true
+    signed: true,
+
 }, app));
 app.use(passport.initialize());
 app.use(passport.session());

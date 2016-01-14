@@ -126,7 +126,8 @@ exports.ensureAuthenticated = function *(next) {
 
 function getUserEmailFromToken(ctx) {
     if (!config.authServers.length) return Promise.resolve('anonymous');
-    const token = ctx.headers['x-auth-session'];
+    const token = ctx.headers['x-auth-session'] || ctx.query['x-auth-session'];
+    if(!token) return Promise.resolve('anonymous');
 
     let res = {
         ok: true,
@@ -154,44 +155,20 @@ function getUserEmailFromToken(ctx) {
 
 
 exports.getUserEmail = function(ctx) {
-    if (ctx.headers['x-auth-session']) {
-        return getUserEmailFromToken(ctx);
-    }
-    if (!ctx.session.passport) return Promise.resolve('anonymous');
-    var user = ctx.session.passport.user;
-    if (!user) {
+    let email, user;
+    if (!ctx.session.passport) {
+        email = 'anonymous';
+    } else if(user = ctx.session.passport.user) {
+        email = user.email;
+    } else {
         debug('passport without user: ', ctx.session.passport);
-        return Promise.resolve('anonymous');
+        email = 'anonymous';
         //throw new Error('UNREACHABLE');
     }
-    var email;
-    switch (user.provider) {
-        case 'github':
-            email = user.email || null;
-            break;
-        case 'google':
-            if (user._json.verified_email === true)
-                email = user._json.email;
-            else
-                email = null;
-            break;
-        case 'facebook':
-            if (user._json.verified === true) {
-                email = user._json.email;
-            }
-            else {
-                email = null;
-            }
-            break;
-        case 'local':
-            email = user.email;
-            break;
-        case 'couchdb':
-            email  = user.email || null;
-            break;
-        default:
-            email = null;
-            break;
+
+    if(!email || email === 'anonymous') {
+        return getUserEmailFromToken(ctx);
     }
+
     return Promise.resolve(email || 'anonymous');
 };
