@@ -6,5 +6,6 @@ module.exports = {
     auth: {
         couchdb: {}
     },
-    port: 3000
+    port: 3000,
+    authServers: []
 };
