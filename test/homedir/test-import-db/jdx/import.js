@@ -1,13 +1,13 @@
 'use strict';
 
 module.exports = {
-    getID: function (filename, contents) {
+    getID: function () {
         return 'xyz';
     },
-    getOwner: function (filename, contents) {
+    getOwner: function () {
         return 'abc@xyz.com';
     },
-    parse: function (filename, contents) {
+    parse: function () {
         return {
             jpath: 'nmr',
             data: {

@@ -16,7 +16,7 @@ describe('Query default data', function () {
         return couch.queryViewByUser('a@a.com', 'entryById', {limit: 2})
             .then(rows => {
                 rows.length.should.equal(2);
-            })
+            });
     });
 
     it('Should query by user id with key', function () {

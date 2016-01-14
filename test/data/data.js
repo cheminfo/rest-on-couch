@@ -58,9 +58,9 @@ function populate(db) {
         $creationDate: 0,
         $modificationDate: 0,
         _attachments: {
-            "test.txt": {
-                "content_type": "text\/plain",
-                "data": "VEhJUyBJUyBBIFRFU1Q="
+            'test.txt': {
+                'content_type': 'text\/plain',
+                'data': 'VEhJUyBJUyBBIFRFU1Q='
             }
         }
     }));

@@ -1,7 +1,6 @@
 'use strict';
 
 const Couch = require('..');
-const data = require('./data/data');
 
 process.on('unhandledRejection', function(err) {
     throw err;
@@ -18,7 +17,7 @@ describe('basic initialization tests', function () {
 
     it('should throw if no database given', function () {
         return Promise.resolve().then(() => {
-            new Couch()
-        }).should.be.rejectedWith('database option is mandatory')
+            new Couch();
+        }).should.be.rejectedWith('database option is mandatory');
     });
 });

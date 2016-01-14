@@ -27,7 +27,7 @@ describe('entry reads', function () {
         return couch.getEntryById('A', 'b@b.com').then(doc => {
             return couch.getEntryByUuid(doc._id, 'b@b.com').then(doc => {
                 doc.should.be.an.instanceOf(Object);
-            })
+            });
         }) ;
     });
 
@@ -38,7 +38,7 @@ describe('entry reads', function () {
     it('should get all readable entries for a user', function () {
         return couch.getEntriesByUserAndRights('b@b.com', 'read').then(entries => {
             entries.should.have.length(3);
-        })
+        });
     });
 });
 
@@ -64,7 +64,7 @@ describe('entry editons', function () {
     it('anybody not anonymous can insert a new entry (with _id)', function () {
         return couch.insertEntry(constants.newEntryWithId, 'z@z.com').then(() => {
             return couch.getEntryById('D', 'z@z.com').should.eventually.be.an.instanceOf(Object);
-        })
+        });
     });
 
     it('insert new entry with groups', function () {
@@ -80,7 +80,7 @@ describe('entry editons', function () {
             return couch.insertEntry(doc, 'b@b.com').then(() => {
                 return couch.insertEntry(doc, 'b@b.com').should.be.rejectedWith(/_rev differ/);
             });
-        })
+        });
     });
 
     it('should modify an entry', function () {
@@ -89,7 +89,7 @@ describe('entry editons', function () {
             return couch.insertEntry(doc, 'a@a.com').then(() => {
                 return couch.getEntryById('A', 'a@a.com').then(entry => {
                     entry.$content.abc.should.equal('abc');
-                })
+                });
             });
         });
     });
