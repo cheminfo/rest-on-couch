@@ -31,9 +31,21 @@ TODO
 
 #### Import a file
 
+| Command | Description |
+| ------ | ----------- |
+| ```rest-on-couch import``` | Import files |
+| ```rest-on-couch server``` | Launch server |
+| ```rest-on-couch config``` | get/set home configuration |
+| ```rest-on-couch log``` | get/set log entries |
+
 ```
-./src/import --config=path/to/config path/to/file
+rest-on-couch import --help
+rest-on-couch server
+rest-on-couch config
+rest-on-couch log
 ```
+
+```rest-on-couch <command> --help``` for more details
 
 ## License
 
