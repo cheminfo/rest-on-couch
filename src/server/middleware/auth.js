@@ -127,7 +127,7 @@ exports.ensureAuthenticated = function *(next) {
 function getUserEmailFromToken(ctx) {
     if (!config.authServers.length) return Promise.resolve('anonymous');
     const token = ctx.headers['x-auth-session'] || ctx.query['x-auth-session'];
-    if(!token) return Promise.resolve('anonymous');
+    if (!token) return Promise.resolve('anonymous');
 
     let res = {
         ok: true,
@@ -158,7 +158,7 @@ exports.getUserEmail = function(ctx) {
     let email, user;
     if (!ctx.session.passport) {
         email = 'anonymous';
-    } else if(user = ctx.session.passport.user) {
+    } else if (user = ctx.session.passport.user) {
         email = user.email;
     } else {
         debug('passport without user: ', ctx.session.passport);
@@ -166,7 +166,7 @@ exports.getUserEmail = function(ctx) {
         //throw new Error('UNREACHABLE');
     }
 
-    if(!email || email === 'anonymous') {
+    if (!email || email === 'anonymous') {
         return getUserEmailFromToken(ctx);
     }
 
