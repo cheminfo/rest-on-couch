@@ -42,7 +42,7 @@ exports.import = function (database, importName, file) {
 
     function verifyConfig(name, defaultValue, mustBeFunction) {
         const value = config[name];
-        if (value == undefined) {
+        if (value === undefined) {
             if (defaultValue) {
                 return defaultValue;
             }
