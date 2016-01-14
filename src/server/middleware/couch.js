@@ -105,9 +105,9 @@ function processCouchQuery(ctx) {
             }
         }
     }
-    if(ctx.query.limit !== undefined) {
+    if (ctx.query.limit !== undefined) {
         ctx.query.limit = +ctx.query.limit;
-        if(Number.isNaN(ctx.query.limit)) {
+        if (Number.isNaN(ctx.query.limit)) {
             ctx.query.limit = undefined;
         }
     }
@@ -137,7 +137,7 @@ function processQuery(ctx) {
             query.endkey = match[2];
         } else if (match[1] === '>' || match[1] === '>=' || match[1] === '=>') {
             query.startkey = match[2];
-            if(type !== 'number') {
+            if (type !== 'number') {
                 query.endkey = '\ufff0';
             }
         } else if (match[1] === '==' || match[1] === '=') {
@@ -185,7 +185,7 @@ function getViewType(ctx) {
         return view.type;
     } else {
         var customDesign = getConfig(ctx.params.dbname).customDesign;
-        if(customDesign && customDesign.views && customDesign.views[ctx.params.view]) {
+        if (customDesign && customDesign.views && customDesign.views[ctx.params.view]) {
             return customDesign.views[ctx.params.view].type;
         }
     }
