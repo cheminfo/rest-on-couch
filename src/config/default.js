@@ -5,5 +5,6 @@ module.exports = {
     logLevel: 'WARN',
     auth: {
         couchdb: {}
-    }
+    },
+    port: 3000
 };

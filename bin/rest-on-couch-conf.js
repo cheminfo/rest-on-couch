@@ -4,7 +4,7 @@
 
 const program = require('commander');
 
-const config = require('../src/config/config');
+const config = require('../src/config/home');
 const debug = require('../src/util/debug')('bin:config');
 
 program.usage('<key>[=<value>]');
