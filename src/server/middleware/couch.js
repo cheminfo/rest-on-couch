@@ -31,7 +31,7 @@ exports.newEntry = function*() {
     const body = this.request.body;
     if (body) body._id = this.params.uuid;
     try {
-        yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
+        this.body = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
         this.status = 200;
     } catch (e) {
         onGetError(this, e);
