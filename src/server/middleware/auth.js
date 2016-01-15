@@ -55,6 +55,16 @@ exports.init = function(passport, _config) {
         return last;
     }
 
+    router.get('/login', function*() {
+        this.session.continue = this.session.continue || this.query.continue || '/';
+        if (this.isAuthenticated()) {
+            this.redirect(this.session.continue);
+            this.session.continue = null;
+        } else {
+            yield this.render('login');
+        }
+    });
+
     router.get('/session', function * (next){
         var that = this;
         // Check if session exists
@@ -107,10 +117,7 @@ exports.init = function(passport, _config) {
 
     router.get('/logout', function*(){
         this.logout();
-        this.body = {
-            ok: true,
-            action: 'logout'
-        };
+        this.redirect('/auth/login');
     });
 
     return router;

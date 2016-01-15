@@ -9,7 +9,7 @@ const couchUrl = require('../../../config/config').globalConfig.url;
 
 exports.init = function (passport, router) {
     passport.use(new LocalStrategy({
-            usernameField: 'name',
+            usernameField: 'username',
             passwordField: 'password'
         },
         function (username, password, done) {
@@ -35,10 +35,8 @@ exports.init = function (passport, router) {
             });
         }));
 
-    router.post('/login/couchdb', passport.authenticate('local'), function*() {
-        this.body = {
-            ok: true,
-            name: yield auth.getUserEmail(this)
-        };
-    });
+    router.post('/login/couchdb', passport.authenticate('local', {
+        successRedirect: '/auth/login',
+        failureRedirect: '/auth/login'
+    }));
 };
