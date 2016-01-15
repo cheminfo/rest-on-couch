@@ -10,6 +10,8 @@ const nanoPromise = require('./util/nanoPromise');
 const log = require('./couch/log');
 const getConfig = require('./config/config').getConfig;
 const co = require('co');
+const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
+const isEmail = require('./util/isEmail');
 
 const basicRights = {
     $type: 'db',
@@ -329,6 +331,24 @@ class Couch {
                         entry._rev = body.rev;
                         return this.insertEntry(entry, user);
                     });
+            });
+    }
+
+    addGlobalRight(type, user) {
+        if(globalRightTypes.indexOf(type) === -1) {
+            return Promise.reject(new Error('Invalid global right type', 'bad argument'));
+        }
+        if(!isValidGlobalRightUser(user)) {
+            return Promise.reject(new Error('Invalid global right user', 'bad argument'));
+        }
+        return nanoPromise.getDocument(this._db, 'rights')
+            .then(doc => {
+                if(!doc) throw new Error('Rights document should always exist', 'unreachable');
+                if(!doc[type]) doc[type] = [];
+                if(doc[type].indexOf(user) === -1) {
+                    doc[type].push(user);
+                }
+                return nanoPromise.insertDocument(this._db, doc);
             });
     }
 
@@ -672,4 +692,8 @@ function getAttachmentFromEntry(db, name, asStream) {
             throw new CouchError(`attachment ${name} not found`);
         }
     };
+}
+
+function isValidGlobalRightUser(user) {
+    return user === 'anonymous' || user === 'anyuser' || isEmail(user);
 }
