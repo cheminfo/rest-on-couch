@@ -44,7 +44,6 @@
     "kcors": "^1.0.1",
     "koa": "^1.1.2",
     "koa-bodyparser": "^2.0.1",
-    "koa-ejs": "^3.0.0",
     "koa-passport": "^1.2.0",
     "koa-proxy": "^0.4.1",
     "koa-router": "^5.3.0",

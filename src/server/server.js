@@ -5,8 +5,7 @@ const bodyParser = require('koa-bodyparser');
 const cors = require('kcors');
 const http = require('http');
 const passport = require('koa-passport');
-const path = require('path');
-const render = require('koa-ejs');
+//const path = require('path');
 const router = require('koa-router')();
 const session = require('koa-session');
 
@@ -19,13 +18,13 @@ const proxy = require('./routes/proxy');
 var _started;
 var _init;
 
-render(app, {
+/*render(app, {
     root: path.join(__dirname, '../src/server/views'),
     layout: 'template',
     viewExt: 'ejs',
     cache: false,
     debug: true
-});
+});*/
 
 const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
 app.use(bodyParser({
