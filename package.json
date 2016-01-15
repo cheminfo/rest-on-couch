@@ -13,6 +13,7 @@
   "scripts": {
     "eslint": "eslint src bin test",
     "eslint-fix": "npm run eslint -- --fix",
+    "start": "./bin/rest-on-couch.js server",
     "test": "npm run test-mocha && npm run eslint && sh test/checkOnly.sh",
     "test-mocha": "mocha --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive",
     "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup"
@@ -51,6 +52,7 @@
     "lodash": "^4.0.0",
     "minimist": "^1.2.0",
     "nano": "^6.1.5",
+    "nunjucks": "^2.3.0",
     "passport-facebook": "^2.0.0",
     "passport-github": "^1.0.0",
     "passport-google": "^0.3.0",

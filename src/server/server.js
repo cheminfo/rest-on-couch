@@ -5,7 +5,7 @@ const bodyParser = require('koa-bodyparser');
 const cors = require('kcors');
 const http = require('http');
 const passport = require('koa-passport');
-//const path = require('path');
+const path = require('path');
 const router = require('koa-router')();
 const session = require('koa-session');
 
@@ -13,18 +13,16 @@ const api = require('./routes/api');
 const auth = require('./middleware/auth');
 const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
+const nunjucks = require('./nunjucks');
 const proxy = require('./routes/proxy');
 
 var _started;
 var _init;
 
-/*render(app, {
-    root: path.join(__dirname, '../src/server/views'),
-    layout: 'template',
-    viewExt: 'ejs',
-    cache: false,
-    debug: true
-});*/
+nunjucks(app, {
+    root: path.join(__dirname, 'views'),
+    ext: 'html'
+});
 
 const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
 app.use(bodyParser({
@@ -46,8 +44,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 app.on('error', printError);
+
+router.get('/', function*() {
+    yield this.render('index', {hello: 'world'});
+});
 
 module.exports.init = function() {
     if (_init) return;
