@@ -1,6 +1,5 @@
 'use strict';
 
-const FlavorUtils = require('flavor-utils');
 const router = require('koa-router')({
     prefix: '/auth'
 });
@@ -65,54 +64,15 @@ exports.init = function(passport, _config) {
         }
     });
 
-    router.get('/session', function * (next){
+    router.get('/session', function*(){
         var that = this;
         // Check if session exists
         var email = yield exports.getUserEmail(that);
-        this.body = JSON.stringify({
+        this.body = {
             ok: true,
-            userCtx: {
-                name: email
-            }
-        });
-        try {
-            var parsedPath = url.parse(config.couchUrl);
-            parsedPath.auth = config.couchUsername + ':' + config.couchPassword;
-            var fullUrl = url.format(parsedPath);
-            if (!config.firstLoginClone || !email){
-                return yield next;
-            }
-
-            var hasViews = yield FlavorUtils.hasViews({
-                couchUrl: fullUrl,
-                couchDatabase: config.couchDatabase,
-                username: email,
-                flavor: config.firstLoginClone.targetFlavor
-            });
-            if (hasViews) {
-                return yield next;
-            }
-
-            yield FlavorUtils.cloneFlavor({
-                source: {
-                    couchUrl: fullUrl,
-                    couchDatabase: config.couchDatabase,
-                    username: config.firstLoginClone.sourceUser,
-                    flavor: config.firstLoginClone.sourceFlavor
-                },
-                target: {
-                    couchUrl: fullUrl,
-                    couchDatabase: config.couchDatabase,
-                    username: email,
-                    flavor: config.firstLoginClone.targetFlavor,
-                    subFolder: config.firstLoginClone.targetSubFolder
-                }
-            });
-        } catch (e) {
-            yield next;
-        }
-
-        yield next;
+            username: email,
+            authenticated: this.isAuthenticated()
+        };
     });
 
     router.get('/logout', function*(){
