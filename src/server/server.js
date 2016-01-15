@@ -30,6 +30,7 @@ if (!proxyPrefix.startsWith('/')) {
 if (!proxyPrefix.endsWith('/')) {
     proxyPrefix = proxyPrefix + '/';
 }
+
 debug(`proxy prefix: ${proxyPrefix}`);
 if (proxyPrefix !== '/') {
     const _redirect = app.context.redirect;
@@ -42,6 +43,7 @@ if (proxyPrefix !== '/') {
 }
 
 app.use(function*(next) {
+    this.state.pathPrefix = proxyPrefix;
     this.state.urlPrefix = this.origin + proxyPrefix;
     yield next;
 });
