@@ -16,7 +16,7 @@ describe('Access based on global rights', function () {
     });
 });
 
-describe.only('Edit global rights', function ()  {
+describe('Edit global rights', function ()  {
     before(noRights);
 
     it('Should only accept valid types', function () {
