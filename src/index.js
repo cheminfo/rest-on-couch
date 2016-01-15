@@ -334,22 +334,43 @@ class Couch {
             });
     }
 
-    addGlobalRight(type, user) {
-        if(globalRightTypes.indexOf(type) === -1) {
-            return Promise.reject(new Error('Invalid global right type', 'bad argument'));
+    editGlobalRight(type, user, action) {
+        if(action !== 'add' && action !== 'remove') {
+            return Promise.reject(new CouchError('Edit global right invalid action', 'bad argument'));
         }
-        if(!isValidGlobalRightUser(user)) {
-            return Promise.reject(new Error('Invalid global right user', 'bad argument'));
+        let e;
+        if(e = checkGlobalTypeAndUser(type, user)) {
+            return Promise.reject(e);
         }
+
         return nanoPromise.getDocument(this._db, 'rights')
             .then(doc => {
                 if(!doc) throw new Error('Rights document should always exist', 'unreachable');
-                if(!doc[type]) doc[type] = [];
-                if(doc[type].indexOf(user) === -1) {
-                    doc[type].push(user);
+                if(action === 'add') {
+                    if(!doc[type]) doc[type] = [];
+                    if(doc[type].indexOf(user) === -1) {
+                        doc[type].push(user);
+                    }
                 }
+                if(action === 'remove') {
+                    if(doc[type]) {
+                        const idx = doc[type].indexOf(user);
+                        if(idx !== -1) {
+                            doc[type].splice(idx, 1);
+                        }
+                    }
+                }
+
                 return nanoPromise.insertDocument(this._db, doc);
             });
+    }
+
+    addGlobalRight(type, user) {
+        return this.editGlobalRight(type, user, 'add');
+    }
+
+    removeGlobalRight(type, user) {
+        return this.editGlobalRight(type, user, 'remove');
     }
 
     addGroupToEntry(id, user, group) {
@@ -696,4 +717,13 @@ function getAttachmentFromEntry(db, name, asStream) {
 
 function isValidGlobalRightUser(user) {
     return user === 'anonymous' || user === 'anyuser' || isEmail(user);
+}
+
+function checkGlobalTypeAndUser(type, user) {
+    if(globalRightTypes.indexOf(type) === -1) {
+        return new CouchError('Invalid global right type', 'bad argument');
+    }
+    if(!isValidGlobalRightUser(user)) {
+        return new CouchError('Invalid global right user', 'bad argument');
+    }
 }

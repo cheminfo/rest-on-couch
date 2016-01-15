@@ -33,4 +33,10 @@ describe.only('Edit global rights', function ()  {
             .should.eventually.be.an.instanceOf(Object);
     });
 
+    it('Sould remove global read right and not grant access anymore', function () {
+        return couch.removeGlobalRight('read', 'a@a.com')
+            .then(() => couch.getEntryById('B', 'a@a.com'))
+            .should.be.rejectedWith(/no access/);
+    })
+
 });
