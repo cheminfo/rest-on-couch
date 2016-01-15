@@ -19,6 +19,33 @@ const proxy = require('./routes/proxy');
 var _started;
 var _init;
 
+// trust X-Forwarded- headers
+app.proxy = config.proxy;
+
+// support proxyPrefix in this.redirect()
+let proxyPrefix = config.proxyPrefix || '/';
+if (!proxyPrefix.startsWith('/')) {
+    proxyPrefix = '/' + proxyPrefix;
+}
+if (!proxyPrefix.endsWith('/')) {
+    proxyPrefix = proxyPrefix + '/';
+}
+debug(`proxy prefix: ${proxyPrefix}`);
+if (proxyPrefix !== '/') {
+    const _redirect = app.context.redirect;
+    app.context.redirect = function (url, alt) {
+        if (typeof url === 'string' && url.startsWith('/')) {
+            url = proxyPrefix + url.substring(1);
+        }
+        return _redirect.call(this, url, alt);
+    };
+}
+
+app.use(function*(next) {
+    this.state.urlPrefix = this.origin + proxyPrefix;
+    yield next;
+});
+
 nunjucks(app, {
     root: path.join(__dirname, 'views'),
     ext: 'html'

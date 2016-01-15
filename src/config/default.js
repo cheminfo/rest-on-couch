@@ -7,5 +7,7 @@ module.exports = {
         couchdb: {}
     },
     port: 3000,
-    authServers: []
+    authServers: [],
+    proxy: true,
+    proxyPrefix: '/'
 };
