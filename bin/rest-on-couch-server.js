@@ -11,7 +11,6 @@ program
     .option('-c --config <path>', 'Path to custom config file')
     .parse(process.argv);
 
-server.init();
 server.start().then(() => {
     debug('server started successfully');
 });

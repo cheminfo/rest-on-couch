@@ -6,18 +6,17 @@ const cors = require('kcors');
 const http = require('http');
 const passport = require('koa-passport');
 const path = require('path');
-const router = require('koa-router')();
 const session = require('koa-session');
-
 const api = require('./routes/api');
+
 const auth = require('./middleware/auth');
 const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
 const nunjucks = require('./nunjucks');
 const proxy = require('./routes/proxy');
+const router = require('./routes/main');
 
-var _started;
-var _init;
+let _started;
 
 // trust X-Forwarded- headers
 app.proxy = config.proxy;
@@ -41,12 +40,6 @@ if (proxyPrefix !== '/') {
         return _redirect.call(this, url, alt);
     };
 }
-
-app.use(function*(next) {
-    this.state.pathPrefix = proxyPrefix;
-    this.state.urlPrefix = this.origin + proxyPrefix;
-    yield next;
-});
 
 nunjucks(app, {
     root: path.join(__dirname, 'views'),
@@ -73,35 +66,36 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.on('error', printError);
-
-router.get('/', function*() {
-    yield this.render('index', {hello: 'world'});
+app.use(function*(next) {
+    this.state.pathPrefix = proxyPrefix;
+    this.state.urlPrefix = this.origin + proxyPrefix;
+    yield next;
 });
 
-module.exports.init = function() {
-    if (_init) return;
-    _init = true;
+app.on('error', printError);
 
-    router.use(auth.init(passport, config).routes());
-    router.use(proxy.init(config).routes());
-    router.use(api.init(config).routes());
+//Unhandled errors
+if (config.debugrest) {
+    // In debug mode, show unhandled errors to the user
+    app.use(function *(next) {
+        try {
+            yield next;
+        } catch (err) {
+            this.status = err.status || 500;
+            this.body = err.message + '\n' + err.stack;
+            printError(err);
+        }
+    });
+}
 
-    //Unhandled errors
-    if (config.debugrest) {
-        // In debug mode, show unhandled errors to the user
-        app.use(function *(next) {
-            try {
-                yield next;
-            } catch (err) {
-                this.status = err.status || 500;
-                this.body = err.message + '\n' + err.stack;
-                printError(err);
-            }
-        });
-    }
-    app.use(router.routes());
-};
+// Main routes
+app.use(router.routes());
+// Authentication
+app.use(auth.init(passport, config).routes());
+// Proxy to CouchDB
+app.use(proxy.init(config).routes());
+// ROC API
+app.use(api.init(config).routes());
 
 module.exports.start = function () {
     if (_started) return _started;
