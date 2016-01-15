@@ -4,8 +4,6 @@ const server = require('../../src/server/server');
 const data = require('../data/noRights');
 const supertest = require('supertest-as-promised')(Promise);
 
-server.init('src/server/config.test.json');
-
 let request = supertest.agent(server.app.callback());
 
 function authenticateAs(user) {

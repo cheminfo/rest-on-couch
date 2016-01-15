@@ -4,6 +4,7 @@
 
 | Method | Route | Action | Description |
 | ------ | ----- | ------ | ----------- |
+| GET | `/auth/login` | login home | Shows login options or redirects the user if he is already authenticated.<br>Optional parameter for redirect: `continue` |
 | GET | `/auth/login/:method` | login | Creates a session.<br>Method can be `couch`, `github`, `google`, ... |
 | GET | `/auth/logout` | logout |
 | GET | `/auth/session` | get info on current session |
