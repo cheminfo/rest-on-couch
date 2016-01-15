@@ -4,7 +4,6 @@ const router = require('koa-router')({
     prefix: '/auth'
 });
 const superagent = require('superagent-promise')(require('superagent'), Promise);
-const url = require('url');
 
 const debug = require('../../util/debug')('auth');
 const die = require('../../util/die');

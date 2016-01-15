@@ -4,7 +4,6 @@ const co = require('co');
 const LocalStrategy = require('passport-local').Strategy;
 const request = require('co-request');
 
-const auth = require('../../middleware/auth');
 const couchUrl = require('../../../config/config').globalConfig.url;
 
 exports.init = function (passport, router) {
