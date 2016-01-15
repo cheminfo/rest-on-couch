@@ -37,6 +37,6 @@ describe.only('Edit global rights', function ()  {
         return couch.removeGlobalRight('read', 'a@a.com')
             .then(() => couch.getEntryById('B', 'a@a.com'))
             .should.be.rejectedWith(/no access/);
-    })
+    });
 
 });

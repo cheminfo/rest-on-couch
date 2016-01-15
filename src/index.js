@@ -335,27 +335,27 @@ class Couch {
     }
 
     editGlobalRight(type, user, action) {
-        if(action !== 'add' && action !== 'remove') {
+        if (action !== 'add' && action !== 'remove') {
             return Promise.reject(new CouchError('Edit global right invalid action', 'bad argument'));
         }
         let e;
-        if(e = checkGlobalTypeAndUser(type, user)) {
+        if (e = checkGlobalTypeAndUser(type, user)) {
             return Promise.reject(e);
         }
 
         return nanoPromise.getDocument(this._db, 'rights')
             .then(doc => {
-                if(!doc) throw new Error('Rights document should always exist', 'unreachable');
-                if(action === 'add') {
-                    if(!doc[type]) doc[type] = [];
-                    if(doc[type].indexOf(user) === -1) {
+                if (!doc) throw new Error('Rights document should always exist', 'unreachable');
+                if (action === 'add') {
+                    if (!doc[type]) doc[type] = [];
+                    if (doc[type].indexOf(user) === -1) {
                         doc[type].push(user);
                     }
                 }
-                if(action === 'remove') {
-                    if(doc[type]) {
+                if (action === 'remove') {
+                    if (doc[type]) {
                         const idx = doc[type].indexOf(user);
-                        if(idx !== -1) {
+                        if (idx !== -1) {
                             doc[type].splice(idx, 1);
                         }
                     }
@@ -720,10 +720,10 @@ function isValidGlobalRightUser(user) {
 }
 
 function checkGlobalTypeAndUser(type, user) {
-    if(globalRightTypes.indexOf(type) === -1) {
+    if (globalRightTypes.indexOf(type) === -1) {
         return new CouchError('Invalid global right type', 'bad argument');
     }
-    if(!isValidGlobalRightUser(user)) {
+    if (!isValidGlobalRightUser(user)) {
         return new CouchError('Invalid global right user', 'bad argument');
     }
 }
