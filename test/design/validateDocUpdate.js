@@ -34,6 +34,12 @@ describe('validate_doc_update', function () {
             addGroup({name: 'abc'});
             assert(addGroup({name: 'a@a.com'}), null, /cannot be an email/);
         });
+        it('db', function () {
+            assert(addRight({create: ''}), null, /always be an array/);
+            assert(addRight({write: 0}), null, /always be an array/);
+            assert(addRight({read: ''}), null, /always be an array/);
+            assert(addRight({createGroup: ''}), null, /always be an array/);
+        });
     });
 });
 
@@ -46,6 +52,11 @@ function assert(newDoc, oldDoc, reg) {
 function addDate(doc) {
     doc.$creationDate = 100;
     doc.$modificationDate = 100;
+    return doc;
+}
+
+function addRight(doc) {
+    doc.$type = 'db';
     return doc;
 }
 

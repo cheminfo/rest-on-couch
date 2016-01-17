@@ -6,6 +6,7 @@ module.exports = function (newDoc, oldDoc) {
         return;
     }
     var validTypes = ['entry', 'group', 'db', 'log'];
+    var validRights = ['create', 'read', 'write', 'createGroup'];
     // see http://emailregex.com/
     var validEmail = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
 
@@ -57,5 +58,11 @@ module.exports = function (newDoc, oldDoc) {
         }
     } else if (newDoc.$type === 'log' && oldDoc) {
         throw({forbidden: 'Logs cannot be changed'});
+    } else if(newDoc.$type === 'db') {
+        for(var i=0; i<validRights.length; i++) {
+            if(newDoc[validRights[i]] !== undefined && !Array.isArray(newDoc[validRights[i]])) {
+                throw({forbidden: 'global db right should always be an array'});
+            }
+        }
     }
 };
