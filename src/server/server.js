@@ -52,6 +52,7 @@ app.use(bodyParser({
 }));
 
 const allowedOrigins = config.allowedOrigins || [];
+debug(`allowed cors origins: ${allowedOrigins}`);
 app.use(cors({
     origin: ctx => {
         const origin = ctx.origin;
