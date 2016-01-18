@@ -40,6 +40,15 @@ TODO
 
 ```rest-on-couch <command> --help``` for more details
 
+### Configuration
+
+The configuration is being read on load from many sources, in the following order (ascending priority):
+1. home configuration file (by default: `~/.rest-on-couch-config`, can be set to another file with `REST_ON_COUCH_CONFIG` environment variable)
+2. main configuration file (`config.js` in ROC`s home directory)
+3. database configuration file
+4. environment variable (only for string values)
+5. custom config file passed with `--config` in the CLI
+
 ## License
 
   [MIT](./LICENSE)
