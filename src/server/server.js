@@ -55,7 +55,7 @@ const allowedOrigins = config.allowedOrigins || [];
 debug(`allowed cors origins: ${allowedOrigins}`);
 app.use(cors({
     origin: ctx => {
-        const origin = ctx.origin;
+        const origin = ctx.get('Origin');
         for (var i = 0; i < allowedOrigins.length; i++) {
             if (allowedOrigins[i] === origin) {
                 return origin;
