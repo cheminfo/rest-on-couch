@@ -3,7 +3,8 @@
 const router = require('koa-router')();
 
 router.get('/', function*() {
-    yield this.render('index', {hello: 'world'});
+    this.state.hello = 'world';
+    yield this.render('index');
 });
 
 module.exports = router;
