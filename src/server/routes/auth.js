@@ -17,6 +17,8 @@ const authPlugins = [
     'ldap'
 ];
 
+const enabledAuthPlugins = [];
+
 if (config.auth) {
     authPlugins.forEach(function (authPlugin) {
         if (!config.auth[authPlugin]) {
@@ -25,11 +27,15 @@ if (config.auth) {
         try {
             debug(`loading auth plugin: ${authPlugin}`);
             require(`../auth/${authPlugin}/index.js`).init(passport, router, config.auth[authPlugin]);
+            enabledAuthPlugins.push(authPlugin);
         } catch (e) {
             debug.error(e);
             die(`could not init auth middleware: ${e.message}`);
         }
     });
+    if (enabledAuthPlugins.length === 0) {
+        debug.error('no authentication plugin was loaded');
+    }
 }
 
 router.get('/login', function*() {
@@ -38,6 +44,7 @@ router.get('/login', function*() {
         this.redirect(this.session.continue);
         this.session.continue = null;
     } else {
+        this.state.enabledAuthPlugins = enabledAuthPlugins;
         yield this.render('login');
     }
 });
