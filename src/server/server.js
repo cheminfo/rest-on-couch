@@ -50,7 +50,20 @@ const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
 app.use(bodyParser({
     jsonLimit: '100mb'
 }));
-app.use(cors());
+
+const allowedOrigins = config.allowedOrigins || [];
+app.use(cors({
+    origin: ctx => {
+        const origin = ctx.origin;
+        for (var i = 0; i < allowedOrigins.length; i++) {
+            if (allowedOrigins[i] === origin) {
+                return origin;
+            }
+        }
+        return null;
+    },
+    credentials: true
+}));
 
 app.keys = ['some secret'];
 app.use(session({
