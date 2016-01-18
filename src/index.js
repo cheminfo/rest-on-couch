@@ -205,16 +205,18 @@ class Couch {
             .then(() => getOwnersById(this._db, id))
             .then(owners => {
                 if (owners.length === 0) {
-                    debug.trace('document not found');
+                    debug.trace(`no entry matching id ${id}`);
                     throw new CouchError('document not found', 'not found');
                 }
-                debug.trace('check rights');
-                // TODO handle more than one result
-                return validateRights(this._db, owners[0].value, user, rights)
+                let hisEntry = owners.find(own => own.value[0] === user);
+                if (!hisEntry) {
+                    hisEntry = owners[0];
+                }
+                return validateRights(this._db, hisEntry.value, user, rights)
                     .then(ok => {
                         if (ok[0]) {
                             debug.trace('user has access');
-                            return nanoPromise.getDocument(this._db, owners[0].id);
+                            return nanoPromise.getDocument(this._db, hisEntry.id);
                         }
                         debug.trace('user has no access');
                         throw new CouchError('user has no access', 'unauthorized');

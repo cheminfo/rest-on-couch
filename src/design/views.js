@@ -20,6 +20,19 @@ views.entryById = {
     type: 'string'
 };
 
+views.entryByOwnerAndId = {
+    map: function (doc) {
+        if (doc.$type !== 'entry') return;
+        emit([doc.$owners[0], doc.$id]);
+    }
+};
+
+views.entryByKindAndId = {
+    map: function (doc) {
+        if (doc.$type !== 'entry') return;
+        emit([doc.$kind ? doc.$kind : null, doc.$id]);
+    }
+};
 
 views.entryByCreationDate = {
     map: function (doc) {
