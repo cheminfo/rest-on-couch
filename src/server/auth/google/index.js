@@ -30,15 +30,15 @@
 //}
 //}
 
-exports.init = function(passport, router, config) {
-    var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
+exports.init = function (passport, router, config) {
     passport.use(new GoogleStrategy({
             clientID: config.clientID,
             clientSecret: config.clientSecret,
             callbackURL: config.publicAddress + config.callbackURL
         },
-        function(accessToken, refreshToken, profile, done) {
+        function (accessToken, refreshToken, profile, done) {
             done(null, {
                 provider: 'google',
                 email: profile.email
@@ -49,7 +49,7 @@ exports.init = function(passport, router, config) {
     router.get(config.loginURL, function*(next) {
         this.session.redirect = config.successRedirect + '?' + this.request.querystring;
         yield next;
-    }, passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.email'] }));
+    }, passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/userinfo.email']}));
 
     router.get(config.callbackURL,
         passport.authenticate('google', {
