@@ -61,7 +61,7 @@ app.use(cors({
                 return origin;
             }
         }
-        return null;
+        return '*';
     },
     credentials: true
 }));
