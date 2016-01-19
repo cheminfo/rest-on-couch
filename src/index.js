@@ -269,6 +269,16 @@ class Couch {
             });
     }
 
+    _doUpdateOnEntryByUuid(uuid, user, update, updateBody) {
+        return this._init()
+            .then(() => this.getEntryByUuid(uuid, user))
+            .then(doc => {
+                const hasRight = isOwner(doc.$owners, user);
+                if (!hasRight) throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
+                return nanoPromise.updateWithHandler(this._db, update, uuid, updateBody);
+            });
+    }
+
     addAttachments(id, user, attachments) {
         if (!Array.isArray(attachments)) {
             attachments = [attachments];
@@ -377,7 +387,12 @@ class Couch {
 
     addGroupToEntry(id, user, group) {
         debug(`addGroupToEntry (${id}, ${user}, ${group})`);
-        return this._doUpdateOnEntry(id, user, 'addGroupToEntry', {group: group});
+        return this._doUpdateOnEntry(id, user, 'addGroupToEntry', {group});
+    }
+
+    addGroupToEntryByUuid(uuid, user, group) {
+        debug(`addGroupToEntryByUuid (${uuid}, ${user}, ${group})`);
+        return this._doUpdateOnEntryByUuid(uuid, user, 'addGroupToEntry', {group})
     }
 
     removeGroupFromEntry(id, user, group) {
@@ -430,7 +445,7 @@ class Couch {
         options = options || {};
         var groups = options.groups || [];
         if (!entry.$content) return Promise.reject(new CouchError('entry has no content'));
-        if (groups !== undefined && !Array.isArray(groups)) return Promise.reject(new CouchError('groups should an arary if defined', 'invalid argument'));
+        if (groups !== undefined && !Array.isArray(groups)) return Promise.reject(new CouchError('groups should be an array if defined', 'invalid argument'));
 
         let prom, res;
 
@@ -450,7 +465,7 @@ class Couch {
                     beforeSaveEntry(doc, user);
                     return nanoPromise.insertDocument(this._db, doc)
                         .then(r => res = r)
-                        .then(addGroups(this, doc.$id, user, groups));
+                        .then(addGroups(this, user, groups));
                 }).catch(error => {
                     if (error.reason === 'not found') {
                         debug.trace('doc not found');
@@ -460,7 +475,7 @@ class Couch {
 
                         return createNew(this, entry, user)
                             .then(r => res = r)
-                            .then(addGroups(this, entry.$id, user, groups));
+                            .then(addGroups(this, user, groups));
                     } else {
                         throw error;
                     }
@@ -472,7 +487,7 @@ class Couch {
             }
             prom = createNew(this, entry, user)
                 .then(r => res = r)
-                .then(addGroups(this, entry.$id, user, groups));
+                .then(addGroups(this, user, groups));
         }
 
         return prom.then(() => res);
@@ -655,11 +670,11 @@ function createNew(ctx, entry, user) {
     });
 }
 
-function addGroups(ctx, entryId, user, groups) {
-    return () => {
+function addGroups(ctx, user, groups) {
+    return doc => {
         let prom = Promise.resolve();
         for (let i = 0; i < groups.length; i++) {
-            prom = prom.then(() => ctx.addGroupToEntry(entryId, user, groups[i]));
+            prom = prom.then(() => ctx.addGroupToEntryByUuid(doc.id, user, groups[i]));
         }
         return prom;
     };
@@ -682,7 +697,7 @@ function createRightsDoc(db, rightsDoc) {
 }
 
 function checkGlobalRight(db, user, right) {
-    debug.trace(`checkGlobalRight (${user}. ${right}`);
+    debug.trace(`checkGlobalRight (${user}. ${right})`);
     return nanoPromise.queryView(db, 'globalRight', {key: right}, {onlyValue: true})
         .then(function (result) {
             for (var i = 0; i < result.length; i++) {
@@ -711,6 +726,9 @@ function getDefaultEntry() {
 }
 
 function beforeSaveEntry(entry, user) {
+    if (entry.$id === undefined) {
+        entry.$id = null;
+    }
     const now = Date.now();
     entry.$lastModification = user;
     entry.$modificationDate = now;

@@ -34,9 +34,6 @@ module.exports = function (newDoc, oldDoc) {
         }
         validateOwners(newDoc);
     } else if (newDoc.$type === 'entry') {
-        if (!newDoc.$id) {
-            throw({forbidden: 'ID is mandatory'});
-        }
         if (typeof newDoc.$creationDate !== 'number' || typeof newDoc.$modificationDate !== 'number') {
             throw({forbidden: 'Creation and modification dates are mandatory'});
         }

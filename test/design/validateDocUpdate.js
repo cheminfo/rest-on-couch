@@ -2,6 +2,11 @@
 
 const validateDocUpdate = require('../../src/design/validateDocUpdate');
 
+// TODO workaround for CentOS 6.
+global.isArray = function (obj) {
+    return Array.isArray(obj);
+};
+
 describe('validate_doc_update', function () {
     describe('general', function () {
         it('$type', function () {
@@ -11,7 +16,6 @@ describe('validate_doc_update', function () {
     });
     describe('$type: entry', function () {
         it('id', function () {
-            assert({$type: 'entry'}, null, 'ID is mandatory');
             assert(
                 addOwners(addDate({$type: 'entry', $id: 'abc'})),
                 addOwners(addDate({$type: 'entry', $id: 'xyz'})),
