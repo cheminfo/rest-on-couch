@@ -392,7 +392,7 @@ class Couch {
 
     addGroupToEntryByUuid(uuid, user, group) {
         debug(`addGroupToEntryByUuid (${uuid}, ${user}, ${group})`);
-        return this._doUpdateOnEntryByUuid(uuid, user, 'addGroupToEntry', {group})
+        return this._doUpdateOnEntryByUuid(uuid, user, 'addGroupToEntry', {group});
     }
 
     removeGroupFromEntry(id, user, group) {
