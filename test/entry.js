@@ -55,6 +55,26 @@ describe('entry editions', function () {
         }, 'z@z.com').should.be.rejectedWith(/has no content/);
     });
 
+    it('update entry should reject if entry does not exist', function () {
+        return couch.insertEntry({
+            _id: 'new',
+            $content: {}
+        }, 'z@z.com', {isUpdate: true}).should.be.rejectedWith(/does not exist/);
+    });
+
+    it('update entry without _id should reject', function () {
+        return couch.insertEntry({
+            $content: {}
+        }, 'z@z.com', {isUpdate: true}).should.be.rejectedWith(/should have an _id/);
+    });
+
+    it.only('create new entry that has an _id is not possible', function () {
+        return couch.insertEntry({
+            $content: {},
+            _id: 'new'
+        }, 'z@z.com', {isNew: true}).should.be.rejectedWith(/should not have _id/);
+    });
+
     it('anybody not anonymous can insert a new entry (without _id)', function () {
         return couch.insertEntry(constants.newEntry, 'z@z.com').then(res => {
             res.id.should.be.an.instanceOf(String);

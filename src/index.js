@@ -455,7 +455,7 @@ class Couch {
                     if (error.reason === 'not found') {
                         debug.trace('doc not found');
                         if (options.isUpdate) {
-                            throw new CouchError('Document already exists', 'conflict');
+                            throw new CouchError('Document does not exist', 'not found');
                         }
 
                         return createNew(this, entry, user)
@@ -468,7 +468,7 @@ class Couch {
         } else {
             debug.trace('entry has no _id');
             if (options.isUpdate) {
-                throw new CouchError('entry should have an _id', 'bad argument');
+                return Promise.reject(new CouchError('entry should have an _id', 'bad argument'));
             }
             prom = createNew(this, entry, user)
                 .then(r => res = r)
