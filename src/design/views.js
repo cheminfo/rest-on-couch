@@ -91,7 +91,7 @@ views.globalRight = {
     map: function (doc) {
         if (doc._id !== 'rights') return;
         for (var i in doc) {
-            if (Array.isArray(doc[i])) {
+            if (isArray(doc[i])) {
                 for (var j = 0; j < doc[i].length; j++) {
                     emit(i, doc[i][j]);
                 }
