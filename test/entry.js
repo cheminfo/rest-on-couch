@@ -68,7 +68,7 @@ describe('entry editions', function () {
         }, 'z@z.com', {isUpdate: true}).should.be.rejectedWith(/should have an _id/);
     });
 
-    it.only('create new entry that has an _id is not possible', function () {
+    it('create new entry that has an _id is not possible', function () {
         return couch.insertEntry({
             $content: {},
             _id: 'new'
