@@ -112,7 +112,7 @@ class Couch {
             .then(() => checkRightAnyGroup(this._db, user, 'create'))
             .then(hasRight => {
                 if (!hasRight) {
-                    debug.trace('user is missing create right');
+                    debug.trace(`user ${user} is missing create right`);
                     throw new CouchError('user is missing create right', 'unauthorized');
                 }
                 return nanoPromise.queryView(this._db, 'entryById', {key: id})
@@ -215,10 +215,10 @@ class Couch {
                 return validateRights(this._db, hisEntry.value, user, rights)
                     .then(ok => {
                         if (ok[0]) {
-                            debug.trace('user has access');
+                            debug.trace(`user ${user} has access`);
                             return nanoPromise.getDocument(this._db, hisEntry.id);
                         }
-                        debug.trace('user has no access');
+                        debug.trace(`user ${user} has no access`);
                         throw new CouchError('user has no access', 'unauthorized');
                     });
             });
@@ -241,10 +241,10 @@ class Couch {
                 return validateRights(this._db, doc.$owners, user, rights)
                     .then(ok => {
                         if (ok[0]) {
-                            debug.trace('user has access');
+                            debug.trace(`user ${user} has access`);
                             return doc;
                         }
-                        debug.trace('user has no access');
+                        debug.trace(`user ${user} has no access`);
                         throw new CouchError('user has no access', 'unauthorized');
                     });
             });
@@ -425,13 +425,19 @@ class Couch {
             });
     }
 
-    insertEntry(entry, user, groups) {
-        debug(`insertEntry (${entry._id}, ${user}, ${groups})`);
-        groups = groups || [];
+    insertEntry(entry, user, options) {
+        debug(`insertEntry (${entry._id}, ${user}, ${options})`);
+        options = options || {};
+        var groups = options.groups || [];
         if (!entry.$content) return Promise.reject(new CouchError('entry has no content'));
         if (groups !== undefined && !Array.isArray(groups)) return Promise.reject(new CouchError('groups should an arary if defined', 'invalid argument'));
 
         let prom, res;
+
+        if (entry._id && options.isNew) {
+            debug.trace('new entry has _id');
+            return Promise.reject(new CouchError('entry should not have _id', 'bad argument'));
+        }
         if (entry._id) {
             prom = this.getEntryByUuidAndRights(entry._id, user, ['write'])
                 .then(doc => {
@@ -448,16 +454,22 @@ class Couch {
                 }).catch(error => {
                     if (error.reason === 'not found') {
                         debug.trace('doc not found');
+                        if (options.isUpdate) {
+                            throw new CouchError('Document already exists', 'conflict');
+                        }
+
                         return createNew(this, entry, user)
                             .then(r => res = r)
                             .then(addGroups(this, entry.$id, user, groups));
                     } else {
-                        debug.warn('error getting document');
                         throw error;
                     }
                 });
         } else {
             debug.trace('entry has no _id');
+            if (options.isUpdate) {
+                throw new CouchError('entry should have an _id', 'bad argument');
+            }
             prom = createNew(this, entry, user)
                 .then(r => res = r)
                 .then(addGroups(this, entry.$id, user, groups));
@@ -623,7 +635,7 @@ function getGroup(db, name) {
 }
 
 function createNew(ctx, entry, user) {
-    debug.trace('check create right');
+    debug.trace('create new');
     return checkGlobalRight(ctx._db, user, 'create').then(ok => {
         if (ok) {
             debug.trace('has right, create new');
@@ -675,11 +687,11 @@ function checkGlobalRight(db, user, right) {
         .then(function (result) {
             for (var i = 0; i < result.length; i++) {
                 if (result[i] === 'anonymous' || result[i] === user || result[i] === 'anyuser' && user !== 'anonymous') {
-                    debug.trace('user has global right');
+                    debug.trace(`user ${user} has global right`);
                     return true;
                 }
             }
-            debug.trace('user does not have global right');
+            debug.trace(`user ${user} does not have global right`);
             return false;
         });
 }

@@ -42,7 +42,7 @@ describe('entry reads', function () {
     });
 });
 
-describe('entry editons', function () {
+describe('entry editions', function () {
     beforeEach(data);
 
     it('anonymous cannot insert a new entry', function () {
@@ -70,7 +70,7 @@ describe('entry editons', function () {
     });
 
     it('insert new entry with groups', function () {
-        return couch.insertEntry(constants.newEntry, 'z@z.com', ['groupX', 'groupY'])
+        return couch.insertEntry(constants.newEntry, 'z@z.com', {groups: ['groupX', 'groupY']})
             .then(() => couch.getEntryById('C', 'z@z.com'))
             .then(entry => {
                 entry.$owners.should.have.length(3);
