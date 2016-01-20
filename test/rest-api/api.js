@@ -1,18 +1,18 @@
 'use strict';
 
-const server = require('../../src/server/server');
 const data = require('../data/noRights');
-const supertest = require('supertest-as-promised')(Promise);
+const request = require('../setup').getAgent();
 
-let request = supertest.agent(server.app.callback());
-
-function noop() {}
-
-function authenticateAs(user) {
+function authenticateAs(username, password) {
     return request.post('/auth/login/couchdb')
         .type('form')
-        .send({username: user, password: '123'})
-        .then(noop);
+        .send({username, password})
+        .then(() => request.get('/auth/session'))
+        .then(res => {
+            if (!res.body.authenticated) {
+                throw new Error(`Could not authenticate on CouchDB as ${username}:${password}`);
+            }
+        });
 }
 
 describe('basic rest-api as anonymous', function () {
@@ -36,7 +36,7 @@ describe('basic rest-api as anonymous', function () {
 
 describe('basic rest-api as a@a.com', function () {
     before(() => {
-        return data().then(authenticateAs('b@b.com'));
+        return data().then(authenticateAs('b@b.com', '123'));
     });
 
     it('get an entry', function () {

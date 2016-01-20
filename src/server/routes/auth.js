@@ -8,6 +8,7 @@ const router = require('koa-router')({
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
 const die = require('../../util/die');
+const getUserEmail = require('../middleware/auth').getUserEmail;
 
 const authPlugins = [
     'couchdb',
@@ -57,7 +58,7 @@ router.get('/logout', function*(){
 router.get('/session', function*(){
     var that = this;
     // Check if session exists
-    var email = yield exports.getUserEmail(that);
+    var email = yield getUserEmail(that);
     this.body = {
         ok: true,
         username: email,
