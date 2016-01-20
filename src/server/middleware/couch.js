@@ -38,9 +38,9 @@ exports.updateEntry = function * () {
     }
 };
 
-exports.newEntry = function * () {
+exports.newOrUpdateEntry = function * () {
     try {
-        this.body = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail, {isNew: true});
+        this.body = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
         this.status = 200;
     } catch (e) {
         onGetError(this, e);

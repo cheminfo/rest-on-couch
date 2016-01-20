@@ -25,7 +25,7 @@ exports.init = function() {
     router.put('/:dbname/:uuid', couch.updateEntry);
 
     // Create a new document
-    router.post('/:dbname', couch.newEntry);
+    router.post('/:dbname', couch.newOrUpdateEntry);
 
     return router;
 };
