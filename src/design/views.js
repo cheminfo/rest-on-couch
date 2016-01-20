@@ -14,9 +14,9 @@ views.ownersById = {
 views.entryById = {
     map: function (doc) {
         if (doc.$type !== 'entry') return;
-        emit(doc.$id, 1);
+        emit(doc.$id);
     },
-    reduce: '_sum',
+    reduce: '_count',
     type: 'string'
 };
 
@@ -54,26 +54,27 @@ views.entryByOwner = {
         for (var i=0; i<doc.$owners.length; i++) {
             emit(doc.$owners[i]);
         }
-    }
+    },
+    reduce: '_count'
 };
 
 
 views.groupByName = {
     map: function (doc) {
         if (doc.$type !== 'group') return;
-        emit(doc.name, 1);
+        emit(doc.name);
     },
-    reduce: '_sum'
+    reduce: '_count'
 };
 
 views.groupByUser = {
     map: function (doc) {
         if (doc.$type !== 'group') return;
         for (var i = 0; i < doc.users.length; i++) {
-            emit(doc.users[i], 1);
+            emit(doc.users[i]);
         }
     },
-    reduce: '_sum'
+    reduce: '_count'
 };
 
 views.groupByUserAndRight = {
