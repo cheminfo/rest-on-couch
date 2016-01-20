@@ -72,7 +72,7 @@ exports.getDocument = function (db, docID) {
 
 exports.insertDocument = function (db, doc) {
     return new Promise((resolve, reject) => {
-        debug.trace('insertDocument ' + doc._id);
+        debug.trace(`insertDocument with _id ${doc._id}`);
         db.insert(doc, function (err, body) {
             if (err) return reject(err);
             debug.trace('document inserted');

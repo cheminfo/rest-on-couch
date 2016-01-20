@@ -2,7 +2,7 @@
 
 const constants = {
     newEntry: {
-        $id: 'C',
+        $id: 'E',
         $content: {
             test: true
         }

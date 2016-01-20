@@ -91,7 +91,7 @@ describe('entry editions', function () {
 
     it('insert new entry with groups', function () {
         return couch.insertEntry(constants.newEntry, 'z@z.com', {groups: ['groupX', 'groupY']})
-            .then(() => couch.getEntryById('C', 'z@z.com'))
+            .then(() => couch.getEntryById(constants.newEntry.$id, 'z@z.com'))
             .then(entry => {
                 entry.$owners.should.have.length(3);
         });
