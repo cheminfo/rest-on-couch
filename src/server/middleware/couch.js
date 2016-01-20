@@ -69,7 +69,8 @@ exports.getAttachmentByUuid = function*() {
 
 exports.allEntries = function*() {
     try {
-        const entries = yield this.state.couch.getEntriesByUserAndRights(this.state.userEmail, 'read', this.query);
+        const right = this.query.right || 'read';
+        const entries = yield this.state.couch.getEntriesByUserAndRights(this.state.userEmail, right, this.query);
         this.status = 200;
         this.body = entries;
     } catch (e) {
