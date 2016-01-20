@@ -2,13 +2,15 @@
 
 module.exports = {
     database: 'jdx',
-    defaultEntry: function () {
-        return {
-            parent: [],
-            name: [],
-            molecule: [],
-            nmr: []
-        };
+    defaultEntry: {
+        molecule: function() {
+            return {
+                parent: [],
+                name: [],
+                molecule: [],
+                nmr: []
+            };
+        }
     },
     customDesign: {
         version: 1,

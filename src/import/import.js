@@ -88,7 +88,8 @@ exports.import = function (database, importName, file) {
 
     function checkDocumentExists(info) {
         return couch.createEntry(info.id, info.owner, {
-            createParameters: [filename, contents]
+            createParameters: [filename, contents],
+            kind: config.kind
         }).then(() => info);
     }
 
