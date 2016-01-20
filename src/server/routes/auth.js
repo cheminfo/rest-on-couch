@@ -40,9 +40,9 @@ if (config.auth) {
 }
 
 router.get('/login', function*() {
-    this.session.continue = this.session.continue || this.query.continue || '/';
+    this.session.continue = this.query.continue || this.session.continue;
     if (this.isAuthenticated()) {
-        this.redirect(this.session.continue);
+        this.redirect(this.session.continue || '/');
         this.session.continue = null;
     } else {
         this.state.enabledAuthPlugins = enabledAuthPlugins;
