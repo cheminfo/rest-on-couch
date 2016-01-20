@@ -83,6 +83,9 @@ exports.insertDocument = function (db, doc) {
 
 exports.queryView = function (db, view, params, options) {
     options = options || {};
+    if (!options.hasOwnProperty('reduce')) {
+        options.reduce = false;
+    }
     return new Promise((resolve, reject) => {
         debug.trace(`queryView ${view}`);
         db.view(constants.DESIGN_DOC_NAME, view, params, function (err, body) {
