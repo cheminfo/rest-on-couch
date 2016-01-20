@@ -9,6 +9,8 @@ function destroy(nano, name) {
 
 function populate(db) {
     const prom = [];
+
+    // Add groups
     prom.push(nanoPromise.insertDocument(db, {
         $type: 'group',
         $owners: ['a@a.com'],
@@ -34,10 +36,31 @@ function populate(db) {
         rights: ['read']
     }));
 
+    // Add entries
     prom.push(nanoPromise.insertDocument(db, {
         $type: 'entry',
         $owners: ['b@b.com', 'groupA', 'groupB'],
         $id: 'A',
+        $creationDate: 0,
+        $modificationDate: 0,
+        $content: {}
+    }));
+
+    prom.push(nanoPromise.insertDocument(db, {
+        $type: 'entry',
+        $owners: ['a@a.com'],
+        $id: 'B',
+        _id: 'B',
+        $creationDate: 0,
+        $modificationDate: 0,
+        $content: {}
+    }));
+
+    prom.push(nanoPromise.insertDocument(db, {
+        $type: 'entry',
+        $owners: ['b@b.com'],
+        $id: 'C',
+        _id: 'C',
         $creationDate: 0,
         $modificationDate: 0,
         $content: {}

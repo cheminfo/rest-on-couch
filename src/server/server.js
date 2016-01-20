@@ -1,7 +1,7 @@
 'use strict';
 
 const app = require('koa')();
-const bodyParser = require('koa-bodyparser');
+const bodyParser = require('koa-body');
 const cors = require('kcors');
 const http = require('http');
 const passport = require('koa-passport');

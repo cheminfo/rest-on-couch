@@ -21,8 +21,11 @@ exports.init = function() {
     // Get an attachment
     router.get('/:dbname/:uuid/:attachment', couch.getAttachmentByUuid);
 
-    // Modify a document
-    router.put('/:dbname/:uuid', couch.newEntry);
+    // Update a document
+    router.put('/:dbname/:uuid', couch.updateEntry);
+
+    // Create a new document
+    router.post('/:dbname', couch.newEntry);
 
     return router;
 };

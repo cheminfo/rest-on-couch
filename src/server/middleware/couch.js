@@ -27,11 +27,20 @@ exports.getDocumentByUuid = function*() {
     }
 };
 
-exports.newEntry = function*() {
+exports.updateEntry = function * () {
     const body = this.request.body;
     if (body) body._id = this.params.uuid;
     try {
-        this.body = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
+        this.body = yield this.state.couch.insertEntry(body, this.state.userEmail, {isUpdate: true});
+        this.status = 200;
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.newEntry = function * () {
+    try {
+        this.body = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail, {isNew: true});
         this.status = 200;
     } catch (e) {
         onGetError(this, e);
@@ -84,10 +93,14 @@ function onGetError(ctx, e) {
             ctx.status = 404;
             ctx.body = 'not found';
             break;
+        case 'conflict':
+            ctx.status = 409;
+            ctx.body = 'conflict';
+            break;
         default:
             ctx.status = 500;
             ctx.body = 'internal server error';
-            debug.error(e);
+            debug.error(e + e.stack);
             break;
     }
     if (config.debugrest) {
