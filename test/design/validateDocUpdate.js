@@ -26,8 +26,14 @@ describe('validate_doc_update', function () {
             assert({$type: 'entry', $id: 'abc'}, null, /dates are mandatory/);
             assert(addOwners(addTypeID({$creationDate: 100})), null, /dates are mandatory/);
             assert(addOwners(addTypeID({$creationDate: 100, $modificationDate: 50})), null, /cannot be before/);
-            assert(addOwners(addTypeID({$creationDate: 99, $modificationDate: 100})), addTypeID({$creationDate: 100}), 'Cannot change creation date');
-            assert(addOwners(addTypeID({$creationDate: 200, $modificationDate: 220})), addTypeID({$creationDate: 200, $modificationDate: 250}), /cannot change to the past/);
+            assert(addOwners(addTypeID({
+                $creationDate: 99,
+                $modificationDate: 100
+            })), addTypeID({$creationDate: 100}), 'Cannot change creation date');
+            assert(addOwners(addTypeID({$creationDate: 200, $modificationDate: 220})), addTypeID({
+                $creationDate: 200,
+                $modificationDate: 250
+            }), /cannot change to the past/);
         });
         it('owners', function () {
             assert(addDate(addTypeID({$owners: []})), null, /must be an email/);
@@ -37,6 +43,18 @@ describe('validate_doc_update', function () {
         it('group', function () {
             addGroup({name: 'abc'});
             assert(addGroup({name: 'a@a.com'}), null, /cannot be an email/);
+        });
+        it('kind', function () {
+            assert(
+                addOwners(addDate({$type: 'entry', $id: 'abc'})),
+                addOwners(addDate({$type: 'entry', $id: 'abc', $kind: 'xy'})),
+                'Cannot change the kind'
+            );
+            assert(
+                addOwners(addDate({$type: 'entry', $id: 'abc', $kind: 'yz'})),
+                addOwners(addDate({$type: 'entry', $id: 'abc', $kind: 'xy'})),
+                'Cannot change the kind'
+            );
         });
     });
 });

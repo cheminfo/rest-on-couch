@@ -51,6 +51,10 @@ module.exports = function (newDoc, oldDoc) {
             if (newDoc.$id !== oldDoc.$id) {
                 throw({forbidden: 'Cannot change the ID'});
             }
+
+            if (newDoc.$kind !== oldDoc.$kind) {
+                throw({forbidden: 'Cannot change the kind'});
+            }
         }
     } else if (newDoc.$type === 'log' && oldDoc) {
         throw({forbidden: 'Logs cannot be changed'});

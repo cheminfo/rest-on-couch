@@ -107,7 +107,7 @@ class Couch {
 
     createEntry(id, user, options) {
         options = options || {};
-        debug(`createEntry (${id}, ${user}, ${options.kind})`);
+        debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
         return this._init()
             .then(() => checkRightAnyGroup(this._db, user, 'create'))
             .then(hasRight => {
@@ -133,7 +133,8 @@ class Couch {
                                         $id: id,
                                         $type: 'entry',
                                         $owners: [user],
-                                        $content: entry
+                                        $content: entry,
+                                        $kind: options.kind
                                     };
                                     beforeSaveEntry(toInsert, user);
                                     return nanoPromise.insertDocument(this._db, toInsert);
@@ -533,6 +534,8 @@ function updateEntry(ctx, oldDoc, newDoc, user, groups) {
         throw new CouchError('document and entry _rev differ', 'conflict');
     }
     oldDoc.$content = newDoc.$content;
+    // Doc validation will fail $kind changed
+    oldDoc.$kind = newDoc.$kind;
     beforeSaveEntry(oldDoc, user);
     return nanoPromise.insertDocument(ctx._db, oldDoc)
         .then(r => res = r)
@@ -681,6 +684,7 @@ function createNew(ctx, entry, user) {
             const newEntry = {
                 $type: 'entry',
                 $id: entry.$id,
+                $kind: entry.$kind,
                 $owners: [user],
                 $content: entry.$content
             };
@@ -752,6 +756,9 @@ function getDefaultEntry() {
 function beforeSaveEntry(entry, user) {
     if (entry.$id === undefined) {
         entry.$id = null;
+    }
+    if (entry.$kind === undefined) {
+        entry.$kind = null;
     }
     const now = Date.now();
     entry.$lastModification = user;
