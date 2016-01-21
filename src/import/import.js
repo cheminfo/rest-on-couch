@@ -14,7 +14,7 @@ exports.import = function (database, importName, file) {
     const contents = fs.readFileSync(file);
 
     let config = getConfig(database);
-    if (!config.import[importName]) {
+    if (!config.import || !config.import[importName]) {
         throw new Error(`no import config for ${database}/${importName}`);
     }
     config = config.import[importName];

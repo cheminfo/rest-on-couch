@@ -137,12 +137,17 @@ function processFile(database, importName, homeDir, p) {
         });
     }).catch(e => {
         // mv to errored
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
+            if(e.message.startsWith('no import config')) {
+                debug.warn('no import configuration found, skipping this file');
+                return resolve();
+            }
             debug.error(e + '\n' + e.stack);
             let dir = path.join(parsedPath.dir, '../errored/' + getMonth());
             createDir(dir);
-            fs.rename(p, path.join(dir, parsedPath.base), function (err) {
-                if (err) return reject(err);
+            let toPath = path.join(dir, parsedPath.base);
+            fs.rename(p, toPath, function (err) {
+                if(err) debug.error(`Could could rename ${p} to ${toPath}: ${err}`);
                 resolve();
             });
         });
