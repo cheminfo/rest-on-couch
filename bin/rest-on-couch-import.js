@@ -138,7 +138,7 @@ function processFile(database, importName, homeDir, p) {
     }).catch(e => {
         // mv to errored
         return new Promise(function (resolve) {
-            if(e.message.startsWith('no import config')) {
+            if (e.message.startsWith('no import config')) {
                 debug.warn('no import configuration found, skipping this file');
                 return resolve();
             }
@@ -147,7 +147,7 @@ function processFile(database, importName, homeDir, p) {
             createDir(dir);
             let toPath = path.join(dir, parsedPath.base);
             fs.rename(p, toPath, function (err) {
-                if(err) debug.error(`Could could rename ${p} to ${toPath}: ${err}`);
+                if (err) debug.error(`Could could rename ${p} to ${toPath}: ${err}`);
                 resolve();
             });
         });
