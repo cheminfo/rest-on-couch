@@ -89,17 +89,17 @@ exports.queryEntriesByUser = function*() {
 
 exports.entriesByKindAndId = function * () {
     try {
-        for(let i=0; i<couchNeedsParse.length; i++) {
+        for (let i=0; i<couchNeedsParse.length; i++) {
             let queryParam = this.query[couchNeedsParse[i]];
             let bodyParam = this.request.body[couchNeedsParse[i]];
-            if(queryParam || bodyParam) {
+            if (queryParam || bodyParam) {
                 this.query[couchNeedsParse[i]] = [this.params.kind, queryParam ? queryParam : bodyParam];
             }
         }
 
         this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, 'entryByKindAndId', this.query);
         this.status = 200;
-    } catch(e) {
+    } catch (e) {
         onGetError(this, e);
     }
 };
@@ -107,16 +107,16 @@ exports.entriesByKindAndId = function * () {
 
 exports.entriesByOwnerAndId = function * () {
     try {
-        for(let i=0; i<couchNeedsParse.length; i++) {
+        for (let i=0; i<couchNeedsParse.length; i++) {
             let queryParam = this.query[couchNeedsParse[i]];
             let bodyParam = this.request.body[couchNeedsParse[i]];
-            if(queryParam || bodyParam) {
+            if (queryParam || bodyParam) {
                 this.query[couchNeedsParse[i]] = [this.params.email, queryParam ? queryParam : bodyParam];
             }
         }
         this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, 'entryByOwnerAndId', this.query);
         this.status = 200;
-    } catch(e) {
+    } catch (e) {
         onGetError(this, e);
     }
 };
