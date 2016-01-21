@@ -21,6 +21,11 @@ describe('validate_doc_update', function () {
                 addOwners(addDate({$type: 'entry', $id: 'xyz'})),
                 'Cannot change the ID'
             );
+            var doc = addOwners(addDate({$type: 'entry', $id: ['a', 'b']}));
+            validateDocUpdate(addOwners(addDate({$type: 'entry', $id: ['a', 'b']})), doc);
+            assert(addOwners(addDate({$type: 'entry', $id: ['a', 'c']})), doc, 'Cannot change the ID');
+            assert(addOwners(addDate({$type: 'entry', $id: []})), doc, 'Cannot change the ID');
+            assert(addOwners(addDate({$type: 'entry', $id: ['a', 'c', 'd']})), doc, 'Cannot change the ID');
         });
         it('date', function () {
             assert({$type: 'entry', $id: 'abc'}, null, /dates are mandatory/);
