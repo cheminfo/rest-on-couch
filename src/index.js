@@ -773,7 +773,7 @@ function getAttachmentFromEntry(db, name, asStream) {
         if (entry._attachments && entry._attachments[name]) {
             return nanoPromise.getAttachment(db, entry._id, name, asStream);
         } else {
-            throw new CouchError(`attachment ${name} not found`);
+            throw new CouchError(`attachment ${name} not found`, 'not found');
         }
     };
 }
