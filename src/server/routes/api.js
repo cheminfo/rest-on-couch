@@ -27,5 +27,10 @@ exports.init = function() {
     // Create a new document
     router.post('/:dbname', couch.newOrUpdateEntry);
 
+    // Queries
+    router.post('/:dbname/_query/byKindAndId/:kind', couch.entriesByKindAndId);
+
+    router.post('/:dbname/_query/byOwnerAndId/:email', couch.entriesByOwnerAndId);
+
     return router;
 };
