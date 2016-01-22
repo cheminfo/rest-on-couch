@@ -138,14 +138,18 @@ class Couch {
                                     };
                                     beforeSaveEntry(toInsert, user);
                                     return nanoPromise.insertDocument(this._db, toInsert);
-                                })
-                                .then(info => info.id);
+                                });
                         }
                         debug.trace('entry already exists');
                         if (options.throwIfExists) {
                             throw new CouchError('entry already exists', 'exists');
                         }
-                        return result[0].id;
+                        // Return something similar to insertDocument
+                        return {
+                            ok: true,
+                            id: result[0]._id,
+                            rev: result[0]._rev
+                        };
                     });
             });
     }
@@ -459,13 +463,13 @@ class Couch {
             if (entry._id) {
                 prom = this.getEntryByUuidAndRights(entry._id, user, ['write'])
                     .then(doc => {
-                        return updateEntry(this, doc, entry, user, options.groups);
+                        return updateEntry(this, doc, entry, user, options);
                     }).catch(onNotFound(this, entry, user, options));
             } else if (entry.$id) {
                 debug.trace('entry has no _id but has $id');
                 prom = this.getEntryByIdAndRights(entry.$id, user, ['write'])
                     .then(doc => {
-                        return updateEntry(this, doc, entry, user, options.groups);
+                        return updateEntry(this, doc, entry, user, options);
                     }).catch(onNotFound(this, entry, user, options));
             } else {
                 debug.trace('entry has no _id nor $id');
@@ -526,20 +530,26 @@ Couch.prototype.addAttachment = Couch.prototype.addAttachments;
 
 module.exports = Couch;
 
-function updateEntry(ctx, oldDoc, newDoc, user, groups) {
+function updateEntry(ctx, oldDoc, newDoc, user, options) {
     debug.trace('update entry');
     var res;
     if (oldDoc._rev !== newDoc._rev) {
         debug.trace('document and entry _rev differ');
         throw new CouchError('document and entry _rev differ', 'conflict');
     }
-    oldDoc.$content = newDoc.$content;
+    if (options.merge) {
+        for (let key in newDoc.$content) {
+            oldDoc.$content[key] = newDoc.$content[key];
+        }
+    } else {
+        oldDoc.$content = newDoc.$content;
+    }
     // Doc validation will fail $kind changed
     oldDoc.$kind = newDoc.$kind;
     beforeSaveEntry(oldDoc, user);
     return nanoPromise.insertDocument(ctx._db, oldDoc)
         .then(r => res = r)
-        .then(addGroups(ctx, user, groups))
+        .then(addGroups(ctx, user, options.groups))
         .then(() => res);
 }
 
