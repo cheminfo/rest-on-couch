@@ -754,9 +754,6 @@ function getDefaultEntry() {
 }
 
 function beforeSaveEntry(entry, user) {
-    if (entry.$id === undefined) {
-        entry.$id = null;
-    }
     if (entry.$kind === undefined) {
         entry.$kind = null;
     }
