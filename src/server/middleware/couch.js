@@ -7,7 +7,7 @@ const Couch = require('../../index');
 const debug = require('../../util/debug')('middleware:couch');
 const views = require('../../design/views');
 
-const couchToProcess = ['key', 'startkey', 'endkey'];
+const couchNeedsParse = ['key', 'startkey', 'endkey'];
 
 exports.setupCouch = function*(next) {
     const dbname = this.params.dbname;
@@ -27,9 +27,29 @@ exports.getDocumentByUuid = function*() {
     }
 };
 
-exports.newEntry = function*() {
+exports.updateEntry = function * () {
     const body = this.request.body;
     if (body) body._id = this.params.uuid;
+    try {
+        this.body = yield this.state.couch.insertEntry(body, this.state.userEmail, {isUpdate: true});
+        this.status = 200;
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.deleteEntry = function*() {
+    try {
+        yield this.state.couch.deleteEntryByUuid(this.params.uuid, this.state.userEmail);
+        this.body = {
+            ok: true
+        };
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.newOrUpdateEntry = function * () {
     try {
         this.body = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
         this.status = 200;
@@ -60,7 +80,8 @@ exports.getAttachmentByUuid = function*() {
 
 exports.allEntries = function*() {
     try {
-        const entries = yield this.state.couch.getEntriesByUserAndRights(this.state.userEmail, 'read', this.query);
+        const right = this.query.right || 'read';
+        const entries = yield this.state.couch.getEntriesByUserAndRights(this.state.userEmail, right, this.query);
         this.status = 200;
         this.body = entries;
     } catch (e) {
@@ -77,6 +98,40 @@ exports.queryEntriesByUser = function*() {
     }
 };
 
+exports.entriesByKindAndId = function * () {
+    try {
+        for (let i=0; i<couchNeedsParse.length; i++) {
+            let queryParam = this.query[couchNeedsParse[i]];
+            let bodyParam = this.request.body[couchNeedsParse[i]];
+            if (queryParam || bodyParam) {
+                this.query[couchNeedsParse[i]] = [this.params.kind, queryParam ? queryParam : bodyParam];
+            }
+        }
+
+        this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, 'entryByKindAndId', this.query);
+        this.status = 200;
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+
+exports.entriesByOwnerAndId = function * () {
+    try {
+        for (let i=0; i<couchNeedsParse.length; i++) {
+            let queryParam = this.query[couchNeedsParse[i]];
+            let bodyParam = this.request.body[couchNeedsParse[i]];
+            if (queryParam || bodyParam) {
+                this.query[couchNeedsParse[i]] = [this.params.email, queryParam ? queryParam : bodyParam];
+            }
+        }
+        this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, 'entryByOwnerAndId', this.query);
+        this.status = 200;
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
 function onGetError(ctx, e) {
     switch (e.reason) {
         case 'not found':
@@ -84,10 +139,14 @@ function onGetError(ctx, e) {
             ctx.status = 404;
             ctx.body = 'not found';
             break;
+        case 'conflict':
+            ctx.status = 409;
+            ctx.body = 'conflict';
+            break;
         default:
             ctx.status = 500;
             ctx.body = 'internal server error';
-            debug.error(e);
+            debug.error(e + e.stack);
             break;
     }
     if (config.debugrest) {
@@ -96,10 +155,10 @@ function onGetError(ctx, e) {
 }
 
 function processCouchQuery(ctx) {
-    for (let i = 0; i < couchToProcess.length; i++) {
-        if (ctx.query[couchToProcess[i]]) {
+    for (let i = 0; i < couchNeedsParse.length; i++) {
+        if (ctx.query[couchNeedsParse[i]]) {
             try {
-                ctx.query[couchToProcess[i]] = JSON.parse(ctx.query[couchToProcess[i]]);
+                ctx.query[couchNeedsParse[i]] = JSON.parse(ctx.query[couchNeedsParse[i]]);
             } catch (e) {
                 // Keep original value if parsing failed
             }
@@ -112,7 +171,6 @@ function processCouchQuery(ctx) {
         }
     }
     processQuery(ctx);
-
 }
 
 function processQuery(ctx) {
@@ -165,14 +223,14 @@ function processQuery(ctx) {
 }
 
 function applyType(query, type) {
-    for (var i = 0; i < couchToProcess.length; i++) {
-        if (query[couchToProcess[i]] !== undefined) {
+    for (var i = 0; i < couchNeedsParse.length; i++) {
+        if (query[couchNeedsParse[i]] !== undefined) {
             switch (type) {
                 case 'string':
-                    query[couchToProcess[i]] = String(query[couchToProcess[i]]);
+                    query[couchNeedsParse[i]] = String(query[couchNeedsParse[i]]);
                     break;
                 case 'number':
-                    query[couchToProcess[i]] = +query[couchToProcess[i]];
+                    query[couchNeedsParse[i]] = +query[couchNeedsParse[i]];
                     break;
             }
         }

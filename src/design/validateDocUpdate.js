@@ -35,9 +35,6 @@ module.exports = function (newDoc, oldDoc) {
         }
         validateOwners(newDoc);
     } else if (newDoc.$type === 'entry') {
-        if (!newDoc.$id) {
-            throw({forbidden: 'ID is mandatory'});
-        }
         if (typeof newDoc.$creationDate !== 'number' || typeof newDoc.$modificationDate !== 'number') {
             throw({forbidden: 'Creation and modification dates are mandatory'});
         }
@@ -52,8 +49,21 @@ module.exports = function (newDoc, oldDoc) {
             if (newDoc.$modificationDate < oldDoc.$modificationDate) {
                 throw({forbidden: 'Modification date cannot change to the past'});
             }
-            if (newDoc.$id !== oldDoc.$id) {
+            if (Array.isArray(newDoc.$id) && Array.isArray(oldDoc.$id)) {
+                if (newDoc.$id.length !== oldDoc.$id.length) {
+                    throw({forbidden: 'Cannot change the ID'});
+                }
+                for (var i=0; i<newDoc.$id.length; i++) {
+                    if (newDoc.$id[i] !== oldDoc.$id[i]) {
+                        throw({forbidden: 'Cannot change the ID'});
+                    }
+                }
+            } else if (newDoc.$id !== oldDoc.$id) {
                 throw({forbidden: 'Cannot change the ID'});
+            }
+
+            if (newDoc.$kind !== oldDoc.$kind) {
+                throw({forbidden: 'Cannot change the kind'});
             }
         }
     } else if (newDoc.$type === 'log' && oldDoc) {

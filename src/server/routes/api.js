@@ -21,8 +21,19 @@ exports.init = function() {
     // Get an attachment
     router.get('/:dbname/:uuid/:attachment', couch.getAttachmentByUuid);
 
-    // Modify a document
-    router.put('/:dbname/:uuid', couch.newEntry);
+    // Update a document
+    router.put('/:dbname/:uuid', couch.updateEntry);
+
+    // Delete a document
+    router.delete('/:dbname/:uuid', couch.deleteEntry);
+
+    // Create a new document
+    router.post('/:dbname', couch.newOrUpdateEntry);
+
+    // Queries
+    router.post('/:dbname/_query/byKindAndId/:kind', couch.entriesByKindAndId);
+
+    router.post('/:dbname/_query/byOwnerAndId/:email', couch.entriesByOwnerAndId);
 
     return router;
 };

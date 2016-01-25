@@ -11,34 +11,28 @@
   },
   "auth": {
     "google": {
-      "oauth2": {
-        "clientID": "",
-        "clientSecret": "",
-        "successRedirect": "http://www.cheminfo.org/static/index.html",
-        "failureRedirect": "/login",
-        "callbackURL": "/login/google/oauth2callback",
-        "loginURL":"/login/google"
-      }
+      "clientID": "",
+      "clientSecret": "",
+      "successRedirect": "http://www.cheminfo.org/static/index.html",
+      "failureRedirect": "/login",
+      "callbackURL": "/login/google/oauth2callback",
+      "loginURL": "/login/google"
     },
     "facebook": {
-      "oauth2": {
-        "appId": "",
-        "appSecret": "",
-        "callbackURL": "/loginlogin/facebook/callback",
-        "failureRedirect": "/login",
-        "successRedirect": "http://www.cheminfo.org/static/index.html",
-        "loginURL":"/login/facebook"
-      }
+      "appId": "",
+      "appSecret": "",
+      "callbackURL": "/loginlogin/facebook/callback",
+      "failureRedirect": "/login",
+      "successRedirect": "http://www.cheminfo.org/static/index.html",
+      "loginURL": "/login/facebook"
     },
     "github": {
-      "oauth2": {
-        "clientID": "",
-        "clientSecret": "",
-        "successRedirect": "http://www.cheminfo.org/static/index.html",
-        "failureRedirect": "/login",
-        "callbackURL": "/login/github/callback",
-        "loginURL":"/login/github"
-      }
+      "clientID": "",
+      "clientSecret": "",
+      "successRedirect": "http://www.cheminfo.org/static/index.html",
+      "failureRedirect": "/login",
+      "callbackURL": "/login/github/callback",
+      "loginURL": "/login/github"
     },
     "ldap": {
       "url": "ldaps://ldap.epfl.ch",
@@ -47,5 +41,7 @@
     },
     "couchdb": {}
   },
-  "authServers": ["http://www.cheminfo.org/clp"]
+  "authServers": [
+    "http://www.cheminfo.org/clp"
+  ]
 }

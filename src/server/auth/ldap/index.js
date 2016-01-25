@@ -1,19 +1,18 @@
 'use strict';
 
 // Doc: https://github.com/vesse/passport-ldapauth#readme
+const LdapStrategy = require('passport-ldapauth');
 
 const auth = require('../../middleware/auth');
 
-exports.init = function(passport, router, config) {
-    var LdapStrategy = require('passport-ldapauth');
-
+exports.init = function (passport, router, config) {
     passport.use(new LdapStrategy(
         {
             server: config.server,
             usernameField: config.usernameField,
             passwordField: config.passwordField
         },
-        function(user, done) {
+        function (user, done) {
             done(null, {
                 provider: 'ldap',
                 email: user.mail
@@ -27,5 +26,4 @@ exports.init = function(passport, router, config) {
             name: yield auth.getUserEmail(this)
         };
     });
-
 };

@@ -107,12 +107,12 @@ class Couch {
 
     createEntry(id, user, options) {
         options = options || {};
-        debug(`createEntry (${id}, ${user}, ${options.kind})`);
+        debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
         return this._init()
             .then(() => checkRightAnyGroup(this._db, user, 'create'))
             .then(hasRight => {
                 if (!hasRight) {
-                    debug.trace('user is missing create right');
+                    debug.trace(`user ${user} is missing create right`);
                     throw new CouchError('user is missing create right', 'unauthorized');
                 }
                 return nanoPromise.queryView(this._db, 'entryById', {key: id})
@@ -133,10 +133,10 @@ class Couch {
                                         $id: id,
                                         $type: 'entry',
                                         $owners: [user],
-                                        $content: entry
+                                        $content: entry,
+                                        $kind: options.kind
                                     };
-                                    beforeSaveEntry(toInsert, user);
-                                    return nanoPromise.insertDocument(this._db, toInsert);
+                                    return saveEntry(this._db, toInsert, user);
                                 })
                                 .then(info => info.id);
                         }
@@ -150,9 +150,9 @@ class Couch {
     }
 
     /*
-        Like queryViewByUser but only entries are returned
-        Since custom design views might emit for non-entries we
-        need to ensure those are not returned to non-admin users
+     Like queryViewByUser but only entries are returned
+     Since custom design views might emit for non-entries we
+     need to ensure those are not returned to non-admin users
      */
     queryEntriesByUser(user, view, options, rights) {
         return this.queryViewByUser(user, view, options, rights)
@@ -205,18 +205,20 @@ class Couch {
             .then(() => getOwnersById(this._db, id))
             .then(owners => {
                 if (owners.length === 0) {
-                    debug.trace('document not found');
+                    debug.trace(`no entry matching id ${id}`);
                     throw new CouchError('document not found', 'not found');
                 }
-                debug.trace('check rights');
-                // TODO handle more than one result
-                return validateRights(this._db, owners[0].value, user, rights)
+                let hisEntry = owners.find(own => own.value[0] === user);
+                if (!hisEntry) {
+                    hisEntry = owners[0];
+                }
+                return validateRights(this._db, hisEntry.value, user, rights)
                     .then(ok => {
                         if (ok[0]) {
-                            debug.trace('user has access');
-                            return nanoPromise.getDocument(this._db, owners[0].id);
+                            debug.trace(`user ${user} has access`);
+                            return nanoPromise.getDocument(this._db, hisEntry.id);
                         }
-                        debug.trace('user has no access');
+                        debug.trace(`user ${user} has no ${rights} access`);
                         throw new CouchError('user has no access', 'unauthorized');
                     });
             });
@@ -239,10 +241,10 @@ class Couch {
                 return validateRights(this._db, doc.$owners, user, rights)
                     .then(ok => {
                         if (ok[0]) {
-                            debug.trace('user has access');
+                            debug.trace(`user ${user} has access`);
                             return doc;
                         }
-                        debug.trace('user has no access');
+                        debug.trace(`user ${user} has no ${rights} access`);
                         throw new CouchError('user has no access', 'unauthorized');
                     });
             });
@@ -264,6 +266,16 @@ class Couch {
                 const hasRight = isOwner(doc.$owners, user);
                 if (!hasRight) throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
                 return nanoPromise.updateWithHandler(this._db, update, doc._id, updateBody);
+            });
+    }
+
+    _doUpdateOnEntryByUuid(uuid, user, update, updateBody) {
+        return this._init()
+            .then(() => this.getEntryByUuid(uuid, user))
+            .then(doc => {
+                const hasRight = isOwner(doc.$owners, user);
+                if (!hasRight) throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
+                return nanoPromise.updateWithHandler(this._db, update, uuid, updateBody);
             });
     }
 
@@ -375,7 +387,12 @@ class Couch {
 
     addGroupToEntry(id, user, group) {
         debug(`addGroupToEntry (${id}, ${user}, ${group})`);
-        return this._doUpdateOnEntry(id, user, 'addGroupToEntry', {group: group});
+        return this._doUpdateOnEntry(id, user, 'addGroupToEntry', {group});
+    }
+
+    addGroupToEntryByUuid(uuid, user, group) {
+        debug(`addGroupToEntryByUuid (${uuid}, ${user}, ${group})`);
+        return this._doUpdateOnEntryByUuid(uuid, user, 'addGroupToEntry', {group});
     }
 
     removeGroupFromEntry(id, user, group) {
@@ -423,45 +440,47 @@ class Couch {
             });
     }
 
-    insertEntry(entry, user, groups) {
-        debug(`insertEntry (${entry._id}, ${user}, ${groups})`);
-        groups = groups || [];
-        if (!entry.$content) return Promise.reject(new CouchError('entry has no content'));
-        if (groups !== undefined && !Array.isArray(groups)) return Promise.reject(new CouchError('groups should an arary if defined', 'invalid argument'));
+    insertEntry(entry, user, options) {
+        debug(`insertEntry (id: ${entry._id}, user: ${user}, options: ${options})`);
 
-        let prom, res;
-        if (entry._id) {
-            prom = this.getEntryByUuidAndRights(entry._id, user, ['write'])
-                .then(doc => {
-                    debug.trace('got document');
-                    if (doc._rev !== entry._rev) {
-                        debug.trace('document and entry _rev differ');
-                        throw new CouchError('document and entry _rev differ', 'conflict');
-                    }
-                    doc.$content = entry.$content;
-                    beforeSaveEntry(doc, user);
-                    return nanoPromise.insertDocument(this._db, doc)
-                        .then(r => res = r)
-                        .then(addGroups(this, doc.$id, user, groups));
-                }).catch(error => {
-                    if (error.reason === 'not found') {
-                        debug.trace('doc not found');
-                        return createNew(this, entry, user)
-                            .then(r => res = r)
-                            .then(addGroups(this, entry.$id, user, groups));
-                    } else {
-                        debug.warn('error getting document');
-                        throw error;
-                    }
-                });
-        } else {
-            debug.trace('entry has no _id');
-            prom = createNew(this, entry, user)
-                .then(r => res = r)
-                .then(addGroups(this, entry.$id, user, groups));
-        }
+        return this._init().then(() => {
+            options = options || {};
+            options.groups = options.groups || [];
+            if (!entry.$content) throw new CouchError('entry has no content');
+            if (options.groups !== undefined && !Array.isArray(options.groups)) throw new CouchError('options.groups should be an array if defined', 'invalid argument');
 
-        return prom.then(() => res);
+            let prom;
+
+            if (entry._id && options.isNew) {
+                debug.trace('new entry has _id');
+                throw new CouchError('entry should not have _id', 'bad argument');
+            }
+            if (entry._id) {
+                prom = this.getEntryByUuidAndRights(entry._id, user, ['write'])
+                    .then(doc => {
+                        return updateEntry(this, doc, entry, user, options.groups);
+                    }).catch(onNotFound(this, entry, user, options));
+            } else if (entry.$id) {
+                debug.trace('entry has no _id but has $id');
+                prom = this.getEntryByIdAndRights(entry.$id, user, ['write'])
+                    .then(doc => {
+                        return updateEntry(this, doc, entry, user, options.groups);
+                    }).catch(onNotFound(this, entry, user, options));
+            } else {
+                debug.trace('entry has no _id nor $id');
+                if (options.isUpdate) {
+                    throw new CouchError('entry should have an _id', 'bad argument');
+                }
+                var res;
+                prom = createNew(this, entry, user)
+                    .then(r => res = r)
+                    .then(addGroups(this, user, options.groups))
+                    .then(() => res);
+            }
+
+            return prom;
+        });
+
     }
 
     deleteEntryByUuid(uuid, user) {
@@ -505,6 +524,41 @@ Couch.get = function (databaseName) {
 Couch.prototype.addAttachment = Couch.prototype.addAttachments;
 
 module.exports = Couch;
+
+function updateEntry(ctx, oldDoc, newDoc, user, groups) {
+    debug.trace('update entry');
+    var res;
+    if (oldDoc._rev !== newDoc._rev) {
+        debug.trace('document and entry _rev differ');
+        throw new CouchError('document and entry _rev differ', 'conflict');
+    }
+    oldDoc.$content = newDoc.$content;
+    // Doc validation will fail $kind changed
+    oldDoc.$kind = newDoc.$kind;
+    return saveEntry(ctx._db, oldDoc, user)
+        .then(r => res = r)
+        .then(addGroups(ctx, user, groups))
+        .then(() => res);
+}
+
+function onNotFound(ctx, entry, user, options) {
+    return error => {
+        var res;
+        if (error.reason === 'not found') {
+            debug.trace('doc not found');
+            if (options.isUpdate) {
+                throw new CouchError('Document does not exist', 'not found');
+            }
+
+            return createNew(ctx, entry, user)
+                .then(r => res = r)
+                .then(addGroups(ctx, user, options.groups))
+                .then(() => res);
+        } else {
+            throw error;
+        }
+    };
+}
 
 function checkDesignDoc(db, custom) {
     debug.trace('check design doc');
@@ -621,18 +675,18 @@ function getGroup(db, name) {
 }
 
 function createNew(ctx, entry, user) {
-    debug.trace('check create right');
+    debug.trace('create new');
     return checkGlobalRight(ctx._db, user, 'create').then(ok => {
         if (ok) {
             debug.trace('has right, create new');
             const newEntry = {
                 $type: 'entry',
                 $id: entry.$id,
+                $kind: entry.$kind,
                 $owners: [user],
                 $content: entry.$content
             };
-            beforeSaveEntry(newEntry, user);
-            return nanoPromise.insertDocument(ctx._db, newEntry);
+            return saveEntry(ctx._db, newEntry, user);
         } else {
             let msg = `${user} not allowed to create`;
             debug.trace(msg);
@@ -641,11 +695,11 @@ function createNew(ctx, entry, user) {
     });
 }
 
-function addGroups(ctx, entryId, user, groups) {
-    return () => {
+function addGroups(ctx, user, groups) {
+    return doc => {
         let prom = Promise.resolve();
         for (let i = 0; i < groups.length; i++) {
-            prom = prom.then(() => ctx.addGroupToEntry(entryId, user, groups[i]));
+            prom = prom.then(() => ctx.addGroupToEntryByUuid(doc.id, user, groups[i]));
         }
         return prom;
     };
@@ -668,16 +722,16 @@ function createRightsDoc(db, rightsDoc) {
 }
 
 function checkGlobalRight(db, user, right) {
-    debug.trace(`checkGlobalRight (${user}. ${right}`);
+    debug.trace(`checkGlobalRight (${user}. ${right})`);
     return nanoPromise.queryView(db, 'globalRight', {key: right}, {onlyValue: true})
         .then(function (result) {
             for (var i = 0; i < result.length; i++) {
                 if (result[i] === 'anonymous' || result[i] === user || result[i] === 'anyuser' && user !== 'anonymous') {
-                    debug.trace('user has global right');
+                    debug.trace(`user ${user} has global right`);
                     return true;
                 }
             }
-            debug.trace('user does not have global right');
+            debug.trace(`user ${user} does not have global right`);
             return false;
         });
 }
@@ -696,13 +750,25 @@ function getDefaultEntry() {
     return {};
 }
 
-function beforeSaveEntry(entry, user) {
+function saveEntry(db, entry, user) {
+    if (entry.$id === undefined) {
+        entry.$id = null;
+    }
+    if (entry.$kind === undefined) {
+        entry.$kind = null;
+    }
     const now = Date.now();
     entry.$lastModification = user;
     entry.$modificationDate = now;
     if (entry.$creationDate === undefined) {
         entry.$creationDate = now;
     }
+    return nanoPromise.insertDocument(db, entry)
+        .then(result => {
+            result.$modificationDate = entry.$modificationDate;
+            result.$creationDate = entry.$creationDate;
+            return result;
+        });
 }
 
 function getAttachmentFromEntry(db, name, asStream) {
@@ -710,7 +776,7 @@ function getAttachmentFromEntry(db, name, asStream) {
         if (entry._attachments && entry._attachments[name]) {
             return nanoPromise.getAttachment(db, entry._id, name, asStream);
         } else {
-            throw new CouchError(`attachment ${name} not found`);
+            throw new CouchError(`attachment ${name} not found`, 'not found');
         }
     };
 }

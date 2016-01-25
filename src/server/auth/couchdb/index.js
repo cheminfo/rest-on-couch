@@ -5,6 +5,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const request = require('co-request');
 
 const couchUrl = require('../../../config/config').globalConfig.url;
+const isEmail = require('../../../util/isEmail');
 
 exports.init = function (passport, router) {
     passport.use(new LocalStrategy({
@@ -13,6 +14,9 @@ exports.init = function (passport, router) {
         },
         function (username, password, done) {
             co(function*() {
+                if (!isEmail(username)) {
+                    return done(null, false, 'username must be an email');
+                }
                 var res = yield request.post(couchUrl + '/' + '_session', {
                     form: {
                         name: username,

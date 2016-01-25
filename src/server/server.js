@@ -1,15 +1,15 @@
 'use strict';
 
 const app = require('koa')();
-const bodyParser = require('koa-bodyparser');
+const bodyParser = require('koa-body');
 const cors = require('kcors');
 const http = require('http');
 const passport = require('koa-passport');
 const path = require('path');
 const session = require('koa-session');
-const api = require('./routes/api');
 
-const auth = require('./middleware/auth');
+const api = require('./routes/api');
+const auth = require('./routes/auth');
 const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
 const nunjucks = require('./nunjucks');
@@ -50,7 +50,21 @@ const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
 app.use(bodyParser({
     jsonLimit: '100mb'
 }));
-app.use(cors());
+
+const allowedOrigins = config.allowedOrigins || [];
+debug(`allowed cors origins: ${allowedOrigins}`);
+app.use(cors({
+    origin: ctx => {
+        const origin = ctx.get('Origin');
+        for (var i = 0; i < allowedOrigins.length; i++) {
+            if (allowedOrigins[i] === origin) {
+                return origin;
+            }
+        }
+        return '*';
+    },
+    credentials: true
+}));
 
 app.keys = ['some secret'];
 app.use(session({
@@ -91,7 +105,7 @@ if (config.debugrest) {
 // Main routes
 app.use(router.routes());
 // Authentication
-app.use(auth.init(passport, config).routes());
+app.use(auth.routes());
 // Proxy to CouchDB
 app.use(proxy.init(config).routes());
 // ROC API

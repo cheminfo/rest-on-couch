@@ -18,3 +18,4 @@
 | GET | `/db/:dbname/:id/:attachment` | Get an attachment |
 | GET | `/db/:dbname/_view/:view` | Query a custom view | Returns an array of documents |
 | PUT | `/db/:dbname/:id` | Update an entry by UUID |
+| POST | `/db/:dbname` | Insert a new entry |

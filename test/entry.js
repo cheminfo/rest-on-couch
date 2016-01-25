@@ -37,12 +37,12 @@ describe('entry reads', function () {
 
     it('should get all readable entries for a user', function () {
         return couch.getEntriesByUserAndRights('b@b.com', 'read').then(entries => {
-            entries.should.have.length(3);
+            entries.should.have.length(5);
         });
     });
 });
 
-describe('entry editons', function () {
+describe('entry editions', function () {
     beforeEach(data);
 
     it('anonymous cannot insert a new entry', function () {
@@ -53,6 +53,26 @@ describe('entry editons', function () {
         return couch.insertEntry({
             $id: 'D'
         }, 'z@z.com').should.be.rejectedWith(/has no content/);
+    });
+
+    it('update entry should reject if entry does not exist', function () {
+        return couch.insertEntry({
+            _id: 'new',
+            $content: {}
+        }, 'z@z.com', {isUpdate: true}).should.be.rejectedWith(/does not exist/);
+    });
+
+    it('update entry without _id should reject', function () {
+        return couch.insertEntry({
+            $content: {}
+        }, 'z@z.com', {isUpdate: true}).should.be.rejectedWith(/should have an _id/);
+    });
+
+    it('create new entry that has an _id is not possible', function () {
+        return couch.insertEntry({
+            $content: {},
+            _id: 'new'
+        }, 'z@z.com', {isNew: true}).should.be.rejectedWith(/should not have _id/);
     });
 
     it('anybody not anonymous can insert a new entry (without _id)', function () {
@@ -70,8 +90,8 @@ describe('entry editons', function () {
     });
 
     it('insert new entry with groups', function () {
-        return couch.insertEntry(constants.newEntry, 'z@z.com', ['groupX', 'groupY'])
-            .then(() => couch.getEntryById('C', 'z@z.com'))
+        return couch.insertEntry(constants.newEntry, 'z@z.com', {groups: ['groupX', 'groupY']})
+            .then(() => couch.getEntryById(constants.newEntry.$id, 'z@z.com'))
             .then(entry => {
                 entry.$owners.should.have.length(3);
         });

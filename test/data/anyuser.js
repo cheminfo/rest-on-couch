@@ -2,6 +2,7 @@
 
 const Couch = require('../..');
 const nanoPromise = require('../../src/util/nanoPromise');
+const insertDocument = require('./insertDocument');
 
 function destroy(nano, name) {
     return nanoPromise.destroyDatabase(nano, name);
@@ -10,7 +11,7 @@ function destroy(nano, name) {
 function populate(db) {
     const prom = [];
 
-    prom.push(nanoPromise.insertDocument(db, {
+    prom.push(insertDocument(db, {
         $type: 'entry',
         $owners: ['b@b.com', 'groupA', 'groupB'],
         $id: 'A',

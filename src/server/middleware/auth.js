@@ -1,86 +1,18 @@
 'use strict';
 
-const router = require('koa-router')({
-    prefix: '/auth'
-});
+const passport = require('koa-passport');
 const superagent = require('superagent-promise')(require('superagent'), Promise);
 
+const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
-const die = require('../../util/die');
 
-const authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['github','oauth2'], ['ldap']];
-const auths = [];
-var config;
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
 
-exports.init = function(passport, _config) {
-    config = _config;
-    for (var i = 0; i < authPlugins.length; i++) {
-        try {
-            // check that parameter exists
-            var conf = configExists(authPlugins[i]);
-            if (conf) {
-                debug('loading auth plugin: ' + authPlugins[i]);
-                var auth = require('../auth/' + authPlugins[i].join('/') + '/index.js');
-                auth.init(passport, router, conf);
-                auths.push(auth);
-            } else {
-                debug('auth plugin not configured: ' + authPlugins[i]);
-            }
-        } catch (e) {
-            debug.error(e);
-            die('Could not init auth middleware: ' + e.message);
-        }
-    }
-
-
-    passport.serializeUser(function(user, done) {
-        done(null, user);
-    });
-
-    passport.deserializeUser(function(obj, done) {
-        done(null, obj);
-    });
-
-    function configExists(conf) {
-        if (!config.auth) return null;
-        var last = config.auth;
-        for (var j=0; j<conf.length; j++) {
-            if (!last[conf[j]]) return null;
-            last = last[conf[j]];
-            last.publicAddress = config.publicAddress;
-            last.couchUrl = config.couchUrl;
-        }
-        return last;
-    }
-
-    router.get('/login', function*() {
-        this.session.continue = this.session.continue || this.query.continue || '/';
-        if (this.isAuthenticated()) {
-            this.redirect(this.session.continue);
-            this.session.continue = null;
-        } else {
-            yield this.render('login');
-        }
-    });
-
-    router.get('/session', function*(){
-        var that = this;
-        // Check if session exists
-        var email = yield exports.getUserEmail(that);
-        this.body = {
-            ok: true,
-            username: email,
-            authenticated: this.isAuthenticated()
-        };
-    });
-
-    router.get('/logout', function*(){
-        this.logout();
-        this.redirect('/auth/login');
-    });
-
-    return router;
-};
+passport.deserializeUser(function(obj, done) {
+    done(null, obj);
+});
 
 exports.ensureAuthenticated = function *(next) {
     if (this.isAuthenticated()) {
@@ -88,6 +20,25 @@ exports.ensureAuthenticated = function *(next) {
         return;
     }
     this.status = 401;
+};
+
+exports.getUserEmail = function(ctx) {
+    let email, user;
+    if (!ctx.session.passport) {
+        email = 'anonymous';
+    } else if (user = ctx.session.passport.user) {
+        email = user.email;
+    } else {
+        debug('passport without user: ', ctx.session.passport);
+        email = 'anonymous';
+        //throw new Error('UNREACHABLE');
+    }
+
+    if (!email || email === 'anonymous') {
+        return getUserEmailFromToken(ctx);
+    }
+
+    return Promise.resolve(email || 'anonymous');
 };
 
 function getUserEmailFromToken(ctx) {
@@ -118,23 +69,3 @@ function getUserEmailFromToken(ctx) {
 
     return prom.then(res => res.userCtx ? res.userCtx.name : 'anonymous');
 }
-
-
-exports.getUserEmail = function(ctx) {
-    let email, user;
-    if (!ctx.session.passport) {
-        email = 'anonymous';
-    } else if (user = ctx.session.passport.user) {
-        email = user.email;
-    } else {
-        debug('passport without user: ', ctx.session.passport);
-        email = 'anonymous';
-        //throw new Error('UNREACHABLE');
-    }
-
-    if (!email || email === 'anonymous') {
-        return getUserEmailFromToken(ctx);
-    }
-
-    return Promise.resolve(email || 'anonymous');
-};

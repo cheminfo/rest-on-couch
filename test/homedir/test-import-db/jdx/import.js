@@ -16,5 +16,6 @@ module.exports = {
             type: 'jcamp',
             content_type: 'chemical/x-jcamp-dx'
         };
-    }
+    },
+    kind: 'molecule'
 };
