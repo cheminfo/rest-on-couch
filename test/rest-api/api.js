@@ -37,7 +37,7 @@ describe('basic rest-api as anonymous', function () {
 
 describe('basic rest-api as b@b.com', function () {
     before(() => {
-        return noRights().then(authenticateAs('b@b.com', '123'));
+        return data().then(authenticateAs('b@b.com', '123'));
     });
 
     it('get an entry', function () {
@@ -64,10 +64,6 @@ describe('basic rest-api as b@b.com', function () {
             });
     });
 
-    before(() => {
-        return data().then(authenticateAs('b@b.com', '123'));
-    });
-
     it('create new document', function () {
         return request.post('/db/test')
             .send({$id: 'new', $content: {}})
@@ -85,7 +81,7 @@ describe('basic rest-api as b@b.com', function () {
     });
 
     it('existent document cannot be update if no write access', function () {
-        // Update docoment for which user has no access
+        // Update document for which user has no access
         return request.put('/db/test/B').send({$id: 'B', $content: {}})
             .expect(404);
     });

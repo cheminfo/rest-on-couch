@@ -751,13 +751,24 @@ function getDefaultEntry() {
 }
 
 function saveEntry(db, entry, user) {
+    if (entry.$id === undefined) {
+        entry.$id = null;
+    }
+    if (entry.$kind === undefined) {
+        entry.$kind = null;
+    }
     const now = Date.now();
     entry.$lastModification = user;
     entry.$modificationDate = now;
     if (entry.$creationDate === undefined) {
         entry.$creationDate = now;
     }
-    return nanoPromise.insertDocument(db, entry);
+    return nanoPromise.insertDocument(db, entry)
+        .then(result => {
+            result.$modificationDate = entry.$modificationDate;
+            result.$creationDate = entry.$creationDate;
+            return result;
+        });
 }
 
 function getAttachmentFromEntry(db, name, asStream) {
