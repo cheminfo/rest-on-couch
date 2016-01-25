@@ -136,8 +136,7 @@ class Couch {
                                         $content: entry,
                                         $kind: options.kind
                                     };
-                                    beforeSaveEntry(toInsert, user);
-                                    return nanoPromise.insertDocument(this._db, toInsert);
+                                    return saveEntry(this._db, toInsert, user);
                                 })
                                 .then(info => info.id);
                         }
@@ -536,8 +535,7 @@ function updateEntry(ctx, oldDoc, newDoc, user, groups) {
     oldDoc.$content = newDoc.$content;
     // Doc validation will fail $kind changed
     oldDoc.$kind = newDoc.$kind;
-    beforeSaveEntry(oldDoc, user);
-    return nanoPromise.insertDocument(ctx._db, oldDoc)
+    return saveEntry(ctx._db, oldDoc, user)
         .then(r => res = r)
         .then(addGroups(ctx, user, groups))
         .then(() => res);
@@ -688,8 +686,7 @@ function createNew(ctx, entry, user) {
                 $owners: [user],
                 $content: entry.$content
             };
-            beforeSaveEntry(newEntry, user);
-            return nanoPromise.insertDocument(ctx._db, newEntry);
+            return saveEntry(ctx._db, newEntry, user);
         } else {
             let msg = `${user} not allowed to create`;
             debug.trace(msg);
@@ -753,16 +750,14 @@ function getDefaultEntry() {
     return {};
 }
 
-function beforeSaveEntry(entry, user) {
-    if (entry.$kind === undefined) {
-        entry.$kind = null;
-    }
+function saveEntry(db, entry, user) {
     const now = Date.now();
     entry.$lastModification = user;
     entry.$modificationDate = now;
     if (entry.$creationDate === undefined) {
         entry.$creationDate = now;
     }
+    return nanoPromise.insertDocument(db, entry);
 }
 
 function getAttachmentFromEntry(db, name, asStream) {
