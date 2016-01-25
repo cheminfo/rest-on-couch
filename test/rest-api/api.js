@@ -103,4 +103,12 @@ describe('basic rest-api as b@b.com', function () {
             });
     });
 
+    it('delete document', function () {
+        return request.del('/db/test/C')
+            .expect(200)
+            .then(res => {
+                res.body.should.eql({ok: true});
+            });
+    });
+
 });
