@@ -42,6 +42,7 @@ module.exports = function (newDoc, oldDoc) {
             throw({forbidden: 'Modification date cannot be before creation date'});
         }
         validateOwners(newDoc);
+        var i;
         if (oldDoc) {
             if (newDoc.$creationDate !== oldDoc.$creationDate) {
                 throw({forbidden: 'Cannot change creation date'});
@@ -53,7 +54,7 @@ module.exports = function (newDoc, oldDoc) {
                 if (newDoc.$id.length !== oldDoc.$id.length) {
                     throw({forbidden: 'Cannot change the ID'});
                 }
-                for (var i=0; i<newDoc.$id.length; i++) {
+                for (i=0; i<newDoc.$id.length; i++) {
                     if (newDoc.$id[i] !== oldDoc.$id[i]) {
                         throw({forbidden: 'Cannot change the ID'});
                     }
@@ -61,16 +62,15 @@ module.exports = function (newDoc, oldDoc) {
             } else if (newDoc.$id !== oldDoc.$id) {
                 throw({forbidden: 'Cannot change the ID'});
             }
-
             if (newDoc.$kind !== oldDoc.$kind) {
                 throw({forbidden: 'Cannot change the kind'});
             }
         }
     } else if (newDoc.$type === 'log' && oldDoc) {
         throw({forbidden: 'Logs cannot be changed'});
-    } else if(newDoc.$type === 'db') {
-        for(var i=0; i<validRights.length; i++) {
-            if(newDoc[validRights[i]] !== undefined && !Array.isArray(newDoc[validRights[i]])) {
+    } else if (newDoc.$type === 'db') {
+        for (i=0; i<validRights.length; i++) {
+            if (newDoc[validRights[i]] !== undefined && !Array.isArray(newDoc[validRights[i]])) {
                 throw({forbidden: 'global db right should always be an array'});
             }
         }

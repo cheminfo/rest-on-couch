@@ -67,8 +67,8 @@ exports.import = function (database, importName, file) {
     }
 
     function getKind(info) {
-        if(!config.kind) return info;
-        if(! (typeof config.kind === 'function')) {
+        if (!config.kind) return info;
+        if (! (typeof config.kind === 'function')) {
             info.kind = config.kind;
             return info;
         }
