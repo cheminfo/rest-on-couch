@@ -7,6 +7,7 @@ const Couch = require('../index');
 const debug = require('../util/debug')('import');
 const getConfig = require('../config/config').getConfig;
 
+
 exports.import = function (database, importName, file) {
     debug(`import ${file} (${database}, ${importName})`);
 
@@ -29,6 +30,7 @@ exports.import = function (database, importName, file) {
     return Promise.resolve()
         .then(getMetadata)
         .then(parseFile)
+        .then(getKind)
         .then(checkDocumentExists)
         .then(updateDocument)
         .then(function () {
@@ -64,6 +66,18 @@ exports.import = function (database, importName, file) {
         });
     }
 
+    function getKind(info) {
+        if(!config.kind) return info;
+        if(! (typeof config.kind === 'function')) {
+            info.kind = config.kind;
+            return info;
+        }
+        return Promise.resolve(config.kind(filename, contents)).then(function (kind) {
+            info.kind = kind;
+            return info;
+        });
+    }
+
     function parseFile(info) {
         debug.trace('parse file contents');
         return Promise.resolve(parse(filename, contents)).then(function (result) {
@@ -89,7 +103,7 @@ exports.import = function (database, importName, file) {
     function checkDocumentExists(info) {
         return couch.createEntry(info.id, info.owner, {
             createParameters: [filename, contents],
-            kind: config.kind
+            kind: info.kind
         }).then(() => info);
     }
 
