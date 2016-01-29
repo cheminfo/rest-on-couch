@@ -7,6 +7,7 @@ const Couch = require('../index');
 const debug = require('../util/debug')('import');
 const getConfig = require('../config/config').getConfig;
 
+
 exports.import = function (database, importName, file) {
     debug(`import ${file} (${database}, ${importName})`);
 
@@ -35,6 +36,7 @@ exports.import = function (database, importName, file) {
     return Promise.resolve()
         .then(getMetadata)
         .then(parseFile)
+        .then(getKind)
         .then(checkDocumentExists)
         .then(updateDocument)
         .then(function () {
@@ -67,6 +69,18 @@ exports.import = function (database, importName, file) {
         return Promise.all([id, owner]).then(function (result) {
             debug.trace(`id: ${result[0]}, owner: ${result[1]}`);
             return {id: result[0], owner: result[1]};
+        });
+    }
+
+    function getKind(info) {
+        if (!config.kind) return info;
+        if (! (typeof config.kind === 'function')) {
+            info.kind = config.kind;
+            return info;
+        }
+        return Promise.resolve(config.kind(filename, contents)).then(function (kind) {
+            info.kind = kind;
+            return info;
         });
     }
 

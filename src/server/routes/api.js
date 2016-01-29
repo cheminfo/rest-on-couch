@@ -24,6 +24,9 @@ exports.init = function() {
     // Update a document
     router.put('/:dbname/:uuid', couch.updateEntry);
 
+    // Delete a document
+    router.delete('/:dbname/:uuid', couch.deleteEntry);
+
     // Create a new document
     router.post('/:dbname', couch.newOrUpdateEntry);
 

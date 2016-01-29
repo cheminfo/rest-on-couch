@@ -136,8 +136,7 @@ class Couch {
                                         $content: entry,
                                         $kind: options.kind
                                     };
-                                    beforeSaveEntry(toInsert, user);
-                                    return nanoPromise.insertDocument(this._db, toInsert);
+                                    return saveEntry(this._db, toInsert, user);
                                 });
                         }
                         debug.trace('entry already exists');
@@ -546,8 +545,7 @@ function updateEntry(ctx, oldDoc, newDoc, user, options) {
     }
     // Doc validation will fail $kind changed
     oldDoc.$kind = newDoc.$kind;
-    beforeSaveEntry(oldDoc, user);
-    return nanoPromise.insertDocument(ctx._db, oldDoc)
+    return saveEntry(ctx._db, oldDoc, user)
         .then(r => res = r)
         .then(addGroups(ctx, user, options.groups))
         .then(() => res);
@@ -698,8 +696,7 @@ function createNew(ctx, entry, user) {
                 $owners: [user],
                 $content: entry.$content
             };
-            beforeSaveEntry(newEntry, user);
-            return nanoPromise.insertDocument(ctx._db, newEntry);
+            return saveEntry(ctx._db, newEntry, user);
         } else {
             let msg = `${user} not allowed to create`;
             debug.trace(msg);
@@ -763,7 +760,7 @@ function getDefaultEntry() {
     return {};
 }
 
-function beforeSaveEntry(entry, user) {
+function saveEntry(db, entry, user) {
     if (entry.$id === undefined) {
         entry.$id = null;
     }
@@ -776,6 +773,12 @@ function beforeSaveEntry(entry, user) {
     if (entry.$creationDate === undefined) {
         entry.$creationDate = now;
     }
+    return nanoPromise.insertDocument(db, entry)
+        .then(result => {
+            result.$modificationDate = entry.$modificationDate;
+            result.$creationDate = entry.$creationDate;
+            return result;
+        });
 }
 
 function getAttachmentFromEntry(db, name, asStream) {
@@ -783,7 +786,7 @@ function getAttachmentFromEntry(db, name, asStream) {
         if (entry._attachments && entry._attachments[name]) {
             return nanoPromise.getAttachment(db, entry._id, name, asStream);
         } else {
-            throw new CouchError(`attachment ${name} not found`);
+            throw new CouchError(`attachment ${name} not found`, 'not found');
         }
     };
 }

@@ -38,6 +38,17 @@ exports.updateEntry = function * () {
     }
 };
 
+exports.deleteEntry = function*() {
+    try {
+        yield this.state.couch.deleteEntryByUuid(this.params.uuid, this.state.userEmail);
+        this.body = {
+            ok: true
+        };
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
 exports.newOrUpdateEntry = function * () {
     try {
         this.body = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
