@@ -107,13 +107,18 @@ class Couch {
     }
 
     editUser(user, data) {
+        if(!(data instanceof Object)) {
+            return Promise.reject(new CouchError('user data should be an object', 'bad argument'));
+        }
         return this.getUser(user).then(doc => {
-            if (!doc) doc = {};
-            for (var key in data) {
-                if (data.hasOwnProperty(key)) {
-                    doc[key] = data[key];
-                }
+            return simpleMerge(data, doc);
+        }).catch(e => {
+            if(e.reason === 'not found') {
+                return data;
+            } else {
+                throw e;
             }
+        }).then(doc => {
             doc.$type = 'user';
             doc.user = user;
             return nanoPromise.insertDocument(this._db, doc);
@@ -886,7 +891,7 @@ function getDefaultEntry() {
 function getUser(db, user) {
     return nanoPromise.queryView(db, 'user', {key: user, include_docs: true})
         .then(rows => {
-            if (!rows.length) return null;
+            if (!rows.length) throw new CouchError('User not found', 'not found');
             if (rows.length > 1) throw new CouchError('Unexepected: more than 1 user profile', 'unreachable');
             return rows[0].doc;
         });
@@ -942,4 +947,13 @@ function checkGlobalTypeAndUser(type, user) {
     if (!isValidGlobalRightUser(user)) {
         return new CouchError('Invalid global right user', 'bad argument');
     }
+}
+
+function simpleMerge(source, target) {
+    for (var key in source) {
+        if (source.hasOwnProperty(key)) {
+            target[key] = source[key];
+        }
+    }
+    return target;
 }

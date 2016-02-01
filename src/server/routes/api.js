@@ -35,8 +35,11 @@ exports.init = function() {
 
     // Queries
     router.post('/:dbname/_query/byKindAndId/:kind', couch.entriesByKindAndId);
-
     router.post('/:dbname/_query/byOwnerAndId/:email', couch.entriesByOwnerAndId);
+
+    // User related routes
+    router.get('/:dbname/_user', couch.getUser);
+    router.post('/:dbname/_user', couch.editUser);
 
     return router;
 };

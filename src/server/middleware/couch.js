@@ -145,6 +145,23 @@ exports.entriesByOwnerAndId = function * () {
     }
 };
 
+exports.getUser = function * () {
+    try {
+        this.body = yield this.state.couch.getUser(this.state.userEmail);
+        this.status = 200;
+    } catch(e) {
+        onGetError(this, e);
+    }
+};
+
+exports.editUser = function * () {
+    try {
+        this.body = yield this.state.couch.getUser(this.state.userEmail, this.request.body);
+    } catch(e) {
+        onGetError(this, e);
+    }
+};
+
 function onGetError(ctx, e) {
     switch (e.reason) {
         case 'not found':

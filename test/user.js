@@ -12,9 +12,7 @@ describe('Couch user API', function () {
     });
 
     it('Get user should return null if not exists', function () {
-        return couch.getUser('b@b.com').then(doc => {
-            should(doc).be.exactly(null);
-        });
+        return couch.getUser('b@b.com').should.be.rejectedWith(/not found/);
     });
 
     it('Should save new  user', function () {
