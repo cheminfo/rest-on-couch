@@ -11,8 +11,12 @@ describe('Couch user API', function () {
         });
     });
 
-    it('Get user should return null if not exists', function () {
+    it('Get user should throw if not exists', function () {
         return couch.getUser('b@b.com').should.be.rejectedWith(/not found/);
+    });
+
+    it('Edit user should throw when anonymous', function () {
+        return couch.editUser('anonymous', {val: 'test'}).should.be.rejectedWith(/must be an email/);
     });
 
     it('Should save new  user', function () {

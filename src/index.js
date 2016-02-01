@@ -107,26 +107,33 @@ class Couch {
     }
 
     editUser(user, data) {
-        if(!(data instanceof Object)) {
-            return Promise.reject(new CouchError('user data should be an object', 'bad argument'));
-        }
-        return this.getUser(user).then(doc => {
-            return simpleMerge(data, doc);
-        }).catch(e => {
-            if(e.reason === 'not found') {
-                return data;
-            } else {
-                throw e;
-            }
-        }).then(doc => {
-            doc.$type = 'user';
-            doc.user = user;
-            return nanoPromise.insertDocument(this._db, doc);
-        });
+        return this._init()
+            .then(() => {
+                if (!(data instanceof Object)) {
+                    throw new CouchError('user data should be an object', 'bad argument');
+                }
+                return this.getUser(user).then(doc => {
+                        return simpleMerge(data, doc);
+                    })
+                    .catch(e => {
+                        if (e.reason === 'not found') {
+                            return data;
+                        } else {
+                            throw e;
+                        }
+                    }).then(doc => {
+                    doc.$type = 'user';
+                    doc.user = user;
+                    return nanoPromise.insertDocument(this._db, doc);
+                });
+            });
     }
 
     getUser(user) {
-        return getUser(this._db, user);
+        return this._init()
+            .then(() => {
+                return getUser(this._db, user);
+            });
     }
 
     createEntry(id, user, options) {

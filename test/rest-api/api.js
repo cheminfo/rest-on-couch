@@ -3,18 +3,7 @@
 const request = require('../setup').getAgent();
 const noRights = require('../data/noRights');
 const data = require('../data/data');
-
-function authenticateAs(username, password) {
-    return request.post('/auth/login/couchdb')
-        .type('form')
-        .send({username, password})
-        .then(() => request.get('/auth/session'))
-        .then(res => {
-            if (!res.body.authenticated) {
-                throw new Error(`Could not authenticate on CouchDB as ${username}:${password}`);
-            }
-        });
-}
+const authenticateAs = require('./authenticate');
 
 describe('basic rest-api as anonymous (noRights)', function () {
     before(noRights);
@@ -55,7 +44,7 @@ describe('rest-api as anonymous (data)', function () {
 
 describe('basic rest-api as b@b.com', function () {
     before(() => {
-        return data().then(authenticateAs('b@b.com', '123'));
+        return data().then(authenticateAs(request, 'b@b.com', '123'));
     });
 
     it('get an entry', function () {
