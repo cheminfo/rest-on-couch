@@ -77,7 +77,8 @@ class Couch {
                 }
             })
             .then(() => checkDesignDoc(this._db, this._customDesign))
-            .then(() => checkRightsDoc(this._db, this._rights));
+            .then(() => checkRightsDoc(this._db, this._rights))
+            .then(() => checkDefaultGroupsDoc(this._db));
     }
 
     _authenticate() {
@@ -359,7 +360,7 @@ class Couch {
             return Promise.reject(e);
         }
 
-        return nanoPromise.getDocument(this._db, 'rights')
+        return nanoPromise.getDocument(this._db, constants.RIGHTS_DOC_ID)
             .then(doc => {
                 if (!doc) throw new Error('Rights document should always exist', 'unreachable');
                 if (action === 'add') {
@@ -729,6 +730,22 @@ function checkRightsDoc(db, rights) {
 
 function createRightsDoc(db, rightsDoc) {
     return nanoPromise.insertDocument(db, rightsDoc);
+}
+
+function checkDefaultGroupsDoc(db) {
+    debug.trace('check defaultGroups doc');
+    return nanoPromise.getDocument(db, constants.DEFAULT_GROUPS_DOC_ID)
+        .then(doc => {
+            if (doc === null) {
+                debug.trace('defaultGroups doc does not exist');
+                return nanoPromise.insertDocument(db, {
+                    _id: constants.DEFAULT_GROUPS_DOC_ID,
+                    $type: 'db',
+                    anonymous: [],
+                    anyuser: []
+                });
+            }
+        });
 }
 
 function checkGlobalRight(db, user, right) {
