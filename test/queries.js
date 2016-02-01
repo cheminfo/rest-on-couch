@@ -32,7 +32,7 @@ describe('Query no rights data', function () {
     it('Should not grant access to all entries', function () {
         return couch.queryViewByUser('a@a.com', 'entryById')
             .then(rows => {
-                rows.length.should.equal(1);
+                rows.length.should.equal(4);
             });
     });
 });

@@ -29,7 +29,7 @@ describe('basic rest-api as anonymous (noRights)', function () {
     it('get all entries', function () {
         return request.get('/db/test/_all/entries').expect(200).then(entries => {
             entries = JSON.parse(entries.text);
-            entries.should.have.length(0);
+            entries.should.have.length(2);
         });
     });
 });

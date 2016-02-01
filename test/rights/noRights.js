@@ -1,7 +1,7 @@
 'use strict';
 
-const data = require('./data/noRights');
-const constants = require('./data/constants');
+const data = require('../data/noRights');
+const constants = require('../data/constants');
 
 describe('entry reads, database without any default rights', function () {
     before(data);
@@ -30,9 +30,13 @@ describe('entry reads, database without any default rights', function () {
 
     it('should only get entries for which user has read access', function () {
         return couch.getEntriesByUserAndRights('a@a.com', 'read').then(entries => {
-            entries.should.have.length(1);
+            entries.should.have.length(4);
             entries[0].$id.should.equal('A');
         });
+    });
+
+    it('should reject anonymous user', function () {
+        return couch.getEntryById('A', 'anonymous').should.be.rejectedWith(/no access/);
     });
 });
 

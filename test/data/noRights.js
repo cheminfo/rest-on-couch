@@ -4,12 +4,20 @@ const Couch = require('../..');
 const nanoPromise = require('../../src/util/nanoPromise');
 const insertDocument = require('./insertDocument');
 
-function destroy(nano, name) {
-    return nanoPromise.destroyDatabase(nano, name);
+function resetDatabase(nano, name) {
+    return nanoPromise.destroyDatabase(nano, name)
+        .then(() => nanoPromise.createDatabase(nano, name));
 }
 
 function populate(db) {
     const prom = [];
+    prom.push(insertDocument(db, {
+        _id: 'defaultGroups',
+        $type: 'db',
+        anonymous: ['defaultAnonymousRead'],
+        anyuser: ['defaultAnyuserRead']
+    }));
+
     prom.push(insertDocument(db, {
         $type: 'group',
         $owners: ['a@a.com'],
@@ -17,7 +25,6 @@ function populate(db) {
         users: ['a@a.com'],
         rights: ['create', 'write', 'delete', 'read']
     }));
-
 
     prom.push(insertDocument(db, {
         $type: 'group',
@@ -27,6 +34,21 @@ function populate(db) {
         rights: ['create']
     }));
 
+    prom.push(insertDocument(db, {
+        $type: 'group',
+        $owners: ['a@a.com'],
+        name: 'defaultAnonymousRead',
+        users: [],
+        rights: ['read']
+    }));
+
+    prom.push(insertDocument(db, {
+        $type: 'group',
+        $owners: ['a@a.com'],
+        name: 'defaultAnyuserRead',
+        users: [],
+        rights: ['read']
+    }));
 
     prom.push(insertDocument(db, {
         $type: 'entry',
@@ -47,19 +69,43 @@ function populate(db) {
         $content: {}
     }));
 
+    prom.push(insertDocument(db, {
+        $type: 'entry',
+        $owners: ['x@x.com', 'defaultAnonymousRead'],
+        $id: 'entryWithDefaultAnonymousRead',
+        $creationDate: 0,
+        $modificationDate: 0
+    }));
+
+    prom.push(insertDocument(db, {
+        $type: 'entry',
+        $owners: ['x@x.com', 'defaultAnyuserRead'],
+        $id: 'entryWithDefaultAnyuserRead',
+        $creationDate: 0,
+        $modificationDate: 0
+    }));
+
+    prom.push(insertDocument(db, {
+        $type: 'entry',
+        $owners: ['x@x.com', 'defaultAnonymousRead', 'defaultAnyuserRead'],
+        $id: 'entryWithDefaultMultiRead',
+        $creationDate: 0,
+        $modificationDate: 0
+    }));
+
     return Promise.all(prom);
 }
 
 module.exports = function () {
     global.couch = new Couch({database: 'test'});
     return global.couch._init()
-        .then(() => destroy(global.couch._nano, global.couch._databaseName))
+        .then(() => resetDatabase(global.couch._nano, global.couch._databaseName))
+        .then(() => populate(global.couch._db))
         .then(() => {
             global.couch = new Couch({
                 database: 'test',
                 rights: {}
             });
             return global.couch._init();
-        })
-        .then(() => populate(global.couch._db));
+        });
 };
