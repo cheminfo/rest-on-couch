@@ -41,10 +41,14 @@ describe('rest-api as anonymous (data)', function () {
         return request.put('/db/test/B/myattachment.txt')
             .set('Content-Type', 'text/plain')
             .set('Accept', 'application/json')
-            .send('aaaa')
+            .send('hello world')
             .expect(200).then(res => {
                 res.body.id.should.equal('B');
                 res.body.rev.should.startWith('2');
+                return request.get('/db/test/B/myattachment.txt').then(res => {
+                    res.text.should.equal('hello world');
+                    res.headers['content-type'].should.equal('text/plain');
+                })
             });
     });
 });
