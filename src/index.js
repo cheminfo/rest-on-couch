@@ -390,6 +390,47 @@ class Couch {
         return this.editGlobalRight(type, user, 'remove');
     }
 
+    editDefaultGroup(group, type, action) {
+        if (action !== 'add' && action !== 'remove') {
+            throw new CouchError('edit default group invalid action', 'bad argument');
+        }
+        if (!isSpecialUser(type)) {
+            throw new CouchError('edit default group invalid type', 'bad argument');
+        }
+        if (!isValidGroupName(group)) {
+            throw new CouchError('edit default group invalid group name', 'bad argument');
+        }
+
+        return nanoPromise.getDocument(this._db, constants.DEFAULT_GROUPS_DOC_ID)
+            .then(doc => {
+                if (!doc) throw new Error('default groups document should always exist', 'unreachable');
+                if (action === 'add') {
+                    if (!doc[type]) doc[type] = [];
+                    if (doc[type].indexOf(group) === -1) {
+                        doc[type].push(group);
+                    }
+                }
+                if (action === 'remove') {
+                    if (doc[type]) {
+                        const idx = doc[type].indexOf(group);
+                        if (idx !== -1) {
+                            doc[type].splice(idx, 1);
+                        }
+                    }
+                }
+
+                return nanoPromise.insertDocument(this._db, doc);
+            });
+    }
+
+    addDefaultGroup(group, type) {
+        return this.editDefaultGroup(group, type, 'add');
+    }
+
+    removeDefaultGroup(group, type) {
+        return this.editDefaultGroup(group, type, 'remove');
+    }
+
     addGroupToEntry(id, user, group) {
         debug(`addGroupToEntry (${id}, ${user}, ${group})`);
         return this._doUpdateOnEntry(id, user, 'addGroupToEntry', {group});
@@ -809,7 +850,15 @@ function getAttachmentFromEntry(db, name, asStream) {
 }
 
 function isValidGlobalRightUser(user) {
-    return user === 'anonymous' || user === 'anyuser' || isEmail(user);
+    return isSpecialUser(user) || isEmail(user);
+}
+
+function isSpecialUser(user) {
+    return user === 'anonymous' || user === 'anyuser';
+}
+
+function isValidGroupName(group) {
+    return !isEmail(group);
 }
 
 function checkGlobalTypeAndUser(type, user) {
