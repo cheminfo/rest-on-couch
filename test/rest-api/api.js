@@ -16,7 +16,7 @@ function authenticateAs(username, password) {
         });
 }
 
-describe('basic rest-api as anonymous', function () {
+describe('basic rest-api as anonymous (noRights)', function () {
     before(noRights);
 
     it('get an entry', function () {
@@ -32,7 +32,21 @@ describe('basic rest-api as anonymous', function () {
             entries.should.have.length(0);
         });
     });
+});
 
+describe('rest-api as anonymous (data)', function () {
+    before(data);
+
+    it('save an attachment', function () {
+        return request.put('/db/test/B/myattachment.txt')
+            .set('Content-Type', 'text/plain')
+            .set('Accept', 'application/json')
+            .send('aaaa')
+            .expect(200).then(res => {
+                res.body.id.should.equal('B');
+                res.body.rev.should.startWith('2');
+            });
+    });
 });
 
 describe('basic rest-api as b@b.com', function () {

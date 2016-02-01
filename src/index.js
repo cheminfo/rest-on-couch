@@ -284,12 +284,24 @@ class Couch {
             });
     }
 
-    addAttachments(id, user, attachments) {
+    addAttachmentsById(id, user, attachments) {
+        debug('trace', 'addAttachmentsById');
         if (!Array.isArray(attachments)) {
             attachments = [attachments];
         }
         return this.getEntryByIdAndRights(id, user, ['write', 'addAttachment'])
             .then(entry => nanoPromise.attachFiles(this._db, entry, attachments));
+    }
+
+    addAttachmentsByUuid(uuid, user, attachments) {
+        debug('trace', 'addAttachmentsByUuid');
+        if (!Array.isArray(attachments)) {
+            attachments = [attachments];
+        }
+        return this.getEntryByUuidAndRights(uuid, user, ['write', 'addAttachment'])
+            .then(entry => {
+                return nanoPromise.attachFiles(this._db, entry, attachments)
+            });
     }
 
     getAttachmentByIdAndName(id, name, user, asStream) {
@@ -567,7 +579,8 @@ Couch.get = function (databaseName) {
     }
 };
 
-Couch.prototype.addAttachment = Couch.prototype.addAttachments;
+Couch.prototype.addAttachmentById = Couch.prototype.addAttachmentsById;
+Couch.prototype.addAttachmentByUuid = Couch.prototype.addAttachmentsByUuid;
 
 module.exports = Couch;
 

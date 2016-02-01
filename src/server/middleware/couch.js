@@ -58,6 +58,19 @@ exports.newOrUpdateEntry = function * () {
     }
 };
 
+exports.saveAttachment = function * () {
+    try {
+        this.body = yield this.state.couch.addAttachmentByUuid(this.params.uuid, this.state.userEmail, {
+            name: this.params.attachment,
+            data: this.request.body,
+            content_type: this.get('Content-Type')
+        });
+        this.status = 200;
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
 exports.getAttachmentById = function*() {
     try {
         const stream = yield this.state.couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, this.state.userEmail, true);

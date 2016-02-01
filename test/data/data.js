@@ -102,7 +102,8 @@ module.exports = function () {
                 rights: {
                     read: ['anonymous'],
                     createGroup: ['anonymous'],
-                    create: ['anonymous']
+                    create: ['anonymous'],
+                    addAttachment: ['anonymous']
                 }
             });
             return global.couch._init();

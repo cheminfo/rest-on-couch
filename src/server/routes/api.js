@@ -24,6 +24,9 @@ exports.init = function() {
     // Update a document
     router.put('/:dbname/:uuid', couch.updateEntry);
 
+    // Send an attachment to a document
+    router.put('/:dbname/:uuid/:attachment', couch.saveAttachment);
+
     // Delete a document
     router.delete('/:dbname/:uuid', couch.deleteEntry);
 

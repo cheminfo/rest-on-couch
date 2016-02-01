@@ -17,7 +17,7 @@ module.exports = {
             content_type: 'chemical/x-jcamp-dx'
         };
     },
-    kind: function (filename, contents) {
+    kind: function () {
         return 'molecule';
     }
 };
