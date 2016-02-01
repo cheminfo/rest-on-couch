@@ -37,6 +37,13 @@ function populate(db) {
         rights: ['read']
     }));
 
+    // Add users
+    prom.push(insertDocument(db, {
+        $type: 'user',
+        user: 'a@a.com',
+        val: 'a'
+    }));
+
     // Add entries
     prom.push(insertDocument(db, {
         $type: 'entry',

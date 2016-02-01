@@ -107,3 +107,12 @@ views.logsByEpoch = {
         emit(doc.epoch);
     }
 };
+
+views.user = {
+    map: function (doc) {
+        if (doc.$type !== 'user') return;
+        if (doc.user) {
+            emit(doc.user);
+        }
+    }
+};

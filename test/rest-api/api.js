@@ -48,7 +48,7 @@ describe('rest-api as anonymous (data)', function () {
                 return request.get('/db/test/B/myattachment.txt').then(res => {
                     res.text.should.equal('hello world');
                     res.headers['content-type'].should.equal('text/plain');
-                })
+                });
             });
     });
 });

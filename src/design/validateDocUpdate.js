@@ -5,7 +5,7 @@ module.exports = function (newDoc, oldDoc) {
     if (newDoc._deleted) {
         return;
     }
-    var validTypes = ['entry', 'group', 'db', 'log'];
+    var validTypes = ['entry', 'group', 'db', 'log', 'user'];
     var validRights = ['create', 'read', 'write', 'createGroup'];
     // see http://emailregex.com/
     var validEmail = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
@@ -79,6 +79,10 @@ module.exports = function (newDoc, oldDoc) {
             if (!Array.isArray(newDoc.anonymous) || !Array.isArray(newDoc.anyuser)) {
                 throw({forbidden: 'defaultGroups document must have anonymous and anyuser arrays'});
             }
+        }
+    } else if (newDoc.$type === 'user') {
+        if (!newDoc.user || !validEmail.test(newDoc.user)) {
+            throw({forbidden: 'user must have user property, which must be an email'});
         }
     }
 };

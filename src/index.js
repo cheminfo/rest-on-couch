@@ -106,6 +106,24 @@ class Couch {
         });
     }
 
+    editUser(user, data) {
+        return this.getUser(user).then(doc => {
+            if (!doc) doc = {};
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    doc[key] = data[key];
+                }
+            }
+            doc.$type = 'user';
+            doc.user = user;
+            return nanoPromise.insertDocument(this._db, doc);
+        });
+    }
+
+    getUser(user) {
+        return getUser(this._db, user);
+    }
+
     createEntry(id, user, options) {
         options = options || {};
         debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
@@ -300,7 +318,7 @@ class Couch {
         }
         return this.getEntryByUuidAndRights(uuid, user, ['write', 'addAttachment'])
             .then(entry => {
-                return nanoPromise.attachFiles(this._db, entry, attachments)
+                return nanoPromise.attachFiles(this._db, entry, attachments);
             });
     }
 
@@ -861,6 +879,15 @@ function getDefaultGroups(db, user) {
 
 function getDefaultEntry() {
     return {};
+}
+
+function getUser(db, user) {
+    return nanoPromise.queryView(db, 'user', {key: user, include_docs: true})
+        .then(rows => {
+            if (!rows.length) return null;
+            if (rows.length > 1) throw new CouchError('Unexepected: more than 1 user profile', 'unreachable');
+            return rows[0].doc;
+        });
 }
 
 function saveEntry(db, entry, user) {
