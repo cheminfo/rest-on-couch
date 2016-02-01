@@ -664,7 +664,6 @@ function isOwner(owners, user) {
 }
 
 function validateRights(db, owners, user, rights) {
-    // owner has all the rights
     if (!Array.isArray(owners[0])) {
         owners = [owners];
     }
@@ -687,15 +686,23 @@ function validateRights(db, owners, user, rights) {
         checks.push(checkGlobalRight(db, user, rights[i])
             .then(function (hasGlobal) {
                 if (hasGlobal) return owners.map(() => true);
-                return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})
-                    .then(function (groups) {
-                        return owners.map((owners, idx) => {
-                            if (areOwners[idx]) return true;
-                            for (var i = 0; i < owners.length; i++) {
-                                if (groups.indexOf(owners[i]) > -1) return true;
+                return getDefaultGroups(db, user)
+                    .then(defaultGroups => {
+                        for (let i = 0; i < defaultGroups.length; i++) {
+                            if (defaultGroups[i].rights.indexOf(rights[i]) !== -1) {
+                                return true;
                             }
-                            return false;
-                        });
+                        }
+                        return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})
+                            .then(function (groups) {
+                                return owners.map((owners, idx) => {
+                                    if (areOwners[idx]) return true;
+                                    for (var i = 0; i < owners.length; i++) {
+                                        if (groups.indexOf(owners[i]) > -1) return true;
+                                    }
+                                    return false;
+                                });
+                            });
                     });
             }));
     }
@@ -822,8 +829,33 @@ function checkRightAnyGroup(db, user, right) {
     return checkGlobalRight(db, user, right)
         .then(hasGlobal => {
             if (hasGlobal) return true;
-            return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, right]})
-                .then(result => result.length > 0);
+            return getDefaultGroups(db, user)
+                .then(defaultGroups => {
+                    for (let i = 0; i < defaultGroups.length; i++) {
+                        if (defaultGroups[i].rights.indexOf(right) !== -1) {
+                            return true;
+                        }
+                    }
+                    return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, right]})
+                        .then(result => result.length > 0);
+                });
+        });
+}
+
+function getDefaultGroups(db, user) {
+    debug.trace('getDefaultGroups');
+    return nanoPromise.getDocument(db, constants.DEFAULT_GROUPS_DOC_ID)
+        .then(defaultGroups => {
+            const toGet = new Set();
+            for (let i = 0; i < defaultGroups.anonymous.length; i++) {
+                toGet.add(defaultGroups.anonymous[i]);
+            }
+            if (user !== 'anonymous') {
+                for (let i = 0; i < defaultGroups.anyuser.length; i++) {
+                    toGet.add(defaultGroups.anyuser[i]);
+                }
+            }
+            return Promise.all(Array.from(toGet).map(group => getGroup(db, group)));
         });
 }
 

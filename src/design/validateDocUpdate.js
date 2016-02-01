@@ -69,9 +69,15 @@ module.exports = function (newDoc, oldDoc) {
     } else if (newDoc.$type === 'log' && oldDoc) {
         throw({forbidden: 'Logs cannot be changed'});
     } else if (newDoc.$type === 'db') {
-        for (i=0; i<validRights.length; i++) {
-            if (newDoc[validRights[i]] !== undefined && !Array.isArray(newDoc[validRights[i]])) {
-                throw({forbidden: 'global db right should always be an array'});
+        if (newDoc._id === 'rights') {
+            for (i = 0; i < validRights.length; i++) {
+                if (newDoc[validRights[i]] !== undefined && !Array.isArray(newDoc[validRights[i]])) {
+                    throw({forbidden: 'global db right should always be an array'});
+                }
+            }
+        } else if (newDoc._id === 'defaultGroups') {
+            if (!Array.isArray(newDoc.anonymous) || !Array.isArray(newDoc.anyuser)) {
+                throw({forbidden: 'defaultGroups document must have anonymous and anyuser arrays'});
             }
         }
     }
