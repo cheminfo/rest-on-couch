@@ -336,16 +336,16 @@ class Couch {
 
     addFileToJpath(id, user, jpath, json, file) {
         if (!Array.isArray(jpath)) {
-            throw new CouchError('jpath must be an array');
+            return Promise.reject(new CouchError('jpath must be an array'));
         }
         if (typeof json !== 'object') {
-            throw new CouchError('json must be an object');
+            return Promise.reject(new CouchError('json must be an object'));
         }
         if (typeof file !== 'object') {
-            throw new CouchError('file must be an object');
+            return Promise.reject(new CouchError('file must be an object'));
         }
         if (!file.type || !file.name || !file.data) {
-            throw new CouchError('file must have type, name and data properties');
+            return Promise.reject(new CouchError('file must have type, name and data properties'));
         }
         return this.getEntryByIdAndRights(id, user, ['write'])
             .then(entry => {
@@ -424,13 +424,13 @@ class Couch {
 
     editDefaultGroup(group, type, action) {
         if (action !== 'add' && action !== 'remove') {
-            throw new CouchError('edit default group invalid action', 'bad argument');
+            return Promise.reject(new CouchError('edit default group invalid action', 'bad argument'));
         }
         if (!isSpecialUser(type)) {
-            throw new CouchError('edit default group invalid type', 'bad argument');
+            return Promise.reject(new CouchError('edit default group invalid type', 'bad argument'));
         }
         if (!isValidGroupName(group)) {
-            throw new CouchError('edit default group invalid group name', 'bad argument');
+            return Promise.reject(new CouchError('edit default group invalid group name', 'bad argument'));
         }
 
         return nanoPromise.getDocument(this._db, constants.DEFAULT_GROUPS_DOC_ID)
