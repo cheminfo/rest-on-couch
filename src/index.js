@@ -303,7 +303,7 @@ class Couch {
     }
 
     addAttachmentsById(id, user, attachments) {
-        debug('trace', 'addAttachmentsById');
+        debug(`addAttachmentsById (${id}, ${user})`);
         if (!Array.isArray(attachments)) {
             attachments = [attachments];
         }
@@ -312,7 +312,7 @@ class Couch {
     }
 
     addAttachmentsByUuid(uuid, user, attachments) {
-        debug('trace', 'addAttachmentsByUuid');
+        debug(`addAttachmentsByUuid (${uuid}, ${user})`);
         if (!Array.isArray(attachments)) {
             attachments = [attachments];
         }
@@ -323,13 +323,15 @@ class Couch {
     }
 
     getAttachmentByIdAndName(id, name, user, asStream) {
+        debug(`getAttachmentByIdAndName (${id}, ${name}, ${user})`);
         return this.getEntryById(id, user)
-            .then(getAttachmentFromEntry(this._db, name, asStream));
+            .then(getAttachmentFromEntry(this, name, asStream));
     }
 
     getAttachmentByUuidAndName(uuid, name, user, asStream) {
+        debug(`getAttachmentByUuidAndName (${uuid}, ${name}, ${user})`);
         return this.getEntryByUuid(uuid, user)
-            .then(getAttachmentFromEntry(this._db, name, asStream));
+            .then(getAttachmentFromEntry(this, name, asStream));
     }
 
     addFileToJpath(id, user, jpath, json, file) {
@@ -682,6 +684,7 @@ function isOwner(owners, user) {
 }
 
 function validateRights(db, owners, user, rights) {
+    debug.trace('validateRights');
     if (!Array.isArray(owners[0])) {
         owners = [owners];
     }
@@ -704,23 +707,22 @@ function validateRights(db, owners, user, rights) {
         checks.push(checkGlobalRight(db, user, rights[i])
             .then(function (hasGlobal) {
                 if (hasGlobal) return owners.map(() => true);
-                return getDefaultGroups(db, user)
-                    .then(defaultGroups => {
-                        for (let i = 0; i < defaultGroups.length; i++) {
-                            if (defaultGroups[i].rights.indexOf(rights[i]) !== -1) {
-                                return true;
-                            }
-                        }
-                        return nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})
-                            .then(function (groups) {
-                                return owners.map((owners, idx) => {
-                                    if (areOwners[idx]) return true;
-                                    for (var i = 0; i < owners.length; i++) {
-                                        if (groups.indexOf(owners[i]) > -1) return true;
+                return Promise.all([getDefaultGroups(db, user), nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})])
+                    .then(result => {
+                        const defaultGroups = result[0];
+                        const groups = result[1];
+                        return owners.map((owners, idx) => {
+                            if (areOwners[idx]) return true;
+                            for (let j = 0; j < owners.length; j++) {
+                                if (groups.indexOf(owners[j]) > -1) return true;
+                                for (let k = 0; k < defaultGroups.length; k++) {
+                                    if (owners.indexOf(defaultGroups[k].name) !== -1 && defaultGroups[k].rights.indexOf(rights[i]) !== -1) {
+                                        return true;
                                     }
-                                    return false;
-                                });
-                            });
+                                }
+                            }
+                            return false;
+                        });
                     });
             }));
     }
@@ -828,7 +830,7 @@ function checkDefaultGroupsDoc(db) {
 }
 
 function checkGlobalRight(db, user, right) {
-    debug.trace(`checkGlobalRight (${user}. ${right})`);
+    debug.trace(`checkGlobalRight (${user}, ${right})`);
     return nanoPromise.queryView(db, 'globalRight', {key: right}, {onlyValue: true})
         .then(function (result) {
             for (var i = 0; i < result.length; i++) {
@@ -911,10 +913,10 @@ function saveEntry(db, entry, user) {
         });
 }
 
-function getAttachmentFromEntry(db, name, asStream) {
+function getAttachmentFromEntry(ctx, name, asStream) {
     return function (entry) {
         if (entry._attachments && entry._attachments[name]) {
-            return nanoPromise.getAttachment(db, entry._id, name, asStream);
+            return nanoPromise.getAttachment(ctx._db, entry._id, name, asStream);
         } else {
             throw new CouchError(`attachment ${name} not found`, 'not found');
         }
