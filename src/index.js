@@ -143,7 +143,6 @@ class Couch {
             .then(() => checkRightAnyGroup(this._db, user, 'create'))
             .then(hasRight => {
                 if (!hasRight) {
-                    debug.trace(`user ${user} is missing create right`);
                     throw new CouchError('user is missing create right', 'unauthorized');
                 }
                 return nanoPromise.queryView(this._db, 'entryById', {key: id})
@@ -172,7 +171,7 @@ class Couch {
                         }
                         debug.trace('entry already exists');
                         if (options.throwIfExists) {
-                            throw new CouchError('entry already exists', 'exists');
+                            throw new CouchError('entry already exists', 'conflict');
                         }
                         // Return something similar to insertDocument
                         return {

@@ -73,6 +73,7 @@ exports.import = function (database, importName, file) {
     }
 
     function getKind(info) {
+        debug.trace('getKind');
         if (!config.kind) return info;
         if (! (typeof config.kind === 'function')) {
             info.kind = config.kind;
@@ -114,9 +115,10 @@ exports.import = function (database, importName, file) {
     }
 
     function checkDocumentExists(info) {
+        debug.trace('checkDocumentExists');
         return couch.createEntry(info.id, info.owner, {
             createParameters: [filename, contents],
-            kind: config.kind
+            kind: info.kind
         }).then(docInfo => {
             return {
                 info,
@@ -126,6 +128,7 @@ exports.import = function (database, importName, file) {
     }
 
     function updateDocument(info) {
+        debug.trace('updateDocument');
         if (parse) {
             info = info.info;
             return couch.addFileToJpath(info.id, info.owner, info.jpath, info.data, {

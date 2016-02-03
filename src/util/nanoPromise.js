@@ -75,7 +75,7 @@ exports.insertDocument = function (db, doc) {
         debug.trace(`insertDocument with _id ${doc._id}`);
         db.insert(doc, function (err, body) {
             if (err) return reject(err);
-            debug.trace('document inserted');
+            debug.trace(`document inserted (${body.id})`);
             resolve(body);
         });
     });
