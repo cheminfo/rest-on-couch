@@ -1,7 +1,6 @@
 'use strict';
 
 const data = require('./data/data');
-const should = require('should');
 
 describe('Couch user API', function () {
     before(data);

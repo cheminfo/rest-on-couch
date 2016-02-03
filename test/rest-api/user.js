@@ -36,7 +36,7 @@ describe('User REST-api (data, a@a.com', function () {
                 res.body.rev.should.startWith('2');
                 return couch.getUser('a@a.com').then(user => {
                     user.val.should.equal('x');
-                })
+                });
             });
-    })
+    });
 });

@@ -147,10 +147,9 @@ exports.entriesByOwnerAndId = function * () {
 
 exports.getUser = function * () {
     try {
-        console.log(this.state.userEmail);
         this.body = yield this.state.couch.getUser(this.state.userEmail);
         this.status = 200;
-    } catch(e) {
+    } catch (e) {
         onGetError(this, e);
     }
 };
@@ -158,8 +157,7 @@ exports.getUser = function * () {
 exports.editUser = function * () {
     try {
         this.body = yield this.state.couch.editUser(this.state.userEmail, this.request.body);
-    } catch(e) {
-        console.log(e, e.stack)
+    } catch (e) {
         onGetError(this, e);
     }
 };
