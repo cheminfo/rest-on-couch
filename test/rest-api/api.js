@@ -44,7 +44,7 @@ describe('rest-api as anonymous (data)', function () {
 
 describe('basic rest-api as b@b.com', function () {
     before(() => {
-        return data().then(authenticateAs(request, 'b@b.com', '123'));
+        return data().then(() => authenticateAs(request, 'b@b.com', '123'));
     });
 
     it('get an entry', function () {
