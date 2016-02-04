@@ -19,3 +19,5 @@
 | GET | `/db/:dbname/_view/:view` | Query a custom view | Returns an array of documents |
 | PUT | `/db/:dbname/:id` | Update an entry by UUID |
 | POST | `/db/:dbname` | Insert a new entry |
+| GET | `/db/:dbname/_user` | Get user preferences | Returns logged user's preferences entry |
+| POST | `/db/:dbname/_user` | Update user preferences | Creates a merge of current preferences with sent preferences |
