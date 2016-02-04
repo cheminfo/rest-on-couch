@@ -15,7 +15,7 @@
     "eslint-fix": "npm run eslint -- --fix",
     "start": "./bin/rest-on-couch.js server",
     "test": "npm run test-mocha && npm run eslint && sh test/checkOnly.sh",
-    "test-mocha": "mocha --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive",
+    "test-mocha": "mocha --timeout 5000 --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive",
     "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup"
   },
   "repository": {
