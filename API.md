@@ -23,3 +23,5 @@
 | DELETE | `/db/:dbname/:uuid` | Delete an an entry by uuid |
 | GET | `/db/:dbname/_user` | Get user preferences | Returns logged user's preferences entry |
 | POST | `/db/:dbname/_user` | Update user preferences | Creates a merge of current preferences with sent preferences |
+| POST | `/db/:dbname/_query/byKindAndId/:kind` | Search by kind and id | key, startkey and endkey can be set in the body of the request |
+| POST | `/db/:dbname/_query/byOwnerAndId/:email` | Search by kind and owner | key, startkey and endkey can be set in the body of the request |
