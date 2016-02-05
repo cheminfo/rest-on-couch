@@ -629,6 +629,9 @@ function updateEntry(ctx, oldDoc, newDoc, user, options) {
     } else {
         oldDoc.$content = newDoc.$content;
     }
+    if (newDoc._attachments) {
+        oldDoc._attachments = newDoc._attachments;
+    }
     // Doc validation will fail $kind changed
     oldDoc.$kind = newDoc.$kind;
     return saveEntry(ctx._db, oldDoc, user)
@@ -787,7 +790,8 @@ function createNew(ctx, entry, user) {
                 $id: entry.$id,
                 $kind: entry.$kind,
                 $owners: [user],
-                $content: entry.$content
+                $content: entry.$content,
+                _attachments: entry._attachments
             };
             return saveEntry(ctx._db, newEntry, user);
         } else {
