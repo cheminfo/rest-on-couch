@@ -11,8 +11,9 @@
     "src"
   ],
   "scripts": {
+    "postinstall": "npm run compile",
     "compile": "babel src --out-dir lib",
-    "watch": "npm run compile -- --watch",
+    "watch": "npm run compile ru-- --watch",
     "eslint": "eslint src bin test",
     "eslint-fix": "npm run eslint -- --fix",
     "start": "./bin/rest-on-couch.js server",
