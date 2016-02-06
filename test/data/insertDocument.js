@@ -1,6 +1,6 @@
 'use strict';
 
-const nanoPromise = require('../../src/util/nanoPromise');
+const nanoPromise = require('../../lib/util/nanoPromise');
 
 module.exports = function(db, entry) {
     processEntry(entry);

@@ -1,6 +1,6 @@
 'use strict';
 
-const server = require('../../src/server/server');
+const server = require('../../lib/server/server');
 const supertest = require('supertest-as-promised')(Promise);
 
 let request = supertest.agent(server.app.callback());

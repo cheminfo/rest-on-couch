@@ -2,7 +2,7 @@
   "name": "rest-on-couch",
   "version": "0.2.0",
   "description": "Interface to CouchDB that allows the control of permissions on the documents",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "bin": {
     "rest-on-couch": "./bin/rest-on-couch.js"
   },
@@ -11,6 +11,9 @@
     "src"
   ],
   "scripts": {
+    "postinstall": "npm run compile",
+    "compile": "babel src --out-dir lib",
+    "watch": "npm run compile ru-- --watch",
     "eslint": "eslint src bin test",
     "eslint-fix": "npm run eslint -- --fix",
     "start": "./bin/rest-on-couch.js server",
@@ -64,6 +67,9 @@
     "superagent-promise": "^1.1.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-eslint": "^5.0.0-beta10",
+    "babel-plugin-transform-async-to-generator": "^6.4.6",
     "eslint": "^2.0.0-rc.0",
     "istanbul": "^0.4.1",
     "mocha": "^2.3.4",
