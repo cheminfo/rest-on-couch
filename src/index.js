@@ -63,124 +63,118 @@ class Couch {
         this._init();
     }
 
-    _init() {
+    async _init() {
         if (this._initPromise) {
             return this._initPromise;
         }
+        return this._initPromise = this.getInitPromise();
+    }
+
+    async getInitPromise() {
         debug(`initialize db ${this._couchOptions.database}`);
-        return this._initPromise = this._authenticate()
-            .then(() => nanoPromise.getDatabase(this._nano, this._couchOptions.database))
-            .then(db => {
-                if (!db) {
-                    debug.trace('db not found -> create');
-                    return nanoPromise.createDatabase(this._nano, this._couchOptions.database);
-                }
-            })
-            .then(() => checkDesignDoc(this._db, this._customDesign))
-            .then(() => checkRightsDoc(this._db, this._rights))
-            .then(() => checkDefaultGroupsDoc(this._db));
+        await this._authenticate();
+        const db = await nanoPromise.getDatabase(this._nano, this._couchOptions.database);
+        if (!db) {
+            debug.trace('db not found -> create');
+            await nanoPromise.createDatabase(this._nano, this._couchOptions.database);
+        }
+        await Promise.all([
+            checkDesignDoc(this._db, this._customDesign),
+            checkRightsDoc(this._db, this._rights),
+            checkDefaultGroupsDoc(this._db)
+        ]);
     }
 
     _authenticate() {
         if (this._currentAuth) {
             return this._currentAuth;
         }
-        let prom = Promise.resolve();
+        return this._currentAuth = this.getAuthenticationPromise();
+    }
+
+    async getAuthenticationPromise() {
         if (this._couchOptions.username) {
             debug.trace('authenticate to CouchDB');
-            prom = nanoPromise.authenticate(
+            const cookie = await nanoPromise.authenticate(
                 this._nano,
                 this._couchOptions.username,
                 this._couchOptions.password
-            ).then(cookie => {
-                this._nano = nano({
-                    url: this._couchOptions.url,
-                    cookie
-                });
+            );
+            this._nano = nano({
+                url: this._couchOptions.url,
+                cookie
             });
         } else {
             debug.warn('no user provided, continue assuming admin party');
         }
-        return this._currentAuth = prom.then(() => {
-            this._db = this._nano.db.use(this._couchOptions.database);
-        });
+        this._db = this._nano.db.use(this._couchOptions.database);
     }
 
-    editUser(user, data) {
-        return this._init()
-            .then(() => {
-                if (!(data instanceof Object)) {
-                    throw new CouchError('user data should be an object', 'bad argument');
-                }
-                return this.getUser(user).then(doc => {
-                        return simpleMerge(data, doc);
-                    })
-                    .catch(e => {
-                        if (e.reason === 'not found') {
-                            return data;
-                        } else {
-                            throw e;
-                        }
-                    }).then(doc => {
-                    doc.$type = 'user';
-                    doc.user = user;
-                    return nanoPromise.insertDocument(this._db, doc);
-                });
-            });
+    async editUser(user, data) {
+        if (!(data instanceof Object)) {
+            throw new CouchError('user data should be an object', 'bad argument');
+        }
+        await this._init();
+        try {
+            const userDoc = await this.getUser(user);
+            data = simpleMerge(data, userDoc);
+        } catch (e) {
+            if (e.reason !== 'not found') {
+                throw e;
+            }
+        }
+
+        data.$type = 'user';
+        data.user = user;
+        return await nanoPromise.insertDocument(this._db, data);
     }
 
-    getUser(user) {
-        return this._init()
-            .then(() => {
-                return getUser(this._db, user);
-            });
+    async getUser(user) {
+        await this._init();
+        return await getUser(this._db, user);
     }
 
-    createEntry(id, user, options) {
+    async createEntry(id, user, options) {
         options = options || {};
         debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
-        return this._init()
-            .then(() => checkRightAnyGroup(this._db, user, 'create'))
-            .then(hasRight => {
-                if (!hasRight) {
-                    throw new CouchError('user is missing create right', 'unauthorized');
-                }
-                return nanoPromise.queryView(this._db, 'entryById', {key: id})
-                    .then(result => {
-                        if (result.length === 0) {
-                            let newEntry;
-                            const defaultEntry = this._defaultEntry;
-                            if (typeof defaultEntry === 'function') {
-                                newEntry = defaultEntry.apply(null, options.createParameters || []);
-                            } else if (typeof defaultEntry[options.kind] === 'function') {
-                                newEntry = defaultEntry[options.kind].apply(null, options.createParameters || []);
-                            } else {
-                                throw new CouchError('unexpected type for default entry');
-                            }
-                            return Promise.resolve(newEntry)
-                                .then(entry => {
-                                    const toInsert = {
-                                        $id: id,
-                                        $type: 'entry',
-                                        $owners: [user],
-                                        $content: entry,
-                                        $kind: options.kind
-                                    };
-                                    return saveEntry(this._db, toInsert, user);
-                                });
-                        }
-                        debug.trace('entry already exists');
-                        if (options.throwIfExists) {
-                            throw new CouchError('entry already exists', 'conflict');
-                        }
-                        // Return something similar to insertDocument
-                        return {
-                            ok: true,
-                            id: result[0]._id,
-                            rev: result[0]._rev
-                        };
-                    });
-            });
+        await this._init();
+        const hasRight = await checkRightAnyGroup(this._db, user, 'create');
+        if (!hasRight) {
+            throw new CouchError('user is missing create right', 'unauthorized');
+        }
+        const result = await nanoPromise.queryView(this._db, 'entryById', {key: id});
+        if (result.length === 0) {
+            let newEntry;
+            const defaultEntry = this._defaultEntry;
+            if (typeof defaultEntry === 'function') {
+                newEntry = defaultEntry.apply(null, options.createParameters || []);
+            } else if (typeof defaultEntry[options.kind] === 'function') {
+                newEntry = defaultEntry[options.kind].apply(null, options.createParameters || []);
+            } else {
+                throw new CouchError('unexpected type for default entry');
+            }
+            const entry = await Promise.resolve(newEntry);
+            const toInsert = {
+                $id: id,
+                $type: 'entry',
+                $owners: [user],
+                $content: entry,
+                $kind: options.kind
+            };
+            return await saveEntry(this._db, toInsert, user);
+        }
+        debug.trace('entry already exists');
+        if (options.throwIfExists) {
+            throw new CouchError('entry already exists', 'conflict');
+        }
+        // Return something similar to insertDocument
+        return {
+            ok: true,
+            id: result[0]._id,
+            rev: result[0]._rev,
+            $modificationDate: result[0].$modificationDate,
+            $creationDate: result[0].$creationDate
+        };
     }
 
     /*
@@ -188,45 +182,41 @@ class Couch {
      Since custom design views might emit for non-entries we
      need to ensure those are not returned to non-admin users
      */
-    queryEntriesByUser(user, view, options, rights) {
-        return this.queryViewByUser(user, view, options, rights)
-            .then(docs => docs.filter(doc => doc.$type === 'entry'));
+    async queryEntriesByUser(user, view, options, rights) {
+        const docs = await this.queryViewByUser(user, view, options, rights);
+        return docs.filter(doc => doc.$type === 'entry');
     }
 
-    queryViewByUser(user, view, options, rights) {
-        var that = this;
+    async queryViewByUser(user, view, options, rights) {
         debug(`queryViewByUser (${user}, ${view})`);
         options = options || {};
         options.include_docs = true;
         options.reduce = false;
         options.skip = 0;
         var limit = options.limit || 1;
+        var cumRows = [];
+        await this._init();
+        while (cumRows.length < limit) {
+            let rows = await nanoPromise.queryView(this._db, view, options);
+            // No more results
+            if (!rows.length) break;
 
-        return co(function * () {
-            var cumRows = [];
-            yield that._init();
-            while (cumRows.length < limit) {
-                let rows = yield nanoPromise.queryView(that._db, view, options);
-                // No more results
-                if (!rows.length) break;
+            let owners = rows.map(r => r.doc.$owners);
+            let hasRights = await validateRights(this._db, owners, user, rights || 'read');
+            rows = rows.map(entry => entry.doc);
+            rows = rows.filter((r, idx) => hasRights[idx]);
 
-                let owners = rows.map(r => r.doc.$owners);
-                let hasRights = yield validateRights(that._db, owners, user, rights || 'read');
-                rows = rows.map(entry => entry.doc);
-                rows = rows.filter((r, idx) => hasRights[idx]);
+            // Return everything
+            if (!options.limit) return rows;
 
-                // Return everything
-                if (!options.limit) return rows;
+            // Concatenate
+            limit = options.limit;
+            options.skip += limit;
+            cumRows = cumRows.concat(rows);
+        }
 
-                // Concatenate
-                limit = options.limit;
-                options.skip += limit;
-                cumRows = cumRows.concat(rows);
-            }
-
-            // Get rid of extra rows
-            return cumRows.filter((r, idx) => idx < options.limit);
-        });
+        // Get rid of extra rows
+        return cumRows.filter((r, idx) => idx < options.limit);
     }
 
     getEntriesByUserAndRights(user, rights, options) {
@@ -929,9 +919,9 @@ function saveEntry(db, entry, user) {
 }
 
 function getAttachmentFromEntry(ctx, name, asStream) {
-    return function (entry) {
+    return async function(entry) {
         if (entry._attachments && entry._attachments[name]) {
-            return nanoPromise.getAttachment(ctx._db, entry._id, name, asStream);
+            return await nanoPromise.getAttachment(ctx._db, entry._id, name, asStream);
         } else {
             throw new CouchError(`attachment ${name} not found`, 'not found');
         }
