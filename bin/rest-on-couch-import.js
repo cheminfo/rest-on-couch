@@ -8,10 +8,10 @@ const fs = require('fs-extra');
 const path = require('path');
 const program = require('commander');
 
-const debug = require('../src/util/debug')('bin:import');
-const die = require('../src/util/die');
-const home = require('../src/config/home');
-const imp = require('../src/import/import');
+const debug = require('../lib/util/debug')('bin:import');
+const die = require('../lib/util/die');
+const home = require('../lib/config/home');
+const imp = require('../lib/import/import');
 
 var processChain = Promise.resolve();
 const importFiles = {};

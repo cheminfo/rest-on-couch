@@ -1,6 +1,6 @@
 'use strict';
 
-const imp = require('../../src/import/import');
+const imp = require('../../lib/import/import');
 const path = require('path');
 
 describe('import', function () {

@@ -4,8 +4,8 @@
 
 const program = require('commander');
 
-const config = require('../src/config/home');
-const debug = require('../src/util/debug')('bin:config');
+const config = require('../lib/config/home');
+const debug = require('../lib/util/debug')('bin:config');
 
 program.usage('<key>[=<value>]');
 program.parse(process.argv);
