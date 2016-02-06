@@ -9,7 +9,6 @@ const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
 const log = require('./couch/log');
 const getConfig = require('./config/config').getConfig;
-const co = require('co');
 const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
 const isEmail = require('./util/isEmail');
 
