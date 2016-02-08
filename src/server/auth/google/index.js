@@ -36,7 +36,7 @@ exports.init = function (passport, router, config) {
     passport.use(new GoogleStrategy({
             clientID: config.clientID,
             clientSecret: config.clientSecret,
-            callbackURL: config.publicAddress + '/auth' + config.callbackURL
+            callbackURL: config.publicAddress + '/auth/login/googl/callback'
         },
         function (accessToken, refreshToken, profile, done) {
             done(null, {
@@ -46,20 +46,11 @@ exports.init = function (passport, router, config) {
         }
     ));
 
-    router.get(config.loginURL, function*(next) {
-        this.session.redirect = config.successRedirect + '?' + this.request.querystring;
-        yield next;
-    }, passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/userinfo.email']}));
+    router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/userinfo.email']}));
 
-    router.get(config.callbackURL,
+    router.get('/login/google/callback',
         passport.authenticate('google', {
-            failureRedirect: config.failureRedirect
-        }), function*() {
-            if (this.session.redirect) {
-                this.response.redirect(this.session.redirect);
-            }
-            else {
-                this.response.redirect(config.successRedirect);
-            }
-        });
+            successRedirect: '/auth/login',
+            failureRedirect: '/auth/login'
+        }));
 };
