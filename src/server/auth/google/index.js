@@ -47,7 +47,7 @@ exports.init = function (passport, router, config, mainConfig) {
             } else {
                 done(null, {
                     provider: 'google',
-                    email
+                    email: email.value
                 });
             }
         }
