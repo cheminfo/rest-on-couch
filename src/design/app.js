@@ -16,6 +16,7 @@ module.exports = function getDesignDoc(custom) {
         filters: Object.assign({}, custom.filters, filters),
         updates: Object.assign({}, custom.updates, updates),
         views: Object.assign({}, custom.views, views),
-        validate_doc_update
+        validate_doc_update,
+        lists: Object.assign({}, custom.lists)
     };
 };
