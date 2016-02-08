@@ -36,7 +36,7 @@ exports.init = function (passport, router, config) {
     passport.use(new GoogleStrategy({
             clientID: config.clientID,
             clientSecret: config.clientSecret,
-            callbackURL: config.publicAddress + config.callbackURL
+            callbackURL: config.publicAddress + '/auth' + config.callbackURL
         },
         function (accessToken, refreshToken, profile, done) {
             done(null, {
