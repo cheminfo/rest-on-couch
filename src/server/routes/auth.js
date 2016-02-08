@@ -27,7 +27,7 @@ if (config.auth) {
         }
         try {
             debug(`loading auth plugin: ${authPlugin}`);
-            require(`../auth/${authPlugin}/index.js`).init(passport, router, config.auth[authPlugin]);
+            require(`../auth/${authPlugin}/index.js`).init(passport, router, config.auth[authPlugin], config);
             enabledAuthPlugins.push(authPlugin);
         } catch (e) {
             debug.error(e);
