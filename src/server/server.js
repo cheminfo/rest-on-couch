@@ -5,6 +5,7 @@ const cors = require('kcors');
 const http = require('http');
 const passport = require('koa-passport');
 const path = require('path');
+const serve = require('koa-serve');
 const session = require('koa-session');
 
 const api = require('./routes/api');
@@ -44,6 +45,8 @@ nunjucks(app, {
     root: path.join(__dirname, '../../views'),
     ext: 'html'
 });
+
+app.use(serve('assets', path.join(__dirname, '../..')));
 
 const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
 
