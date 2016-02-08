@@ -41,10 +41,15 @@ exports.init = function (passport, router, config, mainConfig) {
             callbackURL: mainConfig.publicAddress + '/auth/login/google/callback'
         },
         function (accessToken, refreshToken, profile, done) {
-            done(null, {
-                provider: 'google',
-                email: profile.email
-            });
+            const email = profile.emails.find(email => email.type === 'account');
+            if (!email) {
+                return done(null, false, {message: 'No account email'});
+            } else {
+                done(null, {
+                    provider: 'google',
+                    email
+                });
+            }
         }
     ));
 
