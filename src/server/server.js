@@ -41,7 +41,7 @@ if (proxyPrefix !== '/') {
 }
 
 nunjucks(app, {
-    root: path.join(__dirname, 'views'),
+    root: path.join(__dirname, '../../views'),
     ext: 'html'
 });
 
