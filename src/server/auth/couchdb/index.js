@@ -6,6 +6,7 @@ const request = require('co-request');
 
 const couchUrl = require('../../../config/config').globalConfig.url;
 const isEmail = require('../../../util/isEmail');
+const util = require('../../middleware/util');
 
 exports.init = function (passport, router) {
     passport.use(new LocalStrategy({
@@ -38,7 +39,7 @@ exports.init = function (passport, router) {
             });
         }));
 
-    router.post('/login/couchdb', passport.authenticate('local', {
+    router.post('/login/couchdb', util.parseBody(), passport.authenticate('local', {
         successRedirect: '/auth/login',
         failureRedirect: '/auth/login'
     }));

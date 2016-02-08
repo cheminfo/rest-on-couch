@@ -1,7 +1,6 @@
 'use strict';
 
 const app = require('koa')();
-const bodyParser = require('koa-body');
 const cors = require('kcors');
 const http = require('http');
 const passport = require('koa-passport');
@@ -47,9 +46,6 @@ nunjucks(app, {
 });
 
 const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
-app.use(bodyParser({
-    jsonLimit: '100mb'
-}));
 
 const allowedOrigins = config.allowedOrigins || [];
 debug(`allowed cors origins: ${allowedOrigins}`);

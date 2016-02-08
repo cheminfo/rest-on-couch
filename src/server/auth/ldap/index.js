@@ -4,6 +4,7 @@
 const LdapStrategy = require('passport-ldapauth');
 
 const auth = require('../../middleware/auth');
+const util = require('../../middleware/util');
 
 exports.init = function (passport, router, config) {
     passport.use(new LdapStrategy(
@@ -20,7 +21,7 @@ exports.init = function (passport, router, config) {
         }
     ));
 
-    router.post('/login/ldap', passport.authenticate('ldapauth'), function *() {
+    router.post('/login/ldap', util.parseBody(), passport.authenticate('ldapauth'), function *() {
         this.body = {
             ok: true,
             name: yield auth.getUserEmail(this)
