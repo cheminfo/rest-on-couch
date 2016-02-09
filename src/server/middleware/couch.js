@@ -162,10 +162,16 @@ exports.editUser = function * () {
     }
 };
 
-function onGetError(ctx, e) {
+function onGetError(ctx, e, secure) {
     switch (e.reason) {
-        case 'not found':
         case 'unauthorized':
+            if (!secure) {
+                ctx.status = 401;
+                ctx.body = 'unauthorized';
+                break;
+            }
+            // fallthrough
+        case 'not found':
             ctx.status = 404;
             ctx.body = 'not found';
             break;

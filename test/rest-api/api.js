@@ -11,7 +11,7 @@ describe('basic rest-api as anonymous (noRights)', function () {
     it('get an entry', function () {
         return couch.getEntryById('A', 'b@b.com').then(entry => {
             return request.get(`/db/test/${entry._id}`)
-                .expect(404);
+                .expect(401);
         });
     });
 
@@ -90,7 +90,7 @@ describe('basic rest-api as b@b.com', function () {
     it('existent document cannot be update if no write access', function () {
         // Update document for which user has no access
         return request.put('/db/test/B').send({$id: 'B', $content: {}})
-            .expect(404);
+            .expect(401);
     });
 
     it('update existing document with no _rev return 409 (conflict)', function () {
