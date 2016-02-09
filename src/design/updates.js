@@ -65,6 +65,12 @@ updates.removeGroupFromEntry = function(doc, req) {
         return [null, resp];
     }
 
+    if (idx === 0) {
+        resp.body = '"cannot remove primary owner"';
+        resp.code = 403;
+        return [null, resp];
+    }
+
     doc.$owners.splice(idx, 1);
     return [doc, 'Group removed'];
 };

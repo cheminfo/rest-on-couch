@@ -155,4 +155,8 @@ describe('entry editions', function () {
     it('should fail to remove group from entry', function () {
         return couch.removeGroupFromEntry('A', 'a@a.com', 'groupB').should.be.rejectedWith(/unauthorized/);
     });
+
+    it('should fail to remove primary owner', function () {
+        return couch.removeGroupFromEntry('A', 'b@b.com', 'b@b.com').should.be.rejectedWith(/cannot remove primary owner/);
+    });
 });

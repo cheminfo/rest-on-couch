@@ -3,7 +3,7 @@
 module.exports = {
     DESIGN_DOC_NAME: 'app',
     DESIGN_DOC_ID: '_design/app',
-    DESIGN_DOC_VERSION: 5,
+    DESIGN_DOC_VERSION: 6,
     RIGHTS_DOC_ID: 'rights',
     DEFAULT_GROUPS_DOC_ID: 'defaultGroups'
 };
