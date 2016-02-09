@@ -9,12 +9,13 @@ const util = require('../middleware/util');
 
 router.use(couch.setupCouch);
 
+const parseJson1mb = util.parseBody({jsonLimit: '1mb'});
 const parseJson100mb = util.parseBody({jsonLimit: '100mb'});
 
 exports.init = function () {
     // User related routes
     router.get('/:dbname/_user', couch.getUser);
-    router.post('/:dbname/_user', util.parseBody({jsonLimit: '1mb'}), couch.editUser);
+    router.post('/:dbname/_user', parseJson1mb, couch.editUser);
 
     // Get all entries by user
     router.get('/:dbname/_all/entries', couch.allEntries);
@@ -24,6 +25,11 @@ exports.init = function () {
 
     // Get a view
     router.get('/:dbname/_view/:view', couch.queryEntriesByUser);
+
+    // Manipulate owners of a document
+    router.get('/:dbname/_owners/:uuid', couch.getOwnersByUuid);
+    router.put('/:dbname/_owners/:uuid/:owner', parseJson1mb, couch.addOwnerByUuid);
+    router.delete('/:dbname/_owners/:uuid/:owner', parseJson1mb, couch.removeOwnerByUuid);
 
     // Get an attachment
     router.get('/:dbname/:uuid/:attachment+', couch.getAttachmentByUuid);

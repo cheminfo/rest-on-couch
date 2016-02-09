@@ -162,6 +162,34 @@ exports.editUser = function * () {
     }
 };
 
+exports.getOwnersByUuid = function*() {
+    try {
+        const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail);
+        this.body = doc.$owners;
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.addOwnerByUuid = function*() {
+    try {
+        yield this.state.couch.addGroupToEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
+        this.body = 'ok';
+    } catch (e) {
+        console.log(e);
+        onGetError(this, e);
+    }
+};
+
+exports.removeOwnerByUuid = function*() {
+    try {
+        yield this.state.couch.removeGroupFromEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
+        this.body = 'ok';
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
 function onGetError(ctx, e, secure) {
     switch (e.reason) {
         case 'unauthorized':

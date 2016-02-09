@@ -464,7 +464,12 @@ class Couch {
 
     removeGroupFromEntry(id, user, group) {
         debug(`removeGroupFromEntry (${id}, ${user}, ${group})`);
-        return this._doUpdateOnEntry(id, user, 'removeGroupFromEntry', {group: group});
+        return this._doUpdateOnEntry(id, user, 'removeGroupFromEntry', {group});
+    }
+
+    removeGroupFromEntryByUuid(uuid, user, group) {
+        debug(`removeGroupFromEntryByUuid (${uuid}, ${user}, ${group})`);
+        return this._doUpdateOnEntryByUuid(uuid, user, 'removeGroupFromEntry', {group});
     }
 
     async deleteGroup(groupName, user) {
