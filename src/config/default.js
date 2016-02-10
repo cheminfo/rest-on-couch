@@ -9,5 +9,6 @@ module.exports = {
     port: 3000,
     authServers: [],
     proxy: true,
-    proxyPrefix: '/'
+    proxyPrefix: '/',
+    authRenewal: 1900
 };

@@ -57,8 +57,10 @@ class Couch {
         this._nano = nano(this._couchOptions.url);
         this._db = null;
         this._lastAuth = 0;
-        this._currentAuth = null;
         this._initPromise = null;
+        this._currentAuth = null;
+        this._authRenewal = null;
+        this._authRenewalInterval = config.authRenewal;
         this._init();
     }
 
@@ -72,6 +74,7 @@ class Couch {
     async getInitPromise() {
         debug(`initialize db ${this._couchOptions.database}`);
         await this._authenticate();
+        this._renewAuthentication();
         const db = await nanoPromise.getDatabase(this._nano, this._couchOptions.database);
         if (!db) {
             debug.trace('db not found -> create');
@@ -82,6 +85,15 @@ class Couch {
             checkRightsDoc(this._db, this._rights),
             checkDefaultGroupsDoc(this._db)
         ]);
+    }
+
+    _renewAuthentication() {
+        if(this._authRenewal) {
+            clearInterval(this._authRenewal);
+        }
+        this._authRenewal = setInterval(() => {
+            this._currentAuth = this.getAuthenticationPromise();
+        }, this._authRenewalInterval);
     }
 
     _authenticate() {
