@@ -383,8 +383,12 @@ class Couch {
             filename: file.name
         };
 
-        const body = await nanoPromise.attachFiles(this._db, entry, [file]);
-        entry._rev = body.rev;
+        if (!entry._attachments) entry._attachments = {};
+
+        entry._attachments[file.name] = {
+            content_type: file.content_type,
+            data: file.data.toString('base64')
+        };
         return await this.insertEntry(entry, user);
     }
 
