@@ -1,3 +1,8 @@
 {
-  "post_update": ["npm install", "npm run compile"]
+  "apps": [
+    {
+      "name": "rest-on-couch",
+      "post_update": ["npm install", "npm run compile"]
+    }
+  ]
 }
