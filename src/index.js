@@ -93,7 +93,7 @@ class Couch {
         }
         this._authRenewal = setInterval(() => {
             this._currentAuth = this.getAuthenticationPromise();
-        }, this._authRenewalInterval);
+        }, this._authRenewalInterval * 1000);
     }
 
     _authenticate() {
