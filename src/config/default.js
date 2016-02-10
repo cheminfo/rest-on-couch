@@ -10,5 +10,5 @@ module.exports = {
     authServers: [],
     proxy: true,
     proxyPrefix: '/',
-    authRenewal: 1900000
+    authRenewal: 570
 };
