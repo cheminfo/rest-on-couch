@@ -88,7 +88,7 @@ class Couch {
     }
 
     _renewAuthentication() {
-        if(this._authRenewal) {
+        if (this._authRenewal) {
             clearInterval(this._authRenewal);
         }
         this._authRenewal = setInterval(() => {

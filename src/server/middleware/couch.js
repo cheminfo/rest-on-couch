@@ -176,7 +176,6 @@ exports.addOwnerByUuid = function*() {
         yield this.state.couch.addGroupToEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
         this.body = 'ok';
     } catch (e) {
-        console.log(e);
         onGetError(this, e);
     }
 };
