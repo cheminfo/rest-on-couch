@@ -116,7 +116,7 @@ class Couch {
                 cookie
             });
         } else {
-            debug.warn('no user provided, continue assuming admin party');
+            debug.trace('no user provided, continue assuming admin party');
         }
         this._db = this._nano.db.use(this._couchOptions.database);
     }
