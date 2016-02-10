@@ -1,0 +1,3 @@
+{
+  "post_update": ["npm install", "npm run compile"]
+}
