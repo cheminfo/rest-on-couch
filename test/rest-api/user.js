@@ -7,7 +7,7 @@ const request = require('../setup').getAgent();
 describe('User REST-api (data, anonymous)', function () {
     before(data);
     it('Should return 404 if anonymous', function () {
-        request.get('/db/test/_user')
+        request.get('/db/test/user/_me')
             .expect(404);
     });
 
@@ -20,7 +20,7 @@ describe('User REST-api (data, a@a.com', function () {
     });
 
     it('Should get user details', function () {
-        return request.get('/db/test/_user')
+        return request.get('/db/test/user/_me')
             .expect(200)
             .then(res => {
                 res.body.user.should.equal('a@a.com');
@@ -29,7 +29,7 @@ describe('User REST-api (data, a@a.com', function () {
     });
 
     it('Should save user details', function () {
-        return request.post('/db/test/_user')
+        return request.post('/db/test/user/_me')
             .send({val: 'x'})
             .expect(200)
             .then(res => {

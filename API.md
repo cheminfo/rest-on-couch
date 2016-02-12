@@ -13,15 +13,18 @@
 
 | Method | Route | Action | Description |
 | ------ | ----- | ------ | ----------- |
-| GET | `/db/:dbname/_all/entries` | Get all entries | Returns an array of documents |
-| GET | `/db/:dbname/:uuid` | Get an entry by UUID |
-| GET | `/db/:dbname/:uuid/:attachment` | Get an attachment |
-| PUT | `/db/:dbname/:uuid/:attachment` | Save an attachment |
+| POST | `/db/:dbname/entry` | Insert / Update an entry | Based on _id or $id of the entry |
+| GET | `/db/:dbname/entry/_all` | Get all entries | Returns an array of documents |
+| GET | `/db/:dbname/entry/:uuid` | Get an entry by UUID |
+| PUT | `/db/:dbname/entry/:uuid` | Update an entry by UUID |
+| DELETE | `/db/:dbname/entry/:uuid` | Delete an an entry by UUID |
+| GET | `/db/:dbname/entry/:uuid/_owner` | Get a list of owners |
+| PUT | `/db/:dbname/entry/:uuid/_owner/:owner` | Add an owner |
+| DELETE | `/db/:dbname/entry/:uuid/_owner/:owner` | Remove an owner |
+| GET | `/db/:dbname/entry/:uuid/:attachment+` | Get an attachment |
+| PUT | `/db/:dbname/entry/:uuid/:attachment+` | Save an attachment |
+| GET | `/db/:dbname/user/_me` | Get user preferences | Returns logged user's preferences entry |
+| POST | `/db/:dbname/user/_me` | Update user preferences | Creates a merge of current preferences with sent preferences |
 | GET | `/db/:dbname/_view/:view` | Query a custom view | Returns an array of documents |
-| PUT | `/db/:dbname/:uuid` | Update an entry by UUID |
-| POST | `/db/:dbname` | Insert / Update an entry | Based on _id or $id of the entry |
-| DELETE | `/db/:dbname/:uuid` | Delete an an entry by uuid |
-| GET | `/db/:dbname/_user` | Get user preferences | Returns logged user's preferences entry |
-| POST | `/db/:dbname/_user` | Update user preferences | Creates a merge of current preferences with sent preferences |
 | POST | `/db/:dbname/_query/byKindAndId/:kind` | Search by kind and id | key, startkey and endkey can be set in the body of the request |
 | POST | `/db/:dbname/_query/byOwnerAndId/:email` | Search by kind and owner | key, startkey and endkey can be set in the body of the request |

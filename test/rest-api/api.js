@@ -10,13 +10,13 @@ describe('basic rest-api as anonymous (noRights)', function () {
 
     it('get an entry', function () {
         return couch.getEntryById('A', 'b@b.com').then(entry => {
-            return request.get(`/db/test/${entry._id}`)
+            return request.get(`/db/test/entry/${entry._id}`)
                 .expect(401);
         });
     });
 
     it('get all entries', function () {
-        return request.get('/db/test/_all/entries').expect(200).then(entries => {
+        return request.get('/db/test/entry/_all').expect(200).then(entries => {
             entries = JSON.parse(entries.text);
             entries.should.have.length(2);
         });
@@ -27,14 +27,14 @@ describe('rest-api as anonymous (data)', function () {
     before(data);
 
     it('save an attachment', function () {
-        return request.put('/db/test/B/myattachment.txt')
+        return request.put('/db/test/entry/B/myattachment.txt')
             .set('Content-Type', 'text/plain')
             .set('Accept', 'application/json')
             .send('hello world')
             .expect(200).then(res => {
                 res.body.id.should.equal('B');
                 res.body.rev.should.startWith('2');
-                return request.get('/db/test/B/myattachment.txt').then(res => {
+                return request.get('/db/test/entry/B/myattachment.txt').then(res => {
                     res.text.should.equal('hello world');
                     res.headers['content-type'].should.equal('text/plain');
                 });
@@ -50,13 +50,13 @@ describe('basic rest-api as b@b.com', function () {
     it('get an entry', function () {
         return couch.getEntryById('A', 'b@b.com').then(entry => {
             return request
-                .get(`/db/test/${entry._id}`)
+                .get(`/db/test/entry/${entry._id}`)
                 .expect(200);
         });
     });
 
     it('get all entries', function () {
-        return request.get('/db/test/_all/entries').expect(200).then(entries => {
+        return request.get('/db/test/entry/_all').expect(200).then(entries => {
             entries = JSON.parse(entries.text);
             entries.should.have.length(5);
         });
@@ -72,7 +72,7 @@ describe('basic rest-api as b@b.com', function () {
     });
 
     it('create new document', function () {
-        return request.post('/db/test')
+        return request.post('/db/test/entry')
             .send({$id: 'new', $content: {}})
             .expect(200)
             .then(result => {
@@ -83,25 +83,25 @@ describe('basic rest-api as b@b.com', function () {
 
     it('non-existent document cannot be updated', function () {
         // document with uuid A does not exist
-        return request.put('/db/test/A').send({$id: 'A', $content: {}})
+        return request.put('/db/test/entry/A').send({$id: 'A', $content: {}})
             .expect(404);
     });
 
     it('existent document cannot be update if no write access', function () {
         // Update document for which user has no access
-        return request.put('/db/test/B').send({$id: 'B', $content: {}})
+        return request.put('/db/test/entry/B').send({$id: 'B', $content: {}})
             .expect(401);
     });
 
     it('update existing document with no _rev return 409 (conflict)', function () {
-        return request.put('/db/test/C').send({$id: 'C', $content: {}})
+        return request.put('/db/test/entry/C').send({$id: 'C', $content: {}})
             .expect(409);
     });
 
     it('update document', function () {
          return couch.getEntryById('C', 'b@b.com')
             .then(entry => {
-                return request.put('/db/test/C').send({$id: 'C', $content: {}, _rev: entry._rev})
+                return request.put('/db/test/entry/C').send({$id: 'C', $content: {}, _rev: entry._rev})
                     .expect(200)
                     .then(res => {
                         res.body.should.have.property('rev');
@@ -111,7 +111,7 @@ describe('basic rest-api as b@b.com', function () {
     });
 
     it('delete document', function () {
-        return request.del('/db/test/C')
+        return request.del('/db/test/entry/C')
             .expect(200)
             .then(res => {
                 res.body.should.eql({ok: true});

@@ -13,38 +13,28 @@ const parseJson1mb = util.parseBody({jsonLimit: '1mb'});
 const parseJson100mb = util.parseBody({jsonLimit: '100mb'});
 
 exports.init = function () {
+    // Entries
+    router.post('/:dbname/entry', parseJson100mb, couch.newOrUpdateEntry);
+    router.get('/:dbname/entry/_all', couch.allEntries);
+    router.get('/:dbname/entry/:uuid', couch.getDocumentByUuid);
+    router.put('/:dbname/entry/:uuid', parseJson100mb, couch.updateEntry);
+    router.delete('/:dbname/entry/:uuid', couch.deleteEntry);
+
+    // Owners
+    router.get('/:dbname/entry/:uuid/_owner', couch.getOwnersByUuid);
+    router.put('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.addOwnerByUuid);
+    router.delete('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.removeOwnerByUuid);
+
+    // Attachments
+    router.get('/:dbname/entry/:uuid/:attachment+', couch.getAttachmentByUuid);
+    router.put('/:dbname/entry/:uuid/:attachment+', util.parseRawBody({limit: '100mb'}), couch.saveAttachment);
+
     // User related routes
-    router.get('/:dbname/_user', couch.getUser);
-    router.post('/:dbname/_user', parseJson1mb, couch.editUser);
-
-    // Get all entries by user
-    router.get('/:dbname/_all/entries', couch.allEntries);
-
-    // Get a document
-    router.get('/:dbname/:uuid', couch.getDocumentByUuid);
+    router.get('/:dbname/user/_me', couch.getUser);
+    router.post('/:dbname/user/_me', parseJson1mb, couch.editUser);
 
     // Get a view
     router.get('/:dbname/_view/:view', couch.queryEntriesByUser);
-
-    // Manipulate owners of a document
-    router.get('/:dbname/_owners/:uuid', couch.getOwnersByUuid);
-    router.put('/:dbname/_owners/:uuid/:owner', parseJson1mb, couch.addOwnerByUuid);
-    router.delete('/:dbname/_owners/:uuid/:owner', parseJson1mb, couch.removeOwnerByUuid);
-
-    // Get an attachment
-    router.get('/:dbname/:uuid/:attachment+', couch.getAttachmentByUuid);
-
-    // Update a document
-    router.put('/:dbname/:uuid', parseJson100mb, couch.updateEntry);
-
-    // Send an attachment to a document
-    router.put('/:dbname/:uuid/:attachment+', util.parseRawBody({limit: '100mb'}), couch.saveAttachment);
-
-    // Delete a document
-    router.delete('/:dbname/:uuid', couch.deleteEntry);
-
-    // Create a new document
-    router.post('/:dbname', parseJson100mb, couch.newOrUpdateEntry);
 
     // Queries
     router.post('/:dbname/_query/byKindAndId/:kind', parseJson100mb, couch.entriesByKindAndId);
