@@ -14,7 +14,10 @@ function getMainConfig(homeDir) {
     try {
         return require(path.join(homeDir, 'config'));
     } catch (e) {
-        debug('no main config file');
-        return {};
+        if (e.code === 'MODULE_NOT_FOUND') {
+            debug('no main config file');
+            return {};
+        }
+        throw e;
     }
 }
