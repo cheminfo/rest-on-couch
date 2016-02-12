@@ -2,7 +2,7 @@
 
 module.exports = function (newDoc, oldDoc, userCtx) {
     if (userCtx.name === null) {
-        throw({forbidden: 'must be connected'});
+        throw ({forbidden: 'must be connected'});
     }
     // allow to delete documents
     if (newDoc._deleted) {

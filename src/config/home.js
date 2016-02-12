@@ -1,8 +1,6 @@
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
-
 const debug = require('../util/debug')('config:home');
 
 const result = getHomeConfig();

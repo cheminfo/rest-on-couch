@@ -10,5 +10,6 @@ module.exports = {
     authServers: [],
     proxy: true,
     proxyPrefix: '/',
-    authRenewal: 570
+    authRenewal: 570,
+    autoCreateDatabase: false
 };

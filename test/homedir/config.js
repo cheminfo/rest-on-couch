@@ -2,5 +2,6 @@
 
 module.exports = {
     username: 'admin',
-    password: 'admin'
+    password: 'admin',
+    autoCreateDatabase: true
 };

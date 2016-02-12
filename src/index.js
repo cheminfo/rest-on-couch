@@ -45,7 +45,8 @@ class Couch {
             url: config.url,
             database,
             username: config.username,
-            password: config.password
+            password: config.password,
+            autoCreate: config.autoCreateDatabase
         };
 
         this._logLevel = log.getLevel(config.logLevel);
@@ -74,17 +75,22 @@ class Couch {
     async getInitPromise() {
         debug(`initialize db ${this._couchOptions.database}`);
         await this._authenticate();
-        this._renewAuthentication();
         const db = await nanoPromise.getDatabase(this._nano, this._couchOptions.database);
         if (!db) {
-            debug.trace('db not found -> create');
-            await nanoPromise.createDatabase(this._nano, this._couchOptions.database);
+            if (this._couchOptions.autoCreate) {
+                debug.trace('db not found -> create');
+                await nanoPromise.createDatabase(this._nano, this._couchOptions.database);
+            } else {
+                debug('db not found - autoCreate is false');
+                throw new CouchError('database does not exist', 'not found');
+            }
         }
         await Promise.all([
             checkDesignDoc(this._db, this._customDesign),
             checkRightsDoc(this._db, this._rights),
             checkDefaultGroupsDoc(this._db)
         ]);
+        this._renewAuthentication();
     }
 
     _renewAuthentication() {
