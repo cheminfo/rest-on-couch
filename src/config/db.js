@@ -7,7 +7,7 @@ const debug = require('../util/debug')('config');
 const die = require('../util/die');
 
 const dbConfig = module.exports = {};
-const homeDir = require('./home').config.homeDir;
+const homeDir = require('./home').homeDir;
 
 if (homeDir) {
     try {

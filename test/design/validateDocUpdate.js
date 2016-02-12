@@ -22,7 +22,7 @@ describe('validate_doc_update', function () {
                 'Cannot change the ID'
             );
             var doc = addOwners(addDate({$type: 'entry', $id: ['a', 'b']}));
-            validateDocUpdate(addOwners(addDate({$type: 'entry', $id: ['a', 'b']})), doc);
+            assertNot(addOwners(addDate({$type: 'entry', $id: ['a', 'b']})), doc);
             assert(addOwners(addDate({$type: 'entry', $id: ['a', 'c']})), doc, 'Cannot change the ID');
             assert(addOwners(addDate({$type: 'entry', $id: []})), doc, 'Cannot change the ID');
             assert(addOwners(addDate({$type: 'entry', $id: ['a', 'c', 'd']})), doc, 'Cannot change the ID');
@@ -66,8 +66,14 @@ describe('validate_doc_update', function () {
 
 function assert(newDoc, oldDoc, reg) {
     (function () {
-        validateDocUpdate(newDoc, oldDoc);
+        validateDocUpdate(newDoc, oldDoc, {name: 'admin'});
     }).should.throw({forbidden: reg});
+}
+
+function assertNot(newDoc, oldDoc) {
+    (function () {
+        validateDocUpdate(newDoc, oldDoc, {name: 'admin'});
+    }).should.not.throw();
 }
 
 function addDate(doc) {

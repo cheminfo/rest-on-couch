@@ -96,7 +96,7 @@ function findFiles(homeDir) {
 }
 
 function getHomeDir() {
-    let homeDir = home.get('homeDir');
+    let homeDir = home.homeDir;
     if (!homeDir) {
         die('homeDir must be set to import all');
     }

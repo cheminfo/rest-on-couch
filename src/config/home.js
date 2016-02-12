@@ -5,43 +5,32 @@ const path = require('path');
 
 const debug = require('../util/debug')('config:home');
 
-const mainConfigPath =
-    process.env.REST_ON_COUCH_CONFIG ||
-    path.resolve(require('os').homedir(), '.rest-on-couch-config');
+const result = getHomeConfig();
 
-debug(`main config path is ${mainConfigPath}`);
-
-exports.CONFIG_FILE = mainConfigPath;
-exports.config = getHomeConfig();
+exports.homeDir = result.homeDir;
+exports.config = result.config || {};
 
 function getHomeConfig() {
+    const result = {};
+    let homeDir = process.env.REST_ON_COUCH_HOME_DIR;
+    if (!homeDir) {
+        debug('no home dir');
+        return result;
+    }
+
+    homeDir = path.resolve(homeDir);
+    debug(`home dir is ${homeDir}`);
+
+    result.homeDir = homeDir;
     try {
-        const config = JSON.parse(fs.readFileSync(mainConfigPath, 'utf8'));
-        if (config.homeDir) {
-            config.homeDir = path.resolve(mainConfigPath, '..', config.homeDir);
-            debug(`homeDir is ${config.homeDir}`);
-        }
-        return config;
+        result.config = require(path.join(homeDir, 'config'));
+        debug('loaded main config file');
+        return result;
     } catch (e) {
-        if (e.code === 'ENOENT') {
+        if (e.code === 'MODULE_NOT_FOUND') {
             debug('no main config found');
-        } else {
-            debug.error('Error while reading and parsing config file' + '\n' + e);
+            return result;
         }
-        return {};
+        throw e;
     }
 }
-
-exports.get = function (key) {
-    return exports.config[key];
-};
-
-exports.set = function (key, value) {
-    if (!key) {
-        throw new Error('key is mandatory');
-    }
-    const currentConfig = getHomeConfig();
-    currentConfig[key] = value;
-    fs.writeFileSync(mainConfigPath, JSON.stringify(currentConfig));
-    exports.config = currentConfig;
-};

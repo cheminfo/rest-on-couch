@@ -116,7 +116,7 @@ class Couch {
                 cookie
             });
         } else {
-            debug.trace('no user provided, continue assuming admin party');
+            throw new CouchError('rest-on-couch cannot be used without credentials', 'fatal');
         }
         this._db = this._nano.db.use(this._couchOptions.database);
     }
