@@ -1,15 +1,20 @@
 'use strict';
 
 module.exports = {
+    // Main options
     url: 'http://localhost:5984',
     logLevel: 'WARN',
+    authRenewal: 570,
+    autoCreateDatabase: false,
+
+    // Server options
+    port: 3000,
     auth: {
         couchdb: {}
     },
-    port: 3000,
     authServers: [],
     proxy: true,
     proxyPrefix: '/',
-    authRenewal: 570,
-    autoCreateDatabase: false
+    allowedOrigins: [],
+    debugrest: false
 };
