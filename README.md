@@ -6,15 +6,6 @@
   [![npm download][download-image]][download-url]
 
 Interface to CouchDB that allows the control of permissions on the documents.
-
-## Documentation
-
-* config.database (REST_ON_COUCH_DATABASE): Name of the database
-* config.username (REST_ON_COUCH_USERNAME): Username (needs admin access to the DB)
-* config.password (REST_ON_COUCH_PASSWORD): Password
-* config.logLevel (REST_ON_COUCH_LOG_LEVEL)
-
-### Configuration file
  
 ### Node.js API
 
@@ -35,6 +26,7 @@ TODO
 ### Configuration
 
 The configuration is being read on load from many sources, in the following order (ascending priority):
+
 1. Default configuration. Some configuration elements have default values. They are defined in the [source code](./src/config/default.js)
 2. Main configuration file (`config.js` or `config.json` in ROC's home directory)
 3. Database configuration file (`config.js` in database's subdirectory)
@@ -48,6 +40,18 @@ The configuration is being read on load from many sources, in the following orde
 Type: string  
 Default: `'http://localhost:5984'`  
 URL of the CouchDB server.
+
+##### username
+
+Type: string  
+Default: `undefined`  
+Username for CouchDB connection.
+
+##### password
+
+Type: string  
+Default: `undefined`  
+Password for CouchDB connection.
 
 ##### logLevel
 
