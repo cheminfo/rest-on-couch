@@ -236,8 +236,30 @@ class Couch {
         return cumRows.filter((r, idx) => idx < options.limit);
     }
 
-    getEntriesByUserAndRights(user, rights, options) {
-        return this.queryViewByUser(user, 'entryById', options, rights);
+    async getEntriesByUserAndRights(user, rights, options) {
+        debug(`getEntriesByUserAndRights (${user}, ${rights})`);
+        options = options || {};
+        const limit = options.limit;
+        const skip = options.skip;
+
+        await this._init();
+
+        // First we get a list of owners for each document
+        const owners = await nanoPromise.queryView(this._db, 'ownersById', {
+            reduce: false,
+            include_docs: false
+        });
+
+        // Check rights for current user and keep only documents with granted access
+        const hasRights = await validateRights(this._db, owners.map(r => r.value), user, rights || 'read');
+        let allowedDocs = owners.filter((r, idx) => hasRights[idx]);
+
+        // Apply pagination options
+        if (skip) allowedDocs = allowedDocs.slice(skip);
+        if (limit) allowedDocs = allowedDocs.slice(0, limit);
+
+        // Get each document from CouchDB
+        return await Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
     }
 
     async getEntryByIdAndRights(id, user, rights) {
