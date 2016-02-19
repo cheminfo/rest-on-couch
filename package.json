@@ -50,6 +50,7 @@
     "koa-body": "^1.4.0",
     "koa-passport": "^1.2.0",
     "koa-proxy": "^0.4.1",
+    "koa-response-time": "^1.0.2",
     "koa-router": "^5.3.0",
     "koa-serve": "^0.1.7",
     "koa-session": "^3.1.0",

@@ -5,6 +5,7 @@ const cors = require('kcors');
 const http = require('http');
 const passport = require('koa-passport');
 const path = require('path');
+const responseTime = require('koa-response-time');
 const serve = require('koa-serve');
 const session = require('koa-session');
 
@@ -17,6 +18,8 @@ const proxy = require('./routes/proxy');
 const router = require('./routes/main');
 
 let _started;
+
+app.use(responseTime());
 
 // trust X-Forwarded- headers
 app.proxy = config.proxy;
