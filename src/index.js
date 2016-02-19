@@ -206,20 +206,25 @@ class Couch {
 
     async queryViewByUser(user, view, options, rights) {
         debug(`queryViewByUser (${user}, ${view})`);
-        options = options || {};
+        options = Object.create(options || null);
+        const limit = options.limit;
+        const skip = options.skip;
+        options.limit = undefined;
+        options.skip = undefined;
+        options.include_docs = false;
+        options.reduce = false;
+
         await this._init();
 
         // First we get a list of owners for each document
-        const owners = await nanoPromise.queryView(this._db, 'ownersById', {
-            reduce: false
-        });
+        const owners = await nanoPromise.queryView(this._db, 'ownersById', options);
 
         // Check rights for current user and keep only documents with granted access
         const hasRights = await validateRights(this._db, owners.map(r => r.value), user, rights || 'read');
         let allowedDocs = owners.filter((r, idx) => hasRights[idx]);
 
-        if (options.skip) allowedDocs = allowedDocs.slice(options.skip);
-        if (options.limit) allowedDocs = allowedDocs.slice(0, options.limit);
+        if (skip) allowedDocs = allowedDocs.slice(skip);
+        if (limit) allowedDocs = allowedDocs.slice(0, limit);
 
         return await Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
     }
