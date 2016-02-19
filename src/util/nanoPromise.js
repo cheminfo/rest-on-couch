@@ -5,14 +5,14 @@ const debug = require('./debug')('nano');
 
 exports.authenticate = function (nano, user, password) {
     return new Promise((resolve, reject) => {
-        debug('auth ' + user);
+        debug.trace('auth ' + user);
         nano.auth(user, password, function (err, body, headers) {
             if (err) {
                 debug.warn('auth failed');
                 return reject(err);
             }
             if (headers && headers['set-cookie']) {
-                debug('auth success');
+                debug.trace('auth success');
                 return resolve(headers['set-cookie']);
             }
             reject(new Error('cookie auth not supported'));
