@@ -207,33 +207,21 @@ class Couch {
     async queryViewByUser(user, view, options, rights) {
         debug(`queryViewByUser (${user}, ${view})`);
         options = options || {};
-        options.include_docs = true;
-        options.reduce = false;
-        options.skip = 0;
-        var limit = options.limit || 1;
-        var cumRows = [];
         await this._init();
-        while (cumRows.length < limit) {
-            let rows = await nanoPromise.queryView(this._db, view, options);
-            // No more results
-            if (!rows.length) break;
 
-            let owners = rows.map(r => r.doc.$owners);
-            let hasRights = await validateRights(this._db, owners, user, rights || 'read');
-            rows = rows.map(entry => entry.doc);
-            rows = rows.filter((r, idx) => hasRights[idx]);
+        // First we get a list of owners for each document
+        const owners = await nanoPromise.queryView(this._db, 'ownersById', {
+            reduce: false
+        });
 
-            // Return everything
-            if (!options.limit) return rows;
+        // Check rights for current user and keep only documents with granted access
+        const hasRights = await validateRights(this._db, owners.map(r => r.value), user, rights || 'read');
+        let allowedDocs = owners.filter((r, idx) => hasRights[idx]);
 
-            // Concatenate
-            limit = options.limit;
-            options.skip += limit;
-            cumRows = cumRows.concat(rows);
-        }
+        if (options.skip) allowedDocs = allowedDocs.slice(options.skip);
+        if (options.limit) allowedDocs = allowedDocs.slice(0, options.limit);
 
-        // Get rid of extra rows
-        return cumRows.filter((r, idx) => idx < options.limit);
+        return await Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
     }
 
     getEntriesByUserAndRights(user, rights, options) {
