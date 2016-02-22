@@ -36,6 +36,9 @@ class Couch {
         if (!database) {
             throw new CouchError('database option is mandatory');
         }
+        if (database.startsWith('_')) {
+            throw new CouchError('database name cannot start with an underscore');
+        }
 
         this._databaseName = database;
 
@@ -73,16 +76,16 @@ class Couch {
     }
 
     async getInitPromise() {
-        debug(`initialize db ${this._couchOptions.database}`);
+        debug(`initialize db ${this._databaseName}`);
         await this._authenticate();
-        const db = await nanoPromise.getDatabase(this._nano, this._couchOptions.database);
+        const db = await nanoPromise.getDatabase(this._nano, this._databaseName);
         if (!db) {
             if (this._couchOptions.autoCreate) {
                 debug.trace('db not found -> create');
-                await nanoPromise.createDatabase(this._nano, this._couchOptions.database);
+                await nanoPromise.createDatabase(this._nano, this._databaseName);
                 await nanoPromise.request(this._nano, {
                     method: 'PUT',
-                    db: this._couchOptions.database,
+                    db: this._databaseName,
                     doc: '_security',
                     body: {
                         admins: {
@@ -142,7 +145,7 @@ class Couch {
         } else {
             throw new CouchError('rest-on-couch cannot be used without credentials', 'fatal');
         }
-        this._db = this._nano.db.use(this._couchOptions.database);
+        this._db = this._nano.db.use(this._databaseName);
     }
 
     async editUser(user, data) {
