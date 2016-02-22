@@ -80,11 +80,29 @@ class Couch {
             if (this._couchOptions.autoCreate) {
                 debug.trace('db not found -> create');
                 await nanoPromise.createDatabase(this._nano, this._couchOptions.database);
+                await nanoPromise.request(this._nano, {
+                    method: 'PUT',
+                    db: this._couchOptions.database,
+                    doc: '_security',
+                    body: {
+                        admins: {
+                            names: [this._couchOptions.username],
+                            roles: []
+                        },
+                        members: {
+                            names: [this._couchOptions.username],
+                            roles: []
+                        }
+                    }
+                });
             } else {
                 debug('db not found - autoCreate is false');
                 throw new CouchError('database does not exist', 'not found');
             }
         }
+        // Must be done before the other checks because they can add documents to the db
+        await checkSecurity(this._db, this._couchOptions.username);
+
         await Promise.all([
             checkDesignDoc(this._db, this._customDesign),
             checkRightsDoc(this._db, this._rights),
@@ -682,6 +700,14 @@ function onNotFound(ctx, entry, user, options) {
             throw error;
         }
     };
+}
+
+async function checkSecurity(db, admin) {
+    debug.trace('check security');
+    const security = await nanoPromise.getDocument(db, '_security');
+    if (!security.admins || security.admins.names.indexOf(admin) === -1) {
+        throw new CouchError(`${admin} is not an admin of ${db.config.db}`, 'fatal');
+    }
 }
 
 async function checkDesignDoc(db, custom) {

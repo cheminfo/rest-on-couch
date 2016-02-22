@@ -161,3 +161,13 @@ exports.getAttachment = function (db, doc, name, asStream) {
         }
     });
 };
+
+exports.request = function(nano, options) {
+    return new Promise((resolve, reject) => {
+        debug.trace(`request`);
+        nano.request(options, function(err, result) {
+            if (err) return reject(err);
+            resolve(result);
+        });
+    });
+};

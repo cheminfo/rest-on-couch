@@ -4,9 +4,24 @@ const Couch = require('../..');
 const nanoPromise = require('../../lib/util/nanoPromise');
 const insertDocument = require('./insertDocument');
 
-function resetDatabase(nano, name) {
+function resetDatabase(nano, name, username) {
     return nanoPromise.destroyDatabase(nano, name)
-        .then(() => nanoPromise.createDatabase(nano, name));
+        .then(() => nanoPromise.createDatabase(nano, name))
+        .then(() => nanoPromise.request(nano, {
+            method: 'PUT',
+            db: name,
+            doc: '_security',
+            body: {
+                admins: {
+                    names: [username],
+                    roles: []
+                },
+                members: {
+                    names: [username],
+                    roles: []
+                }
+            }
+        }));
 }
 
 function populate(db) {
@@ -99,7 +114,7 @@ function populate(db) {
 module.exports = function () {
     global.couch = new Couch({database: 'test'});
     return global.couch._init()
-        .then(() => resetDatabase(global.couch._nano, global.couch._databaseName))
+        .then(() => resetDatabase(global.couch._nano, global.couch._databaseName, global.couch._couchOptions.username))
         .then(() => populate(global.couch._db))
         .then(() => {
             global.couch = new Couch({

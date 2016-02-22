@@ -29,9 +29,8 @@ exports.getUserEmail = function(ctx) {
     } else if (user = ctx.session.passport.user) {
         email = user.email;
     } else {
-        debug('passport without user: ', ctx.session.passport);
+        debug(`passport without user`);
         email = 'anonymous';
-        //throw new Error('UNREACHABLE');
     }
 
     if (!email || email === 'anonymous') {
