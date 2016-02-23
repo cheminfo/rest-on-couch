@@ -1,5 +1,7 @@
 'use strict';
 
+const assert = require('assert');
+
 const auth = require('./auth');
 const config = require('../../config/config').globalConfig;
 const getConfig = require('../../config/config').getConfig;
@@ -11,6 +13,7 @@ const couchNeedsParse = ['key', 'startkey', 'endkey'];
 
 exports.setupCouch = function*(next) {
     const dbname = this.params.dbname;
+    this.state.dbName = dbname;
     this.state.userEmail = yield auth.getUserEmail(this);
     this.state.couch = Couch.get(dbname);
     processCouchQuery(this);
@@ -31,7 +34,9 @@ exports.updateEntry = function * () {
     const body = this.request.body;
     if (body) body._id = this.params.uuid;
     try {
-        this.body = yield this.state.couch.insertEntry(body, this.state.userEmail, {isUpdate: true});
+        const result = yield this.state.couch.insertEntry(body, this.state.userEmail, {isUpdate: true});
+        assert.strictEqual(result.action, 'updated');
+        this.body = result.info;
         this.status = 200;
     } catch (e) {
         onGetError(this, e);
@@ -51,8 +56,14 @@ exports.deleteEntry = function*() {
 
 exports.newOrUpdateEntry = function * () {
     try {
-        this.body = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
-        this.status = 200;
+        const result = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
+        this.body = result.info;
+        if (result.action === 'created') {
+            this.status = 201;
+            this.set('Location', `${this.state.urlPrefix}db/${this.state.dbName}/entry/${result.info.id}`);
+        } else {
+            this.status = 200;
+        }
     } catch (e) {
         onGetError(this, e);
     }

@@ -592,20 +592,24 @@ class Couch {
 
         const notFound = onNotFound(this, entry, user, options);
 
+        let result;
+        let action = 'updated';
         if (entry._id) {
             try {
                 const doc = await this.getEntryByUuidAndRights(entry._id, user, ['write']);
-                return await updateEntry(this, doc, entry, user, options);
+                result = await updateEntry(this, doc, entry, user, options);
             } catch (e) {
-                return await notFound(e);
+                result = await notFound(e);
+                action = 'created';
             }
         } else if (entry.$id) {
             debug.trace('entry has no _id but has $id');
             try {
                 const doc = await this.getEntryByIdAndRights(entry.$id, user, ['write']);
-                return await updateEntry(this, doc, entry, user, options);
+                result = await updateEntry(this, doc, entry, user, options);
             } catch (e) {
-                return await notFound(e);
+                result = await notFound(e);
+                action = 'created';
             }
         } else {
             debug.trace('entry has no _id nor $id');
@@ -614,8 +618,10 @@ class Couch {
             }
             const res = await createNew(this, entry, user);
             await addGroups(this, user, options.groups)(res);
-            return res;
+            result = res;
         }
+
+        return {info: result, action};
     }
 
     deleteEntryByUuid(uuid, user) {

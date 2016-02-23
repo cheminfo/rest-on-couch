@@ -74,7 +74,7 @@ describe('basic rest-api as b@b.com', function () {
     it('create new document', function () {
         return request.post('/db/test/entry')
             .send({$id: 'new', $content: {}})
-            .expect(200)
+            .expect(201)
             .then(result => {
                 result.body.should.be.instanceOf(Object);
                 result.body.should.have.property('rev');
