@@ -617,6 +617,7 @@ class Couch {
                 throw new CouchError('entry should have an _id', 'bad argument');
             }
             const res = await createNew(this, entry, user);
+            action = 'created';
             await addGroups(this, user, options.groups)(res);
             result = res;
         }
