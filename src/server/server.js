@@ -1,6 +1,7 @@
 'use strict';
 
 const app = require('koa')();
+const compress = require('koa-compress');
 const cors = require('kcors');
 const http = require('http');
 const passport = require('koa-passport');
@@ -19,6 +20,7 @@ const router = require('./routes/main');
 
 let _started;
 
+app.use(compress());
 app.use(responseTime());
 
 // trust X-Forwarded- headers

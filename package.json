@@ -48,6 +48,7 @@
     "kcors": "^1.0.1",
     "koa": "^1.1.2",
     "koa-body": "^1.4.0",
+    "koa-compress": "^1.0.9",
     "koa-passport": "^1.2.0",
     "koa-proxy": "^0.4.1",
     "koa-response-time": "^1.0.2",
