@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable no-undef */
+
 module.exports = {
     username: 'admin',
     password: 'admin',

@@ -83,7 +83,7 @@ function populate(db) {
         $modificationDate: 0,
         $content: {}
     }));
-    
+
     prom.push(insertDocument(db, {
         $type: 'entry',
         $owners: ['a@a.com'],

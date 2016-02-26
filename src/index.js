@@ -232,7 +232,7 @@ class Couch {
             throw new CouchError(`${view} is not a view with owner`, 'unauthorized');
         }
         right = right || 'read';
-        
+
         // First check if user has global right
         const hasGlobalRight = await checkGlobalRight(this._db, user, right);
         if (hasGlobalRight) {

@@ -42,7 +42,7 @@ describe('Query view with owner (global right)', function () {
     it('should return all docs with global right', function () {
         return couch.queryEntriesByRight('a@a.com', 'entryIdByRight')
             .then(res => {
-                res.sort().should.eql(['A', 'B', 'C', 'anonymousEntry', 'entryWithAttachment'])
+                res.sort().should.eql(['A', 'B', 'C', 'anonymousEntry', 'entryWithAttachment']);
             });
     });
 });
