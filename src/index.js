@@ -1,6 +1,7 @@
 'use strict';
 
 const debug = require('./util/debug')('main');
+const _ = require('lodash');
 const nano = require('nano');
 
 const CouchError = require('./util/CouchError');
@@ -55,6 +56,15 @@ class Couch {
         this._logLevel = log.getLevel(config.logLevel);
 
         this._customDesign = config.customDesign || {};
+        this._viewsWithOwner = new Set();
+        if (this._customDesign.views) {
+            for (const i in this._customDesign.views) {
+                if (this._customDesign.views[i].withOwner) {
+                    this._viewsWithOwner.add(i);
+                }
+            }
+        }
+
         this._defaultEntry = config.defaultEntry || getDefaultEntry;
         this._rights = Object.assign({}, basicRights, config.rights || defaultRights);
 
@@ -213,6 +223,43 @@ class Couch {
             $modificationDate: result[0].$modificationDate,
             $creationDate: result[0].$creationDate
         };
+    }
+
+    async queryEntriesByRight(user, view, right, options) {
+        debug(`queryEntriesByRights (${user}, ${view}, ${right})`);
+        options = options || {};
+        if (!this._viewsWithOwner.has(view)) {
+            throw new CouchError(`${view} is not a view with owner`, 'unauthorized');
+        }
+        right = right || 'read';
+        
+        // First check if user has global right
+        const hasGlobalRight = await checkGlobalRight(this._db, user, right);
+        if (hasGlobalRight) {
+            // When there is a global right, we cannot use queries because the first element of the
+            // key will match all documents
+            const result = await nanoPromise.queryView(this._db, view, {reduce: false});
+            return _.uniqBy(result, 'id').map(x => x.value);
+        }
+
+        const userGroups = await this.getGroupsByRight(user, right);
+        userGroups.push(user);
+        const data = new Map();
+        const userStartKey = options.key ? [options.key] : (options.startkey ? options.startkey : []);
+        const userEndKey = options.key ? [options.key] : (options.endkey ? options.endkey : []);
+        for (const group of userGroups) {
+            const result = await nanoPromise.queryView(this._db, view, {
+                startkey: [group].concat(userStartKey),
+                endkey: [group.concat(userEndKey)],
+                reduce: false
+            });
+            for (const el of result) {
+                if (!data.has(el.id)) {
+                    data.set(el.id, el.value);
+                }
+            }
+        }
+        return Array.from(data.values());
     }
 
     /*
@@ -576,6 +623,23 @@ class Couch {
         });
     }
 
+    /**
+     * Returns a list of groups that grant a given right to the user
+     * @param user
+     * @param right
+     */
+    async getGroupsByRight(user, right) {
+        debug.trace(`getGroupsByRight (${user}, ${right})`);
+        await this._init();
+        // Search in default groups
+        const defaultGroups = await getDefaultGroups(this._db, user, true);
+        // Search inside groups
+        const userGroups  = await nanoPromise.queryView(this._db, 'groupByUserAndRight', {key: [user, right]}, {onlyValue: true});
+        // Merge both lists
+        const union = new Set([...defaultGroups, ...userGroups]);
+        return Array.from(union);
+    }
+
     async insertEntry(entry, user, options) {
         debug(`insertEntry (id: ${entry._id}, user: ${user}, options: ${options})`);
         await this._init();
@@ -923,7 +987,7 @@ async function checkRightAnyGroup(db, user, right) {
     return result.length > 0;
 }
 
-async function getDefaultGroups(db, user) {
+async function getDefaultGroups(db, user, listOnly) {
     debug.trace('getDefaultGroups');
     const defaultGroups = await nanoPromise.getDocument(db, constants.DEFAULT_GROUPS_DOC_ID);
     const toGet = new Set();
@@ -936,7 +1000,11 @@ async function getDefaultGroups(db, user) {
         }
     }
 
-    return await Promise.all(Array.from(toGet).map(group => getGroup(db, group)));
+    if (listOnly) {
+        return Array.from(toGet);
+    } else {
+        return await Promise.all(Array.from(toGet).map(group => getGroup(db, group)));
+    }
 }
 
 function getDefaultEntry() {

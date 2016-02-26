@@ -29,14 +29,6 @@ function populate(db) {
         rights: ['create']
     }));
 
-    prom.push(insertDocument(db, {
-        $type: 'group',
-        $owners: ['a@a.com'],
-        name: 'anonymousRead',
-        users: ['anonymous'],
-        rights: ['read']
-    }));
-
     // Add users
     prom.push(insertDocument(db, {
         $type: 'user',

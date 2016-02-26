@@ -8,6 +8,16 @@ const views = require('./views');
 
 module.exports = function getDesignDoc(custom) {
     custom = custom || {};
+    
+    if (custom.views) {
+        for (const viewName in custom.views) {
+            const view = custom.views[viewName];
+            if (view.withOwner) {
+                view.reduce = '_count'; // force the reduce for future optimizations.
+            }
+        }
+    }
+    
     return {
         _id: constants.DESIGN_DOC_ID,
         language: 'javascript',
