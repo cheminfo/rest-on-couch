@@ -26,5 +26,6 @@
 | GET | `/db/:dbname/user/_me` | Get user preferences | Returns logged user's preferences entry |
 | POST | `/db/:dbname/user/_me` | Update user preferences | Creates a merge of current preferences with sent preferences |
 | GET | `/db/:dbname/_view/:view` | Query a custom view | Returns an array of documents |
+| GET | `/db/:dbname/_query/:view` | Query a custom view with owners | Returns an array of mapped results |
 | POST | `/db/:dbname/_query/byKindAndId/:kind` | Search by kind and id | key, startkey and endkey can be set in the body of the request |
 | POST | `/db/:dbname/_query/byOwnerAndId/:email` | Search by kind and owner | key, startkey and endkey can be set in the body of the request |

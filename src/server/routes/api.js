@@ -36,6 +36,9 @@ exports.init = function () {
     // Get a view
     router.get('/:dbname/_view/:view', couch.queryEntriesByUser);
 
+    // Get result from a view with owner
+    router.get('/:dbname/_query/:view', couch.queryEntriesByRight);
+
     // Queries
     router.post('/:dbname/_query/byKindAndId/:kind', parseJson100mb, couch.entriesByKindAndId);
     router.post('/:dbname/_query/byOwnerAndId/:email', parseJson100mb, couch.entriesByOwnerAndId);

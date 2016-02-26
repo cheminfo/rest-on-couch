@@ -122,6 +122,15 @@ exports.queryEntriesByUser = function*() {
     }
 };
 
+exports.queryEntriesByRight = function*() {
+    try {
+        this.body = yield this.state.couch.queryEntriesByRight(this.state.userEmail, this.params.view, this.query.right, this.query);
+        this.status = 200;
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
 exports.entriesByKindAndId = function * () {
     try {
         for (let i=0; i<couchNeedsParse.length; i++) {
