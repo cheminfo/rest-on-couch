@@ -12,7 +12,7 @@ exports.import = function (database, importName, file) {
     debug(`import ${file} (${database}, ${importName})`);
 
     const filename = path.parse(file).base;
-    const contents = fs.readFileSync(file);
+    let contents = fs.readFileSync(file);
 
     let config = getConfig(database);
     if (!config.import || !config.import[importName]) {
@@ -32,6 +32,8 @@ exports.import = function (database, importName, file) {
     } catch (e) {
         json = verifyConfig('json', null, true);
     }
+
+    if(json) contents = JSON.parse(contents);
 
     return Promise.resolve()
         .then(getMetadata)
