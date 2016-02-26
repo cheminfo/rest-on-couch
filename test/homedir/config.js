@@ -10,7 +10,7 @@ module.exports = {
         views: {
             entryIdByRight: {
                 map: function (doc) {
-                    emitWithOwner(null, doc.$id);
+                    emitWithOwner(['x', 'y', 'z'], doc.$id);
                 },
                 withOwner: true
             }

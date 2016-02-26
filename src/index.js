@@ -248,9 +248,12 @@ class Couch {
         const userStartKey = options.key ? [options.key] : (options.startkey ? options.startkey : []);
         const userEndKey = options.key ? [options.key] : (options.endkey ? options.endkey : []);
         for (const group of userGroups) {
+            const startkey = [group].concat(userStartKey);
+            const endkey = [group].concat(userEndKey);
+            endkey.push({});
             const result = await nanoPromise.queryView(this._db, view, {
-                startkey: [group].concat(userStartKey),
-                endkey: [group.concat(userEndKey)],
+                startkey,
+                endkey,
                 reduce: false
             });
             for (const el of result) {
