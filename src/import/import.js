@@ -33,7 +33,7 @@ exports.import = function (database, importName, file) {
         json = verifyConfig('json', null, true);
     }
 
-    if(json) contents = JSON.parse(contents);
+    if (json) contents = JSON.parse(contents);
 
     return Promise.resolve()
         .then(getMetadata)
