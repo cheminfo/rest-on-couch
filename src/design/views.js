@@ -1,7 +1,5 @@
 'use strict';
 
-/* eslint-disable no-undef */
-
 const views = module.exports = {};
 
 views.ownersById = {
