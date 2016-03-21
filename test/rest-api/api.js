@@ -21,6 +21,14 @@ describe('basic rest-api as anonymous (noRights)', function () {
             entries.should.have.length(2);
         });
     });
+
+    it('get unknown group', function () {
+        return request.get('/db/test/group/doesnotexist').expect(404);
+    });
+
+    it('get group without permission', function () {
+        return request.get('/db/test/group/groupA').expect(401);
+    });
 });
 
 describe('rest-api as anonymous (data)', function () {
@@ -118,4 +126,20 @@ describe('basic rest-api as b@b.com', function () {
             });
     });
 
+    it('get group without permission', function () {
+        return request.get('/db/test/group/groupA').expect(401);
+    });
+
+});
+
+describe('basic rest-api as a@a.com', function () {
+    before(() => {
+        return data().then(() => authenticateAs(request, 'a@a.com', '123'));
+    });
+
+    it('get group with permission', function () {
+        return request.get('/db/test/group/groupA').expect(200).then(function (response) {
+            response.body.should.have.properties(['name', 'users', 'rights']);
+        });
+    });
 });

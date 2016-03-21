@@ -29,3 +29,10 @@
 | GET | `/db/:dbname/_query/:view` | Query a custom view with owners | Returns an array of mapped results |
 | POST | `/db/:dbname/_query/byKindAndId/:kind` | Search by kind and id | key, startkey and endkey can be set in the body of the request |
 | POST | `/db/:dbname/_query/byOwnerAndId/:email` | Search by kind and owner | key, startkey and endkey can be set in the body of the request |
+| GET | `/db/:dbname/group/:name` | Get a group by name |
+| PUT | `/db/:dbname/group/:name` | Create or update a group |
+| DELETE | `/db/:dbname/group/:name` | Remove a group |
+| PUT | `/db/:dbname/group/:name/user/:user` | Add a user to an existing group | Group must exist. No-op if user is already in group |
+| DELETE | `/db/:dbname/group/:name/user/:user` | Remove a user from an existing group | Group must exist. No-op if user is not in group |
+| PUT | `/db/:dbname/group/:name/right/:right` | Add a right to an existing group | Group must exist. No-op if group already has right |
+| DELETE | `/db/:dbname/group/:name/right/:right` | Remove a right from an existing group | Group must exist. No-op if group does not have right |

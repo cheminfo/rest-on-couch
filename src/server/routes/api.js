@@ -42,6 +42,9 @@ exports.init = function () {
     // Queries
     router.post('/:dbname/_query/byKindAndId/:kind', parseJson100mb, couch.entriesByKindAndId);
     router.post('/:dbname/_query/byOwnerAndId/:email', parseJson100mb, couch.entriesByOwnerAndId);
+    
+    // Groups
+    router.get('/:dbname/group/:name', couch.getGroup);
 
     return router;
 };

@@ -606,7 +606,7 @@ class Couch {
     }
 
     async createGroup(groupName, user, rights) {
-        debug(`createGroup ${groupName}, ${user}`);
+        debug(`createGroup (${groupName}, ${user})`);
         if (!Array.isArray(rights)) rights = ['read'];
 
         await this._init();
@@ -624,6 +624,21 @@ class Couch {
             users: [],
             rights: rights
         });
+    }
+
+    async getGroup(groupName, user) {
+        debug(`getGroup (${groupName}, ${user})`);
+        await this._init();
+        const doc = await getGroup(this._db, groupName);
+        if (!doc) {
+            debug.trace('group does not exist');
+            throw new CouchError('group does not exist', 'not found');
+        }
+        if (!isOwner(doc.$owners, user)) {
+            debug.trace('not allowed to get group');
+            throw new CouchError(`user ${user} is not an owner of the group`, 'unauthorized');
+        }
+        return doc;
     }
 
     /**

@@ -209,6 +209,14 @@ exports.removeOwnerByUuid = function*() {
     }
 };
 
+exports.getGroup = function*() {
+    try {
+        this.body = yield this.state.couch.getGroup(this.params.name, this.state.userEmail);
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
 function onGetError(ctx, e, secure) {
     switch (e.reason) {
         case 'unauthorized':
