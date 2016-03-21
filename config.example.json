@@ -2,7 +2,6 @@
   "port": 3000,
   "sessionDomain": ".example.com",
   "sessionSecure": false,
-  "sessionSecureProxy": true,
   "firstLoginClone": {
     "sourceFlavor": "workshop",
     "targetFlavor": "default",

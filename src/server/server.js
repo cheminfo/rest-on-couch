@@ -76,7 +76,6 @@ app.use(session({
     path: '/',
     domain: config.sessionDomain,
     secure: config.sessionSecure,
-    secureProxy: config.sessionSecureProxy, // true if SSL is handled by Apache
     httpOnly: true,
     signed: true
 
