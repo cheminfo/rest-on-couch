@@ -2,11 +2,11 @@
 
 const views = module.exports = {};
 
-views.ownersById = {
+views.documentByType = {
     map: function (doc) {
-        if (doc.$type !== 'entry') return;
-        emit(doc.$id, doc.$owners);
-    }
+        emit(doc.$type);
+    },
+    reduce: '_count'
 };
 
 views.entryById = {
@@ -14,8 +14,56 @@ views.entryById = {
         if (doc.$type !== 'entry') return;
         emit(doc.$id);
     },
-    reduce: '_count',
-    type: 'string'
+    reduce: '_count'
+};
+
+views.entryByKind = {
+    map: function (doc) {
+        if (doc.$type !== 'entry') return;
+        emit(doc.$kind);
+    },
+    reduce: '_count'
+};
+
+views.entryByCreationDate = {
+    map: function (doc) {
+        if (doc.$type !== 'entry') return;
+        emit(doc.$creationDate);
+    },
+    reduce: '_count'
+};
+
+views.entryByModificationDate = {
+    map: function (doc) {
+        if (doc.$type !== 'entry') return;
+        emit(doc.$modificationDate);
+    },
+    reduce: '_count'
+};
+
+views.entryByOwner = {
+    map: function (doc) {
+        if (doc.$type !== 'entry') return;
+        for (var i=0; i<doc.$owners.length; i++) {
+            emit(doc.$owners[i]);
+        }
+    },
+    reduce: '_count'
+};
+
+views.entryByLastModification = {
+    map: function (doc) {
+        if (doc.$type !== 'entry') return;
+        emit(doc.$lastModification);
+    },
+    reduce: '_count'
+};
+
+views.ownersById = {
+    map: function (doc) {
+        if (doc.$type !== 'entry') return;
+        emit(doc.$id, doc.$owners);
+    }
 };
 
 views.entryByOwnerAndId = {
@@ -31,31 +79,6 @@ views.entryByKindAndId = {
         emit([doc.$kind ? doc.$kind : null, doc.$id]);
     }
 };
-
-views.entryByCreationDate = {
-    map: function (doc) {
-        if (doc.$type !== 'entry') return;
-        emit(doc.$creationDate);
-    }
-};
-
-views.entryByModificationDate = {
-    map: function (doc) {
-        if (doc.$type !== 'entry') return;
-        emit(doc.$modificationDate);
-    }
-};
-
-views.entryByOwner = {
-    map: function (doc) {
-        if (doc.$type !== 'entry') return;
-        for (var i=0; i<doc.$owners.length; i++) {
-            emit(doc.$owners[i]);
-        }
-    },
-    reduce: '_count'
-};
-
 
 views.groupByName = {
     map: function (doc) {
