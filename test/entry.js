@@ -147,8 +147,8 @@ describe('entry editions', function () {
             .then(() => couch.getEntryById('A', 'b@b.com'))
             .then(entry => {
                 let count = 0;
-                for(let i=0; i<entry.$owners.length; i++) {
-                    if(entry.$owners[i] === 'groupD') count++;
+                for (let i=0; i<entry.$owners.length; i++) {
+                    if (entry.$owners[i] === 'groupD') count++;
                 }
                 count.should.equal(1);
             });
@@ -162,10 +162,9 @@ describe('entry editions', function () {
                     .then(() => couch.addGroupToEntryByUuid(uuid, 'b@b.com', 'anonymousRead'))
                     .then(() => couch.getEntryById('A', 'b@b.com'))
                     .then(entry => {
-                        console.log(entry);
                         let count = 0;
-                        for(let i=0; i<entry.$owners.length; i++) {
-                            if(entry.$owners[i] === 'anonymousRead') count++;
+                        for (let i=0; i<entry.$owners.length; i++) {
+                            if (entry.$owners[i] === 'anonymousRead') count++;
                         }
                         count.should.equal(1);
                     });
