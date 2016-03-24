@@ -141,6 +141,37 @@ describe('entry editions', function () {
             });
     });
 
+    it('Add existing group to entry', function() {
+        return couch.addGroupToEntry('A', 'b@b.com', 'groupD')
+            .then(() => couch.addGroupToEntry('A', 'b@b.com', 'groupD'))
+            .then(() => couch.getEntryById('A', 'b@b.com'))
+            .then(entry => {
+                let count = 0;
+                for(let i=0; i<entry.$owners.length; i++) {
+                    if(entry.$owners[i] === 'groupD') count++;
+                }
+                count.should.equal(1);
+            });
+    });
+
+    it('Add existing group to entry (by uuid)', function() {
+        return couch.getEntryById('A', 'b@b.com')
+            .then(entry => {
+                let uuid = entry._id;
+                return couch.addGroupToEntryByUuid(uuid, 'b@b.com', 'anonymousRead')
+                    .then(() => couch.addGroupToEntryByUuid(uuid, 'b@b.com', 'anonymousRead'))
+                    .then(() => couch.getEntryById('A', 'b@b.com'))
+                    .then(entry => {
+                        console.log(entry);
+                        let count = 0;
+                        for(let i=0; i<entry.$owners.length; i++) {
+                            if(entry.$owners[i] === 'anonymousRead') count++;
+                        }
+                        count.should.equal(1);
+                    });
+            });
+    });
+
     it('should fail to add group to entry', function () {
         return couch.addGroupToEntry('A', 'a@a.com', 'groupC').should.be.rejectedWith(/unauthorized/);
     });

@@ -26,7 +26,7 @@ updates.addGroupToEntry = function(doc, req) {
         return [null, resp];
     }
     var idx = doc.$owners.indexOf(group);
-    if (idx > 1) {
+    if (idx > -1) {
         resp.body = '"group already exists for this entry"';
         return [null, resp];
     }
