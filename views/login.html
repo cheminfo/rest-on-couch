@@ -5,6 +5,23 @@
     <title>Login</title>
 </head>
 <body>
-    <a href="login/google"><img src="{{pathPrefix}}assets/img/logo/google_signin.png" /></a>
+    {% if "google" in enabledAuthPlugins %}
+        <p>
+            <a href="login/google"><img src="{{pathPrefix}}assets/img/logo/google_signin.png" /></a>
+        </p>
+    {% endif %}
+
+    {% if "ldap" in enabledAuthPlugins %}
+        <h3>LDAP login</h3>
+        <p>
+            <form method="post" action="login/ldap">
+                <label for="ldap-username">Username</label>
+                <input id="ldap-username" type="text" name="username" /><br>
+                <label for="ldap-password">Password</label>
+                <input id="ldap-password" type="password" name="password" /><br>
+                <input type="submit" value="Connect" />
+            </form>
+        </p>
+    {% endif %}
 </body>
 </html>

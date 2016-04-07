@@ -8,11 +8,7 @@ const util = require('../../middleware/util');
 
 exports.init = function (passport, router, config) {
     passport.use(new LdapStrategy(
-        {
-            server: config.server,
-            usernameField: config.usernameField,
-            passwordField: config.passwordField
-        },
+        config,
         function (user, done) {
             done(null, {
                 provider: 'ldap',
@@ -21,10 +17,8 @@ exports.init = function (passport, router, config) {
         }
     ));
 
-    router.post('/login/ldap', util.parseBody(), passport.authenticate('ldapauth'), function *() {
-        this.body = {
-            ok: true,
-            name: yield auth.getUserEmail(this)
-        };
-    });
+    router.post('/login/ldap', util.parseBody(), passport.authenticate('ldapauth', {
+        successRedirect: '/auth/login',
+        failureRedirect: '/auth/login'
+    }));
 };
