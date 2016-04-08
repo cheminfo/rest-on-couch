@@ -106,6 +106,7 @@ exports.import = function (database, importName, file) {
                 info.data = result.data;
                 info.content_type = result.content_type || 'application/octet-stream';
                 info.field = result.field;
+                info.reference = result.reference;
                 return info;
             });
         } else if (json) {
