@@ -136,7 +136,7 @@ exports.import = function (database, importName, file) {
             return couch.addFileToJpath(info.id, info.owner, info.jpath, info.data, {
                 field: info.field,
                 reference: info.reference,
-                name: filename,
+                name: info.jpath.join('/') + '/' + filename,
                 data: contents,
                 content_type: info.content_type
             });
