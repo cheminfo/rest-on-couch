@@ -13,6 +13,7 @@ if (homeDir) {
     try {
         const databases = fs.readdirSync(homeDir);
         for (const database of databases) {
+            if (database === 'node_modules') continue;
             const databasePath = path.join(homeDir, database);
             if (fs.statSync(databasePath).isDirectory()) {
                 let databaseConfig = {};
