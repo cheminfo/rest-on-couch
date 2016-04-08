@@ -13,7 +13,7 @@ module.exports = {
             data: {
                 abc: 'test'
             },
-            type: 'jcamp',
+            field: 'jcamp',
             content_type: 'chemical/x-jcamp-dx'
         };
     },

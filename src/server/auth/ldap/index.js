@@ -3,7 +3,6 @@
 // Doc: https://github.com/vesse/passport-ldapauth#readme
 const LdapStrategy = require('passport-ldapauth');
 
-const auth = require('../../middleware/auth');
 const util = require('../../middleware/util');
 
 exports.init = function (passport, router, config) {

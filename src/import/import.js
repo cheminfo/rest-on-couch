@@ -97,15 +97,15 @@ exports.import = function (database, importName, file) {
                 if (typeof result.data !== 'object' || result.data === null) {
                     throw new Error('parse: data must be an object');
                 }
-                if (typeof result.type !== 'string') {
-                    throw new Error('parse: type must be a string');
+                if (typeof result.field !== 'string') {
+                    throw new Error('parse: field must be a string');
                 }
 
                 debug.trace(`jpath: ${result.jpath}`);
                 info.jpath = result.jpath.split('.');
                 info.data = result.data;
                 info.content_type = result.content_type || 'application/octet-stream';
-                info.type = result.type;
+                info.field = result.field;
                 return info;
             });
         } else if (json) {
@@ -134,7 +134,8 @@ exports.import = function (database, importName, file) {
         if (parse) {
             info = info.info;
             return couch.addFileToJpath(info.id, info.owner, info.jpath, info.data, {
-                type: info.type,
+                field: info.field,
+                reference: info.reference,
                 name: filename,
                 data: contents,
                 content_type: info.content_type

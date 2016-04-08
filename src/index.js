@@ -451,8 +451,8 @@ class Couch {
         if (typeof file !== 'object') {
             throw new CouchError('file must be an object');
         }
-        if (!file.type || !file.name || !file.data) {
-            throw new CouchError('file must have type, name and data properties');
+        if (!file.field || !file.name || !file.data) {
+            throw new CouchError('file must have field, name and data properties');
         }
 
         const entry = await this.getEntryByIdAndRights(id, user, ['write']);
@@ -467,18 +467,20 @@ class Couch {
             throw new CouchError('jpath must point to an array');
         }
 
-        // Find element(s) with the same file name and remove them
-        let filenames = current.map(el => el.file.filename);
-        let idx;
-        while (( idx = filenames.findIndex(filename => filename === file.name) ) > -1) {
-            filenames.splice(idx, 1);
-            current.splice(idx, 1);
+        if (file.reference) {
+            let found = current.find(el => el.reference === file.reference);
+            if (found) {
+                Object.assign(found, json);
+                json = found;
+            } else {
+                json.reference = file.reference;
+                current.push(json);
+            }
+        } else {
+            current.push(json);
         }
 
-        current.push(json);
-
-        json.file = {
-            type: file.type,
+        json[file.field] = {
             filename: file.name
         };
 
