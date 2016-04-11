@@ -82,7 +82,7 @@ prom.then(function () {
 
 function findFiles(homeDir) {
     return new Promise(function (resolve, reject) {
-        exec("find . -maxdepth 4 -mindepth 4 -type f -not -regex '.*/\\(processed\\|errored\\|node_modules\\|\\.\\).*'", {
+        exec("find . -mindepth 4 -type f -not -regex '.*/\\(processed\\|errored\\|node_modules\\|\\.\\).*'", {
             cwd: homeDir,
             maxBuffer: 10 * 1000 * 1024
         }, function (err, stdout) {
@@ -107,7 +107,7 @@ function checkFile(homeDir, p) {
     p = path.resolve(homeDir, p);
     const relpath = path.relative(homeDir, p);
     const elements = relpath.split('/');
-    if (elements.length !== 4) return false;
+    if (elements.length >= 4) return false;
     if (elements[2] !== 'to_process') return false;
 
     if (hasImportFile(p)) {
