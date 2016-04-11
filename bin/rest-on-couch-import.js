@@ -109,8 +109,7 @@ function checkFile(homeDir, p) {
     const elements = relpath.split('/');
     if (elements.length < 4) return false;
     if (elements[2] !== 'to_process') return false;
-
-    if (hasImportFile(p)) {
+    if (hasImportFile(path.resolve(homeDir, elements[0] + '/' + elements[1]))) {
         return {
             database: elements[0],
             importName: elements[1]
@@ -175,11 +174,11 @@ function tryRename(from, to, resolve, reject, suffix) {
 }
 
 function hasImportFile(p) {
-    const importFile = path.resolve(p, '../../import.js');
     if (importFiles[p]) return true;
-
+    const importFile = path.join(p, 'import.js');
     try {
         fs.accessSync(importFile);
+        importFiles[p] = true;
         return true;
     } catch (e) {
         return false;
