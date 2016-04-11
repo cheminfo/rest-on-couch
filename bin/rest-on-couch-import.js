@@ -107,7 +107,7 @@ function checkFile(homeDir, p) {
     p = path.resolve(homeDir, p);
     const relpath = path.relative(homeDir, p);
     const elements = relpath.split('/');
-    if (elements.length <= 4) return false;
+    if (elements.length < 4) return false;
     if (elements[2] !== 'to_process') return false;
 
     if (hasImportFile(p)) {
