@@ -54,7 +54,7 @@
     "koa-router": "^5.3.0",
     "koa-serve": "^0.1.7",
     "koa-session": "^3.1.0",
-    "lodash": "^4.0.0",
+    "lodash": "^4.9.0",
     "minimist": "^1.2.0",
     "nano": "^6.1.5",
     "nunjucks": "^2.3.0",
@@ -65,20 +65,20 @@
     "passport-ldapauth": "^0.5.0",
     "passport-local": "^1.0.0",
     "raw-body": "^2.1.5",
-    "superagent": "^1.6.1",
+    "superagent": "^1.8.3",
     "superagent-promise": "^1.1.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.4.5",
-    "babel-eslint": "^6.0.0-beta.6",
-    "babel-plugin-transform-async-to-generator": "^6.4.6",
+    "babel-cli": "^6.7.5",
+    "babel-eslint": "^6.0.2",
+    "babel-plugin-transform-async-to-generator": "^6.7.4",
     "babel-plugin-transform-es2015-spread": "^6.6.5",
-    "eslint": "^2.4.0",
-    "istanbul": "^0.4.1",
+    "eslint": "^2.7.0",
+    "istanbul": "^0.4.3",
     "mocha": "^2.3.4",
-    "mocha-better-spec-reporter": "^3.0.1",
-    "should": "^8.0.1",
+    "mocha-better-spec-reporter": "^3.0.2",
+    "should": "^8.3.0",
     "supertest": "^1.1.0",
-    "supertest-as-promised": "^3.0.0"
+    "supertest-as-promised": "^3.1.0"
   }
 }
