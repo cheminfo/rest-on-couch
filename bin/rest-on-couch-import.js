@@ -130,14 +130,11 @@ function processFile(database, importName, homeDir, p) {
         return new Promise(function (resolve, reject) {
             let dir = path.join(parsedPath.dir, '../processed/' + getMonth());
             createDir(dir);
-            fs.rename(p, path.join(dir, parsedPath.base), function (err) {
-                if (err) return reject(err);
-                resolve();
-            });
+            tryRename(p, path.join(dir, parsedPath.base), resolve, reject);
         });
     }).catch(e => {
         // mv to errored
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             if (e.message.startsWith('no import config')) {
                 debug.warn('no import configuration found, skipping this file');
                 return resolve();
@@ -145,15 +142,36 @@ function processFile(database, importName, homeDir, p) {
             debug.error(e + '\n' + e.stack);
             let dir = path.join(parsedPath.dir, '../errored/' + getMonth());
             createDir(dir);
-            let toPath = path.join(dir, parsedPath.base);
-            fs.rename(p, toPath, function (err) {
-                if (err) debug.error(`Could could rename ${p} to ${toPath}: ${err}`);
-                resolve();
-            });
+            tryRename(p, path.join(dir, parsedPath.base), resolve, reject);
         });
     });
 
     return processChain;
+}
+
+function tryRename(from, to, resolve, reject, suffix) {
+    if (!suffix) {
+        suffix = 0;
+    }
+    var newTo = to;
+    if (suffix > 0) {
+        newTo += '.' + suffix;
+    }
+    fs.access(newTo, function (err) {
+        if (err) {
+            if (err.code !== 'ENOENT') {
+                debug.error(`Could could rename ${from} to ${newTo}: ${err}`);
+                return reject(err);
+            } else {
+                return fs.rename(from, newTo, function (err) {
+                    if (err) return reject(err);
+                    resolve();
+                });
+            }
+        }
+        // file exists. retry with another name
+        return tryRename(from, to, resolve, reject, ++suffix);
+    });
 }
 
 function hasImportFile(p) {
