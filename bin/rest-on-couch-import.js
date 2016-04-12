@@ -68,25 +68,17 @@ function doContinuous(waitTime) {
     );
 }
 
-function importAll() {
+const importAll = co.wrap(function*() {
     const homeDir = getHomeDir();
-    return findFiles(homeDir)
-        .then(paths => {
-            const limit = program.limit || paths.length;
-            debug(`limit is ${limit}`);
-            var i = 0, count = 0;
-            var p = Promise.resolve();
-            while (count < limit && i < paths.length) {
-                let file = checkFile(homeDir, paths[i]);
-                if (file) {
-                    count++;
-                    p = p.then(() => processFile(file.database, file.importName, homeDir, paths[i]));
-                }
-                i++;
-            }
-            return p;
-        });
-}
+    const files = yield findFiles(homeDir);
+    const limit = program.limit || files.length;
+    debug(`${files.length} files and limit is ${limit}`);
+    const min = Math.min(limit, files.length);
+    for (var i = 0; i < min; i++) {
+        var file = files[i];
+        yield processFile2(file.database, file.importName, homeDir, file.path);
+    }
+});
 
 prom.then(function () {
     debug('finished');
@@ -121,20 +113,30 @@ const findFiles = co.wrap(function*(homeDir){
                             const sourceToProcessPath = path.join(sourcePath, 'to_process');
                             const stat = yield fsp.stat(sourceToProcessPath);
                             if (stat.isDirectory()) {
-                                files = files.concat(yield getFilesToProcess(sourceToProcessPath));
+                                const fileList = yield getFilesToProcess(sourceToProcessPath);
+                                const objFiles = fileList.map(file => ({database, importName, path: file}));
+                                files = files.concat(objFiles);
                             }
-                        } catch (e) {}
+                        } catch (e) {
+                            // ignore
+                        }
                     }
                 }
-            } catch (e) {}
+            } catch (e) {
+                // ignore
+            }
 
             try {
                 const toProcessPath = path.join(importNamePath, 'to_process');
                 const stat = yield fsp.stat(toProcessPath);
                 if (stat.isDirectory()) {
-                    files = files.concat(yield getFilesToProcess(toProcessPath));
+                    const fileList = yield getFilesToProcess(toProcessPath);
+                    const objFiles = fileList.map(file => ({database, importName, path: file}));
+                    files = files.concat(objFiles);
                 }
-            } catch (e) {}
+            } catch (e) {
+                // ignore
+            }
         }
     }
 
@@ -210,6 +212,63 @@ function processFile(database, importName, homeDir, p) {
     });
 
     return processChain;
+}
+
+function* processFile2(database, importName, filePath) {
+    debug.trace(`process file ${filePath}`);
+    const parsedPath = path.parse(filePath);
+    const splitParsedPath = parsedPath.dir.split('/');
+    const to_process = splitParsedPath.indexOf('to_process');
+    if (to_process === -1) {
+        throw new Error('to_process not found in path. This should not happen');
+    }
+
+    try {
+        yield imp.import(database, importName, filePath);
+        // success, move to processed
+        yield moveFile(filePath, parsedPath.base, splitParsedPath, to_process, 'processed');
+    } catch (e) {
+        // error, move to errored
+        if (e.message.startsWith('no import config')) {
+            debug.warn('no import configuration found, skipping this file');
+            return;
+        }
+        debug.error(e + '\n' + e.stack);
+        yield moveFile(filePath, parsedPath.base, splitParsedPath, to_process, 'errored');
+    }
+}
+
+function* moveFile(filePath, fileName, splitParsedPath, to_process, dest) {
+    const base = splitParsedPath.slice(0, to_process).join('/');
+    let subdir;
+    if (splitParsedPath.length - to_process > 1) {
+        subdir = splitParsedPath.slice(to_process + 1).join('/');
+    } else {
+        subdir = getMonth();
+    }
+    const destination = path.join(base, dest, subdir, fileName);
+    yield tryMove(filePath, destination);
+}
+
+function* tryMove(from, to, suffix) {
+    if (suffix > 1000) {
+        throw new Error('tryMove: too many retries');
+    }
+    if (!suffix) {
+        suffix = 0;
+    }
+    var newTo = to;
+    if (suffix > 0) {
+        newTo += '.' + suffix;
+    }
+    try {
+        yield fsp.move(from, newTo);
+    } catch (e) {
+        if (e.code !== 'EEXIST') {
+            throw new Error(`Could could rename ${from} to ${newTo}: ${e}`);
+        }
+        yield tryMove(from, to, ++suffix);
+    }
 }
 
 function tryRename(from, to, resolve, reject, suffix) {
