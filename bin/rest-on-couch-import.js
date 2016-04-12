@@ -29,7 +29,10 @@ program
 
 function doContinuous(waitTime) {
     importAll().then(
-        () => setTimeout(doContinuous, waitTime),
+        () => {
+            debug('now waiting');
+            setTimeout(() => doContinuous(waitTime), waitTime);
+        },
         err => die(err.message || err)
     );
 }
@@ -280,16 +283,12 @@ function getMonth() {
     return now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2);
 }
 
-let prom = Promise.resolve();
 if (program.args[0]) {
     debug(`file argument: ${program.args[0]}`);
     // TODO add 2 arguments: db and import names
     throw new Error('not ready');
     //const file = path.resolve(program.args[0]);
-    //
-    //prom = prom.then(() => {
-    //    return imp.import(config, file);
-    //});
+    //imp.import(config, file);
 } else if (program.watch) {
     // watch files to import
     let homeDir = getHomeDir();
@@ -311,11 +310,9 @@ if (program.args[0]) {
     doContinuous(waitTime);
 } else {
     debug('no watch');
-    prom = prom.then(importAll);
+    importAll().then(function () {
+        debug('finished');
+    }, function (err) {
+        die(err.message || err);
+    });
 }
-
-prom.then(function () {
-    debug('finished');
-}, function (err) {
-    die(err.message || err);
-});
