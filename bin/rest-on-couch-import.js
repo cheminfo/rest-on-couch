@@ -42,7 +42,7 @@ const importAll = co.wrap(function*() {
     const min = Math.min(limit, files.length);
     for (var i = 0; i < min; i++) {
         var file = files[i];
-        yield processFile2(file.database, file.importName, homeDir, file.path);
+        yield processFile2(file.database, file.importName, file.path);
     }
 });
 
