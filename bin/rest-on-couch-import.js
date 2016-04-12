@@ -23,7 +23,7 @@ program
     .option('-l, --limit <number>', 'Limit of files to import', Number)
     .option('-w, --watch', 'Watch files')
     .option('--continuous', 'Continuous mode. When import is finished, wait for some time and then import again')
-    .option('--wait <time>', 'Wait time in minutes between imports for continuous mode (default: 1)', Number, 1)
+    .option('--wait <time>', 'Wait time in seconds between imports for continuous mode (default: 60)', Number, 60)
     .option('-c --config <path>', 'Path to custom config file')
     .parse(process.argv);
 
@@ -306,8 +306,8 @@ if (program.args[0]) {
         processFile(file.database, file.importName, homeDir, p);
     });
 } else if (program.continuous) {
-    debug('continuous');
-    const waitTime = program.wait * 60;
+    const waitTime = program.wait * 1000;
+    debug(`continuous import. Wait time is ${program.wait}`);
     doContinuous(waitTime);
 } else {
     debug('no watch');
