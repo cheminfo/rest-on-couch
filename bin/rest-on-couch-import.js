@@ -105,13 +105,13 @@ const findFiles = co.wrap(function*(homeDir){
     const databases = yield fsp.readdir(homeDir);
     for (const database of databases) {
         const databasePath = path.join(homeDir, database);
-        const stat = yield fs.stat(databasePath);
+        const stat = yield fsp.stat(databasePath);
         if (!stat.isDirectory()) continue;
 
         const importNames = yield fsp.readdir(databasePath);
         for (const importName of importNames) {
             const importNamePath = path.join(databasePath, importName);
-            const stat = yield fs.stat(importNamePath);
+            const stat = yield fsp.stat(importNamePath);
             if (!stat.isDirectory()) continue;
 
             try {
