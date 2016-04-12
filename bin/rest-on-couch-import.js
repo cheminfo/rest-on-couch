@@ -3,8 +3,9 @@
 'use strict';
 
 const chokidar = require('chokidar');
-const exec = require('child_process').exec;
+const co = require('co');
 const fs = require('fs-extra');
+const fsp = require('thenify-all')(fs);
 const path = require('path');
 const program = require('commander');
 
@@ -71,6 +72,11 @@ function importAll() {
     const homeDir = getHomeDir();
     return findFiles(homeDir)
         .then(paths => {
+
+            // todo remove this
+            console.log(paths);
+            return;
+
             const limit = program.limit || paths.length;
             debug(`limit is ${limit}`);
             var i = 0, count = 0;
@@ -93,18 +99,66 @@ prom.then(function () {
     die(err.message || err);
 });
 
-function findFiles(homeDir) {
-    return new Promise(function (resolve, reject) {
-        exec("find . -mindepth 4 -type f -not -regex '.*/\\(processed\\|errored\\|node_modules\\|\\.\\).*'", {
-            cwd: homeDir,
-            maxBuffer: 10 * 1000 * 1024
-        }, function (err, stdout) {
-            if (err) return reject(err);
-            let paths = stdout.split('\n');
-            paths = paths.filter(path => path);
-            debug(`findFiles found ${paths.length} files`);
-            resolve(paths);
-        });
+const findFiles = co.wrap(function*(homeDir){
+    let files = [];
+
+    const databases = yield fsp.readdir(homeDir);
+    for (const database of databases) {
+        const databasePath = path.join(homeDir, database);
+        const stat = yield fs.stat(databasePath);
+        if (!stat.isDirectory()) continue;
+
+        const importNames = yield fsp.readdir(databasePath);
+        for (const importName of importNames) {
+            const importNamePath = path.join(databasePath, importName);
+            const stat = yield fs.stat(importNamePath);
+            if (!stat.isDirectory()) continue;
+
+            try {
+                const importConfigPath = path.join(importNamePath, 'import');
+                const importConfig = require(importConfigPath);
+                if (importConfig && Array.isArray(importConfig.source)) {
+                    for (const source of importConfig.source) {
+                        try {
+                            const sourcePath = path.resolve(importNamePath, source);
+                            const sourceToProcessPath = path.join(sourcePath, 'to_process');
+                            const stat = yield fsp.stat(sourceToProcessPath);
+                            if (stat.isDirectory()) {
+                                files = files.concat(yield getFilesToProcess(sourceToProcessPath));
+                            }
+                        } catch (e) {}
+                    }
+                }
+            } catch (e) {}
+
+            try {
+                const toProcessPath = path.join(importNamePath, 'to_process');
+                const stat = yield fsp.stat(toProcessPath);
+                if (stat.isDirectory()) {
+                    files = files.concat(yield getFilesToProcess(toProcessPath));
+                }
+            } catch (e) {}
+        }
+    }
+
+    return files;
+});
+
+function getFilesToProcess(directory) {
+    return new Promise((resolve, reject) => {
+        const items = [];
+        fs.walk(directory)
+            .on('data', function (item) {
+                if (item.stats.isFile()) {
+                    items.push(item.path);
+                }
+            })
+            .on('end', function () {
+                resolve(items);
+            })
+            .on('error', function (error) {
+                reject(error);
+            });
     });
 }
 
