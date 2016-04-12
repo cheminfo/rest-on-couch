@@ -79,7 +79,7 @@ function importAll() {
                 let file = checkFile(homeDir, paths[i]);
                 if (file) {
                     count++;
-                    p = processFile(file.database, file.importName, homeDir, paths[i]);
+                    p = p.then(() => processFile(file.database, file.importName, homeDir, paths[i]));
                 }
                 i++;
             }
