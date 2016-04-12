@@ -72,11 +72,6 @@ function importAll() {
     const homeDir = getHomeDir();
     return findFiles(homeDir)
         .then(paths => {
-
-            // todo remove this
-            console.log(paths);
-            return;
-
             const limit = program.limit || paths.length;
             debug(`limit is ${limit}`);
             var i = 0, count = 0;
@@ -104,12 +99,14 @@ const findFiles = co.wrap(function*(homeDir){
 
     const databases = yield fsp.readdir(homeDir);
     for (const database of databases) {
+        if (database === 'node_modules') continue;
         const databasePath = path.join(homeDir, database);
         const stat = yield fsp.stat(databasePath);
         if (!stat.isDirectory()) continue;
 
         const importNames = yield fsp.readdir(databasePath);
         for (const importName of importNames) {
+            if (importName === 'node_modules') continue;
             const importNamePath = path.join(databasePath, importName);
             const stat = yield fsp.stat(importNamePath);
             if (!stat.isDirectory()) continue;
