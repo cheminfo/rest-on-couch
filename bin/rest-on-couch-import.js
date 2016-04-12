@@ -27,40 +27,6 @@ program
     .option('-c --config <path>', 'Path to custom config file')
     .parse(process.argv);
 
-let prom = Promise.resolve();
-if (program.args[0]) {
-    debug(`file argument: ${program.args[0]}`);
-    // TODO add 2 arguments: db and import names
-    throw new Error('not ready');
-    //const file = path.resolve(program.args[0]);
-    //
-    //prom = prom.then(() => {
-    //    return imp.import(config, file);
-    //});
-} else if (program.watch) {
-    // watch files to import
-    let homeDir = getHomeDir();
-    debug(`watch ${homeDir}`);
-    chokidar.watch(homeDir, {
-        ignored: /[\/\\](\.|processed|errored|node_modules)/,
-        persistent: true
-    }).on('all', function (event, p) {
-        debug.trace(`watch event: ${event} - ${p}`);
-        let file = checkFile(homeDir, p);
-        if (event !== 'add' && event !== 'change' || !file) {
-            return;
-        }
-        processFile(file.database, file.importName, homeDir, p);
-    });
-} else if (program.continuous) {
-    debug('continuous');
-    const waitTime = program.wait * 60;
-    doContinuous(waitTime);
-} else {
-    debug('no watch');
-    prom = prom.then(importAll);
-}
-
 function doContinuous(waitTime) {
     importAll().then(
         () => setTimeout(doContinuous, waitTime),
@@ -78,12 +44,6 @@ const importAll = co.wrap(function*() {
         var file = files[i];
         yield processFile2(file.database, file.importName, homeDir, file.path);
     }
-});
-
-prom.then(function () {
-    debug('finished');
-}, function (err) {
-    die(err.message || err);
 });
 
 const findFiles = co.wrap(function*(homeDir){
@@ -319,3 +279,43 @@ function getMonth() {
     var now = new Date();
     return now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2);
 }
+
+let prom = Promise.resolve();
+if (program.args[0]) {
+    debug(`file argument: ${program.args[0]}`);
+    // TODO add 2 arguments: db and import names
+    throw new Error('not ready');
+    //const file = path.resolve(program.args[0]);
+    //
+    //prom = prom.then(() => {
+    //    return imp.import(config, file);
+    //});
+} else if (program.watch) {
+    // watch files to import
+    let homeDir = getHomeDir();
+    debug(`watch ${homeDir}`);
+    chokidar.watch(homeDir, {
+        ignored: /[\/\\](\.|processed|errored|node_modules)/,
+        persistent: true
+    }).on('all', function (event, p) {
+        debug.trace(`watch event: ${event} - ${p}`);
+        let file = checkFile(homeDir, p);
+        if (event !== 'add' && event !== 'change' || !file) {
+            return;
+        }
+        processFile(file.database, file.importName, homeDir, p);
+    });
+} else if (program.continuous) {
+    debug('continuous');
+    const waitTime = program.wait * 60;
+    doContinuous(waitTime);
+} else {
+    debug('no watch');
+    prom = prom.then(importAll);
+}
+
+prom.then(function () {
+    debug('finished');
+}, function (err) {
+    die(err.message || err);
+});
