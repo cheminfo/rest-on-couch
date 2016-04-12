@@ -19,8 +19,10 @@ const createdDirs = {};
 
 program
     .usage('<file>')
-    .option('-l, --limit <number>', 'Limit of files to import')
+    .option('-l, --limit <number>', 'Limit of files to import', Number)
     .option('-w, --watch', 'Watch files')
+    .option('--continuous', 'Continuous mode. When import is finished, wait for some time and then import again')
+    .option('--wait <time>', 'Wait time in minutes between imports for continuous mode (default: 1)', Number, 1)
     .option('-c --config <path>', 'Path to custom config file')
     .parse(process.argv);
 
@@ -34,27 +36,6 @@ if (program.args[0]) {
     //prom = prom.then(() => {
     //    return imp.import(config, file);
     //});
-} else if (!program.watch) {
-    debug('no watch');
-    // import all
-    let homeDir = getHomeDir();
-
-    prom = prom.then(() => findFiles(homeDir))
-        .then(paths => {
-            const limit = +program.limit || paths.length;
-            debug(`limit is ${limit}`);
-            var i = 0, count = 0;
-            var p = Promise.resolve();
-            while (count < limit && i < paths.length) {
-                let file = checkFile(homeDir, paths[i]);
-                if (file) {
-                    count++;
-                    p = processFile(file.database, file.importName, homeDir, paths[i]);
-                }
-                i++;
-            }
-            return p;
-        });
 } else if (program.watch) {
     // watch files to import
     let homeDir = getHomeDir();
@@ -70,8 +51,40 @@ if (program.args[0]) {
         }
         processFile(file.database, file.importName, homeDir, p);
     });
+} else if (program.continuous) {
+    debug('continuous');
+    const waitTime = program.wait * 60;
+    doContinuous(waitTime);
 } else {
-    die('UNREACHABLE');
+    debug('no watch');
+    prom = prom.then(importAll);
+}
+
+function doContinuous(waitTime) {
+    importAll().then(
+        () => setTimeout(doContinuous, waitTime),
+        err => die(err.message || err)
+    );
+}
+
+function importAll() {
+    const homeDir = getHomeDir();
+    return findFiles(homeDir)
+        .then(paths => {
+            const limit = program.limit || paths.length;
+            debug(`limit is ${limit}`);
+            var i = 0, count = 0;
+            var p = Promise.resolve();
+            while (count < limit && i < paths.length) {
+                let file = checkFile(homeDir, paths[i]);
+                if (file) {
+                    count++;
+                    p = processFile(file.database, file.importName, homeDir, paths[i]);
+                }
+                i++;
+            }
+            return p;
+        });
 }
 
 prom.then(function () {
