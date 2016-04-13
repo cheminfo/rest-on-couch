@@ -186,12 +186,12 @@ class Couch {
         options = options || {};
         debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
         await this._init();
-        const hasRight = await checkRightAnyGroup(this._db, user, 'create');
-        if (!hasRight) {
-            throw new CouchError('user is missing create right', 'unauthorized');
-        }
         const result = await nanoPromise.queryView(this._db, 'entryByOwnerAndId', {key: [user, id], reduce: false, include_docs: true});
         if (result.length === 0) {
+            const hasRight = await checkRightAnyGroup(this._db, user, 'create');
+            if (!hasRight) {
+                throw new CouchError('user is missing create right', 'unauthorized');
+            }
             let newEntry;
             const defaultEntry = this._defaultEntry;
             if (typeof defaultEntry === 'function') {
