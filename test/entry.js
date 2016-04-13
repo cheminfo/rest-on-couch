@@ -42,8 +42,34 @@ describe('entry reads', function () {
     });
 });
 
-describe('entry editions', function () {
+describe('entry creation and editions', function () {
     beforeEach(data);
+
+    it('create a new entry', function() {
+        return couch.createEntry('myid', 'a@a.com', {}).then(entryInfo => {
+            entryInfo.should.have.property('id');
+            entryInfo.should.have.property('rev');
+            return couch.getEntryById('myid', 'a@a.com').then(entry => {
+                entry.should.have.property('$content');
+            });
+        });
+    });
+
+    it('create two entries with same id but different users', function () {
+        return couch.createEntry('myid', 'a@a.com').then(entryInfo => {
+            return couch.createEntry('myid', 'b@b.com').then(entryInfo2 => {
+                entryInfo.id.should.not.equal(entryInfo2.id);
+            });
+        })
+    });
+
+    it('create an entry for which the owner and id already exists', function () {
+        return couch.createEntry('myid', 'a@a.com').then(entryInfo => {
+            return couch.createEntry('myid', 'a@a.com').then(entryInfo2 => {
+                entryInfo.id.should.equal(entryInfo2.id);
+            })
+        })
+    });
 
     it('anonymous cannot insert a new entry', function () {
         return couch.insertEntry(constants.newEntry, 'anonymous').should.be.rejectedWith(/must be an email/);

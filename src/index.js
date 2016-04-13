@@ -190,7 +190,7 @@ class Couch {
         if (!hasRight) {
             throw new CouchError('user is missing create right', 'unauthorized');
         }
-        const result = await nanoPromise.queryView(this._db, 'entryById', {key: id});
+        const result = await nanoPromise.queryView(this._db, 'entryByOwnerAndId', {key: [user, id], reduce: false, include_docs: true});
         if (result.length === 0) {
             let newEntry;
             const defaultEntry = this._defaultEntry;
@@ -218,10 +218,10 @@ class Couch {
         // Return something similar to insertDocument
         return {
             ok: true,
-            id: result[0]._id,
-            rev: result[0]._rev,
-            $modificationDate: result[0].$modificationDate,
-            $creationDate: result[0].$creationDate
+            id: result[0].doc._id,
+            rev: result[0].doc._rev,
+            $modificationDate: result[0].doc.$modificationDate,
+            $creationDate: result[0].doc.$creationDate
         };
     }
 
