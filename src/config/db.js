@@ -44,7 +44,11 @@ function readImportConfig(databasePath, databaseConfig) {
             try {
                 importConfig = require(path.join(importPath, 'import'));
             } catch (e) {
-                debug.trace(e);
+                if (e.code !== 'MODULE_NOT_FOUND') {
+                    debug.trace(e.stack || e);
+                } else {
+                    debug.trace(e);
+                }
                 continue;
             }
             databaseConfig.import[importDir] = Object.assign({}, databaseConfig.import[importDir], importConfig);
