@@ -227,6 +227,7 @@ class Couch {
 
     async queryEntriesByRight(user, view, right, options) {
         debug(`queryEntriesByRights (${user}, ${view}, ${right})`);
+        await this._init();
         options = options || {};
         if (!this._viewsWithOwner.has(view)) {
             throw new CouchError(`${view} is not a view with owner`, 'unauthorized');
