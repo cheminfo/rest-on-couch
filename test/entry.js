@@ -60,15 +60,15 @@ describe('entry creation and editions', function () {
             return couch.createEntry('myid', 'b@b.com').then(entryInfo2 => {
                 entryInfo.id.should.not.equal(entryInfo2.id);
             });
-        })
+        });
     });
 
     it('create an entry for which the owner and id already exists', function () {
         return couch.createEntry('myid', 'a@a.com').then(entryInfo => {
             return couch.createEntry('myid', 'a@a.com').then(entryInfo2 => {
                 entryInfo.id.should.equal(entryInfo2.id);
-            })
-        })
+            });
+        });
     });
 
     it('anonymous cannot insert a new entry', function () {
