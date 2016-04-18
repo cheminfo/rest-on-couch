@@ -201,11 +201,12 @@ class Couch {
             } else {
                 throw new CouchError('unexpected type for default entry');
             }
+            const owners = options.owners || [];
             const entry = await Promise.resolve(newEntry);
             const toInsert = {
                 $id: id,
                 $type: 'entry',
-                $owners: [user],
+                $owners: [user].concat(owners),
                 $content: entry,
                 $kind: options.kind
             };
