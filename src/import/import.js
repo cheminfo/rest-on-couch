@@ -73,8 +73,9 @@ exports.import = function (database, importName, file) {
             let owner = result[1];
             let owners;
             if (Array.isArray(owner)) {
-                owner = owner[0];
-                owners = owner.slice(1);
+                owners = owner;
+                owner = owners[0];
+                owners = owners.slice(1);
             }
             return {id: result[0], owner: owner, owners: owners};
         });
