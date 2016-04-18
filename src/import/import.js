@@ -70,7 +70,13 @@ exports.import = function (database, importName, file) {
         const owner = Promise.resolve(getOwner(filename, contents));
         return Promise.all([id, owner]).then(function (result) {
             debug.trace(`id: ${result[0]}, owner: ${result[1]}`);
-            return {id: result[0], owner: result[1]};
+            let owner = result[1];
+            let owners;
+            if (Array.isArray(owner)) {
+                owner = owner[0];
+                owners = owner.slice(1);
+            }
+            return {id: result[0], owner: owner, owners: owners};
         });
     }
 
@@ -121,7 +127,8 @@ exports.import = function (database, importName, file) {
         debug.trace('checkDocumentExists');
         return couch.createEntry(info.id, info.owner, {
             createParameters: [filename, contents],
-            kind: info.kind
+            kind: info.kind,
+            owners: info.owners
         }).then(docInfo => {
             return {
                 info,
