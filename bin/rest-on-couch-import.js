@@ -280,7 +280,7 @@ function createDir(dir) {
 
 function getDatePath() {
     var now = new Date();
-    return now.getUTCFullYear() + ('0' + (now.getUTCMonth() + 1)).slice(-2) + ('0' + now.getUTCDate()).slice(-2);
+    return now.getUTCFullYear() + '/' + ('0' + (now.getUTCMonth() + 1)).slice(-2) + '/' + ('0' + now.getUTCDate()).slice(-2);
 }
 
 if (program.args[0]) {
