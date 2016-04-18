@@ -156,7 +156,7 @@ function processFile(database, importName, homeDir, p) {
     }).then(() => {
         // mv to processed
         return new Promise(function (resolve, reject) {
-            let dir = path.join(parsedPath.dir, '../processed/' + getMonth());
+            let dir = path.join(parsedPath.dir, '../processed/' + getDatePath());
             createDir(dir);
             tryRename(p, path.join(dir, parsedPath.base), resolve, reject);
         });
@@ -168,7 +168,7 @@ function processFile(database, importName, homeDir, p) {
                 return resolve();
             }
             debug.error(e + '\n' + e.stack);
-            let dir = path.join(parsedPath.dir, '../errored/' + getMonth());
+            let dir = path.join(parsedPath.dir, '../errored/' + getDatePath());
             createDir(dir);
             tryRename(p, path.join(dir, parsedPath.base), resolve, reject);
         });
@@ -207,7 +207,7 @@ function* moveFile(filePath, fileName, splitParsedPath, to_process, dest) {
     if (splitParsedPath.length - to_process > 1) {
         subdir = splitParsedPath.slice(to_process + 1).join('/');
     } else {
-        subdir = getMonth();
+        subdir = getDatePath();
     }
     const destination = path.join(base, dest, subdir, fileName);
     yield tryMove(filePath, destination);
@@ -278,9 +278,9 @@ function createDir(dir) {
     createdDirs[dir] = true;
 }
 
-function getMonth() {
+function getDatePath() {
     var now = new Date();
-    return now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2);
+    return now.getUTCFullYear() + ('0' + (now.getUTCMonth() + 1)).slice(-2) + ('0' + now.getUTCDate()).slice(-2);
 }
 
 if (program.args[0]) {
