@@ -14,7 +14,7 @@ exports.init = function (passport, router) {
             passwordField: 'password'
         },
         function (username, password, done) {
-            co(function *() {
+            co(function*() {
                 if (!isEmail(username)) {
                     return done(null, false, 'username must be an email');
                 }

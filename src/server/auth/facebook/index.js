@@ -47,14 +47,14 @@ exports.init = function (passport, router, config) {
         }
     ));
 
-    router.get(config.loginURL, function *(next) {
+    router.get(config.loginURL, function*(next) {
         this.session.redirect = config.successRedirect + '?' + this.request.querystring;
         yield next;
     }, passport.authenticate('facebook', {scope: ['email']}));
 
     router.get(config.callbackURL,
         passport.authenticate('facebook', {failureRedirect: config.failureRedirect}),
-        function *() {
+        function*() {
             // Successful authentication, redirect home.
             if (this.session.redirect) {
                 this.response.redirect(this.session.redirect);

@@ -37,7 +37,7 @@ function doContinuous(waitTime) {
     );
 }
 
-const importAll = co.wrap(function *() {
+const importAll = co.wrap(function*() {
     const homeDir = getHomeDir();
     const files = yield findFiles(homeDir);
     const limit = program.limit || files.length;
@@ -49,7 +49,7 @@ const importAll = co.wrap(function *() {
     }
 });
 
-const findFiles = co.wrap(function *(homeDir){
+const findFiles = co.wrap(function*(homeDir){
     let files = [];
 
     const databases = yield fsp.readdir(homeDir);
@@ -177,7 +177,7 @@ function processFile(database, importName, homeDir, p) {
     return processChain;
 }
 
-function *processFile2(database, importName, filePath) {
+function* processFile2(database, importName, filePath) {
     debug.trace(`process file ${filePath}`);
     const parsedPath = path.parse(filePath);
     const splitParsedPath = parsedPath.dir.split('/');
@@ -201,7 +201,7 @@ function *processFile2(database, importName, filePath) {
     }
 }
 
-function *moveFile(filePath, fileName, splitParsedPath, to_process, dest) {
+function* moveFile(filePath, fileName, splitParsedPath, to_process, dest) {
     const base = splitParsedPath.slice(0, to_process).join('/');
     let subdir;
     if (splitParsedPath.length - to_process > 1) {
@@ -213,7 +213,7 @@ function *moveFile(filePath, fileName, splitParsedPath, to_process, dest) {
     yield tryMove(filePath, destination);
 }
 
-function *tryMove(from, to, suffix) {
+function* tryMove(from, to, suffix) {
     if (suffix > 1000) {
         throw new Error('tryMove: too many retries');
     }

@@ -83,7 +83,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(function *(next) {
+app.use(function*(next) {
     this.state.pathPrefix = proxyPrefix;
     this.state.urlPrefix = this.origin + proxyPrefix;
     yield next;
