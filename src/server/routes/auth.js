@@ -39,7 +39,7 @@ if (config.auth) {
     }
 }
 
-router.get('/login', function*() {
+router.get('/login', function *() {
     this.session.continue = this.query.continue || this.session.continue;
     if (this.isAuthenticated()) {
         this.redirect(this.session.continue || '/');
@@ -50,12 +50,12 @@ router.get('/login', function*() {
     }
 });
 
-router.get('/logout', function*(){
+router.get('/logout', function *(){
     this.logout();
     this.redirect('/auth/login');
 });
 
-router.get('/session', function*(){
+router.get('/session', function *(){
     var that = this;
     // Check if session exists
     var email = yield getUserEmail(that);

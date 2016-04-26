@@ -55,7 +55,7 @@ exports.init = function (passport, router, config) {
         },
         function (accessToken, refreshToken, profile, done) {
             // Get the user's email
-            co(function*() {
+            co(function *() {
                 var res = yield request({
                     url: 'https://api.github.com/user/emails?access_token=' + accessToken,
                     headers: {
@@ -77,14 +77,14 @@ exports.init = function (passport, router, config) {
         }
     ));
 
-    router.get(config.loginURL, function*(next) {
+    router.get(config.loginURL, function *(next) {
         this.session.redirect = config.successRedirect + '?' + this.request.querystring;
         yield next;
     }, passport.authenticate('github', {scope: ['user:email']}));
 
     router.get(config.callbackURL,
         passport.authenticate('github', {failureRedirect: config.failureRedirect}),
-        function*() {
+        function *() {
             // Successful authentication, redirect home.
             if (this.session.redirect) {
                 this.response.redirect(this.session.redirect);

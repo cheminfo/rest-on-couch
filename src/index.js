@@ -798,7 +798,7 @@ function onNotFound(ctx, entry, user, options) {
     };
 }
 
-async function checkSecurity(db, admin) {
+async functioncheckSecurity(db, admin) {
     debug.trace('check security');
     const security = await nanoPromise.getDocument(db, '_security');
     if (!security.admins || security.admins.names.indexOf(admin) === -1) {
@@ -806,7 +806,7 @@ async function checkSecurity(db, admin) {
     }
 }
 
-async function checkDesignDoc(db, custom) {
+async functioncheckDesignDoc(db, custom) {
     debug.trace('check design doc');
     const doc = await nanoPromise.getDocument(db, constants.DESIGN_DOC_ID);
     if (doc === null) {
@@ -822,7 +822,7 @@ async function checkDesignDoc(db, custom) {
     }
 }
 
-async function createDesignDoc(db, revID, custom) {
+async functioncreateDesignDoc(db, revID, custom) {
     debug.trace('create design doc');
     const designDoc = getDesignDoc(custom);
     if (revID) {
@@ -831,7 +831,7 @@ async function createDesignDoc(db, revID, custom) {
     return await nanoPromise.insertDocument(db, designDoc);
 }
 
-async function getOwnersById(db, id) {
+async functiongetOwnersById(db, id) {
     return await nanoPromise.queryView(db, 'ownersById', {key: id});
 }
 
@@ -909,7 +909,7 @@ function validateRights(db, owners, user, rights) {
     //return Promise.all(checks).then(result => result.some(value => value === true));
 }
 
-async function getGroup(db, name) {
+async functiongetGroup(db, name) {
     debug.trace('get group');
     const groups = await nanoPromise.queryView(db, 'groupByName', {key: name, reduce: false, include_docs: true});
     if (!groups || groups.length === 0) {
@@ -923,7 +923,7 @@ async function getGroup(db, name) {
     return groups[0].doc;
 }
 
-async function createNew(ctx, entry, user) {
+async functioncreateNew(ctx, entry, user) {
     debug.trace('create new');
     const ok = await checkGlobalRight(ctx._db, user, 'create');
     if (ok) {
@@ -953,7 +953,7 @@ function addGroups(ctx, user, groups) {
 }
 
 
-async function checkRightsDoc(db, rights) {
+async functioncheckRightsDoc(db, rights) {
     debug.trace('check rights doc');
     const doc = await nanoPromise.getDocument(db, constants.RIGHTS_DOC_ID);
     if (doc === null) {
@@ -962,11 +962,11 @@ async function checkRightsDoc(db, rights) {
     }
 }
 
-async function createRightsDoc(db, rightsDoc) {
+async functioncreateRightsDoc(db, rightsDoc) {
     return await nanoPromise.insertDocument(db, rightsDoc);
 }
 
-async function checkDefaultGroupsDoc(db) {
+async functioncheckDefaultGroupsDoc(db) {
     debug.trace('check defaultGroups doc');
     const doc = await nanoPromise.getDocument(db, constants.DEFAULT_GROUPS_DOC_ID);
     if (doc === null) {
@@ -980,7 +980,7 @@ async function checkDefaultGroupsDoc(db) {
     }
 }
 
-async function checkGlobalRight(db, user, right) {
+async functioncheckGlobalRight(db, user, right) {
     debug.trace(`checkGlobalRight (${user}, ${right})`);
     const result = await nanoPromise.queryView(db, 'globalRight', {key: right}, {onlyValue: true});
     for (var i = 0; i < result.length; i++) {
@@ -993,7 +993,7 @@ async function checkGlobalRight(db, user, right) {
     return false;
 }
 
-async function checkRightAnyGroup(db, user, right) {
+async functioncheckRightAnyGroup(db, user, right) {
     debug.trace(`checkRightAnyGroup (${user}, ${right}`);
     const hasGlobal = await checkGlobalRight(db, user, right);
     if (hasGlobal) return true;
@@ -1009,7 +1009,7 @@ async function checkRightAnyGroup(db, user, right) {
     return result.length > 0;
 }
 
-async function getDefaultGroups(db, user, listOnly) {
+async functiongetDefaultGroups(db, user, listOnly) {
     debug.trace('getDefaultGroups');
     const defaultGroups = await nanoPromise.getDocument(db, constants.DEFAULT_GROUPS_DOC_ID);
     const toGet = new Set();
@@ -1033,14 +1033,14 @@ function getDefaultEntry() {
     return {};
 }
 
-async function getUser(db, user) {
+async functiongetUser(db, user) {
     const rows = await nanoPromise.queryView(db, 'user', {key: user, include_docs: true});
     if (!rows.length) throw new CouchError('User not found', 'not found');
     if (rows.length > 1) throw new CouchError('Unexepected: more than 1 user profile', 'unreachable');
     return rows[0].doc;
 }
 
-async function saveEntry(db, entry, user) {
+async functionsaveEntry(db, entry, user) {
     if (entry.$id === undefined) {
         entry.$id = null;
     }

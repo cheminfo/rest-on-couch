@@ -11,7 +11,7 @@ const views = require('../../design/views');
 
 const couchNeedsParse = ['key', 'startkey', 'endkey'];
 
-exports.setupCouch = function*(next) {
+exports.setupCouch = function *(next) {
     const dbname = this.params.dbname;
     this.state.dbName = dbname;
     this.state.userEmail = yield auth.getUserEmail(this);
@@ -20,7 +20,7 @@ exports.setupCouch = function*(next) {
     yield next;
 };
 
-exports.getDocumentByUuid = function*() {
+exports.getDocumentByUuid = function *() {
     try {
         const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail);
         this.status = 200;
@@ -30,7 +30,7 @@ exports.getDocumentByUuid = function*() {
     }
 };
 
-exports.updateEntry = function * () {
+exports.updateEntry = function *() {
     const body = this.request.body;
     if (body) body._id = this.params.uuid;
     try {
@@ -43,7 +43,7 @@ exports.updateEntry = function * () {
     }
 };
 
-exports.deleteEntry = function*() {
+exports.deleteEntry = function *() {
     try {
         yield this.state.couch.deleteEntryByUuid(this.params.uuid, this.state.userEmail);
         this.body = {
@@ -54,10 +54,10 @@ exports.deleteEntry = function*() {
     }
 };
 
-exports.newOrUpdateEntry = function * () {
+exports.newOrUpdateEntry = function *() {
     try {
         const options = {};
-        if(this.request.body.$owners) {
+        if (this.request.body.$owners) {
             options.groups = this.request.body.$owners;
         }
         const result = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail, options);
@@ -73,7 +73,7 @@ exports.newOrUpdateEntry = function * () {
     }
 };
 
-exports.saveAttachment = function * () {
+exports.saveAttachment = function *() {
     try {
         this.body = yield this.state.couch.addAttachmentByUuid(this.params.uuid, this.state.userEmail, {
             name: this.params.attachment,
@@ -86,7 +86,7 @@ exports.saveAttachment = function * () {
     }
 };
 
-exports.getAttachmentById = function*() {
+exports.getAttachmentById = function *() {
     try {
         const stream = yield this.state.couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, this.state.userEmail, true);
         this.status = 200;
@@ -96,7 +96,7 @@ exports.getAttachmentById = function*() {
     }
 };
 
-exports.getAttachmentByUuid = function*() {
+exports.getAttachmentByUuid = function *() {
     try {
         const stream = yield this.state.couch.getAttachmentByUuidAndName(this.params.uuid, this.params.attachment, this.state.userEmail, true);
         this.status = 200;
@@ -106,7 +106,7 @@ exports.getAttachmentByUuid = function*() {
     }
 };
 
-exports.allEntries = function*() {
+exports.allEntries = function *() {
     try {
         const right = this.query.right || 'read';
         const entries = yield this.state.couch.getEntriesByUserAndRights(this.state.userEmail, right, this.query);
@@ -117,7 +117,7 @@ exports.allEntries = function*() {
     }
 };
 
-exports.queryEntriesByUser = function*() {
+exports.queryEntriesByUser = function *() {
     try {
         this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, this.params.view, this.query);
         this.status = 200;
@@ -126,7 +126,7 @@ exports.queryEntriesByUser = function*() {
     }
 };
 
-exports.queryEntriesByRight = function*() {
+exports.queryEntriesByRight = function *() {
     try {
         this.body = yield this.state.couch.queryEntriesByRight(this.state.userEmail, this.params.view, this.query.right, this.query);
         this.status = 200;
@@ -135,7 +135,7 @@ exports.queryEntriesByRight = function*() {
     }
 };
 
-exports.entriesByKindAndId = function * () {
+exports.entriesByKindAndId = function *() {
     try {
         for (let i=0; i<couchNeedsParse.length; i++) {
             let queryParam = this.query[couchNeedsParse[i]];
@@ -153,7 +153,7 @@ exports.entriesByKindAndId = function * () {
 };
 
 
-exports.entriesByOwnerAndId = function * () {
+exports.entriesByOwnerAndId = function *() {
     try {
         for (let i=0; i<couchNeedsParse.length; i++) {
             let queryParam = this.query[couchNeedsParse[i]];
@@ -169,7 +169,7 @@ exports.entriesByOwnerAndId = function * () {
     }
 };
 
-exports.getUser = function * () {
+exports.getUser = function *() {
     try {
         this.body = yield this.state.couch.getUser(this.state.userEmail);
         this.status = 200;
@@ -178,7 +178,7 @@ exports.getUser = function * () {
     }
 };
 
-exports.editUser = function * () {
+exports.editUser = function *() {
     try {
         this.body = yield this.state.couch.editUser(this.state.userEmail, this.request.body);
     } catch (e) {
@@ -186,7 +186,7 @@ exports.editUser = function * () {
     }
 };
 
-exports.getOwnersByUuid = function*() {
+exports.getOwnersByUuid = function *() {
     try {
         const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail);
         this.body = doc.$owners;
@@ -195,7 +195,7 @@ exports.getOwnersByUuid = function*() {
     }
 };
 
-exports.addOwnerByUuid = function*() {
+exports.addOwnerByUuid = function *() {
     try {
         yield this.state.couch.addGroupToEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
         this.body = 'ok';
@@ -204,7 +204,7 @@ exports.addOwnerByUuid = function*() {
     }
 };
 
-exports.removeOwnerByUuid = function*() {
+exports.removeOwnerByUuid = function *() {
     try {
         yield this.state.couch.removeGroupFromEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
         this.body = 'ok';
@@ -213,7 +213,7 @@ exports.removeOwnerByUuid = function*() {
     }
 };
 
-exports.getGroup = function*() {
+exports.getGroup = function *() {
     try {
         this.body = yield this.state.couch.getGroup(this.params.name, this.state.userEmail);
     } catch (e) {

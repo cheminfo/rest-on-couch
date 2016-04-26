@@ -8,7 +8,7 @@ exports.parseBody = function (options) {
 };
 
 exports.parseRawBody = function (options) {
-    return function*(next) {
+    return function *(next) {
         this.request.body = yield rawBody(this.req, options);
         yield next;
     };
