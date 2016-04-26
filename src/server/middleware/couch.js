@@ -56,7 +56,11 @@ exports.deleteEntry = function*() {
 
 exports.newOrUpdateEntry = function * () {
     try {
-        const result = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail);
+        const options = {};
+        if(this.request.body.$owners) {
+            options.groups = this.request.body.$owners;
+        }
+        const result = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail, options);
         this.body = result.info;
         if (result.action === 'created') {
             this.status = 201;
