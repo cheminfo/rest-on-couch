@@ -57,7 +57,7 @@ exports.deleteEntry = function*() {
 exports.newOrUpdateEntry = function * () {
     try {
         const options = {};
-        if(this.request.body.$owners) {
+        if (this.request.body.$owners) {
             options.groups = this.request.body.$owners;
         }
         const result = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail, options);
