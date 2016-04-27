@@ -22,11 +22,34 @@ function *getHomeDir(next) {
 }
 
 router.post('/upload/:database/:kind/:filename', getHomeDir, function*() {
-    const dir = path.join(this.state.homeDir, this.params.database, this.params.kind);
+    const dir = path.join(this.state.homeDir, this.params.database, this.params.kind, 'to_process');
+    const uploadDir = fs.mkdtempSync('upload');
+    const uploadPath = path.join(uploadDir, this.params.filename);
     const file = path.join(dir, this.params.filename);
-    fs.mkdirpSync(dir);
-    var write = fs.createWriteStream(file);
-    this.req.pipe(write);
+    var write = fs.createWriteStream(uploadPath);
+
+    try {
+        yield new Promise((resolve, reject) => {
+            write.on('finish', () => {
+                try {
+                    fs.mkdirpSync(dir);
+                } catch(e) {}
+                fs.renameSync(uploadPath, file);
+                resolve();
+            });
+
+            write.on('error', () => {
+                reject();
+            });
+
+            this.req.pipe(write);
+        });
+        this.body = 'ok';
+        this.status = 200;
+    } catch(e) {
+        this.body = 'error';
+        this.status = 500;
+    }
 });
 
 
