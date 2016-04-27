@@ -221,6 +221,33 @@ exports.getGroup = function*() {
     }
 };
 
+/* todo implement it
+exports.createOrUpdateGroup = function *() {
+    try {
+        const group = yield this.state.couch.getGroup(this.params.name, this.state.userEmail);
+
+    } catch (e) {
+        if (e.reason === 'not found') {
+            try {
+                yield this.state.couch.createGroup(this.params.name, this.state.userEmail, this.body.rights);
+            } catch (e) {
+                onGetError(this, e);
+            }
+        } else {
+            onGetError(this, e);
+        }
+    }
+};*/
+
+
+exports.deleteGroup = function *() {
+    try {
+        yield this.state.couch.deleteGroup(this.params.name, this.state.userEmail);
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
 function onGetError(ctx, e, secure) {
     switch (e.reason) {
         case 'unauthorized':
