@@ -33,7 +33,9 @@ router.post('/upload/:database/:kind/:filename', getHomeDir, function*() {
             write.on('finish', () => {
                 try {
                     fs.mkdirpSync(dir);
-                } catch(e) {}
+                } catch (e) {
+                    debug.trace('dir already exists');
+                }
                 fs.renameSync(uploadPath, file);
                 resolve();
             });
@@ -46,7 +48,7 @@ router.post('/upload/:database/:kind/:filename', getHomeDir, function*() {
         });
         this.body = 'ok';
         this.status = 200;
-    } catch(e) {
+    } catch (e) {
         this.body = 'error';
         this.status = 500;
     }
