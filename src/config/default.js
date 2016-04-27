@@ -9,6 +9,7 @@ module.exports = {
 
     // Server options
     port: 3000,
+    fileDropPort: 3001,
     auth: {
         couchdb: {}
     },
