@@ -1,12 +1,8 @@
 'use strict';
 
 const app = require('koa')();
-const compress = require('koa-compress');
-const cors = require('kcors');
 const http = require('http');
-const passport = require('koa-passport');
 const path = require('path');
-const serve = require('koa-serve');
 const home = require('../lib/config/home');
 
 const config = require('../src/config/config').globalConfig;
@@ -26,7 +22,6 @@ function *getHomeDir(next) {
 }
 
 router.post('/upload/:database/:kind/:filename', getHomeDir, function*() {
-    console.log(this.state.homeDir);
     const dir = path.join(this.state.homeDir, this.params.database, this.params.kind);
     const file = path.join(dir, this.params.filename);
     fs.mkdirpSync(dir);
@@ -45,7 +40,6 @@ app.on('error', printError);
 
 //Unhandled errors
 if (config.debugrest) {
-    console.log('debugrest');
     // In debug mode, show unhandled errors to the user
     app.use(function *(next) {
         try {
