@@ -66,8 +66,8 @@ exports.import = function (database, importName, file) {
 
     function getMetadata() {
         debug.trace('get metadata');
-        const id = Promise.resolve(getID(filename, contents));
-        const owner = Promise.resolve(getOwner(filename, contents));
+        const id = Promise.resolve(getID(filename, contents, couch));
+        const owner = Promise.resolve(getOwner(filename, contents, couch));
         return Promise.all([id, owner]).then(function (result) {
             debug.trace(`id: ${result[0]}, owner: ${result[1]}`);
             let owner = result[1];
@@ -88,7 +88,7 @@ exports.import = function (database, importName, file) {
             info.kind = config.kind;
             return info;
         }
-        return Promise.resolve(config.kind(filename, contents)).then(function (kind) {
+        return Promise.resolve(config.kind(filename, contents, couch)).then(function (kind) {
             info.kind = kind;
             return info;
         });
@@ -97,7 +97,7 @@ exports.import = function (database, importName, file) {
     function parseFile(info) {
         debug.trace('parse file contents');
         if (parse) {
-            return Promise.resolve(parse(filename, contents)).then(function (result) {
+            return Promise.resolve(parse(filename, contents, couch)).then(function (result) {
                 if (typeof result.jpath !== 'string') {
                     throw new Error('parse: jpath must be a string');
                 }
@@ -117,7 +117,7 @@ exports.import = function (database, importName, file) {
                 return info;
             });
         } else if (json) {
-            return Promise.resolve(json(filename, contents)).then(function (result) {
+            return Promise.resolve(json(filename, contents, couch)).then(function (result) {
                 info.data = result;
                 return info;
             });
