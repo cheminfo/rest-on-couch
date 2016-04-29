@@ -10,6 +10,8 @@ const debug = require('../src/util/debug')('server');
 const router = require('koa-router')();
 const fs = require('fs-extra');
 
+app.proxy = config.fileDropProxy;
+
 function *getHomeDir(next) {
     let homeDir = home.homeDir;
     if (!homeDir) {
@@ -20,6 +22,11 @@ function *getHomeDir(next) {
     this.state.homeDir = homeDir;
     yield next;
 }
+
+router.get('/', function * () {
+    this.body = 'hello world';
+    this.status = 200;
+});
 
 router.post('/upload/:database/:kind/:filename', getHomeDir, function*() {
     const dir = path.join(this.state.homeDir, this.params.database, this.params.kind, 'to_process');
