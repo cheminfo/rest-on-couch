@@ -241,7 +241,7 @@ class Couch {
             // When there is a global right, we cannot use queries because the first element of the
             // key will match all documents
             const result = await nanoPromise.queryView(this._db, view, {reduce: false});
-            return _.uniqBy(result, 'id').map(x => x.value);
+            return _.uniqBy(result, 'id');
         }
 
         const userGroups = await this.getGroupsByRight(user, right);
@@ -254,13 +254,14 @@ class Couch {
             const endkey = [group].concat(userEndKey);
             endkey.push({});
             const result = await nanoPromise.queryView(this._db, view, {
+                include_docs: options.include_docs,
                 startkey,
                 endkey,
                 reduce: false
             });
             for (const el of result) {
                 if (!data.has(el.id)) {
-                    data.set(el.id, el.value);
+                    data.set(el.id, el);
                 }
             }
         }

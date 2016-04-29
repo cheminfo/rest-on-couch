@@ -42,6 +42,7 @@ describe('Query view with owner (global right)', function () {
     it('should return all docs with global right', function () {
         return couch.queryEntriesByRight('a@a.com', 'entryIdByRight')
             .then(res => {
+                res = res.map(x => x.value);
                 res.sort().should.eql(['A', 'B', 'C', 'anonymousEntry', 'entryWithAttachment']);
             });
     });
@@ -52,6 +53,7 @@ describe('Query view with owner (group right)', function () {
     it('should return authorized docs for user', function () {
         return couch.queryEntriesByRight('a@a.com', 'entryIdByRight')
             .then(res => {
+                res = res.map(x => x.value);
                 res.sort().should.eql([
                     'A',
                     'entryWithDefaultAnonymousRead',
@@ -64,6 +66,7 @@ describe('Query view with owner (group right)', function () {
     it('should return authorized docs for anonymous', function () {
         return couch.queryEntriesByRight('anonymous', 'entryIdByRight')
             .then(res => {
+                res = res.map(x => x.value);
                 res.sort().should.eql([
                     'entryWithDefaultAnonymousRead',
                     'entryWithDefaultMultiRead'
