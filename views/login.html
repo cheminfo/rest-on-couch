@@ -23,5 +23,18 @@
             </form>
         </p>
     {% endif %}
+
+    {% if "couchdb" in enabledAuthPlugins %}
+        <h3>CouchDB login</h3>
+        <p>
+        <form method="post" action="login/couchdb">
+            <label for="couchdb-username">Username</label>
+            <input id="couchdb-username" type="text" name="username" /><br>
+            <label for="couchdb-password">Password</label>
+            <input id="couchdb-password" type="password" name="password" /><br>
+            <input type="submit" value="Connect" />
+        </form>
+        </p>
+    {% endif %}
 </body>
 </html>
