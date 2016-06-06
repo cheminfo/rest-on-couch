@@ -151,7 +151,7 @@ exports.getAttachment = function (db, doc, name, asStream, options) {
     return new Promise((resolve, reject) => {
         debug.trace(`get attachment ${doc}/${name}`);
         if (asStream) {
-            const stream = db.attachment.get(doc, name);
+            const stream = db.attachment.get(doc, name, options);
             resolve(stream);
         } else {
             db.attachment.get(doc, name, options, function (err, body) {
