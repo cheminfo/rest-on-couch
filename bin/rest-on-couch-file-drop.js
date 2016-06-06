@@ -30,7 +30,7 @@ router.get('/', function * () {
 
 router.post('/upload/:database/:kind/:filename', getHomeDir, function*() {
     const dir = path.join(this.state.homeDir, this.params.database, this.params.kind, 'to_process');
-    const uploadDir = fs.mkdtempSync('upload');
+    const uploadDir = fs.mkdtempSync('/tmp/roc-upload-');
     const uploadPath = path.join(uploadDir, this.params.filename);
     const file = path.join(dir, this.params.filename);
     var write = fs.createWriteStream(uploadPath);
@@ -44,11 +44,13 @@ router.post('/upload/:database/:kind/:filename', getHomeDir, function*() {
                     debug.trace('dir already exists');
                 }
                 fs.renameSync(uploadPath, file);
+                fs.rmdirSync(uploadDir);
                 resolve();
             });
 
             write.on('error', () => {
                 reject();
+                fs.rmdirSync(uploadDir);
             });
 
             this.req.pipe(write);
