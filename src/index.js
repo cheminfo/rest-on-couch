@@ -25,6 +25,8 @@ const defaultRights = {
     read: ['anonymous']
 };
 
+const allowedFirstLevelKeys = new Set(['$deleted']);
+
 class Couch {
     constructor(options) {
         let database;
@@ -771,6 +773,11 @@ function updateEntry(ctx, oldDoc, newDoc, user, options) {
     }
     if (newDoc._attachments) {
         oldDoc._attachments = newDoc._attachments;
+    }
+    for (let key in newDoc) {
+        if (allowedFirstLevelKeys.has(key)) {
+            oldDoc[key] = newDoc[key];
+        }
     }
     // Doc validation will fail $kind changed
     oldDoc.$kind = newDoc.$kind;
