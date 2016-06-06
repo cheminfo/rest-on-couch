@@ -338,7 +338,7 @@ class Couch {
         return await Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
     }
 
-    async getEntryByIdAndRights(id, user, rights) {
+    async getEntryByIdAndRights(id, user, rights, options) {
         debug(`getEntryByIdAndRights (${id}, ${user}, ${rights})`);
         await this._init();
 
@@ -355,14 +355,14 @@ class Couch {
         const ok = await validateRights(this._db, hisEntry.value, user, rights);
         if (ok[0]) {
             debug.trace(`user ${user} has access`);
-            return await nanoPromise.getDocument(this._db, hisEntry.id);
+            return await nanoPromise.getDocument(this._db, hisEntry.id, options);
         }
 
         debug.trace(`user ${user} has no ${rights} access`);
         throw new CouchError('user has no access', 'unauthorized');
     }
 
-    async getEntryByUuidAndRights(uuid, user, rights) {
+    async getEntryByUuidAndRights(uuid, user, rights, options) {
         debug(`getEntryByUuidAndRights (${uuid}, ${user}, ${rights})`);
         await this._init();
 
@@ -380,19 +380,23 @@ class Couch {
         const ok = await validateRights(this._db, doc.$owners, user, rights);
         if (ok[0]) {
             debug.trace(`user ${user} has access`);
-            return doc;
+            if (!options) {
+                return doc;
+            } else {
+                return await nanoPromise.getDocument(this._db, uuid, options);
+            }
         }
 
         debug.trace(`user ${user} has no ${rights} access`);
         throw new CouchError('user has no access', 'unauthorized');
     }
 
-    getEntryByUuid(uuid, user) {
-        return this.getEntryByUuidAndRights(uuid, user, 'read');
+    getEntryByUuid(uuid, user, options) {
+        return this.getEntryByUuidAndRights(uuid, user, 'read', options);
     }
 
-    getEntryById(id, user) {
-        return this.getEntryByIdAndRights(id, user, 'read');
+    getEntryById(id, user, options) {
+        return this.getEntryByIdAndRights(id, user, 'read', options);
     }
 
     async _doUpdateOnEntry(id, user, update, updateBody) {
@@ -434,15 +438,15 @@ class Couch {
         return await nanoPromise.attachFiles(this._db, entry, attachments);
     }
 
-    getAttachmentByIdAndName(id, name, user, asStream) {
+    getAttachmentByIdAndName(id, name, user, asStream, options) {
         debug(`getAttachmentByIdAndName (${id}, ${name}, ${user})`);
-        return this.getEntryById(id, user)
+        return this.getEntryById(id, user, options)
             .then(getAttachmentFromEntry(this, name, asStream));
     }
 
-    getAttachmentByUuidAndName(uuid, name, user, asStream) {
+    getAttachmentByUuidAndName(uuid, name, user, asStream, options) {
         debug(`getAttachmentByUuidAndName (${uuid}, ${name}, ${user})`);
-        return this.getEntryByUuid(uuid, user)
+        return this.getEntryByUuid(uuid, user, options)
             .then(getAttachmentFromEntry(this, name, asStream));
     }
 
@@ -1071,7 +1075,7 @@ async function saveEntry(db, entry, user) {
 function getAttachmentFromEntry(ctx, name, asStream) {
     return async function(entry) {
         if (entry._attachments && entry._attachments[name]) {
-            return await nanoPromise.getAttachment(ctx._db, entry._id, name, asStream);
+            return await nanoPromise.getAttachment(ctx._db, entry._id, name, asStream, {rev: entry._rev});
         } else {
             throw new CouchError(`attachment ${name} not found`, 'not found');
         }

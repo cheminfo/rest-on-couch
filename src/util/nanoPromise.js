@@ -52,10 +52,10 @@ exports.createDatabase = function (nano, database) {
     });
 };
 
-exports.getDocument = function (db, docID) {
+exports.getDocument = function (db, docID, options) {
     return new Promise((resolve, reject) => {
         debug.trace(`getDocument ${docID}`);
-        db.get(docID, function (err, result) {
+        db.get(docID, options, function (err, result) {
             if (err) {
                 if (err.statusCode === 404 && (err.reason === 'missing' || err.reason === 'deleted')) {
                     debug.trace('document missing');
@@ -147,14 +147,14 @@ exports.attachFiles = function (db, doc, files) {
     });
 };
 
-exports.getAttachment = function (db, doc, name, asStream) {
+exports.getAttachment = function (db, doc, name, asStream, options) {
     return new Promise((resolve, reject) => {
         debug.trace(`get attachment ${doc}/${name}`);
         if (asStream) {
             const stream = db.attachment.get(doc, name);
             resolve(stream);
         } else {
-            db.attachment.get(doc, name, function (err, body) {
+            db.attachment.get(doc, name, options, function (err, body) {
                 if (err) return reject(err);
                 resolve(body);
             });
