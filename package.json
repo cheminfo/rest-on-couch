@@ -43,13 +43,13 @@
     "commander": "^2.9.0",
     "debug": "^2.2.0",
     "escape-string-regexp": "^1.0.4",
-    "fs-extra": "^0.26.3",
+    "fs-extra": "^0.30.0",
     "kcors": "^1.0.1",
     "koa": "^1.1.2",
     "koa-body": "^1.4.0",
     "koa-compress": "^1.0.9",
     "koa-passport": "^1.2.0",
-    "koa-proxy": "^0.5.0",
+    "koa-proxy": "^0.6.0",
     "koa-response-time": "^1.0.2",
     "koa-router": "^5.3.0",
     "koa-serve": "^0.1.7",
@@ -66,7 +66,7 @@
     "passport-ldapauth": "^0.5.0",
     "passport-local": "^1.0.0",
     "raw-body": "^2.1.5",
-    "superagent": "^1.8.3",
+    "superagent": "^2.0.0",
     "superagent-promise": "^1.1.0",
     "thenify-all": "^1.6.0"
   },
@@ -79,7 +79,7 @@
     "istanbul": "^0.4.3",
     "mocha": "^2.3.4",
     "mocha-better-spec-reporter": "^3.0.2",
-    "should": "^8.3.0",
+    "should": "^9.0.0",
     "supertest": "^1.1.0",
     "supertest-as-promised": "^3.1.0"
   }
