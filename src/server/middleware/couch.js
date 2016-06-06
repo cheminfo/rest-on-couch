@@ -22,7 +22,7 @@ exports.setupCouch = function*(next) {
 
 exports.getDocumentByUuid = function*() {
     try {
-        const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail);
+        const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail, this.query);
         this.status = 200;
         this.body = doc;
     } catch (e) {
@@ -88,7 +88,7 @@ exports.saveAttachment = function * () {
 
 exports.getAttachmentById = function*() {
     try {
-        const stream = yield this.state.couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, this.state.userEmail, true);
+        const stream = yield this.state.couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, this.state.userEmail, true, this.query);
         this.status = 200;
         this.body = stream;
     } catch (e) {
@@ -98,7 +98,7 @@ exports.getAttachmentById = function*() {
 
 exports.getAttachmentByUuid = function*() {
     try {
-        const stream = yield this.state.couch.getAttachmentByUuidAndName(this.params.uuid, this.params.attachment, this.state.userEmail, true);
+        const stream = yield this.state.couch.getAttachmentByUuidAndName(this.params.uuid, this.params.attachment, this.state.userEmail, true, this.query);
         this.status = 200;
         this.body = stream;
     } catch (e) {
