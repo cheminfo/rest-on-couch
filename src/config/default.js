@@ -16,6 +16,7 @@ module.exports = {
     authServers: [],
     proxy: true,
     proxyPrefix: '/',
+    keys: ['some secret'],
     allowedOrigins: [],
     debugrest: false
 };

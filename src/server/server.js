@@ -70,7 +70,7 @@ app.use(cors({
     credentials: true
 }));
 
-app.keys = ['some secret'];
+app.keys = config.keys;
 app.use(session({
     maxAge: ONE_YEAR,
     path: '/',
