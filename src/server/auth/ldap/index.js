@@ -11,7 +11,8 @@ exports.init = function (passport, router, config) {
         function (user, done) {
             done(null, {
                 provider: 'ldap',
-                email: user.mail
+                email: user.mail,
+                uid: user.uid ? user.uid[0] : null
             });
         }
     ));
