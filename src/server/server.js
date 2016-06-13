@@ -20,6 +20,10 @@ const router = require('./routes/main');
 
 let _started;
 
+app.use(function *() {
+    debug.trace(`Method: ${this.method}\nPath: ${this.path}`);
+});
+
 app.use(compress());
 app.use(responseTime());
 
