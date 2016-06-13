@@ -826,8 +826,8 @@ async function checkDesignDoc(db, custom) {
         return await createDesignDoc(db, null, custom);
     }
     if (
-        doc.version < constants.DESIGN_DOC_VERSION ||
-        (custom && doc.customVersion < custom.version)
+        (!doc.version || doc.version < constants.DESIGN_DOC_VERSION) ||
+        (custom && (!doc.customVersion || doc.customVersion < custom.version))
     ) {
         debug.trace('design doc needs update');
         return await createDesignDoc(db, doc._rev, custom);
