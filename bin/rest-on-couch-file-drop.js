@@ -30,7 +30,10 @@ router.get('/', function * () {
 
 router.post('/upload/:database/:kind/:filename', getHomeDir, function*() {
     const dir = path.join(this.state.homeDir, this.params.database, this.params.kind, 'to_process');
-    const uploadDir = fs.mkdtempSync('/tmp/roc-upload-');
+    var tmpDir = path.join(this.state.homeDir, this.params.database, this.params.kind, 'tmp');
+    fs.mkdirpSync(tmpDir);
+
+    const uploadDir = fs.mkdtempSync(path.join(tmpDir, 'roc-upload-'));
     const uploadPath = path.join(uploadDir, this.params.filename);
     const file = path.join(dir, this.params.filename);
     var write = fs.createWriteStream(uploadPath);
