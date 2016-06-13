@@ -21,7 +21,7 @@ const router = require('./routes/main');
 let _started;
 
 app.use(function *(next) {
-    debug.trace(`Method: ${this.method}\nPath: ${this.path}`);
+    debug.trace(`Method: ${this.method}; Path: ${this.path}`);
     yield next;
 });
 
