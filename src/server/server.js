@@ -20,8 +20,9 @@ const router = require('./routes/main');
 
 let _started;
 
-app.use(function *() {
+app.use(function *(next) {
     debug.trace(`Method: ${this.method}\nPath: ${this.path}`);
+    yield next;
 });
 
 app.use(compress());
