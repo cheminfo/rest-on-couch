@@ -9,11 +9,19 @@ exports.init = function (passport, router, config) {
     passport.use(new LdapStrategy(
         config,
         function (user, done) {
-            done(null, {
+            const data = {
                 provider: 'ldap',
                 email: user.mail,
-                uid: user.uid ? user.uid[0] : null
-            });
+                info: {}
+            };
+            if (typeof config.getUserInfo === 'function') {
+                return Promise.resolve(config.getUserInfo(user)).then(info => {
+                    data.info = info;
+                    done(null, data);
+                }, err => done(err));
+            } else {
+                done(null, data);
+            }
         }
     ));
 
