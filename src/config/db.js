@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const debug = require('../util/debug')('config');
+const debug = require('../util/debug')('config:db');
 const die = require('../util/die');
 
 const dbConfig = module.exports = {};
