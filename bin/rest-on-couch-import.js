@@ -109,10 +109,14 @@ const findFiles = co.wrap(function*(homeDir){
 function getFilesToProcess(directory) {
     return new Promise((resolve, reject) => {
         const items = [];
-        fs.walk(directory)
+        var readStream = fs.walk(directory);
+        readStream
             .on('data', function (item) {
                 if (item.stats.isFile()) {
                     items.push(item.path);
+                    if(items.length >= 1000) {
+                        readStream.close();
+                    }
                 }
             })
             .on('end', function () {
