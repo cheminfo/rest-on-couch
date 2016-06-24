@@ -114,8 +114,8 @@ function getFilesToProcess(directory) {
             .on('data', function (item) {
                 if (item.stats.isFile()) {
                     items.push(item.path);
-                    if(items.length >= 1000) {
-                        readStream.close();
+                    if(items.length >= 100) {
+                        readStream.destroy();
                     }
                 }
             })
