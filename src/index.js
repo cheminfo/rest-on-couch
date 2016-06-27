@@ -467,10 +467,15 @@ class Couch {
         const entry = await this.getEntryByIdAndRights(id, user, ['write']);
         let current = entry.$content || {};
         for (var i = 0; i < jpath.length; i++) {
-            current = current[jpath[i]];
-            if (!current) {
-                throw new CouchError('jpath does not match document structure');
+            let newCurrent = current[jpath[i]];
+            if (!newCurrent) {
+                if (i < jpath.length - 1) {
+                    newCurrent = current[jpath[i]] = {};
+                } else {
+                    newCurrent = current[jpath[i]] = [];
+                }
             }
+            current = newCurrent;
         }
         if (!Array.isArray(current)) {
             throw new CouchError('jpath must point to an array');
