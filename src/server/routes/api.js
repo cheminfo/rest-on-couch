@@ -27,6 +27,8 @@ exports.init = function () {
 
     // Attachments
     router.get('/:dbname/entry/:uuid/:attachment+', couch.getAttachmentByUuid);
+    // Delete attachment slightly different from couchdb api. It does not require _rev in the query parameters.
+    router.delete('/:dbname/entry/:uuid/:attachment+', couch.deleteAttachment);
     router.put('/:dbname/entry/:uuid/:attachment+', util.parseRawBody({limit: '100mb'}), couch.saveAttachment);
 
     // User related routes

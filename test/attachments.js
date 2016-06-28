@@ -25,4 +25,15 @@ describe('entries with attachments', function () {
             .then(entry => couch.getAttachmentByUuidAndName(entry._id, 'test.txt', 'b@b.com'))
             .should.be.fulfilledWith(new Buffer('THIS IS A TEST'));
     });
+
+    it('should delete an attachment from a document given by its uuid', function () {
+        return couch.getEntryById('entryWithAttachment', 'b@b.com')
+            .then(entry => couch.deleteAttachmentByUuid(entry._id, 'b@b.com', 'test.txt', {
+                rev: entry._rev
+            }))
+            .then(() => {
+                return couch.getAttachmentByIdAndName('entryWithAttachment', 'test.txt', 'b@b.com')
+                    .should.be.rejectedWith(/attachment test\.txt not found/);
+            });
+    });
 });

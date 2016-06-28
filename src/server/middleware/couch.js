@@ -73,6 +73,10 @@ exports.newOrUpdateEntry = function * () {
     }
 };
 
+exports.deleteAttachment = function * () {
+    this.body = yield this.state.couch.deleteAttachmentByUuid(this.params.uuid, this.state.userEmail, this.params.attachment);
+};
+
 exports.saveAttachment = function * () {
     try {
         this.body = yield this.state.couch.addAttachmentByUuid(this.params.uuid, this.state.userEmail, {

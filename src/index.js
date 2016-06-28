@@ -438,6 +438,16 @@ class Couch {
         return await nanoPromise.attachFiles(this._db, entry, attachments);
     }
 
+    async deleteAttachmentByUuid(uuid, user, attachmentName) {
+        debug(`deleteAttachmentByUuid (${uuid}, ${user})`);
+        const entry = await this.getEntryByUuidAndRights(uuid, user, ['delete', 'addAttachment']);
+        if (!entry._attachments[attachmentName]) {
+            return;
+        }
+        delete entry._attachments[attachmentName];
+        return saveEntry(this._db, entry, user);
+    }
+
     getAttachmentByIdAndName(id, name, user, asStream, options) {
         debug(`getAttachmentByIdAndName (${id}, ${name}, ${user})`);
         return this.getEntryById(id, user, options)

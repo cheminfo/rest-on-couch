@@ -111,7 +111,7 @@ exports.destroyDatabase = function (nano, dbName) {
     });
 };
 
-exports.destroyDocument = function(db, docId, revId) {
+exports.destroyDocument = function (db, docId, revId) {
     debug.trace('destroy document');
     if (!revId) {
         return exports.getDocument(db, docId).then(doc => {
@@ -119,18 +119,18 @@ exports.destroyDocument = function(db, docId, revId) {
             return exports.destroyDocument(db, docId, doc._rev);
         });
     }
-    return new Promise(function(resolve, reject) {
-        db.destroy(docId, revId, function(err, body) {
+    return new Promise(function (resolve, reject) {
+        db.destroy(docId, revId, function (err, body) {
             if (err) return reject(err);
             resolve(body);
         });
     });
 };
 
-exports.updateWithHandler = function(db, update, docId, body) {
+exports.updateWithHandler = function (db, update, docId, body) {
     return new Promise((resolve, reject) => {
         debug.trace(`update with handler ${JSON.stringify(body)}`);
-        db.atomic(constants.DESIGN_DOC_NAME, update, docId, body, function(err, body) {
+        db.atomic(constants.DESIGN_DOC_NAME, update, docId, body, function (err, body) {
             if (err) return reject(err);
             resolve(body);
         });
@@ -162,10 +162,10 @@ exports.getAttachment = function (db, doc, name, asStream, options) {
     });
 };
 
-exports.request = function(nano, options) {
+exports.request = function (nano, options) {
     return new Promise((resolve, reject) => {
         debug.trace('request');
-        nano.request(options, function(err, result) {
+        nano.request(options, function (err, result) {
             if (err) return reject(err);
             resolve(result);
         });

@@ -38,14 +38,22 @@ describe('rest-api as anonymous (data)', function () {
         return request.put('/db/test/entry/B/myattachment.txt')
             .set('Content-Type', 'text/plain')
             .set('Accept', 'application/json')
-            .send('hello world')
+            .send('rest-on-couch!!')
             .expect(200).then(res => {
                 res.body.id.should.equal('B');
                 res.body.rev.should.startWith('2');
                 return request.get('/db/test/entry/B/myattachment.txt').then(res => {
-                    res.text.should.equal('hello world');
+                    res.text.should.equal('rest-on-couch!!');
                     res.headers['content-type'].should.equal('text/plain');
                 });
+            });
+    });
+
+    it('deletes an attachment', function () {
+        return request.delete('/db/test/entry/B/myattachment.txt')
+            .send()
+            .expect(200).then(() => {
+                return request.get('/db/test/entry/B/myattachment.txt').expect(404);
             });
     });
 });
