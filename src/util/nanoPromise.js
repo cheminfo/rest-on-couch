@@ -2,6 +2,7 @@
 
 const constants = require('../constants');
 const debug = require('./debug')('nano');
+const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 exports.authenticate = function (nano, user, password) {
     return new Promise((resolve, reject) => {
@@ -84,7 +85,7 @@ exports.insertDocument = function (db, doc) {
 exports.queryView = function (db, view, params, options) {
     params = params || {};
     options = options || {};
-    if (!params.hasOwnProperty('reduce')) {
+    if (!hasOwnProperty.call(params, 'reduce')) {
         params.reduce = false;
     }
     return new Promise((resolve, reject) => {
