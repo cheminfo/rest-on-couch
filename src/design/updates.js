@@ -31,7 +31,7 @@ updates.addGroupToEntry = function(doc, req) {
     }
 
     for (var i = 0; i < group.length; i++) {
-        if (typeof group !== 'string') {
+        if (typeof group[i] !== 'string') {
             resp.code = 400;
             resp.body = '{"error": "group must be a string or array"}';
             return [null, resp];
@@ -76,7 +76,7 @@ updates.removeGroupFromEntry = function(doc, req) {
     }
 
     for (var i = 0; i < group.length; i++) {
-        if (typeof group !== 'string') {
+        if (typeof group[i] !== 'string') {
             resp.code = 400;
             resp.body = '{"error": "group must be a string or array"}';
             return [null, resp];
