@@ -13,6 +13,10 @@ const getConfig = require('./config/config').getConfig;
 const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
 const isEmail = require('./util/isEmail');
 
+process.on('unhandledRejection', function (err) {
+    debug.error('unhandled rejection: ' + err.stack);
+});
+
 const basicRights = {
     $type: 'db',
     _id: constants.RIGHTS_DOC_ID,
@@ -77,14 +81,18 @@ class Couch {
         this._currentAuth = null;
         this._authRenewal = null;
         this._authRenewalInterval = config.authRenewal;
-        this._init();
+        this.open();
     }
 
-    async _init() {
+    async open() {
         if (this._initPromise) {
             return this._initPromise;
         }
         return this._initPromise = this.getInitPromise();
+    }
+
+    close() {
+        clearInterval(this._authRenewal);
     }
 
     async getInitPromise() {
@@ -164,7 +172,7 @@ class Couch {
         if (!(data instanceof Object)) {
             throw new CouchError('user data should be an object', 'bad argument');
         }
-        await this._init();
+        await this.open();
         try {
             const userDoc = await this.getUser(user);
             data = simpleMerge(data, userDoc);
@@ -180,14 +188,14 @@ class Couch {
     }
 
     async getUser(user) {
-        await this._init();
+        await this.open();
         return await getUser(this._db, user);
     }
 
     async createEntry(id, user, options) {
         options = options || {};
         debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
-        await this._init();
+        await this.open();
         const result = await nanoPromise.queryView(this._db, 'entryByOwnerAndId', {key: [user, id], reduce: false, include_docs: true});
         if (result.length === 0) {
             const hasRight = await checkRightAnyGroup(this._db, user, 'create');
@@ -230,7 +238,7 @@ class Couch {
 
     async queryEntriesByRight(user, view, right, options) {
         debug(`queryEntriesByRights (${user}, ${view}, ${right})`);
-        await this._init();
+        await this.open();
         options = options || {};
         if (!this._viewsWithOwner.has(view)) {
             throw new CouchError(`${view} is not a view with owner`, 'unauthorized');
@@ -288,7 +296,7 @@ class Couch {
         options.skip = 0;
         var limit = options.limit || 1;
         var cumRows = [];
-        await this._init();
+        await this.open();
         while (cumRows.length < limit) {
             let rows = await nanoPromise.queryView(this._db, view, options);
             // No more results
@@ -318,7 +326,7 @@ class Couch {
         const limit = options.limit;
         const skip = options.skip;
 
-        await this._init();
+        await this.open();
 
         // First we get a list of owners for each document
         const owners = await nanoPromise.queryView(this._db, 'ownersById', {
@@ -340,7 +348,7 @@ class Couch {
 
     async getEntryByIdAndRights(id, user, rights, options) {
         debug(`getEntryByIdAndRights (${id}, ${user}, ${rights})`);
-        await this._init();
+        await this.open();
 
         const owners = await getOwnersById(this._db, id);
         if (owners.length === 0) {
@@ -364,7 +372,7 @@ class Couch {
 
     async getEntryByUuidAndRights(uuid, user, rights, options) {
         debug(`getEntryByUuidAndRights (${uuid}, ${user}, ${rights})`);
-        await this._init();
+        await this.open();
 
         const doc = await nanoPromise.getDocument(this._db, uuid);
         if (!doc) {
@@ -401,7 +409,7 @@ class Couch {
 
     async _doUpdateOnEntry(id, user, update, updateBody) {
         // Call update handler
-        await this._init();
+        await this.open();
         const doc = await this.getEntryById(id, user);
         const hasRight = isOwner(doc.$owners, user);
         if (!hasRight) {
@@ -411,7 +419,7 @@ class Couch {
     }
 
     async _doUpdateOnEntryByUuid(uuid, user, update, updateBody) {
-        await this._init();
+        await this.open();
         const doc = await this.getEntryByUuid(uuid, user);
         const hasRight = isOwner(doc.$owners, user);
         if (!hasRight) {
@@ -615,7 +623,7 @@ class Couch {
 
     async deleteGroup(groupName, user) {
         debug(`deleteGroup (${groupName}, ${user})`);
-        await this._init();
+        await this.open();
 
         const doc = await getGroup(this._db, groupName);
         if (!doc) {
@@ -635,7 +643,7 @@ class Couch {
         debug(`createGroup (${groupName}, ${user})`);
         if (!Array.isArray(rights)) rights = ['read'];
 
-        await this._init();
+        await this.open();
 
         const hasRight = await checkRightAnyGroup(this._db, user, 'createGroup');
         if (!hasRight) throw new CouchError(`user ${user} does not have createGroup right`);
@@ -654,7 +662,7 @@ class Couch {
 
     async getGroup(groupName, user) {
         debug(`getGroup (${groupName}, ${user})`);
-        await this._init();
+        await this.open();
         const doc = await getGroup(this._db, groupName);
         if (!doc) {
             debug.trace('group does not exist');
@@ -674,7 +682,7 @@ class Couch {
      */
     async getGroupsByRight(user, right) {
         debug.trace(`getGroupsByRight (${user}, ${right})`);
-        await this._init();
+        await this.open();
         // Search in default groups
         const defaultGroups = await getDefaultGroups(this._db, user, true);
         // Search inside groups
@@ -686,7 +694,7 @@ class Couch {
 
     async insertEntry(entry, user, options) {
         debug(`insertEntry (id: ${entry._id}, user: ${user}, options: ${options})`);
-        await this._init();
+        await this.open();
 
         options = options || {};
         options.groups = options.groups || [];
@@ -747,12 +755,12 @@ class Couch {
 
     log(message, level) {
         debug(`log (${message}, ${level})`);
-        return this._init().then(() => log.log(this._db, this._logLevel, message, level));
+        return this.open().then(() => log.log(this._db, this._logLevel, message, level));
     }
 
     getLogs(epoch) {
         debug(`getLogs (${epoch}`);
-        return this._init().then(() => log.getLogs(this._db, epoch));
+        return this.open().then(() => log.getLogs(this._db, epoch));
     }
 }
 

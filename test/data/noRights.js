@@ -122,7 +122,7 @@ function populate(db) {
 
 module.exports = function () {
     global.couch = new Couch({database: 'test'});
-    return global.couch._init()
+    return global.couch.open()
         .then(() => resetDatabase(global.couch._nano, global.couch._databaseName, global.couch._couchOptions.username))
         .then(() => populate(global.couch._db))
         .then(() => {
@@ -130,6 +130,6 @@ module.exports = function () {
                 database: 'test',
                 rights: {}
             });
-            return global.couch._init();
+            return global.couch.open();
         });
 };

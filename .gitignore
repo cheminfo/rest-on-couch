@@ -28,3 +28,4 @@ node_modules
 
 test/dummy.js
 lib
+config.json

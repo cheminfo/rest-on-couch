@@ -93,7 +93,7 @@ function populate(db) {
 
 module.exports = function () {
     global.couch = new Couch({database: 'test'});
-    return global.couch._init()
+    return global.couch.open()
         .then(() => destroy(global.couch._nano, global.couch._databaseName))
         .then(() => {
             global.couch = new Couch({
@@ -105,7 +105,7 @@ module.exports = function () {
                     addAttachment: ['anonymous']
                 }
             });
-            return global.couch._init();
+            return global.couch.open();
         })
         .then(() => populate(global.couch._db));
 };

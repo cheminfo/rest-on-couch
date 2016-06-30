@@ -12,7 +12,7 @@ describe('basic initialization tests', function () {
         couch = new Couch({database: 'test2'});
     });
     it('should init', function () {
-        return couch._init();
+        return couch.open();
     });
 
     it('should throw if no database given', function () {
