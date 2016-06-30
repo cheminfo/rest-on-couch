@@ -2,7 +2,7 @@
 
 const co = require('co');
 const LocalStrategy = require('passport-local').Strategy;
-const request = require('co-request');
+const request = require('request-promise');
 
 const couchUrl = require('../../../config/config').globalConfig.url;
 const isEmail = require('../../../util/isEmail');
@@ -22,7 +22,8 @@ exports.init = function (passport, router) {
                     form: {
                         name: username,
                         password: password
-                    }
+                    },
+                    resolveWithFullResponse: true
                 });
                 if (res[0] instanceof Error) {
                     return done(res[0]);

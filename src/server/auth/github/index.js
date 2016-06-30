@@ -45,7 +45,7 @@
 
 const co = require('co');
 const GitHubStrategy = require('passport-github').Strategy;
-const request = require('co-request');
+const request = require('request-promise');
 
 exports.init = function (passport, router, config) {
     passport.use(new GitHubStrategy({
@@ -56,13 +56,12 @@ exports.init = function (passport, router, config) {
         function (accessToken, refreshToken, profile, done) {
             // Get the user's email
             co(function*() {
-                var res = yield request({
+                var answer = yield request({
                     url: 'https://api.github.com/user/emails?access_token=' + accessToken,
                     headers: {
                         'User-Agent': 'request'
                     }
                 });
-                var answer = JSON.parse(res.body);
                 var email = answer.filter(function (val) {
                     return val.primary === true;
                 });
