@@ -12,27 +12,39 @@ updates.addGroupToEntry = function(doc, req) {
 
     if (!doc) {
         resp.code = 404;
-        resp.body = '"document does not exist"';
+        resp.body = '{"error": "not found"}';
         return [null, resp];
     }
     if (doc.$type !== 'entry') {
         resp.code = 400;
-        resp.body = '"Document is not of type entry"';
+        resp.body = '{"error": "not an entry"}';
         return [null, resp];
     }
     if (!group) {
-        resp.body = '"no group in request"';
         resp.code = 400;
-        return [null, resp];
-    }
-    var idx = doc.$owners.indexOf(group);
-    if (idx > -1) {
-        resp.body = '"group already exists for this entry"';
+        resp.body = '{"error": "no group in query"}';
         return [null, resp];
     }
 
-    doc.$owners.push(group);
-    return [doc, 'Group added'];
+    if (!Array.isArray(group)) {
+        group = [group];
+    }
+
+    for (var i = 0; i < group.length; i++) {
+        if (typeof group !== 'string') {
+            resp.code = 400;
+            resp.body = '{"error": "group must be a string or array"}';
+            return [null, resp];
+        }
+        var idx = doc.$owners.indexOf(group[i]);
+        if (idx === -1) {
+            doc.$owners.push(group[i]);
+        }
+    }
+
+    resp.code = 200;
+    resp.body = '{"ok": true}';
+    return [doc, resp];
 };
 
 updates.removeGroupFromEntry = function(doc, req) {
@@ -45,32 +57,41 @@ updates.removeGroupFromEntry = function(doc, req) {
 
     if (!doc) {
         resp.code = 404;
-        resp.body = '"document does not exist"';
+        resp.body = '{"error": "not found"}';
         return [null, resp];
     }
     if (doc.$type !== 'entry') {
         resp.code = 400;
-        resp.body = '"Document is not of type entry"';
+        resp.body = '{"error": "not an entry"}';
         return [null, resp];
     }
     if (!group) {
-        resp.body = '"no group in request"';
         resp.code = 400;
+        resp.body = '{"error": "no group in query"}';
         return [null, resp];
     }
 
-    var idx = doc.$owners.indexOf(group);
-    if (idx === -1) {
-        resp.body = '"group does not exist for this entry"';
-        return [null, resp];
+    if (!Array.isArray(group)) {
+        group = [group];
     }
 
-    if (idx === 0) {
-        resp.body = '"cannot remove primary owner"';
-        resp.code = 403;
-        return [null, resp];
+    for (var i = 0; i < group.length; i++) {
+        if (typeof group !== 'string') {
+            resp.code = 400;
+            resp.body = '{"error": "group must be a string or array"}';
+            return [null, resp];
+        }
+        var idx = doc.$owners.indexOf(group[i]);
+        if (idx === 0) {
+            resp.code = 403;
+            resp.body = '{"error": "cannot remove primary owner"}';
+            return [null, resp];
+        } else if (idx !== -1) {
+            doc.$owners.splice(idx, 1);
+        }
     }
 
-    doc.$owners.splice(idx, 1);
-    return [doc, 'Group removed'];
+    resp.code = 200;
+    resp.body = '{"ok": true}';
+    return [doc, resp];
 };

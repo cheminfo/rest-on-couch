@@ -202,7 +202,7 @@ exports.getOwnersByUuid = function*() {
 exports.addOwnerByUuid = function*() {
     try {
         yield this.state.couch.addGroupToEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
-        this.body = 'ok';
+        this.body = {ok: true};
     } catch (e) {
         onGetError(this, e);
     }
@@ -211,7 +211,7 @@ exports.addOwnerByUuid = function*() {
 exports.removeOwnerByUuid = function*() {
     try {
         yield this.state.couch.removeGroupFromEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
-        this.body = 'ok';
+        this.body = {ok: true};
     } catch (e) {
         onGetError(this, e);
     }
