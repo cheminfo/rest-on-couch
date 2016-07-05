@@ -11,6 +11,13 @@ const views = require('../../design/views');
 
 const couchNeedsParse = ['key', 'startkey', 'endkey'];
 
+const statusMessages = {
+    '404': 'not found',
+    '401': 'unauthorized',
+    '409': 'conflict',
+    '500': 'internal server error'
+};
+
 exports.setupCouch = function*(next) {
     const dbname = this.params.dbname;
     this.state.dbName = dbname;
@@ -257,28 +264,49 @@ function onGetError(ctx, e, secure) {
         case 'unauthorized':
             if (!secure) {
                 ctx.status = 401;
-                ctx.body = 'unauthorized';
+                ctx.body = statusMessages[401];
                 break;
             }
             // fallthrough
         case 'not found':
             ctx.status = 404;
-            ctx.body = 'not found';
+            ctx.body = statusMessages[404];
             break;
         case 'conflict':
             ctx.status = 409;
-            ctx.body = 'conflict';
+            ctx.body = statusMessages[409];
             break;
         default:
-            ctx.status = 500;
-            ctx.body = 'internal server error';
-            debug.error(e + e.stack);
+            if(!handleCouchError(ctx, e, secure)) {
+                ctx.status = 500;
+                ctx.body = statusMessages[500];
+                debug.error(e + e.stack);
+            }
             break;
     }
     if (config.debugrest) {
         ctx.body += '\n\n' + e + '\n' + e.stack;
     }
 }
+
+function handleCouchError(ctx, e, secure) {
+    if(e.scope !== 'couch') return;
+    var statusCode = e.statusCode;
+    if(statusCode) {
+        if(statusCode === 404 && secure) {
+            statusCode = 401;
+        }
+
+        if(statusCode === 500) {
+            debug.error(e + e.stack);
+        }
+
+        ctx.status = statusCode;
+        ctx.body = statusMessages[statusCode] || `error ${statusCode}`;
+        return true;
+    }
+}
+
 
 function processCouchQuery(ctx) {
     for (let i = 0; i < couchNeedsParse.length; i++) {
