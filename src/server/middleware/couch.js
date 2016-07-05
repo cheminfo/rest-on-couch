@@ -277,7 +277,7 @@ function onGetError(ctx, e, secure) {
             ctx.body = statusMessages[409];
             break;
         default:
-            if(!handleCouchError(ctx, e, secure)) {
+            if (!handleCouchError(ctx, e, secure)) {
                 ctx.status = 500;
                 ctx.body = statusMessages[500];
                 debug.error(e + e.stack);
@@ -290,14 +290,14 @@ function onGetError(ctx, e, secure) {
 }
 
 function handleCouchError(ctx, e, secure) {
-    if(e.scope !== 'couch') return;
+    if (e.scope !== 'couch') return;
     var statusCode = e.statusCode;
-    if(statusCode) {
-        if(statusCode === 404 && secure) {
+    if (statusCode) {
+        if (statusCode === 404 && secure) {
             statusCode = 401;
         }
 
-        if(statusCode === 500) {
+        if (statusCode === 500) {
             debug.error(e + e.stack);
         }
 
