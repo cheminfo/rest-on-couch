@@ -4,8 +4,15 @@
 
 const program = require('commander');
 
-const debug = require('../lib/util/debug')('bin:server');
-const server = require('../lib/server/server');
+let debug, server;
+
+if (process.env.REST_ON_COUCH_ASYNC_AWAIT) {
+    debug = require('../src/util/debug')('bin:server');
+    server = require('../src/server/server');
+} else {
+    debug = require('../lib/util/debug')('bin:server');
+    server = require('../lib/server/server');
+}
 
 program
     .option('-c --config <path>', 'Path to custom config file')
