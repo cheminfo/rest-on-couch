@@ -12,6 +12,7 @@ if (process.env.REST_ON_COUCH_ASYNC_AWAIT) {
 } else {
     debug = require('../lib/util/debug')('bin:server');
     server = require('../lib/server/server');
+    debug('starting app with async/await support');
 }
 
 program
