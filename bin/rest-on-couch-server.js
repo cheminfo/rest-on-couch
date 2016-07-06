@@ -9,10 +9,10 @@ let debug, server;
 if (process.env.REST_ON_COUCH_ASYNC_AWAIT) {
     debug = require('../src/util/debug')('bin:server');
     server = require('../src/server/server');
+    debug('starting app with async/await support');
 } else {
     debug = require('../lib/util/debug')('bin:server');
     server = require('../lib/server/server');
-    debug('starting app with async/await support');
 }
 
 program
