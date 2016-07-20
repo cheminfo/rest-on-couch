@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+    </style>
 </head>
 <body>
     {% if "google" in enabledAuthPlugins %}
+        <h3>Google login</h3>
         <p>
-            <a href="login/google"><img src="{{pathPrefix}}assets/img/logo/google_signin.png" /></a>
+            <a href="login/google"><img  src="{{pathPrefix}}assets/img/logo/google_signin.png" /></a>
         </p>
     {% endif %}
 
