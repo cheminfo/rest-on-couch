@@ -42,8 +42,13 @@ if (config.auth) {
 router.get('/login', function*() {
     this.session.continue = this.query.continue || this.session.continue;
     if (this.isAuthenticated()) {
-        this.redirect(this.session.continue || '/');
-        this.session.continue = null;
+        if(this.session.continue === 'close') {
+            this.session.continue = null;
+            yield this.render('close');
+        } else {
+            this.redirect(this.session.continue || '/');
+            this.session.continue = null;
+        }
     } else {
         this.state.enabledAuthPlugins = enabledAuthPlugins;
         yield this.render('login');
