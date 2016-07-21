@@ -21,8 +21,8 @@ module.exports = {
         couchdb: {},
         ldap: {},
         google: {
-            clientID: "972364289541-o1nmqlnkgiip8ujjigra2cbpiu6l0mi8.apps.googleusercontent.com",
-            clientSecret: "t04__CXMjujZ_rw-W66Q1Nt4"
+            clientID: '972364289541-o1nmqlnkgiip8ujjigra2cbpiu6l0mi8.apps.googleusercontent.com',
+            clientSecret: 't04__CXMjujZ_rw-W66Q1Nt4'
         }
     }
 };
