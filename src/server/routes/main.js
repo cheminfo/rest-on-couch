@@ -7,4 +7,8 @@ router.get('/', function*() {
     yield this.render('index');
 });
 
+router.get('/close', function * () {
+    yield this.render('close');
+});
+
 module.exports = router;

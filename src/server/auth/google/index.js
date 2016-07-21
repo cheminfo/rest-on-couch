@@ -53,9 +53,14 @@ exports.init = function (passport, router, config, mainConfig) {
         }
     ));
 
+    router.get('/login/google/popup', function * () {
+        this.session.popup = true;
+        this.redirect('/auth/login/google');
+    });
+    
     router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/userinfo.email']}));
 
-    router.get('/login/google/callback',
+    router.get('/login/google/callback', 
         passport.authenticate('google', {
             successRedirect: '/auth/login',
             failureRedirect: '/auth/login'

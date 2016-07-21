@@ -20,7 +20,7 @@
     {% if "google" in enabledAuthPlugins %}
         <h3>Google login</h3>
         <p>
-            <a href="login/google"><img  src="{{pathPrefix}}assets/img/logo/google_signin.png" /></a>
+            <a id="google-login-link" href="#"><img  src="{{pathPrefix}}assets/img/logo/google_signin.png" /></a>
         </p>
     {% endif %}
 
@@ -50,4 +50,32 @@
         </p>
     {% endif %}
 </body>
+<script>
+    if(window.name === 'loginPopup' && location.href.match(/auth\/login/i)) {
+        window.close();
+    }
+    var google = document.getElementById('google-login-link');
+    if(google) {
+        google.onclick = function() {
+            var url = '/auth/login/google';
+            doLogin(url);
+        };
+    }
+
+    function doLogin(url) {
+        debugger;
+        if(window.parent !== window) {
+            url += '/popup';
+            var popup = window.open(url, 'loginPopup');
+            var interval = setInterval(function () {
+                if(popup.closed) {
+                    clearInterval(interval);
+                    window.location.reload();
+                }
+            }, 250)
+        } else {
+            window.location = url;
+        }
+    }
+</script>
 </html>
