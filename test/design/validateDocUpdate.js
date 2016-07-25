@@ -10,7 +10,7 @@ global.isArray = function (obj) {
 describe('validate_doc_update', function () {
     describe('general', function () {
         it('$type', function () {
-            assert({$type: 'abc'}, null, 'Invalid type');
+            assert({$type: 'abc'}, null, 'Invalid type: abc');
             assert({$type: 'entry'}, {$type: 'group'}, /Cannot change the type/);
         });
     });

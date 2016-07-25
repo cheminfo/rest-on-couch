@@ -137,3 +137,17 @@ views.user = {
         }
     }
 };
+
+views.tokenById = {
+    map: function (doc) {
+        if (doc.$type !== 'token') return;
+        emit(doc.$id);
+    }
+};
+
+views.tokenByOwner = {
+    map: function (doc) {
+        if (doc.$type !== 'token') return;
+        emit(doc.$owner);
+    }
+};

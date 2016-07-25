@@ -8,6 +8,7 @@ const CouchError = require('./util/CouchError');
 const constants = require('./constants');
 const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
+const token = require('./util/token');
 const log = require('./couch/log');
 const getConfig = require('./config/config').getConfig;
 const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
@@ -748,7 +749,7 @@ class Couch {
     }
 
     deleteEntryById(id, user) {
-        debug(`deleteEntryById (${id}, ${user}`);
+        debug(`deleteEntryById (${id}, ${user})`);
         return this.getEntryByIdAndRights(id, user, 'delete')
             .then(doc => nanoPromise.destroyDocument(this._db, doc._id));
     }
@@ -761,6 +762,43 @@ class Couch {
     getLogs(epoch) {
         debug(`getLogs (${epoch}`);
         return this.open().then(() => log.getLogs(this._db, epoch));
+    }
+
+    async createEntryToken(user, uuid) {
+        debug(`createEntryToken (${user}, ${uuid})`);
+        await this.open();
+        // We need write right to create a token. This will throw if not.
+        await this.getEntryByUuidAndRights(uuid, user, 'write');
+        return await token.createEntryToken(this._db, user, uuid, 'read');
+    }
+
+    async deleteToken(user, tokenId) {
+        debug(`deleteToken (${user}, ${tokenId})`);
+        await this.open();
+        const tokenValue = await token.getToken(this._db, tokenId);
+        if (!tokenValue) {
+            throw new CouchError('token not found', 'not found');
+        }
+        if (tokenValue.$owner !== user) {
+            throw new CouchError('only owner can delete a token', 'unauthorized');
+        }
+        await token.destroyToken(this._db, tokenValue._id, tokenValue._rev);
+    }
+
+    async getToken(tokenId) {
+        debug(`getToken (${tokenId})`);
+        await this.open();
+        const tokenValue = await token.getToken(this._db, tokenId);
+        if (!tokenValue) {
+            throw new CouchError('token not found', 'not found');
+        }
+        return tokenValue;
+    }
+
+    async getTokens(user) {
+        debug(`getTokens (${user})`);
+        await this.open();
+        return await token.getTokens(this._db, user);
     }
 }
 

@@ -99,7 +99,7 @@ describe('basic rest-api as b@b.com', function () {
 
     it('non-existent document cannot be updated', function () {
         // document with uuid A does not exist
-        return request.put('/db/test/entry/A').send({$id: 'A', $content: {}})
+        return request.put('/db/test/entry/NOTEXIST').send({$id: 'NOTEXIST', $content: {}})
             .expect(404);
     });
 

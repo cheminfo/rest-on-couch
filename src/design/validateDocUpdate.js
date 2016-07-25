@@ -8,7 +8,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     if (newDoc._deleted) {
         return;
     }
-    var validTypes = ['entry', 'group', 'db', 'log', 'user'];
+    var validTypes = ['entry', 'group', 'db', 'log', 'user', 'token'];
     var validRights = ['create', 'read', 'write', 'createGroup'];
     // see http://emailregex.com/
     var validEmail = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
@@ -23,7 +23,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     }
 
     if (!newDoc.$type || validTypes.indexOf(newDoc.$type) === -1) {
-        throw ({forbidden: 'Invalid type'});
+        throw ({forbidden: 'Invalid type: ' + newDoc.$type});
     }
     if (oldDoc && newDoc.$type !== oldDoc.$type) {
         throw ({forbidden: 'Cannot change the type of document'});
@@ -86,6 +86,16 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     } else if (newDoc.$type === 'user') {
         if (!newDoc.user || !validEmail.test(newDoc.user)) {
             throw ({forbidden: 'user must have user property, which must be an email'});
+        }
+    } else if (newDoc.$type === 'token') {
+        if (oldDoc) {
+            throw ({forbidden: 'Tokens are immutable'});
+        }
+        if (newDoc.$kind !== 'entry') {
+            throw ({forbidden: 'Only entry tokens are supported'});
+        }
+        if (!newDoc.$id || !newDoc.$owner || !newDoc.uuid || (typeof newDoc.$creationDate !== 'number') || !Array.isArray(newDoc.rights)) {
+            throw ({forbidden: 'token is missing fields'});
         }
     }
 };
