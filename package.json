@@ -75,7 +75,7 @@
     "babel-eslint": "^6.0.2",
     "babel-plugin-transform-async-to-generator": "^6.7.4",
     "babel-plugin-transform-es2015-spread": "^6.6.5",
-    "eslint": "^2.7.0",
+    "eslint": "^3.1.1",
     "istanbul": "^0.4.3",
     "mocha": "^2.3.4",
     "mocha-better-spec-reporter": "^3.0.2",

@@ -2,8 +2,6 @@ env:
   es6: true
   node: true
 parser: babel-eslint
-parserOptions:
-  ecmaVersion: 6
 extends: eslint:recommended
 rules:
   eol-last: 2
@@ -14,3 +12,4 @@ rules:
   keyword-spacing: 2
   semi: 2
   quotes: [2, single, avoid-escape]
+  require-yield: 0
