@@ -27,6 +27,13 @@ exports.setupCouch = function*(next) {
     yield next;
 };
 
+exports.tokenLookup = function* (next) {
+    if (this.query.token) {
+        this.query.token = yield this.state.couch.getToken(this.query.token);
+    }
+    yield next;
+};
+
 exports.getDocumentByUuid = function*() {
     try {
         const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail, this.query);
@@ -148,7 +155,7 @@ exports.queryEntriesByRight = function*() {
 
 exports.entriesByKindAndId = function * () {
     try {
-        for (let i=0; i<couchNeedsParse.length; i++) {
+        for (let i = 0; i < couchNeedsParse.length; i++) {
             let queryParam = this.query[couchNeedsParse[i]];
             let bodyParam = this.request.body[couchNeedsParse[i]];
             if (queryParam || bodyParam) {
@@ -166,7 +173,7 @@ exports.entriesByKindAndId = function * () {
 
 exports.entriesByOwnerAndId = function * () {
     try {
-        for (let i=0; i<couchNeedsParse.length; i++) {
+        for (let i = 0; i < couchNeedsParse.length; i++) {
             let queryParam = this.query[couchNeedsParse[i]];
             let bodyParam = this.request.body[couchNeedsParse[i]];
             if (queryParam || bodyParam) {
@@ -259,6 +266,41 @@ exports.deleteGroup = function *() {
     }
 };
 
+exports.createEntryToken = function* () {
+    try {
+        const token = yield this.state.couch.createEntryToken(this.state.userEmail, this.params.uuid);
+        this.status = 201;
+        this.body = token;
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.getTokens = function* () {
+    try {
+        this.body = yield this.state.couch.getTokens(this.state.userEmail);
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.getTokenById = function* () {
+    try {
+        this.body = yield this.state.couch.getToken(this.params.tokenid);
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.deleteTokenById = function* () {
+    try {
+        yield this.state.couch.deleteToken(this.state.userEmail, this.params.tokenid);
+        this.body = {ok: true};
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
 function onGetError(ctx, e, secure) {
     switch (e.reason) {
         case 'unauthorized':
@@ -339,7 +381,7 @@ function processQuery(ctx) {
 
     var type = getViewType(ctx);
 
-    if (match = q.match(/^([<>=]{1,2})([^<>=]+)$/)) {
+    if ((match = q.match(/^([<>=]{1,2})([^<>=]+)$/))) {
         if (match[1] === '<') {
             query.startkey = '';
             query.endkey = match[2];
@@ -355,7 +397,7 @@ function processQuery(ctx) {
         } else if (match[1] === '==' || match[1] === '=') {
             query.key = match[2];
         }
-    } else if (match = q.match(/^(.+)\.\.(.+)$/)) {
+    } else if ((match = q.match(/^(.+)\.\.(.+)$/))) {
         query.startkey = match[1];
         query.endkey = match[2];
     } else {

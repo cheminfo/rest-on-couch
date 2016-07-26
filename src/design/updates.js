@@ -2,7 +2,7 @@
 
 const updates = module.exports;
 
-updates.addGroupToEntry = function(doc, req) {
+updates.addGroupToEntry = function (doc, req) {
     var group = JSON.parse(req.body).group || req.query.group;
     var resp = {
         headers: {
@@ -47,7 +47,7 @@ updates.addGroupToEntry = function(doc, req) {
     return [doc, resp];
 };
 
-updates.removeGroupFromEntry = function(doc, req) {
+updates.removeGroupFromEntry = function (doc, req) {
     var group = JSON.parse(req.body).group || req.query.group;
     var resp = {
         headers: {

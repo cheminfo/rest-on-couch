@@ -9,7 +9,8 @@ const isEmail = require('../../../util/isEmail');
 const util = require('../../middleware/util');
 
 exports.init = function (passport, router) {
-    passport.use(new LocalStrategy({
+    passport.use(
+        new LocalStrategy({
             usernameField: 'username',
             passwordField: 'password'
         },

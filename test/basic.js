@@ -2,7 +2,7 @@
 
 const Couch = require('..');
 
-process.on('unhandledRejection', function(err) {
+process.on('unhandledRejection', function (err) {
     throw err;
 });
 

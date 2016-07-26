@@ -41,6 +41,7 @@ function populate(db) {
         $type: 'entry',
         $owners: ['b@b.com', 'groupA', 'groupB'],
         $id: 'A',
+        _id: 'A',
         $creationDate: 0,
         $modificationDate: 0,
         $content: {}

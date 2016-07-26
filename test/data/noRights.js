@@ -79,6 +79,7 @@ function populate(db) {
         $type: 'entry',
         $owners: ['b@b.com'],
         $id: 'B',
+        _id: 'B',
         $creationDate: 0,
         $modificationDate: 0,
         $content: {}
@@ -115,6 +116,16 @@ function populate(db) {
         $id: 'entryWithDefaultMultiRead',
         $creationDate: 0,
         $modificationDate: 0
+    }));
+
+    prom.push(insertDocument(db, {
+        $type: 'token',
+        $kind: 'entry',
+        $owner: 'x@x.com',
+        $id: 'mytoken',
+        $creationDate: 0,
+        uuid: 'A',
+        rights: ['read']
     }));
 
     return Promise.all(prom);

@@ -53,9 +53,10 @@ exports.createDatabase = function (nano, database) {
     });
 };
 
-exports.getDocument = function (db, docID, options) {
+exports.getDocument = function (db, docID, options = {}) {
     return new Promise((resolve, reject) => {
         debug.trace(`getDocument ${docID}`);
+        cleanOptions(options);
         db.get(docID, options, function (err, result) {
             if (err) {
                 if (err.statusCode === 404 && (err.reason === 'missing' || err.reason === 'deleted')) {
@@ -82,14 +83,13 @@ exports.insertDocument = function (db, doc) {
     });
 };
 
-exports.queryView = function (db, view, params, options) {
-    params = params || {};
-    options = options || {};
+exports.queryView = function (db, view, params = {}, options = {}) {
     if (!hasOwnProperty.call(params, 'reduce')) {
         params.reduce = false;
     }
     return new Promise((resolve, reject) => {
         debug.trace(`queryView ${view}`);
+        cleanOptions(params);
         db.view(constants.DESIGN_DOC_NAME, view, params, function (err, body) {
             if (err) return reject(err);
             if (options.onlyValue) {
@@ -149,9 +149,10 @@ exports.attachFiles = function (db, doc, files) {
     });
 };
 
-exports.getAttachment = function (db, doc, name, asStream, options) {
+exports.getAttachment = function (db, doc, name, asStream, options = {}) {
     return new Promise((resolve, reject) => {
         debug.trace(`get attachment ${doc}/${name}`);
+        cleanOptions(options);
         if (asStream) {
             const stream = db.attachment.get(doc, name, options);
             resolve(stream);
@@ -164,12 +165,19 @@ exports.getAttachment = function (db, doc, name, asStream, options) {
     });
 };
 
-exports.request = function (nano, options) {
+exports.request = function (nano, options = {}) {
     return new Promise((resolve, reject) => {
         debug.trace('request');
+        cleanOptions(options);
         nano.request(options, function (err, result) {
             if (err) return reject(err);
             resolve(result);
         });
     });
 };
+
+function cleanOptions(options) {
+    if (options.token) {
+        delete options.token;
+    }
+}

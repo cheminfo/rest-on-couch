@@ -49,7 +49,7 @@ const importAll = co.wrap(function*() {
     }
 });
 
-const findFiles = co.wrap(function*(homeDir){
+const findFiles = co.wrap(function* (homeDir) {
     let files = [];
 
     const databases = yield fsp.readdir(homeDir);
@@ -182,15 +182,15 @@ function* processFile2(database, importName, filePath) {
     debug.trace(`process file ${filePath}`);
     const parsedPath = path.parse(filePath);
     const splitParsedPath = parsedPath.dir.split('/');
-    const to_process = splitParsedPath.indexOf('to_process');
-    if (to_process === -1) {
+    const toProcess = splitParsedPath.indexOf('to_process');
+    if (toProcess === -1) {
         throw new Error('to_process not found in path. This should not happen');
     }
 
     try {
         yield imp.import(database, importName, filePath);
         // success, move to processed
-        yield moveFile(filePath, parsedPath.base, splitParsedPath, to_process, 'processed');
+        yield moveFile(filePath, parsedPath.base, splitParsedPath, toProcess, 'processed');
     } catch (e) {
         // error, move to errored
         if (e.message.startsWith('no import config')) {
@@ -198,15 +198,15 @@ function* processFile2(database, importName, filePath) {
             return;
         }
         debug.error(e + '\n' + e.stack);
-        yield moveFile(filePath, parsedPath.base, splitParsedPath, to_process, 'errored');
+        yield moveFile(filePath, parsedPath.base, splitParsedPath, toProcess, 'errored');
     }
 }
 
-function* moveFile(filePath, fileName, splitParsedPath, to_process, dest) {
-    const base = splitParsedPath.slice(0, to_process).join('/');
+function* moveFile(filePath, fileName, splitParsedPath, toProcess, dest) {
+    const base = splitParsedPath.slice(0, toProcess).join('/');
     let subdir;
-    if (splitParsedPath.length - to_process > 1) {
-        subdir = splitParsedPath.slice(to_process + 1).join('/');
+    if (splitParsedPath.length - toProcess > 1) {
+        subdir = splitParsedPath.slice(toProcess + 1).join('/');
     } else {
         subdir = getDatePath();
     }

@@ -149,8 +149,7 @@ exports.import = function (database, importName, file) {
                 data: contents,
                 content_type: info.content_type
             });
-        }
-        else if (json) {
+        } else if (json) {
             var entry = {};
             entry.$id = info.info.id;
             entry.$kind = config.kind;

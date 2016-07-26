@@ -28,7 +28,7 @@ describe('entry reads', function () {
             return couch.getEntryByUuid(doc._id, 'b@b.com').then(doc => {
                 doc.should.be.an.instanceOf(Object);
             });
-        }) ;
+        });
     });
 
     it('should not find document', function () {
@@ -45,7 +45,7 @@ describe('entry reads', function () {
 describe('entry creation and editions', function () {
     beforeEach(data);
 
-    it('create a new entry', function() {
+    it('create a new entry', function () {
         return couch.createEntry('myid', 'a@a.com', {}).then(entryInfo => {
             entryInfo.should.have.property('id');
             entryInfo.should.have.property('rev');
@@ -121,7 +121,7 @@ describe('entry creation and editions', function () {
             .then(() => couch.getEntryById(constants.newEntry.$id, 'z@z.com'))
             .then(entry => {
                 entry.$owners.should.have.length(3);
-        });
+            });
     });
 
     it('should throw a conflict error', function () {
@@ -167,20 +167,20 @@ describe('entry creation and editions', function () {
             });
     });
 
-    it('Add existing group to entry', function() {
+    it('Add existing group to entry', function () {
         return couch.addGroupToEntry('A', 'b@b.com', 'groupD')
             .then(() => couch.addGroupToEntry('A', 'b@b.com', 'groupD'))
             .then(() => couch.getEntryById('A', 'b@b.com'))
             .then(entry => {
                 let count = 0;
-                for (let i=0; i<entry.$owners.length; i++) {
+                for (let i = 0; i < entry.$owners.length; i++) {
                     if (entry.$owners[i] === 'groupD') count++;
                 }
                 count.should.equal(1);
             });
     });
 
-    it('Add existing group to entry (by uuid)', function() {
+    it('Add existing group to entry (by uuid)', function () {
         return couch.getEntryById('A', 'b@b.com')
             .then(entry => {
                 let uuid = entry._id;
@@ -189,7 +189,7 @@ describe('entry creation and editions', function () {
                     .then(() => couch.getEntryById('A', 'b@b.com'))
                     .then(entry => {
                         let count = 0;
-                        for (let i=0; i<entry.$owners.length; i++) {
+                        for (let i = 0; i < entry.$owners.length; i++) {
                             if (entry.$owners[i] === 'anonymousRead') count++;
                         }
                         count.should.equal(1);

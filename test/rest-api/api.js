@@ -9,10 +9,23 @@ describe('basic rest-api as anonymous (noRights)', function () {
     before(noRights);
 
     it('get an entry', function () {
-        return couch.getEntryById('A', 'b@b.com').then(entry => {
-            return request.get(`/db/test/entry/${entry._id}`)
-                .expect(401);
-        });
+        return request.get('/db/test/entry/A')
+            .expect(401);
+    });
+
+    it('get an entry with token', function () {
+        return request.get('/db/test/entry/A?token=mytoken')
+            .expect(200);
+    });
+
+    it('get an entry with token (wrong uuid)', function () {
+        return request.get('/db/test/entry/B?token=mytoken')
+            .expect(401);
+    });
+
+    it('not allowed to create a token', function () {
+        return request.post('/db/test/entry/A/_token')
+            .expect(401);
     });
 
     it('get all entries', function () {
@@ -99,7 +112,7 @@ describe('basic rest-api as b@b.com', function () {
 
     it('non-existent document cannot be updated', function () {
         // document with uuid A does not exist
-        return request.put('/db/test/entry/A').send({$id: 'A', $content: {}})
+        return request.put('/db/test/entry/NOTEXIST').send({$id: 'NOTEXIST', $content: {}})
             .expect(404);
     });
 
@@ -115,15 +128,21 @@ describe('basic rest-api as b@b.com', function () {
     });
 
     it('update document', function () {
-         return couch.getEntryById('C', 'b@b.com')
+        return couch.getEntryById('C', 'b@b.com')
             .then(entry => {
-                return request.put('/db/test/entry/C').send({$id: 'C', $content: {}, _rev: entry._rev})
+                return request
+                    .put('/db/test/entry/C')
+                    .send({$id: 'C', $content: {}, _rev: entry._rev})
                     .expect(200)
                     .then(res => {
                         res.body.should.have.property('rev');
                         res.body.rev.should.startWith('2');
                     });
             });
+    });
+
+    it('create token', function () {
+        return request.post('/db/test/entry/C/_token').expect(201);
     });
 
     it('delete document', function () {

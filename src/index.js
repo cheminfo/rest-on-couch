@@ -8,6 +8,7 @@ const CouchError = require('./util/CouchError');
 const constants = require('./constants');
 const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
+const token = require('./util/token');
 const log = require('./couch/log');
 const getConfig = require('./config/config').getConfig;
 const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
@@ -320,9 +321,8 @@ class Couch {
         return cumRows.filter((r, idx) => idx < options.limit);
     }
 
-    async getEntriesByUserAndRights(user, rights, options) {
+    async getEntriesByUserAndRights(user, rights, options = {}) {
         debug(`getEntriesByUserAndRights (${user}, ${rights})`);
-        options = options || {};
         const limit = options.limit;
         const skip = options.skip;
 
@@ -346,7 +346,7 @@ class Couch {
         return await Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
     }
 
-    async getEntryByIdAndRights(id, user, rights, options) {
+    async getEntryByIdAndRights(id, user, rights, options = {}) {
         debug(`getEntryByIdAndRights (${id}, ${user}, ${rights})`);
         await this.open();
 
@@ -360,8 +360,7 @@ class Couch {
             hisEntry = owners[0];
         }
 
-        const ok = await validateRights(this._db, hisEntry.value, user, rights);
-        if (ok[0]) {
+        if (await validateTokenOrRights(this._db, hisEntry.id, hisEntry.value, rights, user, options.token)) {
             debug.trace(`user ${user} has access`);
             return await nanoPromise.getDocument(this._db, hisEntry.id, options);
         }
@@ -370,7 +369,7 @@ class Couch {
         throw new CouchError('user has no access', 'unauthorized');
     }
 
-    async getEntryByUuidAndRights(uuid, user, rights, options) {
+    async getEntryByUuidAndRights(uuid, user, rights, options = {}) {
         debug(`getEntryByUuidAndRights (${uuid}, ${user}, ${rights})`);
         await this.open();
 
@@ -385,8 +384,7 @@ class Couch {
         }
 
         debug.trace('check rights');
-        const ok = await validateRights(this._db, doc.$owners, user, rights);
-        if (ok[0]) {
+        if (await validateTokenOrRights(this._db, uuid, doc.$owners, rights, user, options.token)) {
             debug.trace(`user ${user} has access`);
             if (!options) {
                 return doc;
@@ -529,8 +527,8 @@ class Couch {
         if (action !== 'add' && action !== 'remove') {
             throw new CouchError('Edit global right invalid action', 'bad argument');
         }
-        let e;
-        if (e = checkGlobalTypeAndUser(type, user)) {
+        let e = checkGlobalTypeAndUser(type, user);
+        if (e) {
             throw e;
         }
 
@@ -748,7 +746,7 @@ class Couch {
     }
 
     deleteEntryById(id, user) {
-        debug(`deleteEntryById (${id}, ${user}`);
+        debug(`deleteEntryById (${id}, ${user})`);
         return this.getEntryByIdAndRights(id, user, 'delete')
             .then(doc => nanoPromise.destroyDocument(this._db, doc._id));
     }
@@ -761,6 +759,43 @@ class Couch {
     getLogs(epoch) {
         debug(`getLogs (${epoch}`);
         return this.open().then(() => log.getLogs(this._db, epoch));
+    }
+
+    async createEntryToken(user, uuid) {
+        debug(`createEntryToken (${user}, ${uuid})`);
+        await this.open();
+        // We need write right to create a token. This will throw if not.
+        await this.getEntryByUuidAndRights(uuid, user, 'write');
+        return await token.createEntryToken(this._db, user, uuid, 'read');
+    }
+
+    async deleteToken(user, tokenId) {
+        debug(`deleteToken (${user}, ${tokenId})`);
+        await this.open();
+        const tokenValue = await token.getToken(this._db, tokenId);
+        if (!tokenValue) {
+            throw new CouchError('token not found', 'not found');
+        }
+        if (tokenValue.$owner !== user) {
+            throw new CouchError('only owner can delete a token', 'unauthorized');
+        }
+        await token.destroyToken(this._db, tokenValue._id, tokenValue._rev);
+    }
+
+    async getToken(tokenId) {
+        debug(`getToken (${tokenId})`);
+        await this.open();
+        const tokenValue = await token.getToken(this._db, tokenId);
+        if (!tokenValue) {
+            throw new CouchError('token not found', 'not found');
+        }
+        return tokenValue;
+    }
+
+    async getTokens(user) {
+        debug(`getTokens (${user})`);
+        await this.open();
+        return await token.getTokens(this._db, user);
     }
 }
 
@@ -877,13 +912,13 @@ function isOwner(owners, user) {
     return false;
 }
 
-function validateRights(db, owners, user, rights) {
+function validateRights(db, ownerArrays, user, rights) {
     debug.trace('validateRights');
-    if (!Array.isArray(owners[0])) {
-        owners = [owners];
+    if (!Array.isArray(ownerArrays[0])) {
+        ownerArrays = [ownerArrays];
     }
 
-    let areOwners = owners.map(owner => isOwner(owner, user));
+    let areOwners = ownerArrays.map(owner => isOwner(owner, user));
 
     if (areOwners.every(value => value === true)) {
         return Promise.resolve(areOwners);
@@ -900,12 +935,12 @@ function validateRights(db, owners, user, rights) {
     for (let i = 0; i < rights.length; i++) {
         checks.push(checkGlobalRight(db, user, rights[i])
             .then(function (hasGlobal) {
-                if (hasGlobal) return owners.map(() => true);
+                if (hasGlobal) return ownerArrays.map(() => true);
                 return Promise.all([getDefaultGroups(db, user), nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})])
                     .then(result => {
                         const defaultGroups = result[0];
                         const groups = result[1];
-                        return owners.map((owners, idx) => {
+                        return ownerArrays.map((owners, idx) => {
                             if (areOwners[idx]) return true;
                             for (let j = 0; j < owners.length; j++) {
                                 if (groups.indexOf(owners[j]) > -1) return true;
@@ -921,11 +956,12 @@ function validateRights(db, owners, user, rights) {
             }));
     }
 
-    // Promise resolves with for each right an array of true/false for each passed owner
+    // Promise resolves with for each right an array of true/false that indicates if the user
+    // has this right for the given owner array
     // For example
-    //         read                 write
-    //   doc1  doc2  doc3    doc1   doc2  doc3
-    // [[true, true, false],[false, true, false]]
+    //           read                        write
+    //    own1[] own2[]  own3[]     own1[]   own2[]  own3[]
+    // [ [true,  true,   false],   [false,   true,   false] ]
 
     return Promise.all(checks).then(result => {
         if (result.length === 0) {
@@ -942,6 +978,21 @@ function validateRights(db, owners, user, rights) {
     });
 
     //return Promise.all(checks).then(result => result.some(value => value === true));
+}
+
+async function validateTokenOrRights(db, uuid, owners, rights, user, token) {
+    if (!Array.isArray(rights)) {
+        rights = [rights];
+    }
+    if (token && token.$kind === 'entry' && token.uuid === uuid) {
+        for (var i = 0; i < rights.length; i++) {
+            if (token.rights.indexOf(rights[i]) !== -1) {
+                return true;
+            }
+        }
+    }
+    const ok = await validateRights(db, owners, user, rights);
+    return ok[0];
 }
 
 async function getGroup(db, name) {

@@ -8,6 +8,7 @@ const couch = require('../middleware/couch');
 const util = require('../middleware/util');
 
 router.use(couch.setupCouch);
+router.use(couch.tokenLookup);
 
 const parseJson1mb = util.parseBody({jsonLimit: '1mb'});
 const parseJson100mb = util.parseBody({jsonLimit: '100mb'});
@@ -49,6 +50,12 @@ exports.init = function () {
     router.get('/:dbname/group/:name', couch.getGroup);
     //router.put('/:dbname/group/:name', parseJson1mb, couch.createOrUpdateGroup);
     router.delete('/:dbname/group/:name', couch.deleteGroup);
+
+    // Tokens
+    router.post('/:dbname/entry/:uuid/_token', couch.createEntryToken);
+    router.get('/:dbname/token', couch.getTokens);
+    router.get('/:dbname/token/:tokenid', couch.getTokenById);
+    router.delete('/:dbname/token/:tokenid', couch.deleteTokenById);
 
     return router;
 };
