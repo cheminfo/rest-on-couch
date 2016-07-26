@@ -9,10 +9,23 @@ describe('basic rest-api as anonymous (noRights)', function () {
     before(noRights);
 
     it('get an entry', function () {
-        return couch.getEntryById('A', 'b@b.com').then(entry => {
-            return request.get(`/db/test/entry/${entry._id}`)
-                .expect(401);
-        });
+        return request.get('/db/test/entry/A')
+            .expect(401);
+    });
+
+    it('get an entry with token', function () {
+        return request.get('/db/test/entry/A?token=mytoken')
+            .expect(200);
+    });
+
+    it('get an entry with token (wrong uuid)', function () {
+        return request.get('/db/test/entry/B?token=mytoken')
+            .expect(401);
+    });
+
+    it('not allowed to create a token', function () {
+        return request.post('/db/test/entry/A/_token')
+            .expect(401);
     });
 
     it('get all entries', function () {
@@ -126,6 +139,10 @@ describe('basic rest-api as b@b.com', function () {
                         res.body.rev.should.startWith('2');
                     });
             });
+    });
+
+    it('create token', function () {
+        return request.post('/db/test/entry/C/_token').expect(201);
     });
 
     it('delete document', function () {

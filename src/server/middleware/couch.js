@@ -27,6 +27,13 @@ exports.setupCouch = function*(next) {
     yield next;
 };
 
+exports.tokenLookup = function* (next) {
+    if (this.query.token) {
+        this.query.token = yield this.state.couch.getToken(this.query.token);
+    }
+    yield next;
+};
+
 exports.getDocumentByUuid = function*() {
     try {
         const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail, this.query);

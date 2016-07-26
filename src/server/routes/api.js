@@ -8,6 +8,7 @@ const couch = require('../middleware/couch');
 const util = require('../middleware/util');
 
 router.use(couch.setupCouch);
+router.use(couch.tokenLookup);
 
 const parseJson1mb = util.parseBody({jsonLimit: '1mb'});
 const parseJson100mb = util.parseBody({jsonLimit: '100mb'});

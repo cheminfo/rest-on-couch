@@ -321,9 +321,8 @@ class Couch {
         return cumRows.filter((r, idx) => idx < options.limit);
     }
 
-    async getEntriesByUserAndRights(user, rights, options) {
+    async getEntriesByUserAndRights(user, rights, options = {}) {
         debug(`getEntriesByUserAndRights (${user}, ${rights})`);
-        options = options || {};
         const limit = options.limit;
         const skip = options.skip;
 
@@ -347,7 +346,7 @@ class Couch {
         return await Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
     }
 
-    async getEntryByIdAndRights(id, user, rights, options) {
+    async getEntryByIdAndRights(id, user, rights, options = {}) {
         debug(`getEntryByIdAndRights (${id}, ${user}, ${rights})`);
         await this.open();
 
@@ -361,8 +360,7 @@ class Couch {
             hisEntry = owners[0];
         }
 
-        const ok = await validateRights(this._db, hisEntry.value, user, rights);
-        if (ok[0]) {
+        if (await validateTokenOrRights(this._db, hisEntry.id, hisEntry.value, rights, user, options.token)) {
             debug.trace(`user ${user} has access`);
             return await nanoPromise.getDocument(this._db, hisEntry.id, options);
         }
@@ -371,7 +369,7 @@ class Couch {
         throw new CouchError('user has no access', 'unauthorized');
     }
 
-    async getEntryByUuidAndRights(uuid, user, rights, options) {
+    async getEntryByUuidAndRights(uuid, user, rights, options = {}) {
         debug(`getEntryByUuidAndRights (${uuid}, ${user}, ${rights})`);
         await this.open();
 
@@ -386,8 +384,7 @@ class Couch {
         }
 
         debug.trace('check rights');
-        const ok = await validateRights(this._db, doc.$owners, user, rights);
-        if (ok[0]) {
+        if (await validateTokenOrRights(this._db, uuid, doc.$owners, rights, user, options.token)) {
             debug.trace(`user ${user} has access`);
             if (!options) {
                 return doc;
@@ -981,6 +978,21 @@ function validateRights(db, ownerArrays, user, rights) {
     });
 
     //return Promise.all(checks).then(result => result.some(value => value === true));
+}
+
+async function validateTokenOrRights(db, uuid, owners, rights, user, token) {
+    if (!Array.isArray(rights)) {
+        rights = [rights];
+    }
+    if (token && token.$kind === 'entry' && token.uuid === uuid) {
+        for (var i = 0; i < rights.length; i++) {
+            if (token.rights.indexOf(rights[i]) !== -1) {
+                return true;
+            }
+        }
+    }
+    const ok = await validateRights(db, owners, user, rights);
+    return ok[0];
 }
 
 async function getGroup(db, name) {
