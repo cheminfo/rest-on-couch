@@ -50,5 +50,11 @@ exports.init = function () {
     //router.put('/:dbname/group/:name', parseJson1mb, couch.createOrUpdateGroup);
     router.delete('/:dbname/group/:name', couch.deleteGroup);
 
+    // Tokens
+    router.post('/:dbname/entry/:uuid/_token', couch.createEntryToken);
+    router.get('/:dbname/token', couch.getTokens);
+    router.get('/:dbname/token/:tokenid', couch.getTokenById);
+    router.delete('/:dbname/token/:tokenid', couch.deleteTokenById);
+
     return router;
 };

@@ -259,6 +259,41 @@ exports.deleteGroup = function *() {
     }
 };
 
+exports.createEntryToken = function* () {
+    try {
+        const token = yield this.state.couch.createEntryToken(this.state.userEmail, this.params.uuid);
+        this.status = 201;
+        this.body = token;
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.getTokens = function* () {
+    try {
+        this.body = yield this.state.couch.getTokens(this.state.userEmail);
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.getTokenById = function* () {
+    try {
+        this.body = yield this.state.couch.getToken(this.params.tokenid);
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
+exports.deleteTokenById = function* () {
+    try {
+        yield this.state.couch.deleteToken(this.state.userEmail, this.params.tokenid);
+        this.body = {ok: true};
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
 function onGetError(ctx, e, secure) {
     switch (e.reason) {
         case 'unauthorized':
