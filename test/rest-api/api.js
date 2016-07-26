@@ -115,9 +115,11 @@ describe('basic rest-api as b@b.com', function () {
     });
 
     it('update document', function () {
-         return couch.getEntryById('C', 'b@b.com')
+        return couch.getEntryById('C', 'b@b.com')
             .then(entry => {
-                return request.put('/db/test/entry/C').send({$id: 'C', $content: {}, _rev: entry._rev})
+                return request
+                    .put('/db/test/entry/C')
+                    .send({$id: 'C', $content: {}, _rev: entry._rev})
                     .expect(200)
                     .then(res => {
                         res.body.should.have.property('rev');

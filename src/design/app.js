@@ -3,12 +3,12 @@
 const constants = require('../constants');
 const filters = require('./filters');
 const updates = require('./updates');
-const validate_doc_update = require('./validateDocUpdate');
+const validateDocUpdate = require('./validateDocUpdate');
 const views = require('./views');
 
-const mapTpl = function(doc) {
+const mapTpl = function (doc) {
     if (doc.$type !== 'entry') return;
-    var emitWithOwner = function(key, data) {
+    var emitWithOwner = function (key, data) {
         for (var i = 0; i < doc.$owners.length; i++) {
             if (key == null) {
                 emit([doc.$owners[i]], data);
@@ -42,7 +42,7 @@ module.exports = function getDesignDoc(custom) {
         filters: Object.assign({}, custom.filters, filters),
         updates: Object.assign({}, custom.updates, updates),
         views: Object.assign({}, custom.views, views),
-        validate_doc_update,
+        validate_doc_update: validateDocUpdate,
         lists: Object.assign({}, custom.lists)
     };
 };

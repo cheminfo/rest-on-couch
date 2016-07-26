@@ -530,8 +530,8 @@ class Couch {
         if (action !== 'add' && action !== 'remove') {
             throw new CouchError('Edit global right invalid action', 'bad argument');
         }
-        let e;
-        if (e = checkGlobalTypeAndUser(type, user)) {
+        let e = checkGlobalTypeAndUser(type, user);
+        if (e) {
             throw e;
         }
 

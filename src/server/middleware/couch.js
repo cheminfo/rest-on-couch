@@ -148,7 +148,7 @@ exports.queryEntriesByRight = function*() {
 
 exports.entriesByKindAndId = function * () {
     try {
-        for (let i=0; i<couchNeedsParse.length; i++) {
+        for (let i = 0; i < couchNeedsParse.length; i++) {
             let queryParam = this.query[couchNeedsParse[i]];
             let bodyParam = this.request.body[couchNeedsParse[i]];
             if (queryParam || bodyParam) {
@@ -166,7 +166,7 @@ exports.entriesByKindAndId = function * () {
 
 exports.entriesByOwnerAndId = function * () {
     try {
-        for (let i=0; i<couchNeedsParse.length; i++) {
+        for (let i = 0; i < couchNeedsParse.length; i++) {
             let queryParam = this.query[couchNeedsParse[i]];
             let bodyParam = this.request.body[couchNeedsParse[i]];
             if (queryParam || bodyParam) {
@@ -339,7 +339,7 @@ function processQuery(ctx) {
 
     var type = getViewType(ctx);
 
-    if (match = q.match(/^([<>=]{1,2})([^<>=]+)$/)) {
+    if ((match = q.match(/^([<>=]{1,2})([^<>=]+)$/))) {
         if (match[1] === '<') {
             query.startkey = '';
             query.endkey = match[2];
@@ -355,7 +355,7 @@ function processQuery(ctx) {
         } else if (match[1] === '==' || match[1] === '=') {
             query.key = match[2];
         }
-    } else if (match = q.match(/^(.+)\.\.(.+)$/)) {
+    } else if ((match = q.match(/^(.+)\.\.(.+)$/))) {
         query.startkey = match[1];
         query.endkey = match[2];
     } else {

@@ -33,7 +33,8 @@
 const FacebookStrategy = require('passport-facebook');
 
 exports.init = function (passport, router, config) {
-    passport.use(new FacebookStrategy({
+    passport.use(
+        new FacebookStrategy({
             clientID: config.appId,
             clientSecret: config.appSecret,
             callbackURL: config.publicAddress + config.callbackURL,
@@ -58,8 +59,7 @@ exports.init = function (passport, router, config) {
             // Successful authentication, redirect home.
             if (this.session.redirect) {
                 this.response.redirect(this.session.redirect);
-            }
-            else {
+            } else {
                 this.response.redirect(config.successRedirect);
             }
         });

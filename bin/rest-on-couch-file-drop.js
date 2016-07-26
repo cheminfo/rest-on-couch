@@ -23,7 +23,7 @@ function *getHomeDir(next) {
     yield next;
 }
 
-router.get('/', function * () {
+router.get('/', function* () {
     this.body = 'hello world';
     this.status = 200;
 });

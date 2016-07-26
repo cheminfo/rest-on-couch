@@ -48,7 +48,8 @@ const GitHubStrategy = require('passport-github').Strategy;
 const request = require('request-promise');
 
 exports.init = function (passport, router, config) {
-    passport.use(new GitHubStrategy({
+    passport.use(
+        new GitHubStrategy({
             clientID: config.clientID,
             clientSecret: config.clientSecret,
             callbackURL: config.publicAddress + config.callbackURL
@@ -87,8 +88,7 @@ exports.init = function (passport, router, config) {
             // Successful authentication, redirect home.
             if (this.session.redirect) {
                 this.response.redirect(this.session.redirect);
-            }
-            else {
+            } else {
                 this.response.redirect(config.successRedirect);
             }
         });

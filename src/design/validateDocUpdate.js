@@ -57,7 +57,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
                 if (newDoc.$id.length !== oldDoc.$id.length) {
                     throw ({forbidden: 'Cannot change the ID'});
                 }
-                for (i=0; i<newDoc.$id.length; i++) {
+                for (i = 0; i < newDoc.$id.length; i++) {
                     if (newDoc.$id[i] !== oldDoc.$id[i]) {
                         throw ({forbidden: 'Cannot change the ID'});
                     }

@@ -3,7 +3,7 @@
 module.exports = {
     database: 'jdx',
     defaultEntry: {
-        molecule: function() {
+        molecule: function () {
             return {
                 parent: [],
                 name: [],

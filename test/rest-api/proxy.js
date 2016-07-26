@@ -6,7 +6,7 @@ const supertest = require('supertest-as-promised')(Promise);
 let request = supertest.agent(server.app.callback());
 
 describe('requests that are proxied to couch db', function () {
-    it('_uuids', function() {
+    it('_uuids', function () {
         // couchdb returns text/plain so you have to parse the response yourself...
         return request.get('/_uuids').expect(200)
             .then(res => {

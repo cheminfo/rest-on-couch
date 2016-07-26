@@ -1,15 +1,5 @@
-env:
-  es6: true
-  node: true
 parser: babel-eslint
-extends: eslint:recommended
+extends: cheminfo
 rules:
-  eol-last: 2
-  eqeqeq: [2, allow-null]
-  no-cond-assign: 0
-  no-multiple-empty-lines: [2, {max: 2, maxEOF: 1}]
-  no-trailing-spaces: 2
-  keyword-spacing: 2
-  semi: 2
-  quotes: [2, single, avoid-escape]
-  require-yield: 0
+  camelcase: ['error', {properties: never}]
+  require-yield: 'off'

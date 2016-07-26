@@ -6,15 +6,15 @@ const superagent = require('superagent-promise')(require('superagent'), Promise)
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
     done(null, user);
 });
 
-passport.deserializeUser(function(obj, done) {
+passport.deserializeUser(function (obj, done) {
     done(null, obj);
 });
 
-exports.ensureAuthenticated = function *(next) {
+exports.ensureAuthenticated = function* (next) {
     if (this.isAuthenticated()) {
         yield next;
         return;
@@ -22,11 +22,11 @@ exports.ensureAuthenticated = function *(next) {
     this.status = 401;
 };
 
-exports.getUserEmail = function(ctx) {
+exports.getUserEmail = function (ctx) {
     let email, user;
     if (!ctx.session.passport) {
         email = 'anonymous';
-    } else if (user = ctx.session.passport.user) {
+    } else if ((user = ctx.session.passport.user)) {
         email = user.email;
     } else {
         debug('passport without user');
@@ -52,7 +52,7 @@ function getUserEmailFromToken(ctx) {
 
     let prom = Promise.resolve(res);
 
-    for (let i=0; i<config.authServers.length; i++) {
+    for (let i = 0; i < config.authServers.length; i++) {
         prom = prom.then(res => {
             if (res.userCtx !== null && res.userCtx !== 'anonymous') {
                 return res;

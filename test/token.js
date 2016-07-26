@@ -2,7 +2,7 @@
 
 const data = require('./data/data');
 
-describe.only('token methods', function () {
+describe('token methods', function () {
     before(data);
     it('user should be able to create and get tokens', function () {
         return Promise.all([couch.createEntryToken('a@a.com', 'A'), couch.createEntryToken('a@a.com', 'B')])
