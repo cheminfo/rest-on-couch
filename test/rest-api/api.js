@@ -23,6 +23,11 @@ describe('basic rest-api as anonymous (noRights)', function () {
             .expect(401);
     });
 
+    it('get an entry with token (inexisting token)', function () {
+        return request.get('/db/test/entry/B?token=notexist')
+            .expect(401);
+    });
+
     it('not allowed to create a token', function () {
         return request.post('/db/test/entry/A/_token')
             .expect(401);

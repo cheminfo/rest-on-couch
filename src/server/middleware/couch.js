@@ -8,6 +8,7 @@ const getConfig = require('../../config/config').getConfig;
 const Couch = require('../../index');
 const debug = require('../../util/debug')('middleware:couch');
 const views = require('../../design/views');
+const CouchError = require('../../util/CouchError');
 
 const couchNeedsParse = ['key', 'startkey', 'endkey'];
 
@@ -29,7 +30,15 @@ exports.setupCouch = function*(next) {
 
 exports.tokenLookup = function* (next) {
     if (this.query.token) {
-        this.query.token = yield this.state.couch.getToken(this.query.token);
+        try {
+            this.query.token = yield this.state.couch.getToken(this.query.token);
+        } catch (e) {
+            if (e.reason === 'not found') {
+                return onGetError(this, new CouchError('token not found', 'unauthorized'));
+            } else {
+                return onGetError(this, e);
+            }
+        }
     }
     yield next;
 };
