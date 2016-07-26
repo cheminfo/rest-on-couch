@@ -915,13 +915,13 @@ function isOwner(owners, user) {
     return false;
 }
 
-function validateRights(db, owners, user, rights) {
+function validateRights(db, ownerArrays, user, rights) {
     debug.trace('validateRights');
-    if (!Array.isArray(owners[0])) {
-        owners = [owners];
+    if (!Array.isArray(ownerArrays[0])) {
+        ownerArrays = [ownerArrays];
     }
 
-    let areOwners = owners.map(owner => isOwner(owner, user));
+    let areOwners = ownerArrays.map(owner => isOwner(owner, user));
 
     if (areOwners.every(value => value === true)) {
         return Promise.resolve(areOwners);
@@ -938,12 +938,12 @@ function validateRights(db, owners, user, rights) {
     for (let i = 0; i < rights.length; i++) {
         checks.push(checkGlobalRight(db, user, rights[i])
             .then(function (hasGlobal) {
-                if (hasGlobal) return owners.map(() => true);
+                if (hasGlobal) return ownerArrays.map(() => true);
                 return Promise.all([getDefaultGroups(db, user), nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})])
                     .then(result => {
                         const defaultGroups = result[0];
                         const groups = result[1];
-                        return owners.map((owners, idx) => {
+                        return ownerArrays.map((owners, idx) => {
                             if (areOwners[idx]) return true;
                             for (let j = 0; j < owners.length; j++) {
                                 if (groups.indexOf(owners[j]) > -1) return true;
@@ -959,11 +959,12 @@ function validateRights(db, owners, user, rights) {
             }));
     }
 
-    // Promise resolves with for each right an array of true/false for each passed owner
+    // Promise resolves with for each right an array of true/false that indicates if the user
+    // has this right for the given owner array
     // For example
-    //         read                 write
-    //   doc1  doc2  doc3    doc1   doc2  doc3
-    // [[true, true, false],[false, true, false]]
+    //           read                        write
+    //    own1[] own2[]  own3[]     own1[]   own2[]  own3[]
+    // [ [true,  true,   false],   [false,   true,   false] ]
 
     return Promise.all(checks).then(result => {
         if (result.length === 0) {
