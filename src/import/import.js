@@ -114,6 +114,7 @@ exports.import = function (database, importName, file) {
                 info.content_type = result.content_type || 'application/octet-stream';
                 info.field = result.field;
                 info.reference = result.reference;
+                info.content = result.content;
                 return info;
             });
         } else if (json) {
@@ -148,7 +149,7 @@ exports.import = function (database, importName, file) {
                 name: info.jpath.join('/') + '/' + filename,
                 data: contents,
                 content_type: info.content_type
-            });
+            }, info.content);
         } else if (json) {
             var entry = {};
             entry.$id = info.info.id;

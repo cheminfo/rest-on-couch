@@ -2,6 +2,7 @@
 
 const debug = require('./util/debug')('main');
 const _ = require('lodash');
+const extend = require('extend');
 const nano = require('nano');
 
 const CouchError = require('./util/CouchError');
@@ -466,7 +467,7 @@ class Couch {
             .then(getAttachmentFromEntry(this, name, asStream));
     }
 
-    async addFileToJpath(id, user, jpath, json, file) {
+    async addFileToJpath(id, user, jpath, json, file, newContent) {
         if (!Array.isArray(jpath)) {
             throw new CouchError('jpath must be an array');
         }
@@ -482,6 +483,11 @@ class Couch {
 
         const entry = await this.getEntryByIdAndRights(id, user, ['write']);
         let current = entry.$content || {};
+
+        if (newContent) {
+            extend(current, newContent);
+        }
+
         for (var i = 0; i < jpath.length; i++) {
             let newCurrent = current[jpath[i]];
             if (!newCurrent) {
