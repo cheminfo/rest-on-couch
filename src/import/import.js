@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const fold = require('fold-to-ascii').fold;
 
 const Couch = require('../index');
 const debug = require('../util/debug')('import');
@@ -12,6 +13,7 @@ exports.import = function (database, importName, file) {
     debug(`import ${file} (${database}, ${importName})`);
 
     const filename = path.parse(file).base;
+    const goodFilename = fold(filename, '_');
     let contents = fs.readFileSync(file);
 
     let config = getConfig(database);
@@ -146,7 +148,7 @@ exports.import = function (database, importName, file) {
             return couch.addFileToJpath(info.id, info.owner, info.jpath, info.data, {
                 field: info.field,
                 reference: info.reference,
-                name: info.jpath.join('/') + '/' + filename,
+                name: info.jpath.join('/') + '/' + goodFilename,
                 data: contents,
                 content_type: info.content_type
             }, info.content);

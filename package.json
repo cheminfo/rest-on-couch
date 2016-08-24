@@ -43,6 +43,7 @@
     "debug": "^2.2.0",
     "escape-string-regexp": "^1.0.4",
     "extend": "^3.0.0",
+    "fold-to-ascii": "^2.0.2",
     "fs-extra": "^0.30.0",
     "kcors": "^1.0.1",
     "koa": "^1.1.2",
