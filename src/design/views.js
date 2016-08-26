@@ -129,6 +129,13 @@ views.logsByEpoch = {
     }
 };
 
+views.logsByLevel = {
+    map: function (doc) {
+        if(doc.$type !== 'log') return;
+        emit(doc.level);
+    }
+};
+
 views.user = {
     map: function (doc) {
         if (doc.$type !== 'user') return;
