@@ -131,7 +131,7 @@ views.logsByEpoch = {
 
 views.logsByLevel = {
     map: function (doc) {
-        if(doc.$type !== 'log') return;
+        if (doc.$type !== 'log') return;
         emit(doc.level);
     }
 };
