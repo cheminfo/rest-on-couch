@@ -105,6 +105,28 @@ describe('Query view filter groups', function () {
                 res[2].value.should.equal('entryWithDefaultMultiRead');
             });
     });
+
+    it('should only return entries owned by the owner by using the "mine" option', function () {
+        return couch.queryEntriesByRight('a@a.com', 'entryIdByRight', null, {mine: 1})
+            .then(res => {
+                res.length.should.equal(1);
+                res[0].value.should.equal('onlyA');
+            });
+    });
+
+    it('should return group entries and owner entries when "groups" and "mine" options are used in combination', function () {
+        return couch.queryEntriesByRight('a@a.com', 'entryIdByRight', null, {mine: 1, groups: 'defaultAnonymousRead'})
+            .then(res => {
+                res.length.should.equal(3);
+            });
+    });
+
+    it('should ignore groups in the "groups" option if the user does not belong to it', function () {
+        return couch.queryEntriesByRight('a@a.com', 'entryIdByRight', null, {groups: 'x@x.com'})
+            .then(res => {
+                res.length.should.equal(0);
+            });
+    });
 });
 
 function sortByValue(a, b) {

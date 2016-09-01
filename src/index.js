@@ -271,7 +271,13 @@ class Couch {
                 }
             }
             userGroups = groupsToUse;
+            if (userGroups.indexOf(user) === -1 && options.mine) {
+                userGroups.push(user);
+            }
+        } else if (options.mine) {
+            userGroups = [user];
         }
+
 
         const data = new Map();
         const userStartKey = options.key ? [options.key] : (options.startkey ? options.startkey : []);
