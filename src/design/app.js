@@ -1,5 +1,8 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
 const constants = require('../constants');
 const filters = require('./filters');
 const updates = require('./updates');
@@ -27,9 +30,18 @@ module.exports = function getDesignDoc(custom) {
     if (custom.views) {
         for (const viewName in custom.views) {
             const view = custom.views[viewName];
-            if (view.withOwner && typeof view.map === 'function') {
-                view.map = mapTpl.replace('CUSTOM_MAP', view.map.toString());
-                view.reduce = '_count'; // force the reduce for future optimizations.
+            if (viewName === 'lib') {
+                for (const libName in view) {
+                    const lib = view[libName];
+                    if (typeof lib === 'string' && lib.endsWith('.js')) {
+                        view[libName] = fs.readFileSync(path.resolve(lib), 'utf8');
+                    }
+                }
+            } else {
+                if (view.withOwner && typeof view.map === 'function') {
+                    view.map = mapTpl.replace('CUSTOM_MAP', view.map.toString());
+                    view.reduce = '_count'; // force the reduce for future optimizations.
+                }
             }
         }
     }
