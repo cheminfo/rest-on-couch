@@ -248,6 +248,15 @@ exports.getGroup = function*() {
     }
 };
 
+exports.getGroups = function*() {
+    try {
+        var right = this.params.right || 'read';
+        this.body = yield this.state.couch.getGroupsByRight(this.state.userEmail, right);
+    } catch (e) {
+        onGetError(this, e);
+    }
+};
+
 /* todo implement it
 exports.createOrUpdateGroup = function *() {
     try {

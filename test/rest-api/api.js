@@ -174,4 +174,10 @@ describe('basic rest-api as a@a.com', function () {
             response.body.should.have.properties(['name', 'users', 'rights']);
         });
     });
+
+    it('get list of groups', function () {
+        return request.get('/db/test/groups').expect(200).then(function (response) {
+            response.body.should.deepEqual(['groupA']);
+        });
+    });
 });

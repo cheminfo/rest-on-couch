@@ -48,6 +48,7 @@ exports.init = function () {
 
     // Groups
     router.get('/:dbname/group/:name', couch.getGroup);
+    router.get('/:dbname/groups', couch.getGroups);
     //router.put('/:dbname/group/:name', parseJson1mb, couch.createOrUpdateGroup);
     router.delete('/:dbname/group/:name', couch.deleteGroup);
 
