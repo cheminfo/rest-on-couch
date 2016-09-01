@@ -198,7 +198,11 @@ class Couch {
         options = options || {};
         debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
         await this.open();
-        const result = await nanoPromise.queryView(this._db, 'entryByOwnerAndId', {key: [user, id], reduce: false, include_docs: true});
+        const result = await nanoPromise.queryView(this._db, 'entryByOwnerAndId', {
+            key: [user, id],
+            reduce: false,
+            include_docs: true
+        });
         if (result.length === 0) {
             const hasRight = await checkRightAnyGroup(this._db, user, 'create');
             if (!hasRight) {
@@ -256,8 +260,19 @@ class Couch {
             return _.uniqBy(result, 'id');
         }
 
-        const userGroups = await this.getGroupsByRight(user, right);
+        var userGroups = await this.getGroupsByRight(user, right);
         userGroups.push(user);
+        if (options.groups) {
+            var groupsToUse = [];
+            if (!Array.isArray(options.groups)) options.groups = [options.groups];
+            for (var i = 0; i < userGroups.length; i++) {
+                if (options.groups.indexOf(userGroups[i]) >= 0) {
+                    groupsToUse.push(userGroups[i]);
+                }
+            }
+            userGroups = groupsToUse;
+        }
+
         const data = new Map();
         const userStartKey = options.key ? [options.key] : (options.startkey ? options.startkey : []);
         const userEndKey = options.key ? [options.key] : (options.endkey ? options.endkey : []);
@@ -690,7 +705,7 @@ class Couch {
         // Search in default groups
         const defaultGroups = await getDefaultGroups(this._db, user, true);
         // Search inside groups
-        const userGroups  = await nanoPromise.queryView(this._db, 'groupByUserAndRight', {key: [user, right]}, {onlyValue: true});
+        const userGroups = await nanoPromise.queryView(this._db, 'groupByUserAndRight', {key: [user, right]}, {onlyValue: true});
         // Merge both lists
         const union = new Set([...defaultGroups, ...userGroups]);
         return Array.from(union);
@@ -1153,7 +1168,7 @@ async function saveEntry(db, entry, user) {
 }
 
 function getAttachmentFromEntry(ctx, name, asStream) {
-    return async function(entry) {
+    return async function (entry) {
         if (entry._attachments && entry._attachments[name]) {
             return await nanoPromise.getAttachment(ctx._db, entry._id, name, asStream, {rev: entry._rev});
         } else {

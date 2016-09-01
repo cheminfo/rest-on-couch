@@ -74,3 +74,41 @@ describe('Query view with owner (group right)', function () {
             });
     });
 });
+
+describe('Query view filter groups', function () {
+    before(noRights);
+    it('should only return entries owned by the user', function () {
+        return couch.queryEntriesByRight('a@a.com', 'entryIdByRight', null, {groups: 'a@a.com'})
+            .then(res => {
+                res.length.should.equal(1);
+                res[0].value.should.equal('onlyA');
+            });
+    });
+
+    it('should only return entries owned by the defaultAnonymousRead group', function () {
+        return couch.queryEntriesByRight('a@a.com', 'entryIdByRight', null, {groups: ['defaultAnonymousRead']})
+            .then(res => {
+                res.length.should.equal(2);
+                res.sort(sortByValue);
+                res[0].value.should.equal('entryWithDefaultAnonymousRead');
+                res[1].value.should.equal('entryWithDefaultMultiRead');
+            });
+    });
+
+    it('should only return entries owned by the defaultAnonymousRead or defaultAnyuserRead groups', function () {
+        return couch.queryEntriesByRight('a@a.com', 'entryIdByRight', null, {groups: ['defaultAnonymousRead', 'defaultAnyuserRead']})
+            .then(res => {
+                res.length.should.equal(3);
+                res.sort(sortByValue);
+                res[0].value.should.equal('entryWithDefaultAnonymousRead');
+                res[1].value.should.equal('entryWithDefaultAnyuserRead');
+                res[2].value.should.equal('entryWithDefaultMultiRead');
+            });
+    });
+});
+
+function sortByValue(a, b) {
+    if (a.value < b.value) return -1;
+    else if (a.value > b.value) return 1;
+    return 0;
+}
