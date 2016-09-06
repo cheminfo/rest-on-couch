@@ -100,6 +100,11 @@ exports.import = function (database, importName, file) {
         debug.trace('parse file contents');
         if (parse) {
             return Promise.resolve(parse(filename, contents, couch)).then(function (result) {
+                if (result.skip) {
+                    var error = new Error('skipped');
+                    error.skip = true;
+                    throw error;
+                }
                 if (typeof result.jpath !== 'string') {
                     throw new Error('parse: jpath must be a string');
                 }
