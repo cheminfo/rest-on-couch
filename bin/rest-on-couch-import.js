@@ -54,14 +54,14 @@ const findFiles = co.wrap(function* (homeDir) {
 
     const databases = yield fsp.readdir(homeDir);
     for (const database of databases) {
-        if (database === 'node_modules') continue;
+        if (shouldIgnore(database)) continue;
         const databasePath = path.join(homeDir, database);
         const stat = yield fsp.stat(databasePath);
         if (!stat.isDirectory()) continue;
 
         const importNames = yield fsp.readdir(databasePath);
         for (const importName of importNames) {
-            if (importName === 'node_modules') continue;
+            if (shouldIgnore(importName)) continue;
             const importNamePath = path.join(databasePath, importName);
             const stat = yield fsp.stat(importNamePath);
             if (!stat.isDirectory()) continue;
@@ -282,6 +282,11 @@ function createDir(dir) {
 function getDatePath() {
     var now = new Date();
     return now.getUTCFullYear() + '/' + ('0' + (now.getUTCMonth() + 1)).slice(-2) + '/' + ('0' + now.getUTCDate()).slice(-2);
+}
+
+function shouldIgnore(name) {
+    return name === 'node_modules' ||
+        name.startsWith('.');
 }
 
 if (program.args[0]) {
