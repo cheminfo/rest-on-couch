@@ -162,6 +162,7 @@ function processFile(database, importName, homeDir, p) {
             tryRename(p, path.join(dir, parsedPath.base), resolve, reject);
         });
     }).catch(e => {
+        if (e.skip) return;
         // mv to errored
         return new Promise(function (resolve, reject) {
             if (e.message.startsWith('no import config')) {
@@ -192,6 +193,7 @@ function* processFile2(database, importName, filePath) {
         // success, move to processed
         yield moveFile(filePath, parsedPath.base, splitParsedPath, toProcess, 'processed');
     } catch (e) {
+        if (e.skip) return;
         // error, move to errored
         if (e.message.startsWith('no import config')) {
             debug.warn('no import configuration found, skipping this file');
