@@ -313,7 +313,7 @@ class Couch {
 
     async queryViewByUser(user, view, options, rights) {
         debug(`queryViewByUser (${user}, ${view})`);
-        options = options || {};
+        options = Object.assign({}, options);
         options.include_docs = true;
         options.reduce = false;
         options.skip = 0;
@@ -334,13 +334,13 @@ class Couch {
             if (!options.limit) return rows;
 
             // Concatenate
-            limit = options.limit;
-            options.skip += limit;
+            options.skip += options.limit;
+            options.limit = options.limit * 2;
             cumRows = cumRows.concat(rows);
         }
 
         // Get rid of extra rows
-        return cumRows.filter((r, idx) => idx < options.limit);
+        return cumRows.filter((r, idx) => idx < limit);
     }
 
     async getEntriesByUserAndRights(user, rights, options = {}) {
