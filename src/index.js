@@ -122,7 +122,7 @@ class Couch {
                 });
             } else {
                 debug('db not found - autoCreate is false');
-                throw new CouchError('database does not exist', 'not found');
+                throw new CouchError(`database ${this._databaseName} does not exist`, 'not found');
             }
         }
         // Must be done before the other checks because they can add documents to the db
