@@ -19,16 +19,21 @@ const authPlugins = [
 ];
 
 const enabledAuthPlugins = [];
+const showLoginAuthPlugins = [];
 
 if (config.auth) {
     authPlugins.forEach(function (authPlugin) {
-        if (!config.auth[authPlugin]) {
+        const pluginConfig = config.auth[authPlugin];
+        if (!pluginConfig) {
             return debug(`plugin ${authPlugin} not configured`);
         }
         try {
             debug(`loading auth plugin: ${authPlugin}`);
             require(`../auth/${authPlugin}/index.js`).init(passport, router, config.auth[authPlugin], config);
             enabledAuthPlugins.push(authPlugin);
+            if (pluginConfig.showLogin !== false) {
+                showLoginAuthPlugins.push(authPlugin);
+            }
         } catch (e) {
             debug.error(e);
             die(`could not init auth middleware: ${e.message}`);
@@ -46,7 +51,7 @@ router.get('/login', function*() {
         this.session.continue = null;
     } else {
         this.session.popup = false;
-        this.state.enabledAuthPlugins = enabledAuthPlugins;
+        this.state.enabledAuthPlugins = showLoginAuthPlugins;
         yield this.render('login');
     }
 });
