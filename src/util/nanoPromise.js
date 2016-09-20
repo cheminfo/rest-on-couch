@@ -3,6 +3,7 @@
 const constants = require('../constants');
 const debug = require('./debug')('nano');
 const hasOwnProperty = Object.prototype.hasOwnProperty;
+const getConfig = require('../config/config').getConfig;
 
 exports.authenticate = function (nano, user, password) {
     return new Promise((resolve, reject) => {
@@ -90,7 +91,9 @@ exports.queryView = function (db, view, params = {}, options = {}) {
     return new Promise((resolve, reject) => {
         debug.trace(`queryView ${view}`);
         cleanOptions(params);
-        db.view(constants.DESIGN_DOC_NAME, view, params, function (err, body) {
+        var config = getConfig(db.config.db);
+        var designDoc = config.designDocNames && config.designDocNames[view] || constants.DESIGN_DOC_NAME;
+        db.view(designDoc, view, params, function (err, body) {
             if (err) return reject(err);
             if (options.onlyValue) {
                 resolve(body.rows.map(row => row.value));

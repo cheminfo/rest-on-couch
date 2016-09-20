@@ -1,7 +1,6 @@
 'use strict';
 
 module.exports = {
-    database: 'jdx',
     defaultEntry: {
         molecule: function () {
             return {

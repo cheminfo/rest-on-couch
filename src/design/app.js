@@ -24,9 +24,29 @@ const mapTpl = function (doc) {
     customMap(doc);
 }.toString();
 
-module.exports = function getDesignDoc(custom) {
+module.exports = function (custom) {
     custom = custom || {};
 
+    processViews(custom);
+
+    if (custom.designDoc === 'app') {
+        return {
+            _id: constants.DESIGN_DOC_ID,
+            language: 'javascript',
+            version: constants.DESIGN_DOC_VERSION,
+            customVersion: custom.version,
+            filters: Object.assign({}, custom.filters, filters),
+            updates: Object.assign({}, custom.updates, updates),
+            views: Object.assign({}, custom.views, views),
+            validate_doc_update: validateDocUpdate,
+            lists: Object.assign({}, custom.lists)
+        };
+    } else {
+        return custom;
+    }
+};
+
+function processViews(custom) {
     if (custom.views) {
         for (const viewName in custom.views) {
             const view = custom.views[viewName];
@@ -45,16 +65,4 @@ module.exports = function getDesignDoc(custom) {
             }
         }
     }
-
-    return {
-        _id: constants.DESIGN_DOC_ID,
-        language: 'javascript',
-        version: constants.DESIGN_DOC_VERSION,
-        customVersion: custom.version,
-        filters: Object.assign({}, custom.filters, filters),
-        updates: Object.assign({}, custom.updates, updates),
-        views: Object.assign({}, custom.views, views),
-        validate_doc_update: validateDocUpdate,
-        lists: Object.assign({}, custom.lists)
-    };
-};
+}

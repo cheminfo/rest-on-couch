@@ -4,6 +4,7 @@ const debug = require('./util/debug')('main');
 const _ = require('lodash');
 const extend = require('extend');
 const nano = require('nano');
+const objHash = require('object-hash');
 
 const CouchError = require('./util/CouchError');
 const constants = require('./constants');
@@ -904,24 +905,102 @@ async function checkSecurity(db, admin) {
 }
 
 async function checkDesignDoc(db, custom) {
-    debug.trace('check design doc');
+    var toUpdate = new Set();
+    debug.trace('check _design/app design doc');
     const doc = await nanoPromise.getDocument(db, constants.DESIGN_DOC_ID);
     if (doc === null) {
+        toUpdate.add(constants.DESIGN_DOC_NAME);
         debug.trace('design doc missing');
-        return await createDesignDoc(db, null, custom);
-    }
-    if (
+    } else if (
         (!doc.version || doc.version < constants.DESIGN_DOC_VERSION) ||
         (custom && typeof custom.version === 'number' && (!doc.customVersion || doc.customVersion < custom.version))
     ) {
         debug.trace('design doc needs update');
-        return await createDesignDoc(db, doc._rev, custom);
+        toUpdate.add(constants.DESIGN_DOC_NAME);
     }
+
+    debug.trace('check other custom design docs');
+    var viewNames = Object.keys(custom.views);
+    if (viewNames.indexOf(constants.DESIGN_DOC_NAME) > -1) {
+        let idx = viewNames.indexOf(constants.DESIGN_DOC_NAME);
+        viewNames.splice(idx, 1);
+    }
+    var designNames = viewNames.map(vn => custom.views[vn].designDoc);
+    var uniqDesignNames = _.uniq(designNames);
+    uniqDesignNames = uniqDesignNames.filter(d => d && d !== constants.DESIGN_DOC_NAME);
+    var designDocs = await Promise.all(uniqDesignNames.map(name => nanoPromise.getDocument(db, `_design/${name}`)));
+    uniqDesignNames.push(constants.DESIGN_DOC_NAME);
+    designDocs.push(doc);
+
+    for (var i = 0; i < viewNames.length; i++) {
+        let view = custom.views[viewNames[i]];
+        var hash = objHash(view);
+        var dbView = getDBView(viewNames[i]);
+        if (!dbView) {
+            if (view.designDoc) {
+                debug.trace(`design doc ${view.designDoc} not found, will create it`);
+                toUpdate.add(view.designDoc);
+            }
+        } else {
+
+            if (dbView.hash !== hash) {
+                if (view.designDoc) {
+                    debug.trace(`design doc ${view.designDoc} changed, will update it`);
+                    toUpdate.add(view.designDoc);
+                }
+            }
+        }
+        view.hash = hash;
+    }
+
+    debug.trace(`Update ${toUpdate.size} design documents`);
+    for (var designName of toUpdate.keys()) {
+        var idx = uniqDesignNames.indexOf(designName);
+        if (idx > -1 || designName === constants.DESIGN_DOC_NAME) {
+            await createDesignDoc(db, designDocs[idx] && designDocs[idx]._rev || null, getNewDesignDoc(designName));
+        } else {
+            debug.trace('Expected to be unreachable');
+        }
+    }
+
+    function getDBView(viewName) {
+        for (var i = 0; i < designDocs.length; i++) {
+            if (designDocs[i] && designDocs[i].views && designDocs[i].views[viewName]) {
+                return designDocs[i].views[viewName];
+            }
+        }
+        return null;
+    }
+
+    function getNewDesignDoc(designName) {
+        if (designName === constants.DESIGN_DOC_NAME) {
+            var designDoc = Object.assign({}, custom);
+        } else {
+            designDoc = {};
+        }
+        designDoc.views = {};
+        designDoc.designDoc = designName;
+        for (var i = 0; i < viewNames.length; i++) {
+            var viewName = viewNames[i];
+            if (custom.views[viewName].designDoc === designName) {
+                designDoc.views[viewName] = custom.views[viewName];
+            } else if (!custom.views[viewName].designDoc && designName === constants.DESIGN_DOC_NAME) {
+                designDoc.views[viewName] = custom.views[viewName];
+                designDoc.version = custom.version;
+                designDoc.updat;
+            }
+        }
+        designDoc._id =  '_design/' + designName;
+        return designDoc;
+    }
+
+    // For each design doc, check if any of the associated view has a different hash
+
 }
 
 async function createDesignDoc(db, revID, custom) {
     debug.trace('create design doc');
-    const designDoc = getDesignDoc(custom);
+    var designDoc = getDesignDoc(custom);
     if (revID) {
         designDoc._rev = revID;
     }

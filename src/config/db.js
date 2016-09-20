@@ -19,12 +19,25 @@ if (homeDir) {
                 let databaseConfig = {};
                 try {
                     databaseConfig = require(path.join(databasePath, 'config'));
+                    var designDocNames = {};
+                    databaseConfig.designDocNames = [];
+                    if (databaseConfig.customDesign && databaseConfig.customDesign.views) {
+                        var views = databaseConfig.customDesign.views;
+                        for (var key in views) {
+                            if (views[key].designDoc) {
+                                designDocNames[key] = views[key].designDoc;
+                            }
+                        }
+                    }
+                    databaseConfig.designDocNames = designDocNames;
                 } catch (e) {
                     // database config is not mandatory
                 }
                 if (!databaseConfig.import) {
                     databaseConfig.import = {};
                 }
+
+                databaseConfig.designDocNames = databaseConfig.designDocNames || {};
                 readImportConfig(databasePath, databaseConfig);
                 dbConfig[database] = databaseConfig;
             }
