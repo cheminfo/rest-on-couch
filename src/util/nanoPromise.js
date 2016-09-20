@@ -54,7 +54,8 @@ exports.createDatabase = function (nano, database) {
     });
 };
 
-exports.getDocument = function (db, docID, options = {}) {
+exports.getDocument = function (db, docID, options) {
+    options = options || {};
     return new Promise((resolve, reject) => {
         debug.trace(`getDocument ${docID}`);
         cleanOptions(options);
