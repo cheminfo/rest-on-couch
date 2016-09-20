@@ -85,7 +85,9 @@ exports.insertDocument = function (db, doc) {
     });
 };
 
-exports.queryView = function (db, view, params = {}, options = {}) {
+exports.queryView = function (db, view, params, options) {
+    options = options || {};
+    params = params || {};
     if (!hasOwnProperty.call(params, 'reduce')) {
         params.reduce = false;
     }
@@ -153,7 +155,8 @@ exports.attachFiles = function (db, doc, files) {
     });
 };
 
-exports.getAttachment = function (db, doc, name, asStream, options = {}) {
+exports.getAttachment = function (db, doc, name, asStream, options) {
+    options = options || {};
     return new Promise((resolve, reject) => {
         debug.trace(`get attachment ${doc}/${name}`);
         cleanOptions(options);
@@ -169,7 +172,8 @@ exports.getAttachment = function (db, doc, name, asStream, options = {}) {
     });
 };
 
-exports.request = function (nano, options = {}) {
+exports.request = function (nano, options) {
+    options = options || {};
     return new Promise((resolve, reject) => {
         debug.trace('request');
         cleanOptions(options);
