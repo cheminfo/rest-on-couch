@@ -905,17 +905,18 @@ async function checkSecurity(db, admin) {
 }
 
 async function checkDesignDoc(db, custom) {
+    custom.views = custom.views || {};
     var toUpdate = new Set();
     debug.trace('check _design/app design doc');
     const doc = await nanoPromise.getDocument(db, constants.DESIGN_DOC_ID);
     if (doc === null) {
         toUpdate.add(constants.DESIGN_DOC_NAME);
-        debug.trace('design doc missing');
+        debug.trace(`${constants.DESIGN_DOC_ID} missing`);
     } else if (
         (!doc.version || doc.version < constants.DESIGN_DOC_VERSION) ||
         (custom && typeof custom.version === 'number' && (!doc.customVersion || doc.customVersion < custom.version))
     ) {
-        debug.trace('design doc needs update');
+        debug.trace(`${constants.DESIGN_DOC_ID} needs update`);
         toUpdate.add(constants.DESIGN_DOC_NAME);
     }
 
@@ -986,8 +987,6 @@ async function checkDesignDoc(db, custom) {
                 designDoc.views[viewName] = custom.views[viewName];
             } else if (!custom.views[viewName].designDoc && designName === constants.DESIGN_DOC_NAME) {
                 designDoc.views[viewName] = custom.views[viewName];
-                designDoc.version = custom.version;
-                designDoc.updat;
             }
         }
         designDoc._id =  '_design/' + designName;
@@ -1000,7 +999,7 @@ async function checkDesignDoc(db, custom) {
 
 async function createDesignDoc(db, revID, custom) {
     debug.trace('create design doc');
-    var designDoc = getDesignDoc(custom);
+    var designDoc = getDesignDoc(custom, db.config.db);
     if (revID) {
         designDoc._rev = revID;
     }
