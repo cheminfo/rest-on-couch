@@ -24,7 +24,7 @@ if (homeDir) {
                     if (databaseConfig.customDesign && databaseConfig.customDesign.views) {
                         var views = databaseConfig.customDesign.views;
                         for (var key in views) {
-                            if(views.hasOwnProperty(key)) {
+                            if (views.hasOwnProperty(key)) {
                                 if (views[key].designDoc) {
                                     designDocNames[key] = views[key].designDoc;
                                 }
