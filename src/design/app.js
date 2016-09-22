@@ -69,7 +69,7 @@ function processViews(custom, config) {
         for (const libName in view) {
             const lib = view[libName];
             if (typeof lib === 'string' && lib.endsWith('.js')) {
-                custom.views.lib[libName] = fs.readFileSync(path.resolve(lib), 'utf8');
+                custom.views.lib[libName] = fs.readFileSync(path.resolve(config.homeDir, config.database, lib), 'utf8');
             }
         }
     }

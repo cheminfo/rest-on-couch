@@ -41,6 +41,7 @@ if (homeDir) {
 
                 databaseConfig.designDocNames = databaseConfig.designDocNames || {};
                 readImportConfig(databasePath, databaseConfig);
+                databaseConfig.database = database;
                 dbConfig[database] = databaseConfig;
             }
         }

@@ -2,8 +2,11 @@
 
 module.exports = {
     customDesign: {
-        version: 6,
+        version: 8,
         views: {
+            lib: {
+                test: 'lib.js'
+            },
             test: {
                 map: function (doc) {
                     emit(doc._id);
