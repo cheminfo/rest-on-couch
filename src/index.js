@@ -837,7 +837,6 @@ Couch.get = function (databaseName) {
         return databaseCache.get(databaseName);
     } else {
         const db = new Couch(databaseName);
-        db.open();
         databaseCache.set(databaseName, db);
         return db;
     }

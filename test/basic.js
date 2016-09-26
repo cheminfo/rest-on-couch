@@ -11,7 +11,7 @@ process.on('unhandledRejection', function (err) {
 describe('basic initialization tests', function () {
     let couch;
     beforeEach(function () {
-        couch = new Couch({database: 'test2'});
+        couch = Couch.get('test2');
     });
     it('should init', function () {
         return couch.open();
@@ -27,7 +27,7 @@ describe('basic initialization tests', function () {
 describe('basic initialization with custom design docs', function () {
     let couch;
     it('should load the design doc files at initialization', function () {
-        couch = new Couch({database: 'test3'});
+        couch = Couch.get('test3');
         return couch._initPromise.then(function () {
             var app = nanoPromise.getDocument(couch._db, '_design/app')
                 .then(app => {
