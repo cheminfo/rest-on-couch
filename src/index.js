@@ -130,7 +130,7 @@ class Couch {
         await checkSecurity(this._db, this._couchOptions.username);
 
         await Promise.all([
-            checkDesignDoc(this._db, this._customDesign),
+            checkDesignDoc(this),
             checkRightsDoc(this._db, this._rights),
             checkDefaultGroupsDoc(this._db)
         ]);
@@ -837,6 +837,7 @@ Couch.get = function (databaseName) {
         return databaseCache.get(databaseName);
     } else {
         const db = new Couch(databaseName);
+        db.open();
         databaseCache.set(databaseName, db);
         return db;
     }
@@ -904,7 +905,9 @@ async function checkSecurity(db, admin) {
     }
 }
 
-async function checkDesignDoc(db, custom) {
+async function checkDesignDoc(couch) {
+    var db = couch._db;
+    var custom = couch._customDesign;
     custom.views = custom.views || {};
     var toUpdate = new Set();
     debug.trace('check _design/app design doc');
@@ -958,9 +961,17 @@ async function checkDesignDoc(db, custom) {
     for (var designName of toUpdate.keys()) {
         var idx = uniqDesignNames.indexOf(designName);
         if (idx > -1 || designName === constants.DESIGN_DOC_NAME) {
-            await createDesignDoc(db, designDocs[idx] && designDocs[idx]._rev || null, getNewDesignDoc(designName));
+            var newDesignDoc = getNewDesignDoc(designName);
+            await createDesignDoc(db, designDocs[idx] && designDocs[idx]._rev || null, newDesignDoc);
+            if (newDesignDoc.views) {
+                var keys = Object.keys(newDesignDoc.views).filter(v => v !== 'lib');
+                if (keys.length) {
+                    await nanoPromise.queryView(db, keys[0], {limit: 1});
+                }
+            }
+
         } else {
-            debug.trace('Expected to be unreachable');
+            debug.error('Expected to be unreachable');
         }
     }
 
@@ -992,9 +1003,6 @@ async function checkDesignDoc(db, custom) {
         designDoc._id =  '_design/' + designName;
         return designDoc;
     }
-
-    // For each design doc, check if any of the associated view has a different hash
-
 }
 
 async function createDesignDoc(db, revID, custom) {
