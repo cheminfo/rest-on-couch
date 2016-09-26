@@ -13,7 +13,7 @@ if (homeDir) {
     try {
         const databases = fs.readdirSync(homeDir);
         for (const database of databases) {
-            if (database === 'node_modules') continue;
+            if (shouldIgnore(database)) continue;
             const databasePath = path.join(homeDir, database);
             if (fs.statSync(databasePath).isDirectory()) {
                 let databaseConfig = {};
@@ -54,6 +54,7 @@ if (homeDir) {
 function readImportConfig(databasePath, databaseConfig) {
     const imports = fs.readdirSync(databasePath);
     for (const importDir of imports) {
+        if (shouldIgnore(importDir)) continue;
         const importPath = path.join(databasePath, importDir);
         if (fs.statSync(importPath).isDirectory()) {
             let importConfig = {};
@@ -70,4 +71,9 @@ function readImportConfig(databasePath, databaseConfig) {
             databaseConfig.import[importDir] = Object.assign({}, databaseConfig.import[importDir], importConfig);
         }
     }
+}
+
+function shouldIgnore(name) {
+    return name === 'node_modules' ||
+        name.startsWith('.');
 }
