@@ -6,6 +6,7 @@ process.on('unhandledRejection', function (reason, p) {
 
 process.env.REST_ON_COUCH_HOME_DIR = __dirname + '/homedir';
 
+require('../lib/util/load')();
 const server = require('../lib/server/server');
 const supertest = require('supertest-as-promised')(Promise);
 
