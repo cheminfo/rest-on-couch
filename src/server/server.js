@@ -75,6 +75,7 @@ app.use(cors({
 
 app.keys = config.keys;
 app.use(session({
+    key: 'roc:sess',
     maxAge: config.sessionMaxAge,
     path: '/',
     domain: config.sessionDomain,
