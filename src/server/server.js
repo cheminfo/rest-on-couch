@@ -58,8 +58,6 @@ nunjucks(app, {
 
 app.use(serve('assets', path.join(__dirname, '../..')));
 
-const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
-
 const allowedOrigins = config.allowedOrigins;
 debug(`allowed cors origins: ${allowedOrigins}`);
 app.use(cors({
@@ -77,7 +75,7 @@ app.use(cors({
 
 app.keys = config.keys;
 app.use(session({
-    maxAge: ONE_YEAR,
+    maxAge: config.sessionMaxAge,
     path: '/',
     domain: config.sessionDomain,
     secure: config.sessionSecure,

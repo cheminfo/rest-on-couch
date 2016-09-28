@@ -17,6 +17,7 @@ module.exports = {
     proxy: true,
     proxyPrefix: '/',
     keys: ['some secret'],
+    sessionMaxAge: 24 * 60 * 60 * 1000, // One day
     allowedOrigins: [],
     debugrest: false
 };
