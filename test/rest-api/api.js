@@ -49,6 +49,22 @@ describe('basic rest-api as anonymous (noRights)', function () {
     });
 });
 
+describe('rest-api as b@b.com (noRights)', function () {
+    before(() => {
+        return noRights().then(() => authenticateAs(request, 'b@b.com', '123'));
+    });
+
+    it('get an entry authenticated', function () {
+        return request.get('/db/test/entry/B')
+            .expect(200);
+    });
+
+    it('get an entry authenticated but asAnonymous', function () {
+        return request.get('/db/test/entry/B?asAnonymous=true')
+            .expect(401);
+    });
+});
+
 describe('rest-api as anonymous (data)', function () {
     before(data);
 

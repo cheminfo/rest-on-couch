@@ -22,7 +22,7 @@ const statusMessages = {
 exports.setupCouch = function*(next) {
     const dbname = this.params.dbname;
     this.state.dbName = dbname;
-    this.state.userEmail = yield auth.getUserEmail(this);
+    this.state.userEmail = this.query.asAnonymous ? 'anonymous': yield auth.getUserEmail(this);
     this.state.couch = Couch.get(dbname);
     processCouchQuery(this);
     yield next;
