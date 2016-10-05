@@ -88,6 +88,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(function*(next) {
+    // Force a session change to renew the cookie
+    this.session.time = Date.now();
+});
+
+app.use(function*(next) {
     this.state.pathPrefix = proxyPrefix;
     this.state.urlPrefix = this.origin + proxyPrefix;
     yield next;
