@@ -425,7 +425,7 @@ class Couch {
             .then(() => {
                 return true;
             }, err => {
-                if(err.reason === 'unauthorized') return false;
+                if (err.reason === 'unauthorized') return false;
                 // Propagate
                 throw err;
             });
