@@ -88,6 +88,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(function*(next) {
+    yield next;
     // Force a session change to renew the cookie
     this.session.time = Date.now();
 });
