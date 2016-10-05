@@ -257,6 +257,12 @@ exports.getGroups = function*() {
     }
 };
 
+exports.getRights = function* () {
+    var right = this.params.right;
+    var uuid = this.params.uuid;
+    this.body = yield this.state.couch.hasRightForEntry(uuid, this.state.userEmail, right, this.query);
+};
+
 /* todo implement it
 exports.createOrUpdateGroup = function *() {
     try {

@@ -420,6 +420,17 @@ class Couch {
         throw new CouchError('user has no access', 'unauthorized');
     }
 
+    hasRightForEntry(uuid, user, right, options) {
+        return this.getEntryByUuidAndRights(uuid, user, right, options)
+            .then(() => {
+                return true;
+            }, err => {
+                if(err.reason === 'unauthorized') return false;
+                // Propagate
+                throw err;
+            });
+    }
+
     getEntryByUuid(uuid, user, options) {
         return this.getEntryByUuidAndRights(uuid, user, 'read', options);
     }

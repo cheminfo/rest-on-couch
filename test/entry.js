@@ -217,3 +217,16 @@ describe('entry creation and editions', function () {
         return couch.removeGroupFromEntry('A', 'b@b.com', 'b@b.com').should.be.rejectedWith(/cannot remove primary owner/);
     });
 });
+
+describe('entry rights', function () {
+    before(data);
+    it('should check if user a@a.com has read access to entry', () => couch.hasRightForEntry('A', 'a@a.com', 'read').should.eventually.be.equal(true));
+    it('should check if user a@a.com has write access to entry', () => couch.hasRightForEntry('A', 'a@a.com', 'write').should.eventually.be.equal(true));
+    it('should check if user a@a.com has delete access to entry', () => couch.hasRightForEntry('A', 'a@a.com', 'delete').should.eventually.be.equal(true));
+    it('should reject when entry does not exist', () => couch.hasRightForEntry('does_not_exist', 'a@a.com', 'read').should.be.rejectedWith(/not found/));
+    // Global rights grant read and addAttachment rights
+    it('should check if user b@b.com has read access to entry', () => couch.hasRightForEntry('B', 'b@b.com', 'read').should.eventually.be.equal(true));
+    it('should check if user b@b.com has read access to entry', () => couch.hasRightForEntry('B', 'b@b.com', 'addAttachment').should.eventually.be.equal(true));
+    it('should check if user b@b.com has write access to entry', () => couch.hasRightForEntry('B', 'b@b.com', 'write').should.eventually.be.equal(false));
+    it('should check if user b@b.com has delete access to entry', () => couch.hasRightForEntry('B', 'b@b.com', 'delete').should.eventually.be.equal(false));
+});

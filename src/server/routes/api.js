@@ -26,6 +26,9 @@ exports.init = function () {
     router.put('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.addOwnerByUuid);
     router.delete('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.removeOwnerByUuid);
 
+    // Entry rights
+    router.get('/:dbname/entry/:uuid/_rights/:right', couch.getRights);
+
     // Attachments
     router.get('/:dbname/entry/:uuid/:attachment+', couch.getAttachmentByUuid);
     // Delete attachment slightly different from couchdb api. It does not require _rev in the query parameters.

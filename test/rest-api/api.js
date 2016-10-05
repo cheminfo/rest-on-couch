@@ -63,6 +63,17 @@ describe('rest-api as b@b.com (noRights)', function () {
         return request.get('/db/test/entry/B?asAnonymous=true')
             .expect(401);
     });
+
+    it('check if user has read access to a resource', function () {
+        return request.get('/db/test/entry/B/_rights/read')
+            .expect(200).then(data => data.body.should.equal(true));
+    });
+
+    it('check if user has write access to a resource (as anonymous)', function () {
+        return request.get('/db/test/entry/B/_rights/read?asAnonymous=1')
+            .expect(200)
+            .then(data => data.body.should.equal(false))
+    })
 });
 
 describe('rest-api as anonymous (data)', function () {
