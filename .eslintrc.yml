@@ -1,5 +1,6 @@
-parser: babel-eslint
 extends: cheminfo
+parserOptions:
+  ecmaVersion: '2017'
 rules:
   camelcase: ['error', {properties: never}]
   require-yield: 'off'
