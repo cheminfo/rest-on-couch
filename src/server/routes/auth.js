@@ -22,10 +22,11 @@ const enabledAuthPlugins = [];
 const showLoginAuthPlugins = [];
 
 if (config.auth) {
-    authPlugins.forEach(function (authPlugin) {
+    authPlugins.forEach((authPlugin) => {
         const pluginConfig = config.auth[authPlugin];
         if (!pluginConfig) {
-            return debug(`plugin ${authPlugin} not configured`);
+            debug(`plugin ${authPlugin} not configured`);
+            return;
         }
         try {
             debug(`loading auth plugin: ${authPlugin}`);

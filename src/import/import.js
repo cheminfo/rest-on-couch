@@ -130,6 +130,7 @@ exports.import = function (database, importName, file) {
                 return info;
             });
         }
+        throw new Error('unreachable');
     }
 
     function checkDocumentExists(info) {
@@ -168,5 +169,6 @@ exports.import = function (database, importName, file) {
                 merge: true
             });
         }
+        throw new Error('unreachable');
     }
 };

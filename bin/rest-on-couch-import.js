@@ -145,6 +145,7 @@ function checkFile(homeDir, p) {
             importName: elements[1]
         };
     }
+    return false;
 }
 
 function processFile(database, importName, homeDir, p) {
@@ -162,12 +163,13 @@ function processFile(database, importName, homeDir, p) {
             tryRename(p, path.join(dir, parsedPath.base), resolve, reject);
         });
     }).catch(e => {
-        if (e.skip) return;
+        if (e.skip) return false;
         // mv to errored
         return new Promise(function (resolve, reject) {
             if (e.message.startsWith('no import config')) {
                 debug.warn('no import configuration found, skipping this file');
-                return resolve();
+                resolve();
+                return;
             }
             debug.error(e + '\n' + e.stack);
             let dir = path.join(parsedPath.dir, '../errored/' + getDatePath());
@@ -252,8 +254,8 @@ function tryRename(from, to, resolve, reject, suffix) {
                 return reject(err);
             } else {
                 return fs.rename(from, newTo, function (err) {
-                    if (err) return reject(err);
-                    resolve();
+                    if (err) reject(err);
+                    else resolve();
                 });
             }
         }

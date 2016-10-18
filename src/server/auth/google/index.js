@@ -50,6 +50,7 @@ exports.init = function (passport, router, config, mainConfig) {
                     provider: 'google',
                     email: email.value
                 });
+                return true;
             }
         }
     ));

@@ -18,6 +18,6 @@ function loadCliConfig(source) {
     try {
         return require(source);
     } catch (e) {
-        die(`could not load custom config from ${source}`);
+        return die(`could not load custom config from ${source}`);
     }
 }

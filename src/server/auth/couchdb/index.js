@@ -34,7 +34,7 @@ exports.init = function (passport, router) {
                 if (res.error) {
                     return done(null, false, res.reason);
                 }
-                done(null, {
+                return done(null, {
                     email: res.name,
                     provider: 'local'
                 });

@@ -2,7 +2,7 @@
 
 /**
  * Prints an optional message and exits the process
- * @param message
+ * @param {string} message
  */
 module.exports = function (message) {
     if (message) {

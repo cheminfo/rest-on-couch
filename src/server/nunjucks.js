@@ -14,9 +14,12 @@ module.exports = function (app, opts) {
         debug.trace(`rendering ${name + ext}`);
         return new Promise((resolve, reject) => {
             env.render(name + ext, this.state, (err, res) => {
-                if (err) return reject(err);
-                this.body = res;
-                resolve();
+                if (err) {
+                    reject(err);
+                } else {
+                    this.body = res;
+                    resolve();
+                }
             });
         });
     };

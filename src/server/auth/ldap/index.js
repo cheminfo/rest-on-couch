@@ -21,6 +21,7 @@ exports.init = function (passport, router, config) {
                 }, err => done(err));
             } else {
                 done(null, data);
+                return true;
             }
         }
     ));

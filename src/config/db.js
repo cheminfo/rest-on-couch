@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const hasOwn = require('has-own');
 const path = require('path');
 
 const debug = require('../util/debug')('config:db');
@@ -24,7 +25,7 @@ if (homeDir) {
                     if (databaseConfig.customDesign && databaseConfig.customDesign.views) {
                         var views = databaseConfig.customDesign.views;
                         for (var key in views) {
-                            if (views.hasOwnProperty(key)) {
+                            if (hasOwn(key, views)) {
                                 if (views[key].designDoc) {
                                     designDocNames[key] = views[key].designDoc;
                                 }

@@ -8,7 +8,7 @@ const getConfig = require('../config/config').getConfig;
 exports.authenticate = function (nano, user, password) {
     return new Promise((resolve, reject) => {
         debug.trace('auth ' + user);
-        nano.auth(user, password, function (err, body, headers) {
+        nano.auth(user, password, (err, body, headers) => {
             if (err) {
                 debug.warn('auth failed');
                 return reject(err);
@@ -17,7 +17,7 @@ exports.authenticate = function (nano, user, password) {
                 debug.trace('auth success');
                 return resolve(headers['set-cookie']);
             }
-            reject(new Error('cookie auth not supported'));
+            return reject(new Error('cookie auth not supported'));
         });
     });
 };
@@ -25,7 +25,7 @@ exports.authenticate = function (nano, user, password) {
 exports.getDatabase = function (nano, database) {
     return new Promise((resolve, reject) => {
         debug.trace('getDatabase ' + database);
-        nano.db.get(database, function (err) {
+        nano.db.get(database, (err) => {
             if (err) {
                 if (err.reason === 'no_db_file') {
                     debug.trace('database not found');
@@ -35,7 +35,7 @@ exports.getDatabase = function (nano, database) {
                 return reject(err);
             }
             debug.trace('database exists');
-            resolve(true);
+            return resolve(true);
         });
     });
 };
@@ -43,13 +43,13 @@ exports.getDatabase = function (nano, database) {
 exports.createDatabase = function (nano, database) {
     return new Promise((resolve, reject) => {
         debug.trace('createDatabase ' + database);
-        nano.db.create(database, function (err) {
+        nano.db.create(database, (err) => {
             if (err) {
                 debug.warn('create failed');
                 return reject(err);
             }
             debug('database created');
-            resolve();
+            return resolve();
         });
     });
 };
@@ -59,7 +59,7 @@ exports.getDocument = function (db, docID, options) {
     return new Promise((resolve, reject) => {
         debug.trace(`getDocument ${docID}`);
         cleanOptions(options);
-        db.get(docID, options, function (err, result) {
+        db.get(docID, options, (err, result) => {
             if (err) {
                 if (err.statusCode === 404 && (err.reason === 'missing' || err.reason === 'deleted')) {
                     debug.trace('document missing');
@@ -69,7 +69,7 @@ exports.getDocument = function (db, docID, options) {
                 return reject(err);
             }
             debug.trace('found document');
-            resolve(result);
+            return resolve(result);
         });
     });
 };
@@ -77,10 +77,10 @@ exports.getDocument = function (db, docID, options) {
 exports.insertDocument = function (db, doc) {
     return new Promise((resolve, reject) => {
         debug.trace(`insertDocument with _id ${doc._id}`);
-        db.insert(doc, function (err, body) {
+        db.insert(doc, (err, body) => {
             if (err) return reject(err);
             debug.trace(`document inserted (${body.id})`);
-            resolve(body);
+            return resolve(body);
         });
     });
 };
@@ -96,8 +96,11 @@ exports.queryView = function (db, view, params, options) {
         cleanOptions(params);
         var config = getConfig(db.config.db);
         var designDoc = config.designDocNames && config.designDocNames[view] || constants.DESIGN_DOC_NAME;
-        db.view(designDoc, view, params, function (err, body) {
-            if (err) return reject(err);
+        db.view(designDoc, view, params, (err, body) => {
+            if (err) {
+                reject(err);
+                return;
+            }
             if (options.onlyValue) {
                 resolve(body.rows.map(row => row.value));
             } else if (options.onlyDoc) {
@@ -112,9 +115,9 @@ exports.queryView = function (db, view, params, options) {
 exports.destroyDatabase = function (nano, dbName) {
     return new Promise((resolve, reject) => {
         debug('destroy database ' + dbName);
-        nano.db.destroy(dbName, function (err, body) {
-            if (err) return reject(err);
-            resolve(body);
+        nano.db.destroy(dbName, (err, body) => {
+            if (err) reject(err);
+            else resolve(body);
         });
     });
 };
@@ -128,9 +131,9 @@ exports.destroyDocument = function (db, docId, revId) {
         });
     }
     return new Promise(function (resolve, reject) {
-        db.destroy(docId, revId, function (err, body) {
-            if (err) return reject(err);
-            resolve(body);
+        db.destroy(docId, revId, (err, body) => {
+            if (err) reject(err);
+            else resolve(body);
         });
     });
 };
@@ -138,9 +141,9 @@ exports.destroyDocument = function (db, docId, revId) {
 exports.updateWithHandler = function (db, update, docId, body) {
     return new Promise((resolve, reject) => {
         debug.trace(`update with handler ${JSON.stringify(body)}`);
-        db.atomic(constants.DESIGN_DOC_NAME, update, docId, body, function (err, body) {
-            if (err) return reject(err);
-            resolve(body);
+        db.atomic(constants.DESIGN_DOC_NAME, update, docId, body, (err, body) => {
+            if (err) reject(err);
+            else resolve(body);
         });
     });
 };
@@ -148,9 +151,9 @@ exports.updateWithHandler = function (db, update, docId, body) {
 exports.attachFiles = function (db, doc, files) {
     return new Promise((resolve, reject) => {
         debug.trace('attach files');
-        db.multipart.insert(doc, files, doc._id, function (err, body) {
-            if (err) return reject(err);
-            resolve(body);
+        db.multipart.insert(doc, files, doc._id, (err, body) => {
+            if (err) reject(err);
+            else resolve(body);
         });
     });
 };
@@ -164,9 +167,9 @@ exports.getAttachment = function (db, doc, name, asStream, options) {
             const stream = db.attachment.get(doc, name, options);
             resolve(stream);
         } else {
-            db.attachment.get(doc, name, options, function (err, body) {
-                if (err) return reject(err);
-                resolve(body);
+            db.attachment.get(doc, name, options, (err, body) => {
+                if (err) reject(err);
+                else resolve(body);
             });
         }
     });
@@ -177,9 +180,9 @@ exports.request = function (nano, options) {
     return new Promise((resolve, reject) => {
         debug.trace('request');
         cleanOptions(options);
-        nano.request(options, function (err, result) {
-            if (err) return reject(err);
-            resolve(result);
+        nano.request(options, (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
         });
     });
 };

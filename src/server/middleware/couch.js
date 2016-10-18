@@ -34,10 +34,11 @@ exports.tokenLookup = function* (next) {
             this.query.token = yield this.state.couch.getToken(this.query.token);
         } catch (e) {
             if (e.reason === 'not found') {
-                return onGetError(this, new CouchError('token not found', 'unauthorized'));
+                onGetError(this, new CouchError('token not found', 'unauthorized'));
             } else {
-                return onGetError(this, e);
+                onGetError(this, e);
             }
+            return;
         }
     }
     yield next;
@@ -356,7 +357,9 @@ function onGetError(ctx, e, secure) {
 }
 
 function handleCouchError(ctx, e, secure) {
-    if (e.scope !== 'couch') return;
+    if (e.scope !== 'couch') {
+        return false;
+    }
     var statusCode = e.statusCode;
     if (statusCode) {
         if (statusCode === 404 && secure) {
@@ -371,6 +374,7 @@ function handleCouchError(ctx, e, secure) {
         ctx.body = statusMessages[statusCode] || `error ${statusCode}`;
         return true;
     }
+    return false;
 }
 
 
@@ -452,6 +456,8 @@ function applyType(query, type) {
                 case 'number':
                     query[couchNeedsParse[i]] = +query[couchNeedsParse[i]];
                     break;
+                default:
+                    throw new Error(`unexpected type: ${type}`);
             }
         }
     }
@@ -467,4 +473,5 @@ function getViewType(ctx) {
             return customDesign.views[ctx.params.view].type;
         }
     }
+    return 'unknown';
 }

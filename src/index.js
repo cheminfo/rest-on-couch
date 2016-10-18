@@ -3,6 +3,7 @@
 const debug = require('./util/debug')('main');
 const _ = require('lodash');
 const extend = require('extend');
+const hasOwn = require('has-own');
 const nano = require('nano');
 const objHash = require('object-hash');
 
@@ -482,7 +483,7 @@ class Couch {
         debug(`deleteAttachmentByUuid (${uuid}, ${user})`);
         const entry = await this.getEntryByUuidAndRights(uuid, user, ['delete', 'addAttachment']);
         if (!entry._attachments[attachmentName]) {
-            return;
+            return false;
         }
         delete entry._attachments[attachmentName];
         return saveEntry(this._db, entry, user);
@@ -714,8 +715,9 @@ class Couch {
 
     /**
      * Returns a list of groups that grant a given right to the user
-     * @param user
-     * @param right
+     * @param {string} user
+     * @param {string} right
+     * @return {Array}
      */
     async getGroupsByRight(user, right) {
         debug.trace(`getGroupsByRight (${user}, ${right})`);
@@ -1169,6 +1171,7 @@ async function checkRightsDoc(db, rights) {
         debug.trace('rights doc does not exist');
         return await createRightsDoc(db, rights);
     }
+    return true;
 }
 
 async function createRightsDoc(db, rightsDoc) {
@@ -1187,6 +1190,7 @@ async function checkDefaultGroupsDoc(db) {
             anyuser: []
         });
     }
+    return true;
 }
 
 async function checkGlobalRight(db, user, right) {
@@ -1298,11 +1302,12 @@ function checkGlobalTypeAndUser(type, user) {
     if (!isValidGlobalRightUser(user)) {
         return new CouchError('Invalid global right user', 'bad argument');
     }
+    return null;
 }
 
 function simpleMerge(source, target) {
     for (var key in source) {
-        if (source.hasOwnProperty(key)) {
+        if (hasOwn(key, source)) {
             target[key] = source[key];
         }
     }
