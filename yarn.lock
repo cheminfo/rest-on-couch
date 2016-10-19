@@ -1413,7 +1413,7 @@ has-flag@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-1.0.0.tgz#9d9e793165ce017a00f00418c43f942a7b1d11fa"
 
-has-own:
+has-own@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/has-own/-/has-own-1.0.0.tgz#3062246e31cfd887a9a61ee6d38ca57289378cd1"
 
@@ -1614,6 +1614,10 @@ is-fullwidth-code-point@^1.0.0:
   resolved "https://registry.yarnpkg.com/is-fullwidth-code-point/-/is-fullwidth-code-point-1.0.0.tgz#ef9e31386f031a7f0d643af82fde50c457ef00cb"
   dependencies:
     number-is-nan "^1.0.0"
+
+is-fullwidth-code-point@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/is-fullwidth-code-point/-/is-fullwidth-code-point-2.0.0.tgz#a3b30a5c4f199183167aaab93beefae3ddfb654f"
 
 is-glob@^2.0.0, is-glob@^2.0.1:
   version "2.0.1"
@@ -1837,9 +1841,9 @@ koa-is-json@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/koa-is-json/-/koa-is-json-1.0.0.tgz#273c07edcdcb8df6a2c1ab7d59ee76491451ec14"
 
-koa-passport:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/koa-passport/-/koa-passport-1.3.0.tgz#7168b88cd7fcf3f80246e86e1770a55a930e8c52"
+koa-passport@^1.3.0:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/koa-passport/-/koa-passport-1.3.1.tgz#52f627e943ae6908708916fe48d6e85f8f139127"
   dependencies:
     co "^4.4.0"
     passport "^0.3.0"
@@ -2451,7 +2455,7 @@ passport-google@^0.3.0:
     passport-openid "0.3.x"
     pkginfo "0.2.x"
 
-passport-ldapauth:
+passport-ldapauth@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/passport-ldapauth/-/passport-ldapauth-0.6.0.tgz#4829eb073e1f4632fae3d1795e7e0f49af46bf92"
   dependencies:
@@ -3030,6 +3034,13 @@ string-width@^1.0.1:
     is-fullwidth-code-point "^1.0.0"
     strip-ansi "^3.0.0"
 
+string-width@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-2.0.0.tgz#635c5436cc72a6e0c387ceca278d4e2eec52687e"
+  dependencies:
+    is-fullwidth-code-point "^2.0.0"
+    strip-ansi "^3.0.0"
+
 stringstream@~0.0.4:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/stringstream/-/stringstream-0.0.5.tgz#4e484cd4de5a0bbbee18e46307710a8a81621878"
@@ -3079,7 +3090,7 @@ superagent@^2.0.0:
     qs "^6.1.0"
     readable-stream "^2.0.5"
 
-supertest-as-promised:
+supertest-as-promised@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/supertest-as-promised/-/supertest-as-promised-4.0.0.tgz#d64cd02fac0e4765ce68a0ae31b7f227d8e04ea4"
   dependencies:
@@ -3104,15 +3115,15 @@ supports-color@^3.1.0, supports-color@3.1.2:
     has-flag "^1.0.0"
 
 table@^3.7.8:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/table/-/table-3.8.0.tgz#252166c7f3286684a9d561b0f3a8929caf3a997b"
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/table/-/table-3.8.3.tgz#2bbc542f0fda9861a755d3947fefd8b3f513855f"
   dependencies:
     ajv "^4.7.0"
     ajv-keywords "^1.0.0"
     chalk "^1.1.1"
     lodash "^4.0.0"
     slice-ansi "0.0.4"
-    string-width "^1.0.1"
+    string-width "^2.0.0"
 
 tar-pack@~3.1.0:
   version "3.1.4"
