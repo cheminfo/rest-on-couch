@@ -188,12 +188,12 @@ class Couch {
 
         data.$type = 'user';
         data.user = user;
-        return await nanoPromise.insertDocument(this._db, data);
+        return nanoPromise.insertDocument(this._db, data);
     }
 
     async getUser(user) {
         await this.open();
-        return await getUser(this._db, user);
+        return getUser(this._db, user);
     }
 
     async createEntry(id, user, options) {
@@ -228,7 +228,7 @@ class Couch {
                 $content: entry,
                 $kind: options.kind
             };
-            return await saveEntry(this._db, toInsert, user);
+            return saveEntry(this._db, toInsert, user);
         }
         debug.trace('entry already exists');
         if (options.throwIfExists) {
@@ -367,7 +367,7 @@ class Couch {
         if (limit) allowedDocs = allowedDocs.slice(0, limit);
 
         // Get each document from CouchDB
-        return await Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
+        return Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
     }
 
     async getEntryByIdAndRights(id, user, rights, options = {}) {
@@ -386,7 +386,7 @@ class Couch {
 
         if (await validateTokenOrRights(this._db, hisEntry.id, hisEntry.value, rights, user, options.token)) {
             debug.trace(`user ${user} has access`);
-            return await nanoPromise.getDocument(this._db, hisEntry.id, options);
+            return nanoPromise.getDocument(this._db, hisEntry.id, options);
         }
 
         debug.trace(`user ${user} has no ${rights} access`);
@@ -413,7 +413,7 @@ class Couch {
             if (!options) {
                 return doc;
             } else {
-                return await nanoPromise.getDocument(this._db, uuid, options);
+                return nanoPromise.getDocument(this._db, uuid, options);
             }
         }
 
@@ -448,7 +448,7 @@ class Couch {
         if (!hasRight) {
             throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
         }
-        return await nanoPromise.updateWithHandler(this._db, update, doc._id, updateBody);
+        return nanoPromise.updateWithHandler(this._db, update, doc._id, updateBody);
     }
 
     async _doUpdateOnEntryByUuid(uuid, user, update, updateBody) {
@@ -458,7 +458,7 @@ class Couch {
         if (!hasRight) {
             throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
         }
-        return await nanoPromise.updateWithHandler(this._db, update, uuid, updateBody);
+        return nanoPromise.updateWithHandler(this._db, update, uuid, updateBody);
     }
 
     async addAttachmentsById(id, user, attachments) {
@@ -467,7 +467,7 @@ class Couch {
             attachments = [attachments];
         }
         const entry = await this.getEntryByIdAndRights(id, user, ['write', 'addAttachment']);
-        return await nanoPromise.attachFiles(this._db, entry, attachments);
+        return nanoPromise.attachFiles(this._db, entry, attachments);
     }
 
     async addAttachmentsByUuid(uuid, user, attachments) {
@@ -476,7 +476,7 @@ class Couch {
             attachments = [attachments];
         }
         const entry = await this.getEntryByUuidAndRights(uuid, user, ['write', 'addAttachment']);
-        return await nanoPromise.attachFiles(this._db, entry, attachments);
+        return nanoPromise.attachFiles(this._db, entry, attachments);
     }
 
     async deleteAttachmentByUuid(uuid, user, attachmentName) {
@@ -560,7 +560,7 @@ class Couch {
             content_type: file.content_type,
             data: file.data.toString('base64')
         };
-        return await this.insertEntry(entry, user);
+        return this.insertEntry(entry, user);
     }
 
     async editGlobalRight(type, user, action) {
@@ -589,7 +589,7 @@ class Couch {
             }
         }
 
-        return await nanoPromise.insertDocument(this._db, doc);
+        return nanoPromise.insertDocument(this._db, doc);
     }
 
     addGlobalRight(type, user) {
@@ -628,7 +628,7 @@ class Couch {
             }
         }
 
-        return await nanoPromise.insertDocument(this._db, doc);
+        return nanoPromise.insertDocument(this._db, doc);
     }
 
     addDefaultGroup(group, type) {
@@ -674,7 +674,7 @@ class Couch {
         }
 
         // TODO Change entries which have this group
-        return await nanoPromise.destroyDocument(this._db, doc._id);
+        return nanoPromise.destroyDocument(this._db, doc._id);
     }
 
     async createGroup(groupName, user, rights) {
@@ -689,7 +689,7 @@ class Couch {
         const group = await getGroup(this._db, groupName);
         if (group) throw new CouchError(`group ${groupName} already exists`, 'exists');
 
-        return await nanoPromise.insertDocument(this._db, {
+        return nanoPromise.insertDocument(this._db, {
             $type: 'group',
             $owners: [user],
             name: groupName,
@@ -807,7 +807,7 @@ class Couch {
         await this.open();
         // We need write right to create a token. This will throw if not.
         await this.getEntryByUuidAndRights(uuid, user, 'write');
-        return await token.createEntryToken(this._db, user, uuid, 'read');
+        return token.createEntryToken(this._db, user, uuid, 'read');
     }
 
     async deleteToken(user, tokenId) {
@@ -836,7 +836,7 @@ class Couch {
     async getTokens(user) {
         debug(`getTokens (${user})`);
         await this.open();
-        return await token.getTokens(this._db, user);
+        return token.getTokens(this._db, user);
     }
 }
 
@@ -1023,11 +1023,11 @@ async function createDesignDoc(db, revID, custom) {
     if (revID) {
         designDoc._rev = revID;
     }
-    return await nanoPromise.insertDocument(db, designDoc);
+    return nanoPromise.insertDocument(db, designDoc);
 }
 
 async function getOwnersById(db, id) {
-    return await nanoPromise.queryView(db, 'ownersById', {key: id});
+    return nanoPromise.queryView(db, 'ownersById', {key: id});
 }
 
 function isOwner(owners, user) {
@@ -1147,7 +1147,7 @@ async function createNew(ctx, entry, user) {
             $content: entry.$content,
             _attachments: entry._attachments
         };
-        return await saveEntry(ctx._db, newEntry, user);
+        return saveEntry(ctx._db, newEntry, user);
     } else {
         let msg = `${user} not allowed to create`;
         debug.trace(msg);
@@ -1169,13 +1169,13 @@ async function checkRightsDoc(db, rights) {
     const doc = await nanoPromise.getDocument(db, constants.RIGHTS_DOC_ID);
     if (doc === null) {
         debug.trace('rights doc does not exist');
-        return await createRightsDoc(db, rights);
+        return createRightsDoc(db, rights);
     }
     return true;
 }
 
 async function createRightsDoc(db, rightsDoc) {
-    return await nanoPromise.insertDocument(db, rightsDoc);
+    return nanoPromise.insertDocument(db, rightsDoc);
 }
 
 async function checkDefaultGroupsDoc(db) {
@@ -1183,7 +1183,7 @@ async function checkDefaultGroupsDoc(db) {
     const doc = await nanoPromise.getDocument(db, constants.DEFAULT_GROUPS_DOC_ID);
     if (doc === null) {
         debug.trace('defaultGroups doc does not exist');
-        return await nanoPromise.insertDocument(db, {
+        return nanoPromise.insertDocument(db, {
             _id: constants.DEFAULT_GROUPS_DOC_ID,
             $type: 'db',
             anonymous: [],
@@ -1238,7 +1238,7 @@ async function getDefaultGroups(db, user, listOnly) {
     if (listOnly) {
         return Array.from(toGet);
     } else {
-        return await Promise.all(Array.from(toGet).map(group => getGroup(db, group)));
+        return Promise.all(Array.from(toGet).map(group => getGroup(db, group)));
     }
 }
 
@@ -1276,7 +1276,7 @@ async function saveEntry(db, entry, user) {
 function getAttachmentFromEntry(ctx, name, asStream) {
     return async function (entry) {
         if (entry._attachments && entry._attachments[name]) {
-            return await nanoPromise.getAttachment(ctx._db, entry._id, name, asStream, {rev: entry._rev});
+            return nanoPromise.getAttachment(ctx._db, entry._id, name, asStream, {rev: entry._rev});
         } else {
             throw new CouchError(`attachment ${name} not found`, 'not found');
         }

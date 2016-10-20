@@ -37,9 +37,9 @@ exports.getToken = async function getToken(db, tokenId) {
 };
 
 exports.getTokens = async function getTokens(db, user) {
-    return await nanoPromise.queryView(db, 'tokenByOwner', {key: user, include_docs: true}, {onlyDoc: true});
+    return nanoPromise.queryView(db, 'tokenByOwner', {key: user, include_docs: true}, {onlyDoc: true});
 };
 
 exports.destroyToken = async function destroyToken(db, tokenId, rev) {
-    return await nanoPromise.destroyDocument(db, tokenId, rev);
+    return nanoPromise.destroyDocument(db, tokenId, rev);
 };
