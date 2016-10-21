@@ -1,3 +1,18 @@
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/cheminfo/rest-on-couch/compare/v1.1.0...v1.2.0) (2016-10-21)
+
+
+### Bug Fixes
+
+* renew the session on each request ([f812862](https://github.com/cheminfo/rest-on-couch/commit/f812862))
+
+
+### Features
+
+* add hasRightForEntry (couch api + rest api) ([2b1856a](https://github.com/cheminfo/rest-on-couch/commit/2b1856a))
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/cheminfo/rest-on-couch/compare/v1.0.0...v1.1.0) (2016-09-28)
 
