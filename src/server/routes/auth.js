@@ -5,6 +5,11 @@ const router = require('koa-router')({
     prefix: '/auth'
 });
 
+router.use(function*(next) {
+    this.session.continue = this.query.continue || this.session.continue;
+    yield next;
+});
+
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
 const die = require('../../util/die');
@@ -46,7 +51,6 @@ if (config.auth) {
 }
 
 router.get('/login', function*() {
-    this.session.continue = this.query.continue || this.session.continue;
     if (this.isAuthenticated() && !this.session.popup) {
         this.redirect(this.session.continue || '/');
         this.session.continue = null;
