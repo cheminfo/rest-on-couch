@@ -1,3 +1,5 @@
+#!/bin/env node
+
 'use strict';
 
 const app = require('koa')();
