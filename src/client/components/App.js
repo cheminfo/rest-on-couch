@@ -8,15 +8,41 @@ import NoMatch from './NoMatch';
 export default () => (
     <BrowserRouter>
         <div>
-            <ul>
-                <li><Link to="/">Home</Link></li>
-                <li><Link to="/login">Login</Link></li>
-                <li><Link to="/logout">Logout</Link></li>
-            </ul>
-            <div>
-                <Match exactly pattern="/" component={Home}/>
-                <Match pattern="/login" component={Login}/>
-                <Miss component={NoMatch}/>
+            <div className="wrapper">
+                <div className="sidebar" data-color="purple" data-image="assets/img/sidebar-5.jpg">
+                    <div className="sidebar-wrapper">
+                        <div className="logo">
+                            <Link to="/">ROC</Link>
+                        </div>
+                        <ul className="nav">
+                            <li>
+                                <Link to="/login" activeClassName="active">
+                                    <i className="pe-7s-graph"/>
+                                    <p>Login</p>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/logout" activeClassName="active">
+                                    <i className="pe-7s-user"/>
+                                    <p>Logout</p>
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div className="main-panel">
+                    <nav className="navbar navbar-default navbar-fixed">
+                        <div className="container-fluid">
+                        </div>
+                    </nav>
+                    <div className="content">
+                        <div className="container-fluid">
+                            <Match exactly pattern="/" component={Home}/>
+                            <Match pattern="/login" component={Login}/>
+                            <Miss component={NoMatch}/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </BrowserRouter>

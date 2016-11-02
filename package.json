@@ -4,7 +4,7 @@
   "description": "Interface to CouchDB that allows the control of permissions on the documents",
   "main": "lib/index.js",
   "files": [
-    "assets",
+    "public",
     "bin",
     "lib",
     "views"
@@ -78,7 +78,10 @@
     "raw-body": "^2.1.5",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
+    "react-redux": "^4.4.5",
     "react-router": "next",
+    "redux": "^3.6.0",
+    "redux-actions": "^0.13.0",
     "request": "^2.74.0",
     "request-promise": "^4.0.2",
     "superagent": "^2.0.0",

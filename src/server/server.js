@@ -56,7 +56,7 @@ nunjucks(app, {
     ext: 'html'
 });
 
-app.use(serve('assets', path.join(__dirname, '../..')));
+app.use(serve('assets', path.join(__dirname, '../../public')));
 
 const allowedOrigins = config.allowedOrigins;
 debug(`allowed cors origins: ${allowedOrigins}`);
