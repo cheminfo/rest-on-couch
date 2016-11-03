@@ -63,7 +63,11 @@ router.get('/login', function*() {
 
 router.get('/logout', function*() {
     this.logout();
-    this.redirect('/auth/login');
+    if (this.request.headers.accept && this.request.headers.accept.includes('application/json')) {
+        this.body = {ok: true};
+    } else {
+        this.redirect('/auth/login');
+    }
 });
 
 router.get('/session', function*() {
