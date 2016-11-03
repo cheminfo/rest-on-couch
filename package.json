@@ -13,7 +13,7 @@
     "build": "npm run build:client && npm run build:server",
     "build:client": "webpack",
     "build:server": "npm run compile",
-    "compile": "babel src --out-dir lib --ignore src/client",
+    "compile": "babel src --out-dir lib --ignore src/client --quiet --config babel.config.server.json --plugins transform-async-to-generator,transform-es2015-spread,transform-es2015-parameters",
     "eslint": "eslint src bin test",
     "eslint-fix": "npm run eslint -- --fix",
     "prepublish": "npm run compile",
@@ -86,7 +86,8 @@
     "request-promise": "^4.0.2",
     "superagent": "^2.0.0",
     "superagent-promise": "^1.1.0",
-    "thenify-all": "^1.6.0"
+    "thenify-all": "^1.6.0",
+    "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.7.5",

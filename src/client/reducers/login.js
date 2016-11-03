@@ -1,4 +1,4 @@
-import {HAS_LOGGED} from '../actions/login';
+import {HAS_LOGGED, hasLogged} from '../actions/login';
 
 const initialState = {
     loggedIn: false,
@@ -15,3 +15,11 @@ const loginReducer = (state = initialState, action) => {
 };
 
 export default loginReducer;
+
+export async function checkLogin(store) {
+    const req = await fetch('/auth/session');
+    const data = await req.json();
+    if (data.authenticated) {
+        store.dispatch(hasLogged(data.username));
+    }
+}

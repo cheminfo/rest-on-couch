@@ -1,9 +1,17 @@
 'use strict';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const webpack = require('webpack');
 
+let babelConfig = 'babel-loader?plugins[]=transform-async-to-generator&plugins[]=transform-es2015-modules-commonjs&presets[]=react';
+
+if (isProduction) {
+    babelConfig += '&presets[]=es2015'
+}
+
 module.exports = {
-    entry: './src/client/index.js',
+    entry: ['whatwg-fetch', './src/client/index.js'],
 
     output: {
         path: 'public',
@@ -11,7 +19,7 @@ module.exports = {
         publicPath: '/'
     },
 
-    plugins: process.env.NODE_ENV === 'production' ? [
+    plugins: isProduction ? [
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.UglifyJsPlugin()
@@ -21,7 +29,7 @@ module.exports = {
 
     module: {
         loaders: [
-            { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader?presets[]=es2015&presets[]=react' }
+            { test: /\.js$/, exclude: /node_modules/, loader: babelConfig }
         ]
     }
 };
