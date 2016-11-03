@@ -13,7 +13,7 @@
     "build": "npm run build:client && npm run build:server",
     "build:client": "webpack",
     "build:server": "npm run compile",
-    "compile": "babel src --out-dir lib",
+    "compile": "babel src --out-dir lib --ignore src/client",
     "eslint": "eslint src bin test",
     "eslint-fix": "npm run eslint -- --fix",
     "prepublish": "npm run compile",
