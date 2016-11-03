@@ -15,7 +15,9 @@ module.exports = {
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.UglifyJsPlugin()
-    ] : [],
+    ] : [
+        new (require('webpack-dashboard/plugin'))
+    ],
 
     module: {
         loaders: [

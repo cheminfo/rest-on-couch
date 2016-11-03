@@ -18,7 +18,7 @@
     "eslint-fix": "npm run eslint -- --fix",
     "prepublish": "npm run compile",
     "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
-    "start:dev": "webpack-dev-server --inline --content-base public/ --history-api-fallback",
+    "start:dev": "webpack-dashboard -- webpack-dev-server --inline --content-base public/ --history-api-fallback",
     "start:prod": "npm run build && node bin/rest-on-couch-server.js",
     "test": "npm run compile && npm run test-mocha && npm run eslint && sh test/checkOnly.sh",
     "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup",
@@ -107,6 +107,7 @@
     "supertest": "^2.0.0",
     "supertest-as-promised": "^4.0.0",
     "webpack": "^1.13.2",
+    "webpack-dashboard": "^0.2.0",
     "webpack-dev-server": "^1.16.2"
   }
 }
