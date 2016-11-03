@@ -4,6 +4,7 @@ import {BrowserRouter, Match, Miss, Link} from 'react-router';
 import Home from './Home';
 import Login from './Login';
 import NoMatch from './NoMatch';
+import LoginButton from './LoginButton';
 
 export default () => (
     <BrowserRouter>
@@ -12,7 +13,7 @@ export default () => (
                 <div className="sidebar" data-color="purple" data-image="assets/img/sidebar-5.jpg">
                     <div className="sidebar-wrapper">
                         <div className="logo">
-                            <Link to="/">ROC</Link>
+                            <Link to="/" className="simple-text">REST-ON-COUCH</Link>
                         </div>
                         <ul className="nav">
                             <li>
@@ -33,8 +34,19 @@ export default () => (
                 <div className="main-panel">
                     <nav className="navbar navbar-default navbar-fixed">
                         <div className="container-fluid">
+                            <div className="navbar-header">
+                                <a className="navbar-brand" href="#">Dashboard</a>
+                            </div>
+                            <div className="collapse navbar-collapse">
+                                <ul className="nav navbar-nav navbar-right">
+                                    <li>
+                                        <LoginButton/>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </nav>
+                    
                     <div className="content">
                         <div className="container-fluid">
                             <Match exactly pattern="/" component={Home}/>
