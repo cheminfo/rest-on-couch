@@ -1,12 +1,13 @@
-import React from 'react';
-import {BrowserRouter, Match, Miss, Link} from 'react-router';
+import React, {PropTypes} from 'react';
+import {BrowserRouter, Match, Miss, Link, Redirect} from 'react-router';
+import {connect} from 'react-redux';
 
 import Home from './Home';
 import Login from './Login';
 import NoMatch from './NoMatch';
 import LoginButton from './LoginButton';
 
-export default () => (
+const App = (props) => (
     <BrowserRouter>
         <div>
             <div className="wrapper">
@@ -50,7 +51,13 @@ export default () => (
                     <div className="content">
                         <div className="container-fluid">
                             <Match exactly pattern="/" component={Home}/>
-                            <Match pattern="/login" component={Login}/>
+                            <Match pattern="/login" render={() => {
+                                if (props.loggedIn) {
+                                    return <Redirect to="/"/>;
+                                } else {
+                                    return <Login/>;
+                                }
+                            }} />
                             <Miss component={NoMatch}/>
                         </div>
                     </div>
@@ -59,3 +66,11 @@ export default () => (
         </div>
     </BrowserRouter>
 );
+
+App.propTypes = {
+    loggedIn: PropTypes.bool.isRequired
+};
+
+export default connect(
+    (state) => ({loggedIn: state.login.loggedIn})
+)(App);
