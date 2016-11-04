@@ -56,7 +56,7 @@ class Login extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        {this.props.error ? (<p>Wrong username or password!</p>) : ''}
+                        {this.props.error ? (<p className="text-danger">Wrong username or password!</p>) : ''}
                         <button disabled={this.isEmpty()} type="button" className="btn btn-info btn-fill" onClick={this.handleSubmit}>Login</button>
                         <div className="clearfix"></div>
                     </form>
