@@ -46,6 +46,6 @@ async function doLogin(username, password) {
     if (data.authenticated) {
         return data.username;
     } else {
-        throw new Error('Not logged in!');
+        return false;
     }
 }

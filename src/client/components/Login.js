@@ -56,6 +56,7 @@ class Login extends React.Component {
                                 </div>
                             </div>
                         </div>
+                        {this.props.error ? (<p>Wrong username or password!</p>) : ''}
                         <button disabled={this.isEmpty()} type="button" className="btn btn-info btn-fill" onClick={this.handleSubmit}>Login</button>
                         <div className="clearfix"></div>
                     </form>
@@ -66,10 +67,11 @@ class Login extends React.Component {
 }
 
 Login.propTypes = {
+    error: PropTypes.bool,
     login: PropTypes.func.isRequired
 };
 
 export default connect(
-    null,
+    (state) => ({error: state.login.error}),
     (dispatch) => ({login: loginAction(dispatch)})
 )(Login);
