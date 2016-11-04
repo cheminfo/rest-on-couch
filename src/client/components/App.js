@@ -41,7 +41,7 @@ const App = (props) => (
                             </div>
                         </div>
                     </nav>
-                    
+
                     <div className="content">
                         <div className="container-fluid">
                             <Match exactly pattern="/" component={Home}/>

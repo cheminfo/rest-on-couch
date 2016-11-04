@@ -30,3 +30,4 @@ build/Release
 /lib/
 /config.json
 /public/bundle.js
+/.eslintcache

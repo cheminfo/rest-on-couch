@@ -34,10 +34,10 @@ export const LOGIN = 'LOGIN';
 export function login(dispatch) {
     return (username, password) => {
         return dispatch({
-            type : LOGIN,
+            type: LOGIN,
             payload: doLogin(username, password)
         });
-    }
+    };
 }
 
 async function doLogin(username, password) {
