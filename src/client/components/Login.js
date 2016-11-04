@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 
 import {login as loginAction} from '../actions/login';
+import LoginGoogle from './LoginGoogle';
 
 class Login extends React.Component {
     constructor(props) {
@@ -36,6 +37,7 @@ class Login extends React.Component {
 
     render() {
         return (
+            <div>
             <div className="card">
                 <div className="header">
                     <h4 className="title">LDAP Login</h4>
@@ -61,6 +63,15 @@ class Login extends React.Component {
                         <div className="clearfix"></div>
                     </form>
                 </div>
+            </div>
+            <div className="card">
+                <div className="header">
+                    <h4 className="title">Google login</h4>
+                </div>
+                <div className="content">
+                    <LoginGoogle/>
+                </div>
+            </div>
             </div>
         );
     }
