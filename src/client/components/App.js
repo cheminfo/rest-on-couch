@@ -18,15 +18,9 @@ const App = (props) => (
                         </div>
                         <ul className="nav">
                             <li>
-                                <Link to="/login" activeClassName="active">
-                                    <i className="pe-7s-graph"/>
-                                    <p>Login</p>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/logout" activeClassName="active">
-                                    <i className="pe-7s-user"/>
-                                    <p>Logout</p>
+                                <Link to="/dashboard" activeClassName="active">
+                                    <i className="fa fa-fighter-jet"/>
+                                    <p>Dashboard</p>
                                 </Link>
                             </li>
                         </ul>
@@ -51,9 +45,10 @@ const App = (props) => (
                     <div className="content">
                         <div className="container-fluid">
                             <Match exactly pattern="/" component={Home}/>
+                            <Match pattern="/dashboard" component={Home}/>
                             <Match pattern="/login" render={() => {
                                 if (props.loggedIn) {
-                                    return <Redirect to="/"/>;
+                                    return <Redirect to="/dashboard"/>;
                                 } else {
                                     return <Login/>;
                                 }
