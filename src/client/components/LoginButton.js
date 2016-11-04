@@ -4,11 +4,11 @@ import {Link} from 'react-router';
 
 import {logout as logoutAction} from '../actions/login';
 
-const LoginButton = ({loggedIn, logout}) => {
+const LoginButton = ({loggedIn, logout, username}) => {
     if (loggedIn) {
         return (
             <a href="#" onClick={logout}>
-                Logout
+                {username} - Logout
             </a>
         );
     } else {
@@ -25,6 +25,6 @@ LoginButton.propTypes = {
 };
 
 export default connect(
-    (state) => ({loggedIn: state.login.loggedIn}),
-    (dispatch) => ({logout: logoutAction(dispatch)})
+    (state) => ({loggedIn: state.login.loggedIn, username: state.login.username}), // mapStateToProps
+    (dispatch) => ({logout: logoutAction(dispatch)}) // mapDispatchToProps
 )(LoginButton);

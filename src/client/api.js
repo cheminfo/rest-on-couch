@@ -6,7 +6,8 @@ export function apiFetch(path, options) {
         mode: 'cors',
         credentials: 'include',
         headers: {
-            Accept: 'application/json'
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
         }
     }, options);
     return fetch(API_ROOT + path, options);
@@ -15,4 +16,12 @@ export function apiFetch(path, options) {
 export async function apiFetchJSON(path, options) {
     const req = await apiFetch(path, options);
     return req.json();
+}
+
+export async function apiFetchForm(path, data) {
+    const formData = new URLSearchParams();
+    for (const key in data) {
+        formData.set(key, data[key]);
+    }
+    return apiFetch(path, {method: 'POST', body: formData, redirect: 'manual', headers: {}});
 }
