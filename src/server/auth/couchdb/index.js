@@ -7,6 +7,7 @@ const request = require('request-promise');
 const couchUrl = require('../../../config/config').globalConfig.url;
 const isEmail = require('../../../util/isEmail');
 const util = require('../../middleware/util');
+const auth = require('../../middleware/auth');
 
 exports.init = function (passport, router) {
     passport.use(
@@ -41,8 +42,10 @@ exports.init = function (passport, router) {
             });
         }));
 
-    router.post('/login/couchdb', util.parseBody(), passport.authenticate('local', {
-        successRedirect: '/auth/login',
-        failureRedirect: '/auth/login'
-    }));
+    router.post('/login/couchdb',
+        util.parseBody(),
+        auth.afterFailure,
+        passport.authenticate('local'),
+        auth.afterSuccess
+    );
 };

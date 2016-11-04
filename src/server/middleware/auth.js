@@ -14,6 +14,27 @@ passport.deserializeUser(function (obj, done) {
     done(null, obj);
 });
 
+exports.okOrRedirect = function (ctx) {
+    switch (ctx.accepts('json', 'html')) {
+        case 'json':
+            ctx.body = {ok: true};
+            break;
+        default:
+            ctx.redirect('/auth/login');
+    }
+};
+
+exports.afterSuccess = function* () {
+    exports.okOrRedirect(this);
+};
+
+exports.afterFailure = function* (next) {
+    yield next;
+    if (this.status === 401) { // authentication failed with passport
+        exports.okOrRedirect(this);
+    }
+};
+
 exports.ensureAuthenticated = function* (next) {
     if (this.isAuthenticated()) {
         yield next;

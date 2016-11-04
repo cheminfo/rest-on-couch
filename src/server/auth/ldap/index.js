@@ -4,6 +4,7 @@
 const LdapStrategy = require('passport-ldapauth');
 
 const util = require('../../middleware/util');
+const auth = require('../../middleware/auth');
 
 exports.init = function (passport, router, config) {
     passport.use(new LdapStrategy(
@@ -26,8 +27,10 @@ exports.init = function (passport, router, config) {
         }
     ));
 
-    router.post('/login/ldap', util.parseBody(), passport.authenticate('ldapauth', {
-        successRedirect: '/auth/login',
-        failureRedirect: '/auth/login'
-    }));
+    router.post('/login/ldap',
+        util.parseBody(),
+        auth.afterFailure,
+        passport.authenticate('ldapauth'),
+        auth.afterSuccess
+    );
 };

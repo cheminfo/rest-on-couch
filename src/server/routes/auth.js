@@ -10,10 +10,10 @@ router.use(function*(next) {
     yield next;
 });
 
+const auth = require('../middleware/auth');
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
 const die = require('../../util/die');
-const getUserEmail = require('../middleware/auth').getUserEmail;
 
 const authPlugins = [
     'couchdb',
@@ -54,6 +54,9 @@ router.get('/login', function*() {
     if (this.isAuthenticated() && !this.session.popup) {
         this.redirect(this.session.continue || '/');
         this.session.continue = null;
+    } else if (this.isAuthenticated() && this.session.popup) {
+        this.session.popup = false;
+        this.body = '<script>window.close();</script>';
     } else {
         this.session.popup = false;
         this.state.enabledAuthPlugins = showLoginAuthPlugins;
@@ -63,17 +66,12 @@ router.get('/login', function*() {
 
 router.get('/logout', function*() {
     this.logout();
-    if (this.request.headers.accept && this.request.headers.accept.includes('application/json')) {
-        this.body = {ok: true};
-    } else {
-        this.redirect('/auth/login');
-    }
+    auth.okOrRedirect(this);
 });
 
 router.get('/session', function*() {
-    var that = this;
     // Check if session exists
-    var email = yield getUserEmail(that);
+    const email = yield auth.getUserEmail(this);
     this.body = {
         ok: true,
         username: email,
