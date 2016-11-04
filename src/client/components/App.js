@@ -11,7 +11,7 @@ const App = (props) => (
     <BrowserRouter>
         <div>
             <div className="wrapper">
-                <div className="sidebar" data-color="purple" data-image="assets/img/sidebar-5.jpg">
+                <div className="sidebar" data-color="blue">
                     <div className="sidebar-wrapper">
                         <div className="logo">
                             <Link to="/" className="simple-text">REST-ON-COUCH</Link>
