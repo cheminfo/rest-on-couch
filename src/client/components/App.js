@@ -6,6 +6,7 @@ import Home from './Home';
 import Login from './Login';
 import NoMatch from './NoMatch';
 import LoginButton from './LoginButton';
+import DatabaseSelector from './DatabaseSelector';
 
 const App = (props) => (
     <BrowserRouter>
@@ -34,6 +35,9 @@ const App = (props) => (
                             </div>
                             <div className="collapse navbar-collapse">
                                 <ul className="nav navbar-nav navbar-right">
+                                    <li>
+                                        <DatabaseSelector/>
+                                    </li>
                                     <li>
                                         <LoginButton/>
                                     </li>
