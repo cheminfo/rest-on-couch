@@ -6,7 +6,6 @@ export default ({dbName, dbList}) => {
     return (
         <div
             style={{
-                padding: '10px 15px',
                 margin: '10px 3px',
                 position: 'relative'
             }}
