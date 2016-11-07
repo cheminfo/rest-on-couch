@@ -14,6 +14,9 @@ const parseJson1mb = util.parseBody({jsonLimit: '1mb'});
 const parseJson100mb = util.parseBody({jsonLimit: '100mb'});
 
 exports.init = function () {
+    // Get list of all databases that ROC can handle
+    router.get('/_all_dbs', couch.getAllDbs);
+
     // Entries
     router.post('/:dbname/entry', parseJson100mb, couch.newOrUpdateEntry);
     router.get('/:dbname/entry/_all', couch.allEntries);

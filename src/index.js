@@ -85,7 +85,7 @@ class Couch {
         this._currentAuth = null;
         this._authRenewal = null;
         this._authRenewalInterval = config.authRenewal;
-        this.open();
+        this.open().catch(() => {});
     }
 
     async open() {
@@ -912,7 +912,7 @@ function onNotFound(ctx, entry, user, options) {
 async function checkSecurity(db, admin) {
     debug.trace('check security');
     const security = await nanoPromise.getDocument(db, '_security');
-    if (!security.admins || security.admins.names.indexOf(admin) === -1) {
+    if (!security.admins || !security.admins.names.includes(admin)) {
         throw new CouchError(`${admin} is not an admin of ${db.config.db}`, 'fatal');
     }
 }

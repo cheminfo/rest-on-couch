@@ -11,6 +11,12 @@
 
 ## Database
 
+### General
+
+| Method | Route | Action | Description |
+| ------ | ----- | ------ | ----------- |
+| GET | `/db/_all_dbs` | Get all databases managed by ROC | returns an `Array` of database names |
+
 ### Entry
 
 | Method | Route | Action | Description |

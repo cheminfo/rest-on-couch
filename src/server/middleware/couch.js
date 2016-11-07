@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assert');
+const request = require('request-promise');
 
 const auth = require('./auth');
 const config = require('../../config/config').globalConfig;
@@ -20,11 +21,13 @@ const statusMessages = {
 };
 
 exports.setupCouch = function*(next) {
-    const dbname = this.params.dbname;
-    this.state.dbName = dbname;
-    this.state.userEmail = this.query.asAnonymous ? 'anonymous' : yield auth.getUserEmail(this);
-    this.state.couch = Couch.get(dbname);
-    processCouchQuery(this);
+    if (this.params.dbname) {
+        const dbname = this.params.dbname;
+        this.state.dbName = dbname;
+        this.state.userEmail = this.query.asAnonymous ? 'anonymous' : yield auth.getUserEmail(this);
+        this.state.couch = Couch.get(dbname);
+        processCouchQuery(this);
+    }
     yield next;
 };
 
@@ -42,6 +45,20 @@ exports.tokenLookup = function* (next) {
         }
     }
     yield next;
+};
+
+exports.getAllDbs = function*() {
+    let allDbs = yield request.get(config.url + '/_all_dbs', {json: true});
+    allDbs = allDbs.filter((dbname) => !dbname.startsWith('_'));
+    const result  = [];
+    for (const dbname of allDbs) {
+        const db = Couch.get(dbname);
+        try {
+            yield db.open();
+            result.push(dbname);
+        } catch (e) {}
+    }
+    this.body = result;
 };
 
 exports.getDocumentByUuid = function*() {
