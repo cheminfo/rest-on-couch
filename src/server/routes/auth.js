@@ -50,6 +50,15 @@ if (config.auth) {
     }
 }
 
+router.get('/providers', function*() {
+    this.body = enabledAuthPlugins.map(plugin => {
+        return {
+            name: plugin,
+            visible: enabledAuthPlugins.includes(plugin)
+        };
+    });
+});
+
 router.get('/login', function*() {
     if (this.isAuthenticated() && !this.session.popup) {
         this.redirect(this.session.continue || '/');
