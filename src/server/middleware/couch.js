@@ -56,7 +56,9 @@ exports.getAllDbs = function*() {
         try {
             yield db.open();
             result.push(dbname);
-        } catch (e) {}
+        } catch (e) {
+            // ignore error (means that database is not handled by ROC)
+        }
     }
     this.body = result;
 };
