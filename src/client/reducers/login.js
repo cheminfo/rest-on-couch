@@ -1,8 +1,10 @@
-import {CHECK_LOGIN, LOGIN, LOGOUT} from '../actions/login';
+import {CHECK_LOGIN, LOGIN, LOGOUT, GET_LOGIN_PROVIDERS} from '../actions/login';
 
 const initialState = {
+    loginProviders: [],
     loggedIn: false,
-    username: null
+    username: null,
+    error: false
 };
 
 const loginReducer = (state = initialState, action) => {
@@ -18,6 +20,8 @@ const loginReducer = (state = initialState, action) => {
             return Object.assign({}, state, onLogin(action.payload));
         case `${LOGOUT}_FULFILLED`:
             return Object.assign({}, state, {error: false, loggedIn: false, username: null});
+        case `${GET_LOGIN_PROVIDERS}_FULFILLED`:
+            return Object.assign({}, state, {loginProviders: action.payload});
         default:
             return state;
     }

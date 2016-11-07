@@ -36,10 +36,10 @@ const App = (props) => (
                             <div className="collapse navbar-collapse">
                                 <ul className="nav navbar-nav navbar-right">
                                     <li>
-                                        <DatabaseSelector/>
+                                        <DatabaseSelector dbList={props.dbList} dispatch={props.dispatch} />
                                     </li>
                                     <li>
-                                        <LoginButton/>
+                                        <LoginButton />
                                     </li>
                                 </ul>
                             </div>
@@ -71,5 +71,8 @@ App.propTypes = {
 };
 
 export default connect(
-    (state) => ({loggedIn: state.login.loggedIn})
+    (state) => ({
+        loggedIn: state.login.loggedIn,
+        dbList: state.db.dbList
+    })
 )(App);

@@ -23,7 +23,7 @@ export function doCheckLogin() {
 export const LOGOUT = 'LOGOUT';
 export function logout(dispatch) {
     return () => {
-        return dispatch({
+        dispatch({
             type: LOGOUT,
             payload: doLogout()
         });
@@ -37,7 +37,7 @@ async function doLogout() {
 export const LOGIN = 'LOGIN';
 export function login(dispatch) {
     return (username, password) => {
-        return dispatch({
+        dispatch({
             type: LOGIN,
             payload: doLogin(username, password)
         });
@@ -52,4 +52,12 @@ async function doLogin(username, password) {
     } else {
         return false;
     }
+}
+
+export const GET_LOGIN_PROVIDERS = 'GET_LOGIN_PROVIDERS';
+export function getLoginProviders(dispatch) {
+    dispatch({
+        type: GET_LOGIN_PROVIDERS,
+        payload: apiFetchJSON('auth/providers')
+    });
 }
