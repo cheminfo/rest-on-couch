@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 
 import {API_ROOT} from '../api';
+import {checkLogin} from '../actions/login';
 
 const LoginGoogle = ({doGoogleLogin}) => (
     <a href="#" onClick={doGoogleLogin}>
@@ -23,7 +24,15 @@ export default connect(
             const top = Math.round(window.outerHeight / 2 - height / 2);
             const win = window.open(API_ROOT + 'auth/login/google/popup', 'loginPopup', `location=1,scrollbars=1,height=${height},width=${width},left=${left},top=${top}`);
             if (win.focus) win.focus();
-            console.log(win);
+            checkWindowStatus();
+
+            function checkWindowStatus() {
+                if (win.closed) {
+                    checkLogin(dispatch);
+                } else {
+                    setTimeout(checkWindowStatus, 250);
+                }
+            }
         }
     })
 )(LoginGoogle);

@@ -1,4 +1,4 @@
-import {HAS_LOGGED, LOGIN, LOGOUT} from '../actions/login';
+import {CHECK_LOGIN, LOGIN, LOGOUT} from '../actions/login';
 
 const initialState = {
     loggedIn: false,
@@ -7,7 +7,13 @@ const initialState = {
 
 const loginReducer = (state = initialState, action) => {
     switch (action.type) {
-        case HAS_LOGGED:
+        case `${CHECK_LOGIN}_FULFILLED`: {
+            if (action.payload) {
+                return Object.assign({}, state, onLogin(action.payload));
+            } else { // checkLogin returned false but this is not an error
+                return state;
+            }
+        }
         case `${LOGIN}_FULFILLED`:
             return Object.assign({}, state, onLogin(action.payload));
         case `${LOGOUT}_FULFILLED`:

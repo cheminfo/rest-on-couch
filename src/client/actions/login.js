@@ -1,15 +1,19 @@
-import {createAction} from 'redux-actions';
-
 import {apiFetchJSON, apiFetchForm} from '../api';
 
-export const HAS_LOGGED = 'HAS_LOGGED';
-export const hasLogged = createAction(HAS_LOGGED);
+export const CHECK_LOGIN = 'CHECK_LOGIN';
+export function checkLogin(dispatch) {
+    dispatch({
+        type: CHECK_LOGIN,
+        payload: checkTheLogin()
+    });
+}
 
-export async function checkLogin(store) {
+async function checkTheLogin() {
     const data = await doCheckLogin();
     if (data.authenticated) {
-        store.dispatch(hasLogged(data.username));
+        return data.username;
     }
+    return false;
 }
 
 export function doCheckLogin() {

@@ -14,7 +14,7 @@ const App = (props) => (
                 <div className="sidebar" data-color="blue">
                     <div className="sidebar-wrapper">
                         <div className="logo">
-                            <Link to="/" className="simple-text">REST-ON-COUCH</Link>
+                            <Link to="/" className="simple-text">rest-on-couch</Link>
                         </div>
                         <ul className="nav">
                             <li>
