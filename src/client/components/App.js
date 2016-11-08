@@ -20,7 +20,7 @@ const App = (props) => (
                             <div className="collapse navbar-collapse">
                                 <ul className="nav navbar-nav navbar-right">
                                     <li>
-                                        <DatabaseSelector dbList={props.dbList} dispatch={props.dispatch} />
+                                        <DatabaseSelector dbName={props.dbName} dbList={props.dbList} dispatch={props.dispatch} />
                                     </li>
                                     <li>
                                         <LoginButton />
@@ -57,6 +57,7 @@ App.propTypes = {
 export default connect(
     (state) => ({
         loggedIn: state.login.loggedIn,
-        dbList: state.db.dbList
+        dbList: state.db.dbList,
+        dbName: state.db.dbName
     })
 )(App);
