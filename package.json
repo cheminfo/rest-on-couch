@@ -84,6 +84,7 @@
     "react-select2-wrapper": "^1.0.3",
     "redux": "^3.6.0",
     "redux-actions": "^0.13.0",
+    "redux-persist": "^4.0.0-alpha7",
     "redux-promise-middleware": "^4.1.0",
     "request": "^2.74.0",
     "request-promise": "^4.0.2",
