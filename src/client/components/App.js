@@ -1,38 +1,22 @@
 import React, {PropTypes} from 'react';
-import {BrowserRouter, Match, Miss, Link, Redirect} from 'react-router';
+import {BrowserRouter, Match, Miss, Redirect} from 'react-router';
 import {connect} from 'react-redux';
 
+import DatabaseSelector from './DatabaseSelector';
 import Home from './Home';
 import Login from './Login';
-import NoMatch from './NoMatch';
 import LoginButton from './LoginButton';
-import DatabaseSelector from './DatabaseSelector';
+import NoMatch from './NoMatch';
+import Sidebar from './Sidebar';
 
 const App = (props) => (
     <BrowserRouter>
         <div>
             <div className="wrapper">
-                <div className="sidebar" data-color="blue">
-                    <div className="sidebar-wrapper">
-                        <div className="logo">
-                            <Link to="/" className="simple-text">rest-on-couch</Link>
-                        </div>
-                        <ul className="nav">
-                            <li>
-                                <Link to="/dashboard" activeClassName="active">
-                                    <i className="fa fa-fighter-jet"/>
-                                    <p>Dashboard</p>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                <Sidebar />
                 <div className="main-panel">
                     <nav className="navbar navbar-default navbar-fixed">
                         <div className="container-fluid">
-                            <div className="navbar-header">
-                                <a className="navbar-brand" href="#">Dashboard</a>
-                            </div>
                             <div className="collapse navbar-collapse">
                                 <ul className="nav navbar-nav navbar-right">
                                     <li>
