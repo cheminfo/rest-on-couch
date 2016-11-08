@@ -13,7 +13,7 @@
     "build": "npm run build:client && npm run build:server",
     "build:client": "webpack",
     "build:server": "npm run compile",
-    "compile": "babel src --out-dir lib --ignore src/client --quiet --config babel.config.server.json --plugins transform-async-to-generator,transform-es2015-spread,transform-es2015-parameters",
+    "compile": "babel src --out-dir lib --ignore src/client --quiet --plugins transform-async-to-generator,transform-es2015-spread,transform-es2015-parameters",
     "eslint": "eslint src bin test --cache",
     "eslint-fix": "npm run eslint -- --fix",
     "prepublish": "npm run compile",
