@@ -11,12 +11,12 @@ const CouchError = require('./util/CouchError');
 const constants = require('./constants');
 const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
-const token = require('./util/token');
 const getConfig = require('./config/config').getConfig;
 const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
 
 const log = require('./couch/log');
 const util = require('./couch/util');
+const tokenMethods = require('./couch/token');
 
 process.on('unhandledRejection', function (err) {
     debug.error('unhandled rejection: ' + err.stack);
@@ -802,43 +802,6 @@ class Couch {
         debug(`getLogs (${epoch}`);
         return this.open().then(() => log.getLogs(this._db, epoch));
     }
-
-    async createEntryToken(user, uuid) {
-        debug(`createEntryToken (${user}, ${uuid})`);
-        await this.open();
-        // We need write right to create a token. This will throw if not.
-        await this.getEntryByUuidAndRights(uuid, user, 'write');
-        return token.createEntryToken(this._db, user, uuid, 'read');
-    }
-
-    async deleteToken(user, tokenId) {
-        debug(`deleteToken (${user}, ${tokenId})`);
-        await this.open();
-        const tokenValue = await token.getToken(this._db, tokenId);
-        if (!tokenValue) {
-            throw new CouchError('token not found', 'not found');
-        }
-        if (tokenValue.$owner !== user) {
-            throw new CouchError('only owner can delete a token', 'unauthorized');
-        }
-        await token.destroyToken(this._db, tokenValue._id, tokenValue._rev);
-    }
-
-    async getToken(tokenId) {
-        debug(`getToken (${tokenId})`);
-        await this.open();
-        const tokenValue = await token.getToken(this._db, tokenId);
-        if (!tokenValue) {
-            throw new CouchError('token not found', 'not found');
-        }
-        return tokenValue;
-    }
-
-    async getTokens(user) {
-        debug(`getTokens (${user})`);
-        await this.open();
-        return token.getTokens(this._db, user);
-    }
 }
 
 const databaseCache = new Map();
@@ -858,6 +821,14 @@ Couch.get = function (databaseName) {
 
 Couch.prototype.addAttachmentById = Couch.prototype.addAttachmentsById;
 Couch.prototype.addAttachmentByUuid = Couch.prototype.addAttachmentsByUuid;
+
+function extendCouch(methods) {
+    for (const method in methods) {
+        Couch.prototype[method] = methods[method];
+    }
+}
+
+extendCouch(tokenMethods);
 
 module.exports = Couch;
 
