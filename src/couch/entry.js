@@ -4,6 +4,7 @@ const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:entry');
 const nanoPromise = require('../util/nanoPromise');
 const validate = require('./validate');
+const nanoMethods = require('./nano');
 
 const methods = {
     async getEntryByIdAndRights(id, user, rights, options = {}) {
@@ -67,6 +68,54 @@ const methods = {
         debug(`deleteEntryById (${id}, ${user})`);
         const doc = await this.getEntryByIdAndRights(id, user, 'delete');
         return nanoPromise.destroyDocument(this._db, doc._id);
+    },
+
+    async createEntry(id, user, options) {
+        options = options || {};
+        debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
+        await this.open();
+        const result = await nanoPromise.queryView(this._db, 'entryByOwnerAndId', {
+            key: [user, id],
+            reduce: false,
+            include_docs: true
+        });
+        if (result.length === 0) {
+            const hasRight = await validate.checkRightAnyGroup(this._db, user, 'create');
+            if (!hasRight) {
+                throw new CouchError('user is missing create right', 'unauthorized');
+            }
+            let newEntry;
+            const defaultEntry = this._defaultEntry;
+            if (typeof defaultEntry === 'function') {
+                newEntry = defaultEntry.apply(null, options.createParameters || []);
+            } else if (typeof defaultEntry[options.kind] === 'function') {
+                newEntry = defaultEntry[options.kind].apply(null, options.createParameters || []);
+            } else {
+                throw new CouchError('unexpected type for default entry');
+            }
+            const owners = options.owners || [];
+            const entry = await Promise.resolve(newEntry);
+            const toInsert = {
+                $id: id,
+                $type: 'entry',
+                $owners: [user].concat(owners),
+                $content: entry,
+                $kind: options.kind
+            };
+            return nanoMethods.saveEntry(this._db, toInsert, user);
+        }
+        debug.trace('entry already exists');
+        if (options.throwIfExists) {
+            throw new CouchError('entry already exists', 'conflict');
+        }
+        // Return something similar to insertDocument
+        return {
+            ok: true,
+            id: result[0].doc._id,
+            rev: result[0].doc._rev,
+            $modificationDate: result[0].doc.$modificationDate,
+            $creationDate: result[0].doc.$creationDate
+        };
     }
 };
 

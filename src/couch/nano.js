@@ -17,6 +17,27 @@ async function getGroup(db, name) {
     return groups[0].doc;
 }
 
+async function saveEntry(db, entry, user) {
+    if (entry.$id === undefined) {
+        entry.$id = null;
+    }
+    if (entry.$kind === undefined) {
+        entry.$kind = null;
+    }
+    const now = Date.now();
+    entry.$lastModification = user;
+    entry.$modificationDate = now;
+    if (entry.$creationDate === undefined) {
+        entry.$creationDate = now;
+    }
+
+    const result = await nanoPromise.insertDocument(db, entry);
+    result.$modificationDate = entry.$modificationDate;
+    result.$creationDate = entry.$creationDate;
+    return result;
+}
+
 module.exports = {
-    getGroup
+    getGroup,
+    saveEntry
 };

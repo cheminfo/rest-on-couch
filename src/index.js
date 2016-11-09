@@ -14,7 +14,7 @@ const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
 const init = require('./couch/init');
 const log = require('./couch/log');
 const util = require('./couch/util');
-const getGroup = require('./couch/nano').getGroup;
+const nanoMethods = require('./couch/nano');
 const validate = require('./couch/validate');
 const entryMethods = require('./couch/entry');
 const tokenMethods = require('./couch/token');
@@ -100,54 +100,6 @@ class Couch {
 
     close() {
         clearInterval(this._authRenewal);
-    }
-
-    async createEntry(id, user, options) {
-        options = options || {};
-        debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
-        await this.open();
-        const result = await nanoPromise.queryView(this._db, 'entryByOwnerAndId', {
-            key: [user, id],
-            reduce: false,
-            include_docs: true
-        });
-        if (result.length === 0) {
-            const hasRight = await validate.checkRightAnyGroup(this._db, user, 'create');
-            if (!hasRight) {
-                throw new CouchError('user is missing create right', 'unauthorized');
-            }
-            let newEntry;
-            const defaultEntry = this._defaultEntry;
-            if (typeof defaultEntry === 'function') {
-                newEntry = defaultEntry.apply(null, options.createParameters || []);
-            } else if (typeof defaultEntry[options.kind] === 'function') {
-                newEntry = defaultEntry[options.kind].apply(null, options.createParameters || []);
-            } else {
-                throw new CouchError('unexpected type for default entry');
-            }
-            const owners = options.owners || [];
-            const entry = await Promise.resolve(newEntry);
-            const toInsert = {
-                $id: id,
-                $type: 'entry',
-                $owners: [user].concat(owners),
-                $content: entry,
-                $kind: options.kind
-            };
-            return saveEntry(this._db, toInsert, user);
-        }
-        debug.trace('entry already exists');
-        if (options.throwIfExists) {
-            throw new CouchError('entry already exists', 'conflict');
-        }
-        // Return something similar to insertDocument
-        return {
-            ok: true,
-            id: result[0].doc._id,
-            rev: result[0].doc._rev,
-            $modificationDate: result[0].doc.$modificationDate,
-            $creationDate: result[0].doc.$creationDate
-        };
     }
 
     async queryEntriesByRight(user, view, right, options) {
@@ -341,7 +293,7 @@ class Couch {
             return false;
         }
         delete entry._attachments[attachmentName];
-        return saveEntry(this._db, entry, user);
+        return nanoMethods.saveEntry(this._db, entry, user);
     }
 
     getAttachmentByIdAndName(id, name, user, asStream, options) {
@@ -518,7 +470,7 @@ class Couch {
         debug(`deleteGroup (${groupName}, ${user})`);
         await this.open();
 
-        const doc = await getGroup(this._db, groupName);
+        const doc = await nanoMethods.getGroup(this._db, groupName);
         if (!doc) {
             debug.trace('group does not exist');
             throw new CouchError('group does not exist', 'not found');
@@ -541,7 +493,7 @@ class Couch {
         const hasRight = await validate.checkRightAnyGroup(this._db, user, 'createGroup');
         if (!hasRight) throw new CouchError(`user ${user} does not have createGroup right`);
 
-        const group = await getGroup(this._db, groupName);
+        const group = await nanoMethods.getGroup(this._db, groupName);
         if (group) throw new CouchError(`group ${groupName} already exists`, 'exists');
 
         return nanoPromise.insertDocument(this._db, {
@@ -556,7 +508,7 @@ class Couch {
     async getGroup(groupName, user) {
         debug(`getGroup (${groupName}, ${user})`);
         await this.open();
-        const doc = await getGroup(this._db, groupName);
+        const doc = await nanoMethods.getGroup(this._db, groupName);
         if (!doc) {
             debug.trace('group does not exist');
             throw new CouchError('group does not exist', 'not found');
@@ -701,7 +653,7 @@ function updateEntry(ctx, oldDoc, newDoc, user, options) {
     }
     // Doc validation will fail $kind changed
     oldDoc.$kind = newDoc.$kind;
-    return saveEntry(ctx._db, oldDoc, user)
+    return nanoMethods.saveEntry(ctx._db, oldDoc, user)
         .then(r => res = r)
         .then(addGroups(ctx, user, options.groups))
         .then(() => res);
@@ -739,7 +691,7 @@ async function createNew(ctx, entry, user) {
             $content: entry.$content,
             _attachments: entry._attachments
         };
-        return saveEntry(ctx._db, newEntry, user);
+        return nanoMethods.saveEntry(ctx._db, newEntry, user);
     } else {
         let msg = `${user} not allowed to create`;
         debug.trace(msg);
@@ -757,26 +709,6 @@ function addGroups(ctx, user, groups) {
 
 function getDefaultEntry() {
     return {};
-}
-
-async function saveEntry(db, entry, user) {
-    if (entry.$id === undefined) {
-        entry.$id = null;
-    }
-    if (entry.$kind === undefined) {
-        entry.$kind = null;
-    }
-    const now = Date.now();
-    entry.$lastModification = user;
-    entry.$modificationDate = now;
-    if (entry.$creationDate === undefined) {
-        entry.$creationDate = now;
-    }
-
-    const result = await nanoPromise.insertDocument(db, entry);
-    result.$modificationDate = entry.$modificationDate;
-    result.$creationDate = entry.$creationDate;
-    return result;
 }
 
 function getAttachmentFromEntry(ctx, name, asStream) {
