@@ -1,7 +1,6 @@
 'use strict';
 
 const debug = require('./util/debug')('main');
-const extend = require('extend');
 const nano = require('nano');
 
 const CouchError = require('./util/CouchError');
@@ -37,8 +36,6 @@ const basicRights = {
 const defaultRights = {
     read: ['anonymous']
 };
-
-const allowedFirstLevelKeys = new Set(['$deleted']);
 
 class Couch {
     constructor(options) {
@@ -102,133 +99,6 @@ class Couch {
 
     close() {
         clearInterval(this._authRenewal);
-    }
-
-    async getEntriesByUserAndRights(user, rights, options = {}) {
-        debug(`getEntriesByUserAndRights (${user}, ${rights})`);
-        const limit = options.limit;
-        const skip = options.skip;
-
-        await this.open();
-
-        // First we get a list of owners for each document
-        const owners = await nanoPromise.queryView(this._db, 'ownersById', {
-            reduce: false,
-            include_docs: false
-        });
-
-        // Check rights for current user and keep only documents with granted access
-        const hasRights = await validateMethods.validateRights(this._db, owners.map(r => r.value), user, rights || 'read');
-        let allowedDocs = owners.filter((r, idx) => hasRights[idx]);
-
-        // Apply pagination options
-        if (skip) allowedDocs = allowedDocs.slice(skip);
-        if (limit) allowedDocs = allowedDocs.slice(0, limit);
-
-        // Get each document from CouchDB
-        return Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
-    }
-
-    hasRightForEntry(uuid, user, right, options) {
-        return this.getEntryByUuidAndRights(uuid, user, right, options)
-            .then(() => {
-                return true;
-            }, err => {
-                if (err.reason === 'unauthorized') return false;
-                // Propagate
-                throw err;
-            });
-    }
-
-    getEntryByUuid(uuid, user, options) {
-        return this.getEntryByUuidAndRights(uuid, user, 'read', options);
-    }
-
-    getEntryById(id, user, options) {
-        return this.getEntryByIdAndRights(id, user, 'read', options);
-    }
-
-    async _doUpdateOnEntry(id, user, update, updateBody) {
-        // Call update handler
-        await this.open();
-        const doc = await this.getEntryById(id, user);
-        const hasRight = validateMethods.isOwner(doc.$owners, user);
-        if (!hasRight) {
-            throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
-        }
-        return nanoPromise.updateWithHandler(this._db, update, doc._id, updateBody);
-    }
-
-    async _doUpdateOnEntryByUuid(uuid, user, update, updateBody) {
-        await this.open();
-        const doc = await this.getEntryByUuid(uuid, user);
-        const hasRight = validateMethods.isOwner(doc.$owners, user);
-        if (!hasRight) {
-            throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
-        }
-        return nanoPromise.updateWithHandler(this._db, update, uuid, updateBody);
-    }
-
-    async addFileToJpath(id, user, jpath, json, file, newContent) {
-        if (!Array.isArray(jpath)) {
-            throw new CouchError('jpath must be an array');
-        }
-        if (typeof json !== 'object') {
-            throw new CouchError('json must be an object');
-        }
-        if (typeof file !== 'object') {
-            throw new CouchError('file must be an object');
-        }
-        if (!file.field || !file.name || !file.data) {
-            throw new CouchError('file must have field, name and data properties');
-        }
-
-        const entry = await this.getEntryByIdAndRights(id, user, ['write']);
-        let current = entry.$content || {};
-
-        if (newContent) {
-            extend(current, newContent);
-        }
-
-        for (var i = 0; i < jpath.length; i++) {
-            let newCurrent = current[jpath[i]];
-            if (!newCurrent) {
-                if (i < jpath.length - 1) {
-                    newCurrent = current[jpath[i]] = {};
-                } else {
-                    newCurrent = current[jpath[i]] = [];
-                }
-            }
-            current = newCurrent;
-        }
-        if (!Array.isArray(current)) {
-            throw new CouchError('jpath must point to an array');
-        }
-
-        if (file.reference) {
-            let found = current.find(el => el.reference === file.reference);
-            if (found) {
-                Object.assign(found, json);
-                json = found;
-            } else {
-                json.reference = file.reference;
-                current.push(json);
-            }
-        } else {
-            current.push(json);
-        }
-
-        json[file.field] = {
-            filename: file.name
-        };
-
-        if (!entry._attachments) entry._attachments = {};
-
-        entry._attachments[file.name] = {
-            content_type: file.content_type,
-            data: file.data.toString('base64')
-        };
-        return this.insertEntry(entry, user);
     }
 
     async editDefaultGroup(group, type, action) {
@@ -362,55 +232,6 @@ class Couch {
         return Array.from(union);
     }
 
-    async insertEntry(entry, user, options) {
-        debug(`insertEntry (id: ${entry._id}, user: ${user}, options: ${options})`);
-        await this.open();
-
-        options = options || {};
-        options.groups = options.groups || [];
-        if (!entry.$content) throw new CouchError('entry has no content');
-        if (options.groups !== undefined && !Array.isArray(options.groups)) throw new CouchError('options.groups should be an array if defined', 'invalid argument');
-
-        if (entry._id && options.isNew) {
-            debug.trace('new entry has _id');
-            throw new CouchError('entry should not have _id', 'bad argument');
-        }
-
-        const notFound = onNotFound(this, entry, user, options);
-
-        let result;
-        let action = 'updated';
-        if (entry._id) {
-            try {
-                const doc = await this.getEntryByUuidAndRights(entry._id, user, ['write']);
-                result = await updateEntry(this, doc, entry, user, options);
-            } catch (e) {
-                result = await notFound(e);
-                action = 'created';
-            }
-        } else if (entry.$id) {
-            debug.trace('entry has no _id but has $id');
-            try {
-                const doc = await this.getEntryByIdAndRights(entry.$id, user, ['write']);
-                result = await updateEntry(this, doc, entry, user, options);
-            } catch (e) {
-                result = await notFound(e);
-                action = 'created';
-            }
-        } else {
-            debug.trace('entry has no _id nor $id');
-            if (options.isUpdate) {
-                throw new CouchError('entry should have an _id', 'bad argument');
-            }
-            const res = await createNew(this, entry, user);
-            action = 'created';
-            await addGroups(this, user, options.groups)(res);
-            result = res;
-        }
-
-        return {info: result, action};
-    }
-
     log(message, level) {
         debug(`log (${message}, ${level})`);
         return this.open().then(() => log.log(this._db, this._logLevel, message, level));
@@ -452,84 +273,6 @@ extendCouch(tokenMethods.methods);
 extendCouch(userMethods.methods);
 
 module.exports = Couch;
-
-function updateEntry(ctx, oldDoc, newDoc, user, options) {
-    debug.trace('update entry');
-    var res;
-    if (oldDoc._rev !== newDoc._rev) {
-        debug.trace('document and entry _rev differ');
-        throw new CouchError('document and entry _rev differ', 'conflict');
-    }
-    if (options.merge) {
-        for (let key in newDoc.$content) {
-            oldDoc.$content[key] = newDoc.$content[key];
-        }
-    } else {
-        oldDoc.$content = newDoc.$content;
-    }
-    if (newDoc._attachments) {
-        oldDoc._attachments = newDoc._attachments;
-    }
-    for (let key in newDoc) {
-        if (allowedFirstLevelKeys.has(key)) {
-            oldDoc[key] = newDoc[key];
-        }
-    }
-    // Doc validation will fail $kind changed
-    oldDoc.$kind = newDoc.$kind;
-    return nanoMethods.saveEntry(ctx._db, oldDoc, user)
-        .then(r => res = r)
-        .then(addGroups(ctx, user, options.groups))
-        .then(() => res);
-}
-
-function onNotFound(ctx, entry, user, options) {
-    return error => {
-        var res;
-        if (error.reason === 'not found') {
-            debug.trace('doc not found');
-            if (options.isUpdate) {
-                throw new CouchError('Document does not exist', 'not found');
-            }
-
-            return createNew(ctx, entry, user)
-                .then(r => res = r)
-                .then(addGroups(ctx, user, options.groups))
-                .then(() => res);
-        } else {
-            throw error;
-        }
-    };
-}
-
-async function createNew(ctx, entry, user) {
-    debug.trace('create new');
-    const ok = await validateMethods.checkGlobalRight(ctx._db, user, 'create');
-    if (ok) {
-        debug.trace('has right, create new');
-        const newEntry = {
-            $type: 'entry',
-            $id: entry.$id,
-            $kind: entry.$kind,
-            $owners: [user],
-            $content: entry.$content,
-            _attachments: entry._attachments
-        };
-        return nanoMethods.saveEntry(ctx._db, newEntry, user);
-    } else {
-        let msg = `${user} not allowed to create`;
-        debug.trace(msg);
-        throw new CouchError(msg, 'unauthorized');
-    }
-}
-
-function addGroups(ctx, user, groups) {
-    return async doc => {
-        for (let i = 0; i < groups.length; i++) {
-            await ctx.addGroupToEntryByUuid(doc.id, user, groups[i]);
-        }
-    };
-}
 
 function getDefaultEntry() {
     return {};

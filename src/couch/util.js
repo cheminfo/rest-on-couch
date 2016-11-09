@@ -3,7 +3,7 @@
 const includes = require('array-includes');
 
 const isEmail = require('../util/isEmail');
-const globalRightTypes = require('../constants').globalRightTypes;
+const constants = require('../constants');
 
 function isSpecialUser(user) {
     return user === 'anonymous' || user === 'anyuser';
@@ -22,7 +22,19 @@ function isValidGlobalRightUser(user) {
 }
 
 function isValidGlobalRightType(type) {
-    return includes(globalRightTypes, type);
+    return includes(constants.globalRightTypes, type);
+}
+
+function isAllowedFirstLevelKey(key) {
+    return includes(constants.allowedFirstLevelKeys, key);
+}
+
+function addGroups(ctx, user, groups) {
+    return async doc => {
+        for (let i = 0; i < groups.length; i++) {
+            await ctx.addGroupToEntryByUuid(doc.id, user, groups[i]);
+        }
+    };
 }
 
 module.exports = {
@@ -30,5 +42,7 @@ module.exports = {
     isValidGroupName,
     isValidUsername,
     isValidGlobalRightUser,
-    isValidGlobalRightType
+    isValidGlobalRightType,
+    isAllowedFirstLevelKey,
+    addGroups
 };

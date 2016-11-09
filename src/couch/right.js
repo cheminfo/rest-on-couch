@@ -37,11 +37,25 @@ const methods = {
     },
 
     addGlobalRight(type, user) {
+        debug(`addGlobalRight (${type}, ${user})`);
         return this.editGlobalRight(type, user, 'add');
     },
 
     removeGlobalRight(type, user) {
+        debug(`addGlobalRight (${type}, ${user})`);
         return this.editGlobalRight(type, user, 'remove');
+    },
+
+    hasRightForEntry(uuid, user, right, options) {
+        debug(`has right for entry (${uuid}, ${user}, ${right})`);
+        return this.getEntryByUuidAndRights(uuid, user, right, options)
+            .then(() => {
+                return true;
+            }, err => {
+                if (err.reason === 'unauthorized') return false;
+                // Propagate
+                throw err;
+            });
     }
 };
 
