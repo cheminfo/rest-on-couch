@@ -6,6 +6,7 @@ const extend = require('extend');
 const hasOwn = require('has-own');
 const nano = require('nano');
 const objHash = require('object-hash');
+const includes = require('array-includes');
 
 const CouchError = require('./util/CouchError');
 const constants = require('./constants');
@@ -884,7 +885,7 @@ function onNotFound(ctx, entry, user, options) {
 async function checkSecurity(db, admin) {
     debug.trace('check security');
     const security = await nanoPromise.getDocument(db, '_security');
-    if (!security.admins || !security.admins.names.includes(admin)) {
+    if (!security.admins || !includes(security.admins.names, admin)) {
         throw new CouchError(`${admin} is not an admin of ${db.config.db}`, 'fatal');
     }
 }

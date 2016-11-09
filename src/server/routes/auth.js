@@ -1,5 +1,6 @@
 'use strict';
 
+const includes = require('array-includes');
 const passport = require('koa-passport');
 const router = require('koa-router')({
     prefix: '/auth'
@@ -54,7 +55,7 @@ router.get('/providers', function*() {
     this.body = enabledAuthPlugins.map(plugin => {
         return {
             name: plugin,
-            visible: enabledAuthPlugins.includes(plugin)
+            visible: includes(enabledAuthPlugins, plugin)
         };
     });
 });

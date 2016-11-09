@@ -40,6 +40,7 @@
   },
   "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
   "dependencies": {
+    "array-includes": "^3.0.2",
     "chokidar": "^1.4.2",
     "co": "^4.6.0",
     "co-sleep": "0.0.1",
