@@ -12,10 +12,11 @@ const constants = require('./constants');
 const getDesignDoc = require('./design/app');
 const nanoPromise = require('./util/nanoPromise');
 const token = require('./util/token');
-const log = require('./couch/log');
 const getConfig = require('./config/config').getConfig;
 const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
-const isEmail = require('./util/isEmail');
+
+const log = require('./couch/log');
+const util = require('./couch/util');
 
 process.on('unhandledRejection', function (err) {
     debug.error('unhandled rejection: ' + err.stack);
@@ -604,10 +605,10 @@ class Couch {
         if (action !== 'add' && action !== 'remove') {
             throw new CouchError('edit default group invalid action', 'bad argument');
         }
-        if (!isSpecialUser(type)) {
+        if (!util.isSpecialUser(type)) {
             throw new CouchError('edit default group invalid type', 'bad argument');
         }
-        if (!isValidGroupName(group)) {
+        if (!util.isValidGroupName(group)) {
             throw new CouchError('edit default group invalid group name', 'bad argument');
         }
 
@@ -1283,23 +1284,11 @@ function getAttachmentFromEntry(ctx, name, asStream) {
     };
 }
 
-function isValidGlobalRightUser(user) {
-    return isSpecialUser(user) || isEmail(user);
-}
-
-function isSpecialUser(user) {
-    return user === 'anonymous' || user === 'anyuser';
-}
-
-function isValidGroupName(group) {
-    return !isEmail(group);
-}
-
 function checkGlobalTypeAndUser(type, user) {
     if (globalRightTypes.indexOf(type) === -1) {
         return new CouchError('Invalid global right type', 'bad argument');
     }
-    if (!isValidGlobalRightUser(user)) {
+    if (!util.isValidGlobalRightUser(user)) {
         return new CouchError('Invalid global right user', 'bad argument');
     }
     return null;
