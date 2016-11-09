@@ -10,8 +10,8 @@ export default () => (
                 <Link to="/" className="simple-text">rest-on-couch</Link>
             </div>
             <ul className="nav">
-                <SidebarLink to="/rights" icon="fighter-jet" text="Rights" />
-                <SidebarLink to="/groups" icon="fighter-jet" text="Groups" />
+                <SidebarLink to="/rights" icon="unlock-alt" text="Rights" />
+                <SidebarLink to="/groups" icon="users" text="Groups" />
             </ul>
         </div>
     </div>
