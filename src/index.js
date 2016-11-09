@@ -8,16 +8,16 @@ const CouchError = require('./util/CouchError');
 const constants = require('./constants');
 const nanoPromise = require('./util/nanoPromise');
 const getConfig = require('./config/config').getConfig;
-const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
 
-const initMethods = require('./couch/init');
 const log = require('./couch/log');
 const util = require('./couch/util');
 
 const attachMethods = require('./couch/attachment');
 const entryMethods = require('./couch/entry');
+const initMethods = require('./couch/init');
 const nanoMethods = require('./couch/nano');
 const queryMethods = require('./couch/query');
+const rightMethods = require('./couch/right');
 const tokenMethods = require('./couch/token');
 const userMethods = require('./couch/user');
 const validateMethods = require('./couch/validate');
@@ -229,43 +229,6 @@ class Couch {
             data: file.data.toString('base64')
         };
         return this.insertEntry(entry, user);
-    }
-
-    async editGlobalRight(type, user, action) {
-        if (action !== 'add' && action !== 'remove') {
-            throw new CouchError('Edit global right invalid action', 'bad argument');
-        }
-        let e = checkGlobalTypeAndUser(type, user);
-        if (e) {
-            throw e;
-        }
-
-        const doc = await nanoPromise.getDocument(this._db, constants.RIGHTS_DOC_ID);
-        if (!doc) throw new Error('Rights document should always exist', 'unreachable');
-        if (action === 'add') {
-            if (!doc[type]) doc[type] = [];
-            if (doc[type].indexOf(user) === -1) {
-                doc[type].push(user);
-            }
-        }
-        if (action === 'remove') {
-            if (doc[type]) {
-                const idx = doc[type].indexOf(user);
-                if (idx !== -1) {
-                    doc[type].splice(idx, 1);
-                }
-            }
-        }
-
-        return nanoPromise.insertDocument(this._db, doc);
-    }
-
-    addGlobalRight(type, user) {
-        return this.editGlobalRight(type, user, 'add');
-    }
-
-    removeGlobalRight(type, user) {
-        return this.editGlobalRight(type, user, 'remove');
     }
 
     async editDefaultGroup(group, type, action) {
@@ -484,6 +447,7 @@ extendCouch(attachMethods.methods);
 extendCouch(entryMethods.methods);
 extendCouch(initMethods.methods);
 extendCouch(queryMethods.methods);
+extendCouch(rightMethods.methods);
 extendCouch(tokenMethods.methods);
 extendCouch(userMethods.methods);
 
@@ -569,14 +533,4 @@ function addGroups(ctx, user, groups) {
 
 function getDefaultEntry() {
     return {};
-}
-
-function checkGlobalTypeAndUser(type, user) {
-    if (globalRightTypes.indexOf(type) === -1) {
-        return new CouchError('Invalid global right type', 'bad argument');
-    }
-    if (!util.isValidGlobalRightUser(user)) {
-        return new CouchError('Invalid global right user', 'bad argument');
-    }
-    return null;
 }
