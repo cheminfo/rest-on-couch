@@ -22,6 +22,17 @@ module.exports = function (newDoc, oldDoc, userCtx) {
         }
     }
 
+    function validateUsers(list) {
+        if (!Array.isArray(list)) {
+            throw ({forbidden: 'Users list must be an array'});
+        }
+        for (var i = 0; i < list.length; i++) {
+            if (!validEmail.test(list[i])) {
+                throw ({forbidden: 'Users can only be emails'});
+            }
+        }
+    }
+
     if (!newDoc.$type || validTypes.indexOf(newDoc.$type) === -1) {
         throw ({forbidden: 'Invalid type: ' + newDoc.$type});
     }
@@ -37,6 +48,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
             throw ({forbidden: 'group name cannot be an email'});
         }
         validateOwners(newDoc);
+        validateUsers(newDoc.users);
     } else if (newDoc.$type === 'entry') {
         if (typeof newDoc.$creationDate !== 'number' || typeof newDoc.$modificationDate !== 'number') {
             throw ({forbidden: 'Creation and modification dates are mandatory'});
