@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {login as loginAction} from '../actions/login';
+import {loginLDAP} from '../actions/login';
 import LoginGoogle from './LoginGoogle';
 import LoginLDAP from './LoginLDAP';
 
@@ -28,7 +28,7 @@ const Login = (props) => (
                         <h4 className="title">LDAP Login</h4>
                     </div>
                     <div className="content">
-                        <LoginLDAP error={props.error} login={props.login} />
+                        <LoginLDAP error={props.errors.ldap} login={props.loginLDAP} />
                     </div>
                 </div> : ''
         }
@@ -36,15 +36,15 @@ const Login = (props) => (
 );
 
 Login.propTypes = {
-    error: PropTypes.bool.isRequired,
-    login: PropTypes.func.isRequired,
+    errors: PropTypes.object.isRequired,
+    loginLDAP: PropTypes.func,
     loginProviders: PropTypes.array.isRequired
 };
 
 export default connect(
     (state) => ({
-        error: state.login.error,
+        errors: state.login.errors,
         loginProviders: state.login.loginProviders.filter(p => p.visible).map(p => p.name)
     }),
-    (dispatch) => ({login: loginAction(dispatch)})
+    (dispatch) => ({loginLDAP: loginLDAP(dispatch)})
 )(Login);

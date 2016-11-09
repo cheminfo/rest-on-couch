@@ -21,12 +21,10 @@ export function doCheckLogin() {
 }
 
 export const LOGOUT = 'LOGOUT';
-export function logout(dispatch) {
-    return () => {
-        dispatch({
-            type: LOGOUT,
-            payload: doLogout()
-        });
+export function logout() {
+    return {
+        type: LOGOUT,
+        payload: doLogout()
     };
 }
 
@@ -34,17 +32,17 @@ async function doLogout() {
     await apiFetchJSON('auth/logout');
 }
 
-export const LOGIN = 'LOGIN';
-export function login(dispatch) {
+export const LOGIN_LDAP = 'LOGIN_LDAP';
+export function loginLDAP(dispatch) {
     return (username, password) => {
         dispatch({
-            type: LOGIN,
-            payload: doLogin(username, password)
+            type: LOGIN_LDAP,
+            payload: doLDAPLogin(username, password)
         });
     };
 }
 
-async function doLogin(username, password) {
+async function doLDAPLogin(username, password) {
     await apiFetchForm('auth/login/ldap', {username, password});
     const data = await doCheckLogin();
     if (data.authenticated) {

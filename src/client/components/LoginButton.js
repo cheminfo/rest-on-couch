@@ -26,5 +26,5 @@ LoginButton.propTypes = {
 
 export default connect(
     (state) => ({loggedIn: state.login.loggedIn, username: state.login.username}), // mapStateToProps
-    (dispatch) => ({logout: logoutAction(dispatch)}) // mapDispatchToProps
+    (dispatch) => ({logout: () => dispatch(logoutAction())}) // mapDispatchToProps
 )(LoginButton);

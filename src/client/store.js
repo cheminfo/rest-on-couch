@@ -12,10 +12,14 @@ const composeStoreWithMiddleware = applyMiddleware(
     promiseMiddleware()
 )(createStore);
 
-const store = composeStoreWithMiddleware(combineReducers({
-    db: dbReducer,
-    login: loginReducer
-}), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(), autoRehydrate());
+const store = composeStoreWithMiddleware(
+    combineReducers({
+        db: dbReducer,
+        login: loginReducer
+    }),
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+    autoRehydrate()
+);
 
 const dbTransform = createTransform(
     // transform state coming form redux on its way to being serialized and stored

@@ -2,9 +2,7 @@ import React from 'react';
 import Select2 from 'react-select2-wrapper';
 import 'react-select2-wrapper/css/select2.css';
 
-import {setDbName} from '../actions/db';
-
-export default ({dbName, dbList, dispatch}) => {
+export default ({dbName, dbList, onDbSelected}) => {
     return (
         <div
             style={{
@@ -22,7 +20,7 @@ export default ({dbName, dbList, dispatch}) => {
                 options={{
                     placeholder: 'Select a database',
                 }}
-                onSelect={(event) => dispatch(setDbName(event.target.value))}
+                onSelect={onDbSelected}
             />
         </div>
     );

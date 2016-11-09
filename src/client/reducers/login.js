@@ -1,10 +1,10 @@
-import {CHECK_LOGIN, LOGIN, LOGOUT, GET_LOGIN_PROVIDERS} from '../actions/login';
+import {CHECK_LOGIN, LOGIN_LDAP, LOGOUT, GET_LOGIN_PROVIDERS} from '../actions/login';
 
 const initialState = {
     loginProviders: [],
     loggedIn: false,
     username: null,
-    error: false
+    errors: {}
 };
 
 const loginReducer = (state = initialState, action) => {
@@ -16,10 +16,10 @@ const loginReducer = (state = initialState, action) => {
                 return state;
             }
         }
-        case `${LOGIN}_FULFILLED`:
-            return Object.assign({}, state, onLogin(action.payload));
+        case `${LOGIN_LDAP}_FULFILLED`:
+            return Object.assign({}, state, onLogin('ldap', action.payload));
         case `${LOGOUT}_FULFILLED`:
-            return Object.assign({}, state, {error: false, loggedIn: false, username: null});
+            return Object.assign({}, state, {errors: {}, loggedIn: false, username: null});
         case `${GET_LOGIN_PROVIDERS}_FULFILLED`:
             return Object.assign({}, state, {loginProviders: action.payload});
         default:
@@ -29,10 +29,10 @@ const loginReducer = (state = initialState, action) => {
 
 export default loginReducer;
 
-function onLogin(result) {
+function onLogin(type, result) {
     if (!result) {
-        return {error: true};
+        return {errors: {[type]: true}};
     } else {
-        return {error: false, loggedIn: true, username: result};
+        return {errors: {}, loggedIn: true, username: result};
     }
 }

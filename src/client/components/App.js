@@ -2,6 +2,8 @@ import React, {PropTypes} from 'react';
 import {BrowserRouter, Match, Miss, Redirect} from 'react-router';
 import {connect} from 'react-redux';
 
+import {setDbName} from '../actions/db';
+
 import DatabaseSelector from './DatabaseSelector';
 import Home from './Home';
 import Login from './Login';
@@ -20,7 +22,7 @@ const App = (props) => (
                             <div className="collapse navbar-collapse">
                                 <ul className="nav navbar-nav navbar-right">
                                     <li>
-                                        <DatabaseSelector dbName={props.dbName} dbList={props.dbList} dispatch={props.dispatch} />
+                                        <DatabaseSelector dbName={props.dbName} dbList={props.dbList} onDbSelected={(event) => props.dispatch(setDbName(event.target.value))} />
                                     </li>
                                     <li>
                                         <LoginButton />

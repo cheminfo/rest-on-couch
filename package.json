@@ -86,6 +86,7 @@
     "redux-actions": "^0.13.0",
     "redux-persist": "^4.0.0-alpha7",
     "redux-promise-middleware": "^4.1.0",
+    "redux-thunk": "^2.1.0",
     "request": "^2.74.0",
     "request-promise": "^4.0.2",
     "style-loader": "^0.13.1",
