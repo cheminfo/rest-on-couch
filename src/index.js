@@ -11,11 +11,12 @@ const nanoPromise = require('./util/nanoPromise');
 const getConfig = require('./config/config').getConfig;
 const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
 
-const init = require('./couch/init');
+const initMethods = require('./couch/init');
 const log = require('./couch/log');
 const util = require('./couch/util');
+const attachMethods = require('./couch/attachment');
 const nanoMethods = require('./couch/nano');
-const validate = require('./couch/validate');
+const validateMethods = require('./couch/validate');
 const entryMethods = require('./couch/entry');
 const tokenMethods = require('./couch/token');
 const userMethods = require('./couch/user');
@@ -112,7 +113,7 @@ class Couch {
         right = right || 'read';
 
         // First check if user has global right
-        const hasGlobalRight = await validate.checkGlobalRight(this._db, user, right);
+        const hasGlobalRight = await validateMethods.checkGlobalRight(this._db, user, right);
         if (hasGlobalRight) {
             // When there is a global right, we cannot use queries because the first element of the
             // key will match all documents
@@ -186,7 +187,7 @@ class Couch {
             if (!rows.length) break;
 
             let owners = rows.map(r => r.doc.$owners);
-            let hasRights = await validate.validateRights(this._db, owners, user, rights || 'read');
+            let hasRights = await validateMethods.validateRights(this._db, owners, user, rights || 'read');
             rows = rows.map(entry => entry.doc);
             rows = rows.filter((r, idx) => hasRights[idx]);
 
@@ -217,7 +218,7 @@ class Couch {
         });
 
         // Check rights for current user and keep only documents with granted access
-        const hasRights = await validate.validateRights(this._db, owners.map(r => r.value), user, rights || 'read');
+        const hasRights = await validateMethods.validateRights(this._db, owners.map(r => r.value), user, rights || 'read');
         let allowedDocs = owners.filter((r, idx) => hasRights[idx]);
 
         // Apply pagination options
@@ -251,7 +252,7 @@ class Couch {
         // Call update handler
         await this.open();
         const doc = await this.getEntryById(id, user);
-        const hasRight = validate.isOwner(doc.$owners, user);
+        const hasRight = validateMethods.isOwner(doc.$owners, user);
         if (!hasRight) {
             throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
         }
@@ -261,51 +262,11 @@ class Couch {
     async _doUpdateOnEntryByUuid(uuid, user, update, updateBody) {
         await this.open();
         const doc = await this.getEntryByUuid(uuid, user);
-        const hasRight = validate.isOwner(doc.$owners, user);
+        const hasRight = validateMethods.isOwner(doc.$owners, user);
         if (!hasRight) {
             throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
         }
         return nanoPromise.updateWithHandler(this._db, update, uuid, updateBody);
-    }
-
-    async addAttachmentsById(id, user, attachments) {
-        debug(`addAttachmentsById (${id}, ${user})`);
-        if (!Array.isArray(attachments)) {
-            attachments = [attachments];
-        }
-        const entry = await this.getEntryByIdAndRights(id, user, ['write', 'addAttachment']);
-        return nanoPromise.attachFiles(this._db, entry, attachments);
-    }
-
-    async addAttachmentsByUuid(uuid, user, attachments) {
-        debug(`addAttachmentsByUuid (${uuid}, ${user})`);
-        if (!Array.isArray(attachments)) {
-            attachments = [attachments];
-        }
-        const entry = await this.getEntryByUuidAndRights(uuid, user, ['write', 'addAttachment']);
-        return nanoPromise.attachFiles(this._db, entry, attachments);
-    }
-
-    async deleteAttachmentByUuid(uuid, user, attachmentName) {
-        debug(`deleteAttachmentByUuid (${uuid}, ${user})`);
-        const entry = await this.getEntryByUuidAndRights(uuid, user, ['delete', 'addAttachment']);
-        if (!entry._attachments[attachmentName]) {
-            return false;
-        }
-        delete entry._attachments[attachmentName];
-        return nanoMethods.saveEntry(this._db, entry, user);
-    }
-
-    getAttachmentByIdAndName(id, name, user, asStream, options) {
-        debug(`getAttachmentByIdAndName (${id}, ${name}, ${user})`);
-        return this.getEntryById(id, user, options)
-            .then(getAttachmentFromEntry(this, name, asStream));
-    }
-
-    getAttachmentByUuidAndName(uuid, name, user, asStream, options) {
-        debug(`getAttachmentByUuidAndName (${uuid}, ${name}, ${user})`);
-        return this.getEntryByUuid(uuid, user, options)
-            .then(getAttachmentFromEntry(this, name, asStream));
     }
 
     async addFileToJpath(id, user, jpath, json, file, newContent) {
@@ -475,7 +436,7 @@ class Couch {
             debug.trace('group does not exist');
             throw new CouchError('group does not exist', 'not found');
         }
-        if (!validate.isOwner(doc.$owners, user)) {
+        if (!validateMethods.isOwner(doc.$owners, user)) {
             debug.trace('not allowed to delete group');
             throw new CouchError(`user ${user} is not an owner of the group`, 'unauthorized');
         }
@@ -490,7 +451,7 @@ class Couch {
 
         await this.open();
 
-        const hasRight = await validate.checkRightAnyGroup(this._db, user, 'createGroup');
+        const hasRight = await validateMethods.checkRightAnyGroup(this._db, user, 'createGroup');
         if (!hasRight) throw new CouchError(`user ${user} does not have createGroup right`);
 
         const group = await nanoMethods.getGroup(this._db, groupName);
@@ -513,7 +474,7 @@ class Couch {
             debug.trace('group does not exist');
             throw new CouchError('group does not exist', 'not found');
         }
-        if (!validate.isOwner(doc.$owners, user)) {
+        if (!validateMethods.isOwner(doc.$owners, user)) {
             debug.trace('not allowed to get group');
             throw new CouchError(`user ${user} is not an owner of the group`, 'unauthorized');
         }
@@ -530,7 +491,7 @@ class Couch {
         debug.trace(`getGroupsByRight (${user}, ${right})`);
         await this.open();
         // Search in default groups
-        const defaultGroups = await validate.getDefaultGroups(this._db, user, true);
+        const defaultGroups = await validateMethods.getDefaultGroups(this._db, user, true);
         // Search inside groups
         const userGroups = await nanoPromise.queryView(this._db, 'groupByUserAndRight', {key: [user, right]}, {onlyValue: true});
         // Merge both lists
@@ -613,16 +574,14 @@ Couch.get = function (databaseName) {
     }
 };
 
-Couch.prototype.addAttachmentById = Couch.prototype.addAttachmentsById;
-Couch.prototype.addAttachmentByUuid = Couch.prototype.addAttachmentsByUuid;
-
 function extendCouch(methods) {
     for (const method in methods) {
         Couch.prototype[method] = methods[method];
     }
 }
 
-extendCouch(init.methods);
+extendCouch(initMethods.methods);
+extendCouch(attachMethods.methods);
 extendCouch(entryMethods.methods);
 extendCouch(tokenMethods.methods);
 extendCouch(userMethods.methods);
@@ -680,7 +639,7 @@ function onNotFound(ctx, entry, user, options) {
 
 async function createNew(ctx, entry, user) {
     debug.trace('create new');
-    const ok = await validate.checkGlobalRight(ctx._db, user, 'create');
+    const ok = await validateMethods.checkGlobalRight(ctx._db, user, 'create');
     if (ok) {
         debug.trace('has right, create new');
         const newEntry = {
@@ -709,16 +668,6 @@ function addGroups(ctx, user, groups) {
 
 function getDefaultEntry() {
     return {};
-}
-
-function getAttachmentFromEntry(ctx, name, asStream) {
-    return async function (entry) {
-        if (entry._attachments && entry._attachments[name]) {
-            return nanoPromise.getAttachment(ctx._db, entry._id, name, asStream, {rev: entry._rev});
-        } else {
-            throw new CouchError(`attachment ${name} not found`, 'not found');
-        }
-    };
 }
 
 function checkGlobalTypeAndUser(type, user) {
