@@ -3,7 +3,6 @@
 const debug = require('./util/debug')('main');
 const _ = require('lodash');
 const extend = require('extend');
-const hasOwn = require('has-own');
 const nano = require('nano');
 const objHash = require('object-hash');
 const includes = require('array-includes');
@@ -18,6 +17,7 @@ const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
 const log = require('./couch/log');
 const util = require('./couch/util');
 const tokenMethods = require('./couch/token');
+const userMethods = require('./couch/user');
 
 process.on('unhandledRejection', function (err) {
     debug.error('unhandled rejection: ' + err.stack);
@@ -172,30 +172,6 @@ class Couch {
             throw new CouchError('rest-on-couch cannot be used without credentials', 'fatal');
         }
         this._db = this._nano.db.use(this._databaseName);
-    }
-
-    async editUser(user, data) {
-        if (!(data instanceof Object)) {
-            throw new CouchError('user data should be an object', 'bad argument');
-        }
-        await this.open();
-        try {
-            const userDoc = await this.getUser(user);
-            data = simpleMerge(data, userDoc);
-        } catch (e) {
-            if (e.reason !== 'not found') {
-                throw e;
-            }
-        }
-
-        data.$type = 'user';
-        data.user = user;
-        return nanoPromise.insertDocument(this._db, data);
-    }
-
-    async getUser(user) {
-        await this.open();
-        return getUser(this._db, user);
     }
 
     async createEntry(id, user, options) {
@@ -830,6 +806,7 @@ function extendCouch(methods) {
 }
 
 extendCouch(tokenMethods);
+extendCouch(userMethods);
 
 module.exports = Couch;
 
@@ -1219,13 +1196,6 @@ function getDefaultEntry() {
     return {};
 }
 
-async function getUser(db, user) {
-    const rows = await nanoPromise.queryView(db, 'user', {key: user, include_docs: true});
-    if (!rows.length) throw new CouchError('User not found', 'not found');
-    if (rows.length > 1) throw new CouchError('Unexepected: more than 1 user profile', 'unreachable');
-    return rows[0].doc;
-}
-
 async function saveEntry(db, entry, user) {
     if (entry.$id === undefined) {
         entry.$id = null;
@@ -1264,13 +1234,4 @@ function checkGlobalTypeAndUser(type, user) {
         return new CouchError('Invalid global right user', 'bad argument');
     }
     return null;
-}
-
-function simpleMerge(source, target) {
-    for (var key in source) {
-        if (hasOwn(key, source)) {
-            target[key] = source[key];
-        }
-    }
-    return target;
 }
