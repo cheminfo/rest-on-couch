@@ -5,7 +5,7 @@ const debug = require('../util/debug')('main:user');
 const nanoPromise = require('../util/nanoPromise');
 const simpleMerge = require('../util/simpleMerge');
 
-module.exports = {
+const methods = {
     async editUser(user, data) {
         debug(`edit user (${user})`);
         if (typeof data !== 'object' || data === null) {
@@ -39,3 +39,7 @@ async function getUser(db, user) {
     if (rows.length > 1) throw new CouchError('unexepected: more than 1 user profile', 'unreachable');
     return rows[0].doc;
 }
+
+module.exports = {
+    methods
+};

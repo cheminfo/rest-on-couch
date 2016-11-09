@@ -16,6 +16,9 @@ const globalRightTypes = ['read', 'write', 'create', 'createGroup'];
 
 const log = require('./couch/log');
 const util = require('./couch/util');
+const getGroup = require('./couch/nano').getGroup;
+const validate = require('./couch/validate');
+const entryMethods = require('./couch/entry');
 const tokenMethods = require('./couch/token');
 const userMethods = require('./couch/user');
 
@@ -184,7 +187,7 @@ class Couch {
             include_docs: true
         });
         if (result.length === 0) {
-            const hasRight = await checkRightAnyGroup(this._db, user, 'create');
+            const hasRight = await validate.checkRightAnyGroup(this._db, user, 'create');
             if (!hasRight) {
                 throw new CouchError('user is missing create right', 'unauthorized');
             }
@@ -232,7 +235,7 @@ class Couch {
         right = right || 'read';
 
         // First check if user has global right
-        const hasGlobalRight = await checkGlobalRight(this._db, user, right);
+        const hasGlobalRight = await validate.checkGlobalRight(this._db, user, right);
         if (hasGlobalRight) {
             // When there is a global right, we cannot use queries because the first element of the
             // key will match all documents
@@ -306,7 +309,7 @@ class Couch {
             if (!rows.length) break;
 
             let owners = rows.map(r => r.doc.$owners);
-            let hasRights = await validateRights(this._db, owners, user, rights || 'read');
+            let hasRights = await validate.validateRights(this._db, owners, user, rights || 'read');
             rows = rows.map(entry => entry.doc);
             rows = rows.filter((r, idx) => hasRights[idx]);
 
@@ -337,7 +340,7 @@ class Couch {
         });
 
         // Check rights for current user and keep only documents with granted access
-        const hasRights = await validateRights(this._db, owners.map(r => r.value), user, rights || 'read');
+        const hasRights = await validate.validateRights(this._db, owners.map(r => r.value), user, rights || 'read');
         let allowedDocs = owners.filter((r, idx) => hasRights[idx]);
 
         // Apply pagination options
@@ -346,57 +349,6 @@ class Couch {
 
         // Get each document from CouchDB
         return Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
-    }
-
-    async getEntryByIdAndRights(id, user, rights, options = {}) {
-        debug(`getEntryByIdAndRights (${id}, ${user}, ${rights})`);
-        await this.open();
-
-        const owners = await getOwnersById(this._db, id);
-        if (owners.length === 0) {
-            debug.trace(`no entry matching id ${id}`);
-            throw new CouchError('document not found', 'not found');
-        }
-        let hisEntry = owners.find(own => own.value[0] === user);
-        if (!hisEntry) {
-            hisEntry = owners[0];
-        }
-
-        if (await validateTokenOrRights(this._db, hisEntry.id, hisEntry.value, rights, user, options.token)) {
-            debug.trace(`user ${user} has access`);
-            return nanoPromise.getDocument(this._db, hisEntry.id, options);
-        }
-
-        debug.trace(`user ${user} has no ${rights} access`);
-        throw new CouchError('user has no access', 'unauthorized');
-    }
-
-    async getEntryByUuidAndRights(uuid, user, rights, options = {}) {
-        debug(`getEntryByUuidAndRights (${uuid}, ${user}, ${rights})`);
-        await this.open();
-
-        const doc = await nanoPromise.getDocument(this._db, uuid);
-        if (!doc) {
-            debug.trace('document not found');
-            throw new CouchError('document not found', 'not found');
-        }
-        if (doc.$type !== 'entry') {
-            debug.trace('document is not an entry');
-            throw new CouchError('document is not an entry', 'not entry');
-        }
-
-        debug.trace('check rights');
-        if (await validateTokenOrRights(this._db, uuid, doc.$owners, rights, user, options.token)) {
-            debug.trace(`user ${user} has access`);
-            if (!options) {
-                return doc;
-            } else {
-                return nanoPromise.getDocument(this._db, uuid, options);
-            }
-        }
-
-        debug.trace(`user ${user} has no ${rights} access`);
-        throw new CouchError('user has no access', 'unauthorized');
     }
 
     hasRightForEntry(uuid, user, right, options) {
@@ -422,7 +374,7 @@ class Couch {
         // Call update handler
         await this.open();
         const doc = await this.getEntryById(id, user);
-        const hasRight = isOwner(doc.$owners, user);
+        const hasRight = validate.isOwner(doc.$owners, user);
         if (!hasRight) {
             throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
         }
@@ -432,7 +384,7 @@ class Couch {
     async _doUpdateOnEntryByUuid(uuid, user, update, updateBody) {
         await this.open();
         const doc = await this.getEntryByUuid(uuid, user);
-        const hasRight = isOwner(doc.$owners, user);
+        const hasRight = validate.isOwner(doc.$owners, user);
         if (!hasRight) {
             throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
         }
@@ -646,7 +598,7 @@ class Couch {
             debug.trace('group does not exist');
             throw new CouchError('group does not exist', 'not found');
         }
-        if (!isOwner(doc.$owners, user)) {
+        if (!validate.isOwner(doc.$owners, user)) {
             debug.trace('not allowed to delete group');
             throw new CouchError(`user ${user} is not an owner of the group`, 'unauthorized');
         }
@@ -661,7 +613,7 @@ class Couch {
 
         await this.open();
 
-        const hasRight = await checkRightAnyGroup(this._db, user, 'createGroup');
+        const hasRight = await validate.checkRightAnyGroup(this._db, user, 'createGroup');
         if (!hasRight) throw new CouchError(`user ${user} does not have createGroup right`);
 
         const group = await getGroup(this._db, groupName);
@@ -684,7 +636,7 @@ class Couch {
             debug.trace('group does not exist');
             throw new CouchError('group does not exist', 'not found');
         }
-        if (!isOwner(doc.$owners, user)) {
+        if (!validate.isOwner(doc.$owners, user)) {
             debug.trace('not allowed to get group');
             throw new CouchError(`user ${user} is not an owner of the group`, 'unauthorized');
         }
@@ -701,7 +653,7 @@ class Couch {
         debug.trace(`getGroupsByRight (${user}, ${right})`);
         await this.open();
         // Search in default groups
-        const defaultGroups = await getDefaultGroups(this._db, user, true);
+        const defaultGroups = await validate.getDefaultGroups(this._db, user, true);
         // Search inside groups
         const userGroups = await nanoPromise.queryView(this._db, 'groupByUserAndRight', {key: [user, right]}, {onlyValue: true});
         // Merge both lists
@@ -758,18 +710,6 @@ class Couch {
         return {info: result, action};
     }
 
-    deleteEntryByUuid(uuid, user) {
-        debug(`deleteEntryByUuid (${uuid}, ${user})`);
-        return this.getEntryByUuidAndRights(uuid, user, 'delete')
-            .then(() => nanoPromise.destroyDocument(this._db, uuid));
-    }
-
-    deleteEntryById(id, user) {
-        debug(`deleteEntryById (${id}, ${user})`);
-        return this.getEntryByIdAndRights(id, user, 'delete')
-            .then(doc => nanoPromise.destroyDocument(this._db, doc._id));
-    }
-
     log(message, level) {
         debug(`log (${message}, ${level})`);
         return this.open().then(() => log.log(this._db, this._logLevel, message, level));
@@ -805,8 +745,9 @@ function extendCouch(methods) {
     }
 }
 
-extendCouch(tokenMethods);
-extendCouch(userMethods);
+extendCouch(entryMethods.methods);
+extendCouch(tokenMethods.methods);
+extendCouch(userMethods.methods);
 
 module.exports = Couch;
 
@@ -976,117 +917,9 @@ async function createDesignDoc(db, revID, custom) {
     return nanoPromise.insertDocument(db, designDoc);
 }
 
-async function getOwnersById(db, id) {
-    return nanoPromise.queryView(db, 'ownersById', {key: id});
-}
-
-function isOwner(owners, user) {
-    for (var i = 0; i < owners.length; i++) {
-        if (owners[i] === user) return true;
-    }
-    return false;
-}
-
-function validateRights(db, ownerArrays, user, rights) {
-    debug.trace('validateRights');
-    if (!Array.isArray(ownerArrays[0])) {
-        ownerArrays = [ownerArrays];
-    }
-
-    let areOwners = ownerArrays.map(owner => isOwner(owner, user));
-
-    if (areOwners.every(value => value === true)) {
-        return Promise.resolve(areOwners);
-    }
-
-    if (typeof rights === 'string') {
-        rights = [rights];
-    }
-    if (!Array.isArray(rights)) {
-        throw new TypeError('rights must be an array or a string');
-    }
-
-    var checks = [];
-    for (let i = 0; i < rights.length; i++) {
-        checks.push(checkGlobalRight(db, user, rights[i])
-            .then(function (hasGlobal) {
-                if (hasGlobal) return ownerArrays.map(() => true);
-                return Promise.all([getDefaultGroups(db, user), nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})])
-                    .then(result => {
-                        const defaultGroups = result[0];
-                        const groups = result[1];
-                        return ownerArrays.map((owners, idx) => {
-                            if (areOwners[idx]) return true;
-                            for (let j = 0; j < owners.length; j++) {
-                                if (groups.indexOf(owners[j]) > -1) return true;
-                                for (let k = 0; k < defaultGroups.length; k++) {
-                                    if (owners.indexOf(defaultGroups[k].name) !== -1 && defaultGroups[k].rights.indexOf(rights[i]) !== -1) {
-                                        return true;
-                                    }
-                                }
-                            }
-                            return false;
-                        });
-                    });
-            }));
-    }
-
-    // Promise resolves with for each right an array of true/false that indicates if the user
-    // has this right for the given owner array
-    // For example
-    //           read                        write
-    //    own1[] own2[]  own3[]     own1[]   own2[]  own3[]
-    // [ [true,  true,   false],   [false,   true,   false] ]
-
-    return Promise.all(checks).then(result => {
-        if (result.length === 0) {
-            return areOwners;
-        }
-        return result[0].map((value, idx) => {
-            for (let i = 0; i < result.length; i++) {
-                if (result[i][idx] === true) {
-                    return true;
-                }
-            }
-            return false;
-        });
-    });
-
-    //return Promise.all(checks).then(result => result.some(value => value === true));
-}
-
-async function validateTokenOrRights(db, uuid, owners, rights, user, token) {
-    if (!Array.isArray(rights)) {
-        rights = [rights];
-    }
-    if (token && token.$kind === 'entry' && token.uuid === uuid) {
-        for (var i = 0; i < rights.length; i++) {
-            if (token.rights.indexOf(rights[i]) !== -1) {
-                return true;
-            }
-        }
-    }
-    const ok = await validateRights(db, owners, user, rights);
-    return ok[0];
-}
-
-async function getGroup(db, name) {
-    debug.trace('get group');
-    const groups = await nanoPromise.queryView(db, 'groupByName', {key: name, reduce: false, include_docs: true});
-    if (!groups || groups.length === 0) {
-        debug.trace('group does not exist');
-        return null;
-    }
-    if (groups.length > 1) {
-        debug.warn('Getting more than one result for a group name');
-    }
-    debug.trace('group exists');
-    return groups[0].doc;
-}
-
 async function createNew(ctx, entry, user) {
     debug.trace('create new');
-    const ok = await checkGlobalRight(ctx._db, user, 'create');
+    const ok = await validate.checkGlobalRight(ctx._db, user, 'create');
     if (ok) {
         debug.trace('has right, create new');
         const newEntry = {
@@ -1112,7 +945,6 @@ function addGroups(ctx, user, groups) {
         }
     };
 }
-
 
 async function checkRightsDoc(db, rights) {
     debug.trace('check rights doc');
@@ -1141,55 +973,6 @@ async function checkDefaultGroupsDoc(db) {
         });
     }
     return true;
-}
-
-async function checkGlobalRight(db, user, right) {
-    debug.trace(`checkGlobalRight (${user}, ${right})`);
-    const result = await nanoPromise.queryView(db, 'globalRight', {key: right}, {onlyValue: true});
-    for (var i = 0; i < result.length; i++) {
-        if (result[i] === 'anonymous' || result[i] === user || result[i] === 'anyuser' && user !== 'anonymous') {
-            debug.trace(`user ${user} has global right`);
-            return true;
-        }
-    }
-    debug.trace(`user ${user} does not have global right`);
-    return false;
-}
-
-async function checkRightAnyGroup(db, user, right) {
-    debug.trace(`checkRightAnyGroup (${user}, ${right}`);
-    const hasGlobal = await checkGlobalRight(db, user, right);
-    if (hasGlobal) return true;
-
-    const defaultGroups = await getDefaultGroups(db, user);
-    for (let i = 0; i < defaultGroups.length; i++) {
-        if (defaultGroups[i].rights.indexOf(right) !== -1) {
-            return true;
-        }
-    }
-
-    const result = await nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, right]});
-    return result.length > 0;
-}
-
-async function getDefaultGroups(db, user, listOnly) {
-    debug.trace('getDefaultGroups');
-    const defaultGroups = await nanoPromise.getDocument(db, constants.DEFAULT_GROUPS_DOC_ID);
-    const toGet = new Set();
-    for (let i = 0; i < defaultGroups.anonymous.length; i++) {
-        toGet.add(defaultGroups.anonymous[i]);
-    }
-    if (user !== 'anonymous') {
-        for (let i = 0; i < defaultGroups.anyuser.length; i++) {
-            toGet.add(defaultGroups.anyuser[i]);
-        }
-    }
-
-    if (listOnly) {
-        return Array.from(toGet);
-    } else {
-        return Promise.all(Array.from(toGet).map(group => getGroup(db, group)));
-    }
 }
 
 function getDefaultEntry() {

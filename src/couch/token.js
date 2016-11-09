@@ -4,7 +4,7 @@ const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:token');
 const token = require('../util/token');
 
-module.exports = {
+const methods = {
     async createEntryToken(user, uuid) {
         debug(`createEntryToken (${user}, ${uuid})`);
         await this.open();
@@ -41,4 +41,8 @@ module.exports = {
         await this.open();
         return token.getTokens(this._db, user);
     }
+};
+
+module.exports = {
+    methods
 };
