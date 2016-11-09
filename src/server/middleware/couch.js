@@ -21,17 +21,7 @@ const statusMessages = {
     '500': 'internal server error'
 };
 
-function* errorMiddleware(next) {
-    try {
-        yield next;
-    } catch (e) {
-        onGetError(this, e);
-    }
-}
-
-function composeWithError(middleware) {
-    return compose([errorMiddleware, middleware]);
-}
+const OK = {ok: true};
 
 exports.setupCouch = function*(next) {
     if (this.params.dbname) {
@@ -90,7 +80,7 @@ exports.updateEntry = composeWithError(function*() {
 
 exports.deleteEntry = composeWithError(function*() {
     yield this.state.couch.deleteEntryByUuid(this.params.uuid, this.state.userEmail);
-    this.body = {ok: true};
+    this.body = OK;
 });
 
 exports.newOrUpdateEntry = composeWithError(function*() {
@@ -179,12 +169,12 @@ exports.getOwnersByUuid = composeWithError(function*() {
 
 exports.addOwnerByUuid = composeWithError(function*() {
     yield this.state.couch.addGroupToEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
-    this.body = {ok: true};
+    this.body = OK;
 });
 
 exports.removeOwnerByUuid = composeWithError(function*() {
     yield this.state.couch.removeGroupFromEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
-    this.body = {ok: true};
+    this.body = OK;
 });
 
 exports.getGroup = composeWithError(function*() {
@@ -223,6 +213,7 @@ exports.createOrUpdateGroup = function *() {
 
 exports.deleteGroup = composeWithError(function*() {
     yield this.state.couch.deleteGroup(this.params.name, this.state.userEmail);
+    this.body = OK;
 });
 
 exports.createEntryToken = composeWithError(function*() {
@@ -241,7 +232,7 @@ exports.getTokenById = composeWithError(function*() {
 
 exports.deleteTokenById = composeWithError(function*() {
     yield this.state.couch.deleteToken(this.state.userEmail, this.params.tokenid);
-    this.body = {ok: true};
+    this.body = OK;
 });
 
 function onGetError(ctx, e, secure) {
@@ -392,4 +383,16 @@ function getViewType(ctx) {
         }
     }
     return 'unknown';
+}
+
+function* errorMiddleware(next) {
+    try {
+        yield next;
+    } catch (e) {
+        onGetError(this, e);
+    }
+}
+
+function composeWithError(middleware) {
+    return compose([errorMiddleware, middleware]);
 }
