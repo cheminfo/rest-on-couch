@@ -2,6 +2,7 @@
 
 const util = require('util');
 
+const debug = require('../util/debug')('main:log');
 const nanoPromise = require('../util/nanoPromise');
 
 const levels = {
@@ -61,4 +62,16 @@ exports.format = function (log) {
     const name = levelNames[log.level];
     const date = new Date(log.epoch);
     return `[${date.toISOString()}] [${name}]${' '.repeat(5 - name.length)} ${util.format(log.message)}`;
+};
+
+exports.methods = {
+    log(message, level) {
+        debug(`log (${message}, ${level})`);
+        return this.open().then(() => exports.log(this._db, this._logLevel, message, level));
+    },
+
+    getLogs(epoch) {
+        debug(`getLogs (${epoch}`);
+        return this.open().then(() => exports.getLogs(this._db, epoch));
+    }
 };
