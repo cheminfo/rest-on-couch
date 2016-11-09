@@ -33,6 +33,8 @@ const defaultRights = {
     read: ['anonymous']
 };
 
+const databaseCache = new Map();
+
 class Couch {
     constructor(options) {
         let database;
@@ -83,39 +85,21 @@ class Couch {
         this._currentAuth = null;
         this._authRenewal = null;
         this._authRenewalInterval = config.authRenewal;
-        this.open().catch(() => {});
+        this.open().catch(() => {
+        });
     }
 
-    async open() {
-        if (this._initPromise) {
-            return this._initPromise;
+    static get(databaseName) {
+        if (typeof databaseName !== 'string') {
+            throw new TypeError('database name must be a string');
         }
-        return this._initPromise = this.getInitPromise();
-    }
-
-    close() {
-        clearInterval(this._authRenewal);
-    }
-}
-
-const databaseCache = new Map();
-
-Couch.get = function (databaseName) {
-    if (typeof databaseName !== 'string') {
-        throw new TypeError('database name must be a string');
-    }
-    if (databaseCache.has(databaseName)) {
-        return databaseCache.get(databaseName);
-    } else {
-        const db = new Couch(databaseName);
-        databaseCache.set(databaseName, db);
-        return db;
-    }
-};
-
-function extendCouch(methods) {
-    for (const method in methods) {
-        Couch.prototype[method] = methods[method];
+        if (databaseCache.has(databaseName)) {
+            return databaseCache.get(databaseName);
+        } else {
+            const db = new Couch(databaseName);
+            databaseCache.set(databaseName, db);
+            return db;
+        }
     }
 }
 
@@ -130,6 +114,12 @@ extendCouch(tokenMethods.methods);
 extendCouch(userMethods.methods);
 
 module.exports = Couch;
+
+function extendCouch(methods) {
+    for (const method in methods) {
+        Couch.prototype[method] = methods[method];
+    }
+}
 
 function getDefaultEntry() {
     return {};

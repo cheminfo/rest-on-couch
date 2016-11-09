@@ -13,6 +13,17 @@ const debug = require('../util/debug')('main:init');
 const nanoPromise = require('../util/nanoPromise');
 
 const methods = {
+    async open() {
+        if (this._initPromise) {
+            return this._initPromise;
+        }
+        return this._initPromise = this.getInitPromise();
+    },
+
+    close() {
+        clearInterval(this._authRenewal);
+    },
+
     async getInitPromise() {
         debug(`initialize db ${this._databaseName}`);
         await this._authenticate();
