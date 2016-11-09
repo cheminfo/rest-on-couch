@@ -6,16 +6,7 @@ const nano = require('nano');
 const CouchError = require('./util/CouchError');
 const constants = require('./constants');
 const getConfig = require('./config/config').getConfig;
-
-const attachMethods = require('./couch/attachment');
-const entryMethods = require('./couch/entry');
-const groupMethods = require('./couch/group');
-const initMethods = require('./couch/init');
-const logMethods = require('./couch/log');
-const queryMethods = require('./couch/query');
-const rightMethods = require('./couch/right');
-const tokenMethods = require('./couch/token');
-const userMethods = require('./couch/user');
+const log = require('./couch/log');
 
 process.on('unhandledRejection', function (err) {
     debug.error('unhandled rejection: ' + err.stack);
@@ -63,7 +54,7 @@ class Couch {
             autoCreate: config.autoCreateDatabase
         };
 
-        this._logLevel = logMethods.getLevel(config.logLevel);
+        this._logLevel = log.getLevel(config.logLevel);
 
         this._customDesign = config.customDesign || {};
         this._viewsWithOwner = new Set();
@@ -103,19 +94,20 @@ class Couch {
     }
 }
 
-extendCouch(attachMethods.methods);
-extendCouch(entryMethods.methods);
-extendCouch(groupMethods.methods);
-extendCouch(initMethods.methods);
-extendCouch(logMethods.methods);
-extendCouch(queryMethods.methods);
-extendCouch(rightMethods.methods);
-extendCouch(tokenMethods.methods);
-extendCouch(userMethods.methods);
+extendCouch('attachment');
+extendCouch('entry');
+extendCouch('group');
+extendCouch('init');
+extendCouch('log');
+extendCouch('query');
+extendCouch('right');
+extendCouch('token');
+extendCouch('user');
 
 module.exports = Couch;
 
-function extendCouch(methods) {
+function extendCouch(name) {
+    const methods = require(`./couch/${name}`).methods;
     for (const method in methods) {
         Couch.prototype[method] = methods[method];
     }
