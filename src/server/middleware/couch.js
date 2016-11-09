@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assert');
+const compose = require('koa-compose');
 const request = require('request-promise');
 
 const auth = require('./auth');
@@ -19,6 +20,18 @@ const statusMessages = {
     '409': 'conflict',
     '500': 'internal server error'
 };
+
+function* errorMiddleware(next) {
+    try {
+        yield next;
+    } catch (e) {
+        onGetError(this, e);
+    }
+}
+
+function composeWithError(middleware) {
+    return compose([errorMiddleware, middleware]);
+}
 
 exports.setupCouch = function*(next) {
     if (this.params.dbname) {
@@ -63,225 +76,131 @@ exports.getAllDbs = function*() {
     this.body = result;
 };
 
-exports.getDocumentByUuid = function*() {
-    try {
-        const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail, this.query);
-        this.status = 200;
-        this.body = doc;
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.getDocumentByUuid = composeWithError(function*() {
+    this.body = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail, this.query);
+});
 
-exports.updateEntry = function * () {
+exports.updateEntry = composeWithError(function*() {
     const body = this.request.body;
     if (body) body._id = this.params.uuid;
-    try {
-        const result = yield this.state.couch.insertEntry(body, this.state.userEmail, {isUpdate: true});
-        assert.strictEqual(result.action, 'updated');
-        this.body = result.info;
+    const result = yield this.state.couch.insertEntry(body, this.state.userEmail, {isUpdate: true});
+    assert.strictEqual(result.action, 'updated');
+    this.body = result.info;
+});
+
+exports.deleteEntry = composeWithError(function*() {
+    yield this.state.couch.deleteEntryByUuid(this.params.uuid, this.state.userEmail);
+    this.body = {ok: true};
+});
+
+exports.newOrUpdateEntry = composeWithError(function*() {
+    const options = {};
+    if (this.request.body.$owners) {
+        options.groups = this.request.body.$owners;
+    }
+    const result = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail, options);
+    this.body = result.info;
+    if (result.action === 'created') {
+        this.status = 201;
+        this.set('Location', `${this.state.urlPrefix}db/${this.state.dbName}/entry/${result.info.id}`);
+    } else {
         this.status = 200;
-    } catch (e) {
-        onGetError(this, e);
     }
-};
+});
 
-exports.deleteEntry = function*() {
-    try {
-        yield this.state.couch.deleteEntryByUuid(this.params.uuid, this.state.userEmail);
-        this.body = {
-            ok: true
-        };
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
-
-exports.newOrUpdateEntry = function * () {
-    try {
-        const options = {};
-        if (this.request.body.$owners) {
-            options.groups = this.request.body.$owners;
-        }
-        const result = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail, options);
-        this.body = result.info;
-        if (result.action === 'created') {
-            this.status = 201;
-            this.set('Location', `${this.state.urlPrefix}db/${this.state.dbName}/entry/${result.info.id}`);
-        } else {
-            this.status = 200;
-        }
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
-
-exports.deleteAttachment = function * () {
+exports.deleteAttachment = composeWithError(function*() {
     this.body = yield this.state.couch.deleteAttachmentByUuid(this.params.uuid, this.state.userEmail, this.params.attachment);
-};
+});
 
-exports.saveAttachment = function * () {
-    try {
-        this.body = yield this.state.couch.addAttachmentByUuid(this.params.uuid, this.state.userEmail, {
-            name: this.params.attachment,
-            data: this.request.body,
-            content_type: this.get('Content-Type')
-        });
-        this.status = 200;
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.saveAttachment = composeWithError(function*() {
+    this.body = yield this.state.couch.addAttachmentByUuid(this.params.uuid, this.state.userEmail, {
+        name: this.params.attachment,
+        data: this.request.body,
+        content_type: this.get('Content-Type')
+    });
+});
 
-exports.getAttachmentById = function*() {
-    try {
-        const stream = yield this.state.couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, this.state.userEmail, true, this.query);
-        this.status = 200;
-        this.body = stream;
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.getAttachmentById = composeWithError(function*() {
+    this.body = yield this.state.couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, this.state.userEmail, true, this.query);
+});
 
-exports.getAttachmentByUuid = function*() {
-    try {
-        const stream = yield this.state.couch.getAttachmentByUuidAndName(this.params.uuid, this.params.attachment, this.state.userEmail, true, this.query);
-        this.status = 200;
-        this.body = stream;
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.getAttachmentByUuid = composeWithError(function*() {
+    this.body = yield this.state.couch.getAttachmentByUuidAndName(this.params.uuid, this.params.attachment, this.state.userEmail, true, this.query);
+});
 
-exports.allEntries = function*() {
-    try {
-        const right = this.query.right || 'read';
-        const entries = yield this.state.couch.getEntriesByUserAndRights(this.state.userEmail, right, this.query);
-        this.status = 200;
-        this.body = entries;
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.allEntries = composeWithError(function*() {
+    const right = this.query.right || 'read';
+    this.body = yield this.state.couch.getEntriesByUserAndRights(this.state.userEmail, right, this.query);
+});
 
-exports.queryEntriesByUser = function*() {
-    try {
-        this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, this.params.view, this.query);
-        this.status = 200;
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.queryEntriesByUser = composeWithError(function*() {
+    this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, this.params.view, this.query);
+});
 
-exports.queryEntriesByRight = function*() {
-    try {
-        this.body = yield this.state.couch.queryEntriesByRight(this.state.userEmail, this.params.view, this.query.right, this.query);
-        this.status = 200;
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.queryEntriesByRight = composeWithError(function*() {
+    this.body = yield this.state.couch.queryEntriesByRight(this.state.userEmail, this.params.view, this.query.right, this.query);
+});
 
-exports.entriesByKindAndId = function * () {
-    try {
-        for (let i = 0; i < couchNeedsParse.length; i++) {
-            let queryParam = this.query[couchNeedsParse[i]];
-            let bodyParam = this.request.body[couchNeedsParse[i]];
-            if (queryParam || bodyParam) {
-                this.query[couchNeedsParse[i]] = [this.params.kind, queryParam ? queryParam : bodyParam];
-            }
+exports.entriesByKindAndId = composeWithError(function*() {
+    for (let i = 0; i < couchNeedsParse.length; i++) {
+        let queryParam = this.query[couchNeedsParse[i]];
+        let bodyParam = this.request.body[couchNeedsParse[i]];
+        if (queryParam || bodyParam) {
+            this.query[couchNeedsParse[i]] = [this.params.kind, queryParam ? queryParam : bodyParam];
         }
-
-        this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, 'entryByKindAndId', this.query);
-        this.status = 200;
-    } catch (e) {
-        onGetError(this, e);
     }
-};
 
+    this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, 'entryByKindAndId', this.query);
+});
 
-exports.entriesByOwnerAndId = function * () {
-    try {
-        for (let i = 0; i < couchNeedsParse.length; i++) {
-            let queryParam = this.query[couchNeedsParse[i]];
-            let bodyParam = this.request.body[couchNeedsParse[i]];
-            if (queryParam || bodyParam) {
-                this.query[couchNeedsParse[i]] = [this.params.email, queryParam ? queryParam : bodyParam];
-            }
+exports.entriesByOwnerAndId = composeWithError(function*() {
+    for (let i = 0; i < couchNeedsParse.length; i++) {
+        let queryParam = this.query[couchNeedsParse[i]];
+        let bodyParam = this.request.body[couchNeedsParse[i]];
+        if (queryParam || bodyParam) {
+            this.query[couchNeedsParse[i]] = [this.params.email, queryParam ? queryParam : bodyParam];
         }
-        this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, 'entryByOwnerAndId', this.query);
-        this.status = 200;
-    } catch (e) {
-        onGetError(this, e);
     }
-};
+    this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, 'entryByOwnerAndId', this.query);
+});
 
-exports.getUser = function * () {
-    try {
-        this.body = yield this.state.couch.getUser(this.state.userEmail);
-        this.status = 200;
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.getUser = composeWithError(function*() {
+    this.body = yield this.state.couch.getUser(this.state.userEmail);
+});
 
-exports.editUser = function * () {
-    try {
-        this.body = yield this.state.couch.editUser(this.state.userEmail, this.request.body);
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.editUser = composeWithError(function*() {
+    this.body = yield this.state.couch.editUser(this.state.userEmail, this.request.body);
+});
 
-exports.getOwnersByUuid = function*() {
-    try {
-        const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail);
-        this.body = doc.$owners;
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.getOwnersByUuid = composeWithError(function*() {
+    const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail);
+    this.body = doc.$owners;
+});
 
-exports.addOwnerByUuid = function*() {
-    try {
-        yield this.state.couch.addGroupToEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
-        this.body = {ok: true};
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.addOwnerByUuid = composeWithError(function*() {
+    yield this.state.couch.addGroupToEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
+    this.body = {ok: true};
+});
 
-exports.removeOwnerByUuid = function*() {
-    try {
-        yield this.state.couch.removeGroupFromEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
-        this.body = {ok: true};
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.removeOwnerByUuid = composeWithError(function*() {
+    yield this.state.couch.removeGroupFromEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
+    this.body = {ok: true};
+});
 
-exports.getGroup = function*() {
-    try {
-        this.body = yield this.state.couch.getGroup(this.params.name, this.state.userEmail);
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.getGroup = composeWithError(function*() {
+    this.body = yield this.state.couch.getGroup(this.params.name, this.state.userEmail);
+});
 
-exports.getGroups = function*() {
-    try {
-        var right = this.params.right || 'read';
-        this.body = yield this.state.couch.getGroupsByRight(this.state.userEmail, right);
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.getGroups = composeWithError(function*() {
+    const right = this.params.right || 'read';
+    this.body = yield this.state.couch.getGroupsByRight(this.state.userEmail, right);
+});
 
-exports.getRights = function* () {
-    var right = this.params.right;
-    var uuid = this.params.uuid;
+exports.getRights = composeWithError(function*() {
+    const right = this.params.right;
+    const uuid = this.params.uuid;
     this.body = yield this.state.couch.hasRightForEntry(uuid, this.state.userEmail, right, this.query);
-};
+});
 
 /* todo implement it
 exports.createOrUpdateGroup = function *() {
@@ -302,48 +221,28 @@ exports.createOrUpdateGroup = function *() {
 };*/
 
 
-exports.deleteGroup = function *() {
-    try {
-        yield this.state.couch.deleteGroup(this.params.name, this.state.userEmail);
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.deleteGroup = composeWithError(function*() {
+    yield this.state.couch.deleteGroup(this.params.name, this.state.userEmail);
+});
 
-exports.createEntryToken = function* () {
-    try {
-        const token = yield this.state.couch.createEntryToken(this.state.userEmail, this.params.uuid);
-        this.status = 201;
-        this.body = token;
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.createEntryToken = composeWithError(function*() {
+    const token = yield this.state.couch.createEntryToken(this.state.userEmail, this.params.uuid);
+    this.status = 201;
+    this.body = token;
+});
 
-exports.getTokens = function* () {
-    try {
-        this.body = yield this.state.couch.getTokens(this.state.userEmail);
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.getTokens = composeWithError(function*() {
+    this.body = yield this.state.couch.getTokens(this.state.userEmail);
+});
 
-exports.getTokenById = function* () {
-    try {
-        this.body = yield this.state.couch.getToken(this.params.tokenid);
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.getTokenById = composeWithError(function*() {
+    this.body = yield this.state.couch.getToken(this.params.tokenid);
+});
 
-exports.deleteTokenById = function* () {
-    try {
-        yield this.state.couch.deleteToken(this.state.userEmail, this.params.tokenid);
-        this.body = {ok: true};
-    } catch (e) {
-        onGetError(this, e);
-    }
-};
+exports.deleteTokenById = composeWithError(function*() {
+    yield this.state.couch.deleteToken(this.state.userEmail, this.params.tokenid);
+    this.body = {ok: true};
+});
 
 function onGetError(ctx, e, secure) {
     switch (e.reason) {
