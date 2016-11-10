@@ -124,7 +124,11 @@ exports.allEntries = composeWithError(function*() {
 });
 
 exports.queryEntriesByUser = composeWithError(function*() {
-    this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, this.params.view, this.query);
+    if (this.query.reduce) {
+        this.body = yield this.state.couch.queryViewByUser(this.state.userEmail, this.params.view, this.query);
+    } else {
+        this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, this.params.view, this.query);
+    }
 });
 
 exports.queryEntriesByRight = composeWithError(function*() {

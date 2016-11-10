@@ -132,6 +132,15 @@ describe('basic rest-api as b@b.com', function () {
             });
     });
 
+    it('query view with reduce', function () {
+        return request.get('/db/test/_view/entryById?reduce=true')
+            .expect(200)
+            .then(rows => {
+                rows = JSON.parse(rows.text);
+                rows[0].value.should.equal(5);
+            });
+    });
+
     it('create new document', function () {
         return request.post('/db/test/entry')
             .send({$id: 'new', $content: {}})

@@ -82,6 +82,7 @@ const methods = {
     async queryViewByUser(user, view, options, rights) {
         debug(`queryViewByUser (${user}, ${view})`);
         options = Object.assign({}, options);
+        await this.open();
         if (options.reduce) {
             if (this._viewsWithOwner.has(view)) {
                 // We don't allow this. Reduce with emit owner make little sense
@@ -98,7 +99,6 @@ const methods = {
         options.skip = 0;
         var limit = options.limit || 1;
         var cumRows = [];
-        await this.open();
         while (cumRows.length < limit) {
             let rows = await nanoPromise.queryView(this._db, view, options);
             // No more results
