@@ -49,7 +49,7 @@
     "escape-string-regexp": "^1.0.4",
     "extend": "^3.0.0",
     "fold-to-ascii": "^2.0.2",
-    "fs-extra": "^0.30.0",
+    "fs-extra": "^1.0.0",
     "has-own": "^1.0.0",
     "if-env": "^1.0.0",
     "jquery": "^3.1.1",
