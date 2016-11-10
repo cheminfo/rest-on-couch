@@ -82,7 +82,7 @@ const methods = {
     async queryViewByUser(user, view, options, rights) {
         debug(`queryViewByUser (${user}, ${view})`);
         options = Object.assign({}, options);
-        if(options.reduce) {
+        if (options.reduce) {
             if (this._viewsWithOwner.has(view)) {
                 // We don't allow this. Reduce with emit owner make little sense
                 // since each document can be emited more than once...

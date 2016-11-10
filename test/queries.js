@@ -140,7 +140,7 @@ describe('Query view with reduce', function () {
     });
     it('should fail because emits owners', function () {
         return couch.queryViewByUser('a@a.com', 'entryIdByRight', {reduce: true})
-            .should.be.rejectedWith(/is a view with owner/)
+            .should.be.rejectedWith(/is a view with owner/);
     });
 
     it('Should fail because no reduce', function () {
