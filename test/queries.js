@@ -138,6 +138,15 @@ describe('Query view with reduce', function () {
                 rows[0].value.should.equal(5);
             });
     });
+    it('should fail because emits owners', function () {
+        return couch.queryViewByUser('a@a.com', 'entryIdByRight', {reduce: true})
+            .should.be.rejectedWith(/is a view with owner/)
+    });
+
+    it('Should fail because no reduce', function () {
+        return couch.queryViewByUser('a@a.com', 'globalRight', {reduce: true})
+            .should.be.rejectedWith(/invalid for map-only views/);
+    });
 });
 
 function sortByValue(a, b) {
