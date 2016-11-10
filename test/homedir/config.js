@@ -13,6 +13,16 @@ module.exports = {
                     emitWithOwner(['x', 'y', 'z'], doc.$id);
                 },
                 withOwner: true
+            },
+            testReduce: {
+                map: function (doc) {
+                    if(doc.$type === 'entry') {
+                        emit(doc._id, 1); // eslint-disable-line no-undef
+                    }
+                },
+                reduce: function(keys, values) {
+                    return sum(values);
+                }
             }
         }
     },

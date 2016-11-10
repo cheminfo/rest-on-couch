@@ -75,7 +75,7 @@ describe('Query view with owner (group right)', function () {
     });
 });
 
-describe('Query view filter groups', function () {
+describe('Query entries filter groups', function () {
     before(noRights);
     it('should only return entries owned by the user', function () {
         return couch.queryEntriesByRight('a@a.com', 'entryIdByRight', null, {groups: 'a@a.com'})
@@ -125,6 +125,17 @@ describe('Query view filter groups', function () {
         return couch.queryEntriesByRight('a@a.com', 'entryIdByRight', null, {groups: 'x@x.com'})
             .then(res => {
                 res.length.should.equal(0);
+            });
+    });
+});
+
+describe('Query view with reduce', function () {
+    before(data);
+    it('Should query by user id', function () {
+        return couch.queryViewByUser('a@a.com', 'testReduce', {reduce: true})
+            .then(rows => {
+                // counts the entries
+                rows[0].value.should.equal(5);
             });
     });
 });

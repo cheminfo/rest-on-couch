@@ -48,6 +48,8 @@ const methods = {
         const data = new Map();
         const userStartKey = options.key ? [options.key] : (options.startkey ? options.startkey : []);
         const userEndKey = options.key ? [options.key] : (options.endkey ? options.endkey : []);
+
+
         for (const group of userGroups) {
             const startkey = [group].concat(userStartKey);
             const endkey = [group].concat(userEndKey);
@@ -80,8 +82,19 @@ const methods = {
     async queryViewByUser(user, view, options, rights) {
         debug(`queryViewByUser (${user}, ${view})`);
         options = Object.assign({}, options);
+        if(options.reduce) {
+            if (this._viewsWithOwner.has(view)) {
+                // We don't allow this. Reduce with emit owner make little sense
+                // since each document can be emited more than once...
+                throw new CouchError(`${view} is a view with owner`, 'unauthorized');
+            }
+            // !! if reduce we bypass security
+            // Reduce should not contain sensible data
+            return await nanoPromise.queryView(this._db, view, options);
+        }
+
+
         options.include_docs = true;
-        options.reduce = false;
         options.skip = 0;
         var limit = options.limit || 1;
         var cumRows = [];
