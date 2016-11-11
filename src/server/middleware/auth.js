@@ -43,7 +43,7 @@ exports.ensureAuthenticated = function* (next) {
     this.status = 401;
 };
 
-exports.getUserEmail = function (ctx) {
+exports.getUserEmail = async function (ctx) {
     let email, user;
     if (!ctx.session.passport) {
         email = 'anonymous';
@@ -58,34 +58,24 @@ exports.getUserEmail = function (ctx) {
         return getUserEmailFromToken(ctx);
     }
 
-    return Promise.resolve(email || 'anonymous');
+    return email || 'anonymous';
 };
 
-function getUserEmailFromToken(ctx) {
-    if (!config.authServers.length) return Promise.resolve('anonymous');
+async function getUserEmailFromToken(ctx) {
+    if (!config.authServers.length) return 'anonymous';
+
     const token = ctx.headers['x-auth-session'] || ctx.query['x-auth-session'];
-    if (!token) return Promise.resolve('anonymous');
-
-    let res = {
-        ok: true,
-        userCtx: null
-    };
-
-    let prom = Promise.resolve(res);
+    if (!token) return 'anonymous';
 
     for (let i = 0; i < config.authServers.length; i++) {
-        prom = prom.then(res => {
-            if (res.userCtx !== null && res.userCtx !== 'anonymous') {
-                return res;
-            }
-            return superagent
-                .get(`${config.authServers[i].replace(/\/$/, '')}/_session`)
-                .set('cookie', token)
-                .end().then(res => {
-                    return JSON.parse(res.text);
-                });
-        });
+        const res = await superagent
+            .get(`${config.authServers[i].replace(/\/$/, '')}/_session`)
+            .set('cookie', token);
+        const parsed = JSON.parse(res.text);
+        if (parsed.userCtx) {
+            return parsed.userCtx.name;
+        }
     }
 
-    return prom.then(res => res.userCtx ? res.userCtx.name : 'anonymous');
+    return 'anonymous';
 }
