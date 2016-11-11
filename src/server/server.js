@@ -131,7 +131,7 @@ if (config.debugrest) {
 // Authentication
 app.use(auth.routes());
 // ROC API
-app.use(api.init(config).routes());
+app.use(api.routes());
 
 module.exports.start = function () {
     if (_started) return _started;
