@@ -3,6 +3,7 @@
 const app = require('koa')();
 const compress = require('koa-compress');
 const cors = require('kcors');
+const fs = require('fs');
 const http = require('http');
 const passport = require('koa-passport');
 const path = require('path');
@@ -16,7 +17,6 @@ const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
 const nunjucks = require('./nunjucks');
 const proxy = require('./routes/proxy');
-const router = require('./routes/main');
 
 let _started;
 
@@ -57,6 +57,20 @@ nunjucks(app, {
 });
 
 app.use(serve('assets', path.join(__dirname, '../../public')));
+
+// always render index.html unless it's an API route
+let indexHtml = fs.readFileSync(path.join(__dirname, '../../public/index.html'), 'utf8');
+indexHtml = indexHtml.replace(/assets\//g, proxyPrefix + 'assets/');
+const bundleJs = fs.readFileSync(path.join(__dirname, '../../public/bundle.js'), 'utf8');
+app.use(function*(next) {
+    if (this.path.startsWith(`${proxyPrefix}db`) || this.path.startsWith(`${proxyPrefix}auth`)) {
+        yield next;
+    } else if (this.path.endsWith('/bundle.js')) {
+        this.body = bundleJs;
+    } else {
+        this.body = indexHtml;
+    }
+});
 
 const allowedOrigins = config.allowedOrigins;
 debug(`allowed cors origins: ${allowedOrigins}`);
@@ -115,8 +129,6 @@ if (config.debugrest) {
     });
 }
 
-// Main routes
-app.use(router.routes());
 // Authentication
 app.use(auth.routes());
 // Proxy to CouchDB
