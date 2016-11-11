@@ -29,12 +29,10 @@ function isAllowedFirstLevelKey(key) {
     return includes(constants.allowedFirstLevelKeys, key);
 }
 
-function addGroups(ctx, user, groups) {
-    return async doc => {
-        for (let i = 0; i < groups.length; i++) {
-            await ctx.addGroupToEntryByUuid(doc.id, user, groups[i]);
-        }
-    };
+async function addGroups(doc, ctx, user, groups) {
+    for (let i = 0; i < groups.length; i++) {
+        await ctx.addGroupToEntryByUuid(doc.id, user, groups[i]);
+    }
 }
 
 module.exports = {

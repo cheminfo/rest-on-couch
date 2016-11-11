@@ -36,16 +36,16 @@ const methods = {
         return nanoMethods.saveEntry(this._db, entry, user);
     },
 
-    getAttachmentByIdAndName(id, name, user, asStream, options) {
+    async getAttachmentByIdAndName(id, name, user, asStream, options) {
         debug(`getAttachmentByIdAndName (${id}, ${name}, ${user})`);
-        return this.getEntryById(id, user, options)
-            .then(getAttachmentFromEntry(this, name, asStream));
+        const entry = await this.getEntryById(id, user, options);
+        return getAttachmentFromEntry(entry, this, name, asStream);
     },
 
-    getAttachmentByUuidAndName(uuid, name, user, asStream, options) {
+    async getAttachmentByUuidAndName(uuid, name, user, asStream, options) {
         debug(`getAttachmentByUuidAndName (${uuid}, ${name}, ${user})`);
-        return this.getEntryByUuid(uuid, user, options)
-            .then(getAttachmentFromEntry(this, name, asStream));
+        const entry = await this.getEntryByUuid(uuid, user, options);
+        return getAttachmentFromEntry(entry, this, name, asStream);
     },
 
     async addFileToJpath(id, user, jpath, json, file, newContent) {
@@ -114,14 +114,12 @@ const methods = {
 methods.addAttachmentById = methods.addAttachmentsById;
 methods.addAttachmentByUuid = methods.addAttachmentsByUuid;
 
-function getAttachmentFromEntry(ctx, name, asStream) {
-    return async function (entry) {
-        if (entry._attachments && entry._attachments[name]) {
-            return nanoPromise.getAttachment(ctx._db, entry._id, name, asStream, {rev: entry._rev});
-        } else {
-            throw new CouchError(`attachment ${name} not found`, 'not found');
-        }
-    };
+async function getAttachmentFromEntry(entry, ctx, name, asStream) {
+    if (entry._attachments && entry._attachments[name]) {
+        return nanoPromise.getAttachment(ctx._db, entry._id, name, asStream, {rev: entry._rev});
+    } else {
+        throw new CouchError(`attachment ${name} not found`, 'not found');
+    }
 }
 
 module.exports = {

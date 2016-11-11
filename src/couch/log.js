@@ -34,7 +34,7 @@ exports.getLevel = function (level) {
     return levels[level];
 };
 
-exports.log = function (db, currentLevel, message, level) {
+exports.log = async function (db, currentLevel, message, level) {
     if (typeof currentLevel !== 'number') {
         throw new TypeError('current log level must be a number');
     }
@@ -42,14 +42,15 @@ exports.log = function (db, currentLevel, message, level) {
     checkLevel(level);
     level = levels[level];
     if (level > currentLevel) {
-        return Promise.resolve(false);
+        return false;
     }
-    return nanoPromise.insertDocument(db, {
+    await nanoPromise.insertDocument(db, {
         $type: 'log',
         epoch: Date.now(),
         level,
         message
-    }).then(() => true);
+    });
+    return true;
 };
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -65,13 +66,15 @@ exports.format = function (log) {
 };
 
 exports.methods = {
-    log(message, level) {
+    async log(message, level) {
         debug(`log (${message}, ${level})`);
-        return this.open().then(() => exports.log(this._db, this._logLevel, message, level));
+        await this.open();
+        return exports.log(this._db, this._logLevel, message, level);
     },
 
-    getLogs(epoch) {
+    async getLogs(epoch) {
         debug(`getLogs (${epoch}`);
-        return this.open().then(() => exports.getLogs(this._db, epoch));
+        await this.open();
+        return exports.getLogs(this._db, epoch);
     }
 };

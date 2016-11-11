@@ -7,7 +7,7 @@ const debug = require('../util/debug')('main:validate');
 const nanoPromise = require('../util/nanoPromise');
 const getGroup = require('./nano').getGroup;
 
-function validateRights(db, ownerArrays, user, rights) {
+async function validateRights(db, ownerArrays, user, rights) {
     debug.trace('validateRights');
     if (!Array.isArray(ownerArrays[0])) {
         ownerArrays = [ownerArrays];
@@ -16,7 +16,7 @@ function validateRights(db, ownerArrays, user, rights) {
     let areOwners = ownerArrays.map(owner => isOwner(owner, user));
 
     if (areOwners.every(value => value === true)) {
-        return Promise.resolve(areOwners);
+        return areOwners;
     }
 
     if (typeof rights === 'string') {
@@ -28,27 +28,26 @@ function validateRights(db, ownerArrays, user, rights) {
 
     var checks = [];
     for (let i = 0; i < rights.length; i++) {
-        checks.push(checkGlobalRight(db, user, rights[i])
-            .then(function (hasGlobal) {
-                if (hasGlobal) return ownerArrays.map(() => true);
-                return Promise.all([getDefaultGroups(db, user), nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, rights[i]]}, {onlyValue: true})])
-                    .then(result => {
-                        const defaultGroups = result[0];
-                        const groups = result[1];
-                        return ownerArrays.map((owners, idx) => {
-                            if (areOwners[idx]) return true;
-                            for (let j = 0; j < owners.length; j++) {
-                                if (includes(groups, owners[j])) return true;
-                                for (let k = 0; k < defaultGroups.length; k++) {
-                                    if (includes(owners, defaultGroups[k].name) && includes(defaultGroups[k].rights, rights[i])) {
-                                        return true;
-                                    }
-                                }
-                            }
-                            return false;
-                        });
-                    });
-            }));
+        checks.push(doGlobalRightCheck(rights[i]));
+    }
+
+    async function doGlobalRightCheck(right) {
+        const hasGlobal = await checkGlobalRight(db, user, right);
+        if (hasGlobal) return ownerArrays.map(() => true);
+
+        const [defaultGroups, groups] = await Promise.all([getDefaultGroups(db, user), nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, right]}, {onlyValue: true})]);
+        return ownerArrays.map((owners, idx) => {
+            if (areOwners[idx]) return true;
+            for (let j = 0; j < owners.length; j++) {
+                if (includes(groups, owners[j])) return true;
+                for (let k = 0; k < defaultGroups.length; k++) {
+                    if (includes(owners, defaultGroups[k].name) && includes(defaultGroups[k].rights, right)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
     }
 
     // Promise resolves with for each right an array of true/false that indicates if the user
@@ -58,21 +57,18 @@ function validateRights(db, ownerArrays, user, rights) {
     //    own1[] own2[]  own3[]     own1[]   own2[]  own3[]
     // [ [true,  true,   false],   [false,   true,   false] ]
 
-    return Promise.all(checks).then(result => {
-        if (result.length === 0) {
-            return areOwners;
-        }
-        return result[0].map((value, idx) => {
-            for (let i = 0; i < result.length; i++) {
-                if (result[i][idx] === true) {
-                    return true;
-                }
+    const result = await Promise.all(checks);
+    if (result.length === 0) {
+        return areOwners;
+    }
+    return result[0].map((value, idx) => {
+        for (let i = 0; i < result.length; i++) {
+            if (result[i][idx] === true) {
+                return true;
             }
-            return false;
-        });
+        }
+        return false;
     });
-
-    //return Promise.all(checks).then(result => result.some(value => value === true));
 }
 
 async function validateTokenOrRights(db, uuid, owners, rights, user, token) {

@@ -215,7 +215,7 @@ const methods = {
             }
             const res = await createNew(this, entry, user);
             action = 'created';
-            await util.addGroups(this, user, options.groups)(res);
+            await util.addGroups(res, this, user, options.groups);
             result = res;
         }
 
@@ -228,18 +228,16 @@ async function getOwnersById(db, id) {
 }
 
 function onNotFound(ctx, entry, user, options) {
-    return error => {
-        var res;
+    return async (error) => {
         if (error.reason === 'not found') {
             debug.trace('doc not found');
             if (options.isUpdate) {
                 throw new CouchError('Document does not exist', 'not found');
             }
 
-            return createNew(ctx, entry, user)
-                .then(r => res = r)
-                .then(util.addGroups(ctx, user, options.groups))
-                .then(() => res);
+            const res = await createNew(ctx, entry, user);
+            await util.addGroups(res, ctx, user, options.groups);
+            return res;
         } else {
             throw error;
         }
@@ -267,9 +265,8 @@ async function createNew(ctx, entry, user) {
     }
 }
 
-function updateEntry(ctx, oldDoc, newDoc, user, options) {
+async function updateEntry(ctx, oldDoc, newDoc, user, options) {
     debug.trace('update entry');
-    var res;
     if (oldDoc._rev !== newDoc._rev) {
         debug.trace('document and entry _rev differ');
         throw new CouchError('document and entry _rev differ', 'conflict');
@@ -291,10 +288,9 @@ function updateEntry(ctx, oldDoc, newDoc, user, options) {
     }
     // Doc validation will fail $kind changed
     oldDoc.$kind = newDoc.$kind;
-    return nanoMethods.saveEntry(ctx._db, oldDoc, user)
-        .then(r => res = r)
-        .then(util.addGroups(ctx, user, options.groups))
-        .then(() => res);
+    const res = await nanoMethods.saveEntry(ctx._db, oldDoc, user);
+    await util.addGroups(res, ctx, user, options.groups);
+    return res;
 }
 
 module.exports = {

@@ -46,16 +46,16 @@ const methods = {
         return this.editGlobalRight(type, user, 'remove');
     },
 
-    hasRightForEntry(uuid, user, right, options) {
+    async hasRightForEntry(uuid, user, right, options) {
         debug(`has right for entry (${uuid}, ${user}, ${right})`);
-        return this.getEntryByUuidAndRights(uuid, user, right, options)
-            .then(() => {
-                return true;
-            }, err => {
-                if (err.reason === 'unauthorized') return false;
-                // Propagate
-                throw err;
-            });
+        try {
+            await this.getEntryByUuidAndRights(uuid, user, right, options);
+            return true;
+        } catch (e) {
+            if (e.reason === 'unauthorized') return false;
+            // Propagate
+            throw e;
+        }
     }
 };
 
