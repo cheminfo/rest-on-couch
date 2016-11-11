@@ -22,6 +22,16 @@ describe('basic initialization tests', function () {
             new Couch();
         }).should.be.rejectedWith('database option is mandatory');
     });
+
+    it('should throw on invalid db name', function () {
+        (function () {
+            new Couch({database: '_test'});
+        }).should.throw(/invalid database name/);
+
+        (function () {
+            Couch.get(1);
+        }).should.throw(/database name must be a string/);
+    });
 });
 
 describe('basic initialization with custom design docs', function () {

@@ -39,7 +39,7 @@ class Couch {
             throw new CouchError('database option is mandatory');
         }
         if (database.startsWith('_')) {
-            throw new CouchError('database name cannot start with an underscore');
+            throw new CouchError('invalid database name');
         }
 
         this._databaseName = database;
