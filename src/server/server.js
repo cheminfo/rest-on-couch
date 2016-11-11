@@ -57,19 +57,22 @@ nunjucks(app, {
 
 app.use(serve('assets', path.join(__dirname, '../../public')));
 
+const bundlePath = path.join(__dirname, '../../public/bundle.js');
+if (fs.existsSync(bundlePath)) {
 // always render index.html unless it's an API route
-let indexHtml = fs.readFileSync(path.join(__dirname, '../../public/index.html'), 'utf8');
-indexHtml = indexHtml.replace(/assets\//g, proxyPrefix + 'assets/');
-const bundleJs = fs.readFileSync(path.join(__dirname, '../../public/bundle.js'), 'utf8');
-app.use(function*(next) {
-    if (this.path.startsWith(`${proxyPrefix}db`) || this.path.startsWith(`${proxyPrefix}auth`)) {
-        yield next;
-    } else if (this.path.endsWith('/bundle.js')) {
-        this.body = bundleJs;
-    } else {
-        this.body = indexHtml;
-    }
-});
+    let indexHtml = fs.readFileSync(path.join(__dirname, '../../public/index.html'), 'utf8');
+    indexHtml = indexHtml.replace(/assets\//g, proxyPrefix + 'assets/');
+    const bundleJs = fs.readFileSync(bundlePath, 'utf8');
+    app.use(function*(next) {
+        if (this.path.startsWith(`${proxyPrefix}db`) || this.path.startsWith(`${proxyPrefix}auth`)) {
+            yield next;
+        } else if (this.path.endsWith('/bundle.js')) {
+            this.body = bundleJs;
+        } else {
+            this.body = indexHtml;
+        }
+    });
+}
 
 const allowedOrigins = config.allowedOrigins;
 debug(`allowed cors origins: ${allowedOrigins}`);
