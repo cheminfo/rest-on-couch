@@ -1049,12 +1049,6 @@ co-body@*:
     raw-body "~2.1.2"
     type-is "~1.6.6"
 
-co-request@^0.2.0:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/co-request/-/co-request-0.2.1.tgz#6428c002ad4229b3eda6725022aeccf273bee3fb"
-  dependencies:
-    request "*"
-
 co-sleep@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/co-sleep/-/co-sleep-0.0.1.tgz#5ec6a9c77649eaf5c4e1116e62635668c608ee32"
@@ -2395,10 +2389,6 @@ https-browserify@0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-0.0.0.tgz#b3ffdfe734b2a3d4a9efd58e8654c91fce86eafd"
 
-iconv-lite@^0.2.11:
-  version "0.2.11"
-  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.2.11.tgz#1ce60a3a57864a292d1321ff4609ca4bb965adc8"
-
 iconv-lite@~0.4.13, iconv-lite@0.4.13:
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.13.tgz#1f88aba4ab0b1508e8312acc39345f36e992e2f2"
@@ -2844,13 +2834,6 @@ koa-passport@^1.3.0:
   dependencies:
     co "^4.4.0"
     passport "^0.3.0"
-
-koa-proxy@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/koa-proxy/-/koa-proxy-0.6.0.tgz#99f1860ff65fe167a865a5649d57a7dd3ad5cab0"
-  dependencies:
-    co-request "^0.2.0"
-    iconv-lite "^0.2.11"
 
 koa-response-time@^1.0.2:
   version "1.0.2"
@@ -4326,7 +4309,7 @@ request-promise@^4.0.2:
     request-promise-core "1.1.1"
     stealthy-require "^1.0.0"
 
-request@*, request@^2.53.0, request@^2.74.0, request@^2.75.0:
+request@^2.53.0, request@^2.74.0, request@^2.75.0:
   version "2.78.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.78.0.tgz#e1c8dec346e1c81923b24acdb337f11decabe9cc"
   dependencies:

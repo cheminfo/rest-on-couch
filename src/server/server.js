@@ -16,7 +16,6 @@ const auth = require('./routes/auth');
 const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
 const nunjucks = require('./nunjucks');
-const proxy = require('./routes/proxy');
 
 let _started;
 
@@ -131,8 +130,6 @@ if (config.debugrest) {
 
 // Authentication
 app.use(auth.routes());
-// Proxy to CouchDB
-app.use(proxy.init(config).routes());
 // ROC API
 app.use(api.init(config).routes());
 
