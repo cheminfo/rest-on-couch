@@ -17,6 +17,10 @@ function isValidUsername(username) {
     return isEmail(username);
 }
 
+function isValidOwner(owner) {
+    return isValidUsername(owner) || isValidGroupName(owner);
+}
+
 function isValidGlobalRightUser(user) {
     return isSpecialUser(user) || isValidUsername(user);
 }
@@ -39,6 +43,7 @@ module.exports = {
     isSpecialUser,
     isValidGroupName,
     isValidUsername,
+    isValidOwner,
     isValidGlobalRightUser,
     isValidGlobalRightType,
     isAllowedFirstLevelKey,
