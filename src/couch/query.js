@@ -91,7 +91,7 @@ const methods = {
             }
             // !! if reduce we bypass security
             // Reduce should not contain sensible data
-            return await nanoPromise.queryView(this._db, view, options);
+            return nanoPromise.queryView(this._db, view, options);
         }
 
 
