@@ -39,6 +39,10 @@ async function addGroups(doc, ctx, user, groups) {
     }
 }
 
+function isManagedDocumentType(type) {
+    return type === 'entry' || type === 'group';
+}
+
 module.exports = {
     isSpecialUser,
     isValidGroupName,
@@ -47,5 +51,6 @@ module.exports = {
     isValidGlobalRightUser,
     isValidGlobalRightType,
     isAllowedFirstLevelKey,
-    addGroups
+    addGroups,
+    isManagedDocumentType
 };

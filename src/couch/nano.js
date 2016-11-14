@@ -1,11 +1,16 @@
 'use strict';
 
+const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:nano');
 const nanoPromise = require('../util/nanoPromise');
 
 async function getGroup(db, name) {
     debug.trace('get group');
-    const groups = await nanoPromise.queryView(db, 'groupByName', {key: name, reduce: false, include_docs: true});
+    const groups = await nanoPromise.queryView(db, 'groupByName', {
+        key: name,
+        reduce: false,
+        include_docs: true
+    });
     if (!groups || groups.length === 0) {
         debug.trace('group does not exist');
         return null;
@@ -15,6 +20,17 @@ async function getGroup(db, name) {
     }
     debug.trace('group exists');
     return groups[0].doc;
+}
+
+async function save(db, entry, user) {
+    switch (entry.$type) {
+        case 'entry':
+            return saveEntry(db, entry, user);
+        case 'group':
+            return saveGroup(db, entry, user);
+        default:
+            throw new CouchError(`invalid type: ${entry.$type}`);
+    }
 }
 
 async function saveEntry(db, entry, user) {
@@ -45,8 +61,48 @@ async function saveWithFields(db, object, user) {
     return result;
 }
 
+async function getUuidFromId(db, id, type, user) {
+    switch (type) {
+        case 'entry':
+            return getUuidFromIdEntry(db, id, user);
+        case 'group':
+            return getUuidFromIdGroup(db, id);
+        default:
+            throw new CouchError(`invalid type: ${type}`);
+    }
+}
+
+async function getUuidFromIdEntry(db, id, user) {
+    const owners = await nanoPromise.queryView(db, 'ownerByTypeAndId', {
+        key: ['entry', id]
+    });
+    if (owners.length === 0) {
+        throw new CouchError('document not found', 'not found');
+    }
+    const hisEntry = owners.find(own => own.value === user);
+    if (!hisEntry) {
+        throw new CouchError('document not found', 'not found');
+    }
+    return hisEntry.id;
+}
+
+async function getUuidFromIdGroup(db, id) {
+    const owners = await nanoPromise.queryView(db, 'ownerByTypeAndId', {
+        key: ['group', id]
+    });
+    if (owners.length === 0) {
+        throw new CouchError('document not found', 'not found');
+    }
+    if (owners.length !== 1) {
+        throw new CouchError(`unexpected number of results: ${owners.length}. There should be only one`);
+    }
+    return owners[0].id;
+}
+
 module.exports = {
     getGroup,
     saveEntry,
-    saveGroup
+    saveGroup,
+    save,
+    getUuidFromId
 };

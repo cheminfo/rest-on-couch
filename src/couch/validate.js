@@ -6,8 +6,9 @@ const constants = require('../constants');
 const debug = require('../util/debug')('main:validate');
 const nanoPromise = require('../util/nanoPromise');
 const getGroup = require('./nano').getGroup;
+const ensureStringArray = require('../util/ensureStringArray');
 
-async function validateRights(db, ownerArrays, user, rights) {
+async function validateRights(db, ownerArrays, user, rights, type = 'entry') {
     debug.trace('validateRights');
     if (!Array.isArray(ownerArrays[0])) {
         ownerArrays = [ownerArrays];
@@ -19,14 +20,13 @@ async function validateRights(db, ownerArrays, user, rights) {
         return areOwners;
     }
 
-    if (typeof rights === 'string') {
-        rights = [rights];
-    }
-    if (!Array.isArray(rights)) {
-        throw new TypeError('rights must be an array or a string');
+    rights = ensureStringArray(rights);
+    if (type !== 'entry') {
+        const suffix = type.charAt(0).toUpperCase() + type.substring(1);
+        rights = rights.map(right => right + suffix);
     }
 
-    var checks = [];
+    const checks = [];
     for (let i = 0; i < rights.length; i++) {
         checks.push(doGlobalRightCheck(rights[i]));
     }
@@ -71,18 +71,17 @@ async function validateRights(db, ownerArrays, user, rights) {
     });
 }
 
-async function validateTokenOrRights(db, uuid, owners, rights, user, token) {
-    if (!Array.isArray(rights)) {
-        rights = [rights];
-    }
-    if (token && token.$kind === 'entry' && token.uuid === uuid) {
+async function validateTokenOrRights(db, uuid, owners, rights, user, token, type = 'entry') {
+    rights = ensureStringArray(rights);
+
+    if (token && token.$kind === type && token.uuid === uuid) {
         for (var i = 0; i < rights.length; i++) {
             if (includes(token.rights, rights[i])) {
                 return true;
             }
         }
     }
-    const ok = await validateRights(db, owners, user, rights);
+    const ok = await validateRights(db, owners, user, rights, type);
     return ok[0];
 }
 

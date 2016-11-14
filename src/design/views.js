@@ -9,6 +9,16 @@ views.documentByType = {
     reduce: '_count'
 };
 
+views.ownerByTypeAndId = {
+    map: function (doc) {
+        if (doc.$type === 'entry') {
+            emit(['entry', doc.$id], doc.$owners[0]);
+        } else if (doc.$type === 'group') {
+            emit(['group', doc.name], doc.$owners[0]);
+        }
+    }
+};
+
 views.entryById = {
     map: function (doc) {
         if (doc.$type !== 'entry') return;

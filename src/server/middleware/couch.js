@@ -15,8 +15,9 @@ const CouchError = require('../../util/CouchError');
 const couchNeedsParse = ['key', 'startkey', 'endkey'];
 
 const statusMessages = {
-    '404': 'not found',
+    '400': 'bad request',
     '401': 'unauthorized',
+    '404': 'not found',
     '409': 'conflict',
     '500': 'internal server error'
 };
@@ -255,6 +256,10 @@ function onGetError(ctx, e, secure) {
         case 'conflict':
             ctx.status = 409;
             ctx.body = statusMessages[409];
+            break;
+        case 'invalid':
+            ctx.status = 400;
+            ctx.body = e.message || statusMessages[400];
             break;
         default:
             if (!handleCouchError(ctx, e, secure)) {

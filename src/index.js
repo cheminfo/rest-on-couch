@@ -95,6 +95,7 @@ class Couch {
 }
 
 extendCouch('attachment');
+extendCouch('doc');
 extendCouch('entry');
 extendCouch('group');
 extendCouch('init');
