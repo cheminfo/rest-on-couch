@@ -99,13 +99,13 @@ const methods = {
         const group = await nanoMethods.getGroup(this._db, groupName);
         if (group) throw new CouchError(`group ${groupName} already exists`, 'exists');
 
-        return nanoPromise.insertDocument(this._db, {
+        return nanoMethods.saveGroup(this._db, {
             $type: 'group',
             $owners: [user],
             name: groupName,
             users: [],
             rights: rights
-        });
+        }, user);
     },
 
     async getGroup(groupName, user) {

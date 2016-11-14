@@ -24,20 +24,29 @@ async function saveEntry(db, entry, user) {
     if (entry.$kind === undefined) {
         entry.$kind = null;
     }
+    return saveWithFields(db, entry, user);
+}
+
+async function saveGroup(db, group, user) {
+    return saveWithFields(db, group, user);
+}
+
+async function saveWithFields(db, object, user) {
     const now = Date.now();
-    entry.$lastModification = user;
-    entry.$modificationDate = now;
-    if (entry.$creationDate === undefined) {
-        entry.$creationDate = now;
+    object.$lastModification = user;
+    object.$modificationDate = now;
+    if (object.$creationDate === undefined) {
+        object.$creationDate = now;
     }
 
-    const result = await nanoPromise.insertDocument(db, entry);
-    result.$modificationDate = entry.$modificationDate;
-    result.$creationDate = entry.$creationDate;
+    const result = await nanoPromise.insertDocument(db, object);
+    result.$modificationDate = object.$modificationDate;
+    result.$creationDate = object.$creationDate;
     return result;
 }
 
 module.exports = {
     getGroup,
-    saveEntry
+    saveEntry,
+    saveGroup
 };
