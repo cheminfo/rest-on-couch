@@ -41,7 +41,6 @@
   "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
   "dependencies": {
     "array-includes": "^3.0.2",
-    "babel-plugin-transform-es2015-destructuring": "^6.18.0",
     "chokidar": "^1.4.2",
     "co": "^4.6.0",
     "co-sleep": "0.0.1",
