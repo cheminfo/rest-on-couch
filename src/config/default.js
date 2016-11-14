@@ -3,7 +3,7 @@
 module.exports = {
     // Main options
     url: 'http://localhost:5984',
-    logLevel: 'WARN',
+    logLevel: 'FATAL',
     authRenewal: 570,
     autoCreateDatabase: false,
 
