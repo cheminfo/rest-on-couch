@@ -11,51 +11,42 @@ const nanoMethods = require('./nano');
 const ensureStringArray = require('../util/ensureStringArray');
 
 const methods = {
-    async getDocByRights(idOrUuid, user, rights, options) {
+    async getDocByRights(uuid, user, rights, type, options) {
         await this.open();
         debug.trace('getDocByRights');
-        if (!util.isManagedDocumentType(options.type)) {
-            throw new CouchError(`invalid document type: ${options.type}`);
+        if (!util.isManagedDocumentType(type)) {
+            throw new CouchError(`invalid type argument: ${type}`);
         }
-
-        let uuid;
-        if (idOrUuid.id) {
-            uuid = await nanoMethods.getUuidFromId(this._db, idOrUuid.id, options.type, user);
-        } else if (idOrUuid.uuid) {
-            uuid = idOrUuid.uuid;
-        } else {
-            throw new CouchError('missing id or uuid');
-        }
-
 
         const doc = await nanoPromise.getDocument(this._db, uuid);
         if (!doc) {
             throw new CouchError('document not found', 'not found');
         }
-        if (doc.$type !== options.type) {
-            throw new CouchError(`wrong document type: ${doc.$type}. Expected: ${options.type}`);
+        if (doc.$type !== type) {
+            throw new CouchError(`wrong document type: ${doc.$type}. Expected: ${type}`);
         }
 
-        if (await validate.validateTokenOrRights(this._db, uuid, doc.$owners, rights, user, options.token, options.type)) {
+        const token = options ? options.token : null;
+        if (await validate.validateTokenOrRights(this._db, uuid, doc.$owners, rights, user, token, type)) {
             return nanoPromise.getDocument(this._db, uuid, options);
         }
         throw new CouchError('user has no access', 'unauthorized');
     },
 
-    async addOwnersToDoc(idOrUuid, user, owners, options) {
+    async addOwnersToDoc(uuid, user, owners, type, options) {
         await this.open();
         debug.trace('addOwnersToDoc');
         owners = ensureOwnersArray(owners);
-        const doc = await this.getDocByRights(idOrUuid, user, 'owner', options);
+        const doc = await this.getDocByRights(uuid, user, 'owner', type, options);
         doc.$owners = _.union(doc.$owners, owners);
         return nanoMethods.save(this._db, doc, user);
     },
 
-    async removeOwnersFromDoc(idOrUuid, user, owners, options) {
+    async removeOwnersFromDoc(uuid, user, owners, type, options) {
         await this.open();
         debug.trace('removeOwnersFromDoc');
         owners = ensureOwnersArray(owners);
-        const doc = await this.getDocByRights(idOrUuid, user, 'owner', options);
+        const doc = await this.getDocByRights(uuid, user, 'owner', type, options);
         const newArray = _.pullAll(doc.$owners.slice(1), owners);
         newArray.unshift(doc.$owners[0]);
         doc.$owners = newArray;

@@ -9,7 +9,9 @@ const constants = {
     },
     newEntryWithId: {
         $id: 'D',
-        $content: {test: true},
+        $content: {
+            test: true
+        },
         _id: 'D'
     }
 };

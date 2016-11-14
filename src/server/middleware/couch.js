@@ -111,10 +111,6 @@ exports.saveAttachment = composeWithError(function*() {
     });
 });
 
-exports.getAttachmentById = composeWithError(function*() {
-    this.body = yield this.state.couch.getAttachmentByIdAndName(this.params.id, this.params.attachment, this.state.userEmail, true, this.query);
-});
-
 exports.getAttachmentByUuid = composeWithError(function*() {
     this.body = yield this.state.couch.getAttachmentByUuidAndName(this.params.uuid, this.params.attachment, this.state.userEmail, true, this.query);
 });

@@ -49,19 +49,9 @@ const methods = {
         return this.editDefaultGroup(group, type, 'remove');
     },
 
-    addGroupToEntry(id, user, group) {
-        debug(`addGroupToEntry (${id}, ${user}, ${group})`);
-        return this._doUpdateOnEntry(id, user, 'addGroupToEntry', {group});
-    },
-
     addGroupToEntryByUuid(uuid, user, group) {
         debug(`addGroupToEntryByUuid (${uuid}, ${user}, ${group})`);
         return this._doUpdateOnEntryByUuid(uuid, user, 'addGroupToEntry', {group});
-    },
-
-    removeGroupFromEntry(id, user, group) {
-        debug(`removeGroupFromEntry (${id}, ${user}, ${group})`);
-        return this._doUpdateOnEntry(id, user, 'removeGroupFromEntry', {group});
     },
 
     removeGroupFromEntryByUuid(uuid, user, group) {

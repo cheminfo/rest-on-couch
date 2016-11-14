@@ -16,6 +16,7 @@ function populate(db) {
         $type: 'group',
         $owners: ['a@a.com'],
         name: 'groupA',
+        _id: 'groupA',
         users: ['a@a.com'],
         rights: ['create', 'write', 'delete', 'read']
     }));
@@ -25,6 +26,7 @@ function populate(db) {
         $type: 'group',
         $owners: ['a@a.com'],
         name: 'groupB',
+        _id: 'groupB',
         users: ['a@a.com'],
         rights: ['create']
     }));
@@ -71,6 +73,7 @@ function populate(db) {
         $type: 'entry',
         $owners: ['b@b.com', 'groupC'],
         $id: 'anonymousEntry',
+        _id: 'anonymousEntry',
         $creationDate: 0,
         $modificationDate: 0
     }));
@@ -79,6 +82,7 @@ function populate(db) {
         $type: 'entry',
         $owners: ['c@c.com'],
         $id: 'entryWithAttachment',
+        _id: 'entryWithAttachment',
         $creationDate: 0,
         $modificationDate: 0,
         _attachments: {

@@ -37,6 +37,7 @@ function populate(db) {
         $type: 'group',
         $owners: ['a@a.com'],
         name: 'groupA',
+        _id: 'groupA',
         users: ['a@a.com'],
         rights: ['create', 'write', 'delete', 'read']
     }));
@@ -45,6 +46,7 @@ function populate(db) {
         $type: 'group',
         $owners: ['a@a.com'],
         name: 'groupB',
+        _id: 'groupB',
         users: ['b@b.com', 'c@c.com'],
         rights: ['create']
     }));
@@ -53,6 +55,7 @@ function populate(db) {
         $type: 'group',
         $owners: ['a@a.com'],
         name: 'defaultAnonymousRead',
+        _id: 'defaultAnonymousRead',
         users: [],
         rights: ['read']
     }));
@@ -61,6 +64,7 @@ function populate(db) {
         $type: 'group',
         $owners: ['a@a.com'],
         name: 'defaultAnyuserRead',
+        _id: 'defaultAnyuserRead',
         users: [],
         rights: ['read']
     }));
@@ -89,6 +93,7 @@ function populate(db) {
         $type: 'entry',
         $owners: ['a@a.com'],
         $id: 'onlyA',
+        _id: 'onlyA',
         $creationDate: 0,
         $modificationDate: 0,
         $content: {}
@@ -98,6 +103,7 @@ function populate(db) {
         $type: 'entry',
         $owners: ['x@x.com', 'defaultAnonymousRead'],
         $id: 'entryWithDefaultAnonymousRead',
+        _id: 'entryWithDefaultAnonymousRead',
         $creationDate: 0,
         $modificationDate: 0
     }));
@@ -106,6 +112,7 @@ function populate(db) {
         $type: 'entry',
         $owners: ['x@x.com', 'defaultAnyuserRead'],
         $id: 'entryWithDefaultAnyuserRead',
+        _id: 'entryWithDefaultAnyuserRead',
         $creationDate: 0,
         $modificationDate: 0
     }));
@@ -114,6 +121,7 @@ function populate(db) {
         $type: 'entry',
         $owners: ['x@x.com', 'defaultAnonymousRead', 'defaultAnyuserRead'],
         $id: 'entryWithDefaultMultiRead',
+        _id: 'entryWithDefaultMultiRead',
         $creationDate: 0,
         $modificationDate: 0
     }));

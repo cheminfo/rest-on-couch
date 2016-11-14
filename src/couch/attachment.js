@@ -8,15 +8,6 @@ const nanoPromise = require('../util/nanoPromise');
 const nanoMethods = require('./nano');
 
 const methods = {
-    async addAttachmentsById(id, user, attachments) {
-        debug(`addAttachmentsById (${id}, ${user})`);
-        if (!Array.isArray(attachments)) {
-            attachments = [attachments];
-        }
-        const entry = await this.getEntryByIdAndRights(id, user, ['write', 'addAttachment']);
-        return nanoPromise.attachFiles(this._db, entry, attachments);
-    },
-
     async addAttachmentsByUuid(uuid, user, attachments) {
         debug(`addAttachmentsByUuid (${uuid}, ${user})`);
         if (!Array.isArray(attachments)) {
@@ -34,12 +25,6 @@ const methods = {
         }
         delete entry._attachments[attachmentName];
         return nanoMethods.saveEntry(this._db, entry, user);
-    },
-
-    async getAttachmentByIdAndName(id, name, user, asStream, options) {
-        debug(`getAttachmentByIdAndName (${id}, ${name}, ${user})`);
-        const entry = await this.getEntryById(id, user, options);
-        return getAttachmentFromEntry(entry, this, name, asStream);
     },
 
     async getAttachmentByUuidAndName(uuid, name, user, asStream, options) {
@@ -62,7 +47,7 @@ const methods = {
             throw new CouchError('file must have field, name and data properties');
         }
 
-        const entry = await this.getEntryByIdAndRights(id, user, ['write']);
+        const entry = await this.getEntryById(id, user);
         let current = entry.$content || {};
 
         if (newContent) {
@@ -111,7 +96,6 @@ const methods = {
     }
 };
 
-methods.addAttachmentById = methods.addAttachmentsById;
 methods.addAttachmentByUuid = methods.addAttachmentsByUuid;
 
 async function getAttachmentFromEntry(entry, ctx, name, asStream) {

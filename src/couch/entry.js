@@ -8,29 +8,6 @@ const nanoMethods = require('./nano');
 const util = require('./util');
 
 const methods = {
-    async getEntryByIdAndRights(id, user, rights, options = {}) {
-        debug(`getEntryByIdAndRights (${id}, ${user}, ${rights})`);
-        await this.open();
-
-        const owners = await getOwnersById(this._db, id);
-        if (owners.length === 0) {
-            debug.trace(`no entry matching id ${id}`);
-            throw new CouchError('document not found', 'not found');
-        }
-        let hisEntry = owners.find(own => own.value[0] === user);
-        if (!hisEntry) {
-            hisEntry = owners[0];
-        }
-
-        if (await validateMethods.validateTokenOrRights(this._db, hisEntry.id, hisEntry.value, rights, user, options.token)) {
-            debug.trace(`user ${user} has access`);
-            return nanoPromise.getDocument(this._db, hisEntry.id, options);
-        }
-
-        debug.trace(`user ${user} has no ${rights} access`);
-        throw new CouchError('user has no access', 'unauthorized');
-    },
-
     async getEntryByUuidAndRights(uuid, user, rights, options = {}) {
         debug(`getEntryByUuidAndRights (${uuid}, ${user}, ${rights})`);
         await this.open();
@@ -63,20 +40,18 @@ const methods = {
         return this.getEntryByUuidAndRights(uuid, user, 'read', options);
     },
 
-    getEntryById(id, user, options) {
-        return this.getEntryByIdAndRights(id, user, 'read', options);
+    // this function can only return an entry for its main owner
+    async getEntryById(id, user, options) {
+        await this.open();
+        debug(`getEntryById (${id}, ${user})`);
+        const uuid = await nanoMethods.getUuidFromId(this._db, id, 'entry', user);
+        return this.getDocByRights(uuid, user, 'owner', 'entry', options);
     },
 
     async deleteEntryByUuid(uuid, user) {
         debug(`deleteEntryByUuid (${uuid}, ${user})`);
         await this.getEntryByUuidAndRights(uuid, user, 'delete');
         return nanoPromise.destroyDocument(this._db, uuid);
-    },
-
-    async deleteEntryById(id, user) {
-        debug(`deleteEntryById (${id}, ${user})`);
-        const doc = await this.getEntryByIdAndRights(id, user, 'delete');
-        return nanoPromise.destroyDocument(this._db, doc._id);
     },
 
     async createEntry(id, user, options) {
@@ -152,17 +127,6 @@ const methods = {
         return Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
     },
 
-    async _doUpdateOnEntry(id, user, update, updateBody) {
-        // Call update handler
-        await this.open();
-        const doc = await this.getEntryById(id, user);
-        const hasRight = validateMethods.isOwner(doc.$owners, user);
-        if (!hasRight) {
-            throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
-        }
-        return nanoPromise.updateWithHandler(this._db, update, doc._id, updateBody);
-    },
-
     async _doUpdateOnEntryByUuid(uuid, user, update, updateBody) {
         await this.open();
         const doc = await this.getEntryByUuid(uuid, user);
@@ -196,17 +160,25 @@ const methods = {
                 const doc = await this.getEntryByUuidAndRights(entry._id, user, ['write']);
                 result = await updateEntry(this, doc, entry, user, options);
             } catch (e) {
-                result = await notFound(e);
-                action = 'created';
+                if (e.reason === 'not found') {
+                    result = await notFound(e);
+                    action = 'created';
+                } else {
+                    throw e;
+                }
             }
         } else if (entry.$id) {
             debug.trace('entry has no _id but has $id');
             try {
-                const doc = await this.getEntryByIdAndRights(entry.$id, user, ['write']);
-                result = await updateEntry(this, doc, entry, user, options);
+                await this.getEntryById(entry.$id, user);
+                throw new CouchError('entry already exists', 'conflict');
             } catch (e) {
-                result = await notFound(e);
-                action = 'created';
+                if (e.reason === 'not found') {
+                    result = await notFound(e);
+                    action = 'created';
+                } else {
+                    throw e;
+                }
             }
         } else {
             debug.trace('entry has no _id nor $id');
@@ -223,12 +195,8 @@ const methods = {
     }
 };
 
-async function getOwnersById(db, id) {
-    return nanoPromise.queryView(db, 'ownersById', {key: id});
-}
-
 function onNotFound(ctx, entry, user, options) {
-    return async (error) => {
+    return async(error) => {
         if (error.reason === 'not found') {
             debug.trace('doc not found');
             if (options.isUpdate) {
