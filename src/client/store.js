@@ -3,6 +3,7 @@ import promiseMiddleware from 'redux-promise-middleware';
 import {persistStore, autoRehydrate, createTransform} from 'redux-persist';
 
 import dbReducer from './reducers/db';
+import dbNameReducer from './reducers/dbName';
 import loginReducer from './reducers/login';
 
 import {getDbList} from './actions/db';
@@ -15,24 +16,15 @@ const composeStoreWithMiddleware = applyMiddleware(
 const store = composeStoreWithMiddleware(
     combineReducers({
         db: dbReducer,
+        dbName: dbNameReducer,
         login: loginReducer
     }),
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
     autoRehydrate()
 );
 
-const dbTransform = createTransform(
-    // transform state coming form redux on its way to being serialized and stored
-    (inboundState) => inboundState.dbName,
-    // transform state coming from storage, on its way to be rehydrated into redux
-    (outboundState) => ({dbName: outboundState}),
-    // configuration options
-    {whitelist: ['db']}
-);
-
 persistStore(store, {
-    whitelist: ['db'],
-    transforms: [dbTransform],
+    whitelist: ['dbName'],
     debounce: 1000
 });
 

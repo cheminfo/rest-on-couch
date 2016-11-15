@@ -60,6 +60,6 @@ export default connect(
     (state) => ({
         loggedIn: state.login.loggedIn,
         dbList: state.db.dbList,
-        dbName: state.db.dbName
+        dbName: state.dbName
     })
 )(App);
