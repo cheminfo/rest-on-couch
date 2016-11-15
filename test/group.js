@@ -56,6 +56,14 @@ describe('group methods', function () {
                 group.users[0].should.equal('test123@example.com');
             });
     });
+
+    it('getGroups should return users groups', function () {
+        return couch.getDocsAsOwner('a@a.com', 'group', {onlyDoc: true})
+            .then(function (docs) {
+                docs.should.have.lengthOf(2);
+                docs[0].users[0].should.equal('a@a.com');
+            });
+    });
 });
 
 describe('group methods (no default rights)', function () {

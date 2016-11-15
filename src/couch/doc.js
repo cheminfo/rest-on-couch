@@ -59,6 +59,15 @@ const methods = {
         newArray.unshift(doc.$owners[0]);
         doc.$owners = newArray;
         return nanoMethods.save(this._db, doc, user);
+    },
+
+    async getDocsAsOwner(user, type, options) {
+        debug.trace('getDocsAsOwner');
+        await this.open();
+        return nanoPromise.queryView(this._db, 'documentByOwners', {
+            key: [type, user],
+            include_docs: true
+        }, options);
     }
 };
 

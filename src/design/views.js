@@ -9,6 +9,16 @@ views.documentByType = {
     reduce: '_count'
 };
 
+views.documentByOwners = {
+    map: function (doc) {
+        if (doc.$type !== 'entry' && doc.$type !== 'group') return;
+        for (var i = 0; i < doc.$owners.length; i++) {
+            emit([doc.$type, doc.$owners[i]]);
+        }
+    },
+    reduce: '_count'
+};
+
 views.ownerByTypeAndId = {
     map: function (doc) {
         if (doc.$type === 'entry') {
@@ -47,16 +57,6 @@ views.entryByModificationDate = {
     map: function (doc) {
         if (doc.$type !== 'entry') return;
         emit(doc.$modificationDate);
-    },
-    reduce: '_count'
-};
-
-views.entryByOwner = {
-    map: function (doc) {
-        if (doc.$type !== 'entry') return;
-        for (var i = 0; i < doc.$owners.length; i++) {
-            emit(doc.$owners[i]);
-        }
     },
     reduce: '_count'
 };
