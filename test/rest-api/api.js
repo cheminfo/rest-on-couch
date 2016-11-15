@@ -213,7 +213,8 @@ describe('basic rest-api as a@a.com', function () {
 
     it('get list of groups', function () {
         return request.get('/db/test/groups').expect(200).then(function (response) {
-            response.body.should.deepEqual(['groupA']);
+            response.body.should.have.lengthOf(2);
+            response.body[0].should.be.an.Object();
         });
     });
 });

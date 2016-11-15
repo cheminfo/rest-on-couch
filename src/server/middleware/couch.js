@@ -190,8 +190,7 @@ exports.getGroup = composeWithError(function*() {
 });
 
 exports.getGroups = composeWithError(function*() {
-    const right = this.params.right || 'read';
-    this.body = yield this.state.couch.getGroupsByRight(this.state.userEmail, right);
+    this.body = yield this.state.couch.getDocsAsOwner(this.state.userEmail, 'group');
 });
 
 exports.getGroupUsers = composeWithError(function*() {
