@@ -6,22 +6,6 @@
   [![npm download][download-image]][download-url]
 
 Interface to CouchDB that allows the control of permissions on the documents.
- 
-### Node.js API
-
-TODO
-
-### CLI
-
-#### Import a file
-
-| Command | Description |
-| ------ | ----------- |
-| ```rest-on-couch import``` | Import files |
-| ```rest-on-couch server``` | Launch server |
-| ```rest-on-couch log``` | get/set log entries |
-
-```rest-on-couch <command> --help``` for more details
 
 ### Configuration
 

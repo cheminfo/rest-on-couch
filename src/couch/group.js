@@ -1,5 +1,7 @@
 'use strict';
 
+const _ = require('lodash');
+
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:group');
 const nanoPromise = require('../util/nanoPromise');
@@ -117,8 +119,25 @@ const methods = {
         // Search inside groups
         const userGroups = await nanoPromise.queryView(this._db, 'groupByUserAndRight', {key: [user, right]}, {onlyValue: true});
         // Merge both lists
-        const union = new Set([...defaultGroups, ...userGroups]);
-        return Array.from(union);
+        return _.union(defaultGroups, userGroups);
+    },
+
+    async addUsersToGroup(uuid, user, usernames) {
+        debug(`addUserToGroup (${uuid}, ${user}, ${usernames})`);
+        await this.open();
+        usernames = util.ensureUsersArray(usernames);
+        const group = await this.getDocByRights(uuid, user, 'write', 'group');
+        group.users = _.union(group.users, usernames);
+        return nanoMethods.save(this._db, group, user);
+    },
+
+    async removeUsersFromGroup(uuid, user, usernames) {
+        debug(`removeUsersFromGroup (${uuid}, ${user}, ${usernames})`);
+        await this.open();
+        usernames = util.ensureUsersArray(usernames);
+        const group = await this.getDocByRights(uuid, user, 'write', 'group');
+        _.pullAll(group.users, usernames);
+        return nanoMethods.save(this._db, group, user);
     }
 };
 

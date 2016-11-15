@@ -1,10 +1,10 @@
 'use strict';
 
 const data = require('./data/data');
-const noRights  = require('./data/noRights');
+const noRights = require('./data/noRights');
 
 describe('group methods', function () {
-    before(data);
+    beforeEach(data);
     it('anyone should be able to create a group', function () {
         return couch.createGroup('groupX', 'a@a.com').should.be.fulfilled();
     });
@@ -24,10 +24,42 @@ describe('group methods', function () {
     it('should throw if deleting non-existant group', function () {
         return couch.deleteGroup('inexistant', 'a@a.com').should.be.rejectedWith(/group does not exist/);
     });
+
+    it('should add one user to group', function () {
+        return couch.addUsersToGroup('groupA', 'a@a.com', 'test123@example.com').then(function () {
+            return couch.getDocByRights('groupA', 'a@a.com', 'read', 'group');
+        }).then(function (group) {
+            group.users.should.have.lengthOf(2);
+            group.users[1].should.equal('test123@example.com');
+        });
+    });
+
+    it('should add several users to group', function () {
+        return couch.addUsersToGroup('groupA', 'a@a.com', ['test123@example.com', 'dup@example.com', 'dup@example.com'])
+            .then(function () {
+                return couch.getDocByRights('groupA', 'a@a.com', 'read', 'group');
+            }).then(function (group) {
+                group.users.should.have.lengthOf(3);
+                group.users[1].should.equal('test123@example.com');
+                group.users[2].should.equal('dup@example.com');
+            });
+    });
+
+    it('should remove users from group', function () {
+        return couch.addUsersToGroup('groupA', 'a@a.com', ['test123@example.com'])
+            .then(function () {
+                return couch.removeUsersFromGroup('groupA', 'a@a.com', 'a@a.com');
+            }).then(function () {
+                return couch.getDocByRights('groupA', 'a@a.com', 'read', 'group');
+            }).then(function (group) {
+                group.users.should.have.lengthOf(1);
+                group.users[0].should.equal('test123@example.com');
+            });
+    });
 });
 
 describe('group methods (no default rights)', function () {
-    before(noRights);
+    beforeEach(noRights);
 
     it('anyone cannot create group', function () {
         return couch.createGroup('groupX', 'a@a.com').should.be.rejectedWith(/does not have createGroup right/);

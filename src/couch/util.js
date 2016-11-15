@@ -2,6 +2,8 @@
 
 const includes = require('array-includes');
 
+const CouchError = require('../util/CouchError');
+const ensureStringArray = require('../util/ensureStringArray');
 const isEmail = require('../util/isEmail');
 const constants = require('../constants');
 
@@ -39,6 +41,26 @@ function isManagedDocumentType(type) {
     return type === 'entry' || type === 'group';
 }
 
+function ensureOwnersArray(owners) {
+    owners = ensureStringArray(owners);
+    for (const owner of owners) {
+        if (!isValidOwner(owner)) {
+            throw new CouchError(`invalid owner: ${owner}`, 'invalid');
+        }
+    }
+    return owners;
+}
+
+function ensureUsersArray(users) {
+    users = ensureStringArray(users);
+    for (const user of users) {
+        if (!isValidUsername(user)) {
+            throw new CouchError(`invalid user: ${user}`, 'invalid');
+        }
+    }
+    return users;
+}
+
 module.exports = {
     isSpecialUser,
     isValidGroupName,
@@ -47,5 +69,7 @@ module.exports = {
     isValidGlobalRightUser,
     isValidGlobalRightType,
     isAllowedFirstLevelKey,
-    isManagedDocumentType
+    isManagedDocumentType,
+    ensureOwnersArray,
+    ensureUsersArray
 };

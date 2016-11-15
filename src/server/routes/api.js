@@ -58,8 +58,11 @@ router.get('/:dbname/groups', couch.getGroups);
 router.get('/:dbname/group/:name', couch.getGroup);
 //router.put('/:dbname/group/:name', parseJson1mb, couch.createOrUpdateGroup);
 router.delete('/:dbname/group/:name', couch.deleteGroup);
-// router.put('/:dbname/group/:name/user/Username', couch.addUserToGroup);
-// router.delete('/:dbname/group/:name/user/:username', couch.deleteUserFromGroup);
+
+// Group users management
+router.get('/:dbname/group/:name/users', getUuidFromGroupName, couch.getGroupUsers);
+router.put('/:dbname/group/:name/user/:username', getUuidFromGroupName, couch.addUserToGroup);
+router.delete('/:dbname/group/:name/user/:username', getUuidFromGroupName, couch.removeUserFromGroup);
 
 // Group owners
 router.get('/:dbname/group/:name/_owner', getUuidFromGroupName, couch.getOwners('group'));

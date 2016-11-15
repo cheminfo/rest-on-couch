@@ -9,7 +9,6 @@ const nanoPromise = require('../util/nanoPromise');
 const util = require('./util');
 const validate = require('./validate');
 const nanoMethods = require('./nano');
-const ensureStringArray = require('../util/ensureStringArray');
 
 const methods = {
     async getDocUuidFromId(id, user, type) {
@@ -17,8 +16,8 @@ const methods = {
     },
 
     async getDocByRights(uuid, user, rights, type, options) {
-        await this.open();
         debug.trace('getDocByRights');
+        await this.open();
         if (!util.isManagedDocumentType(type)) {
             throw new CouchError(`invalid type argument: ${type}`);
         }
@@ -39,18 +38,18 @@ const methods = {
     },
 
     async addOwnersToDoc(uuid, user, owners, type, options) {
-        await this.open();
         debug.trace('addOwnersToDoc');
-        owners = ensureOwnersArray(owners);
+        await this.open();
+        owners = util.ensureOwnersArray(owners);
         const doc = await this.getDocByRights(uuid, user, 'owner', type, options);
         doc.$owners = _.union(doc.$owners, owners);
         return nanoMethods.save(this._db, doc, user);
     },
 
     async removeOwnersFromDoc(uuid, user, owners, type, options) {
-        await this.open();
         debug.trace('removeOwnersFromDoc');
-        owners = ensureOwnersArray(owners);
+        await this.open();
+        owners = util.ensureOwnersArray(owners);
         const doc = await this.getDocByRights(uuid, user, 'owner', type, options);
         const mainOwner = doc.$owners[0];
         if (includes(owners, mainOwner)) {
@@ -62,16 +61,6 @@ const methods = {
         return nanoMethods.save(this._db, doc, user);
     }
 };
-
-function ensureOwnersArray(owners) {
-    owners = ensureStringArray(owners);
-    for (const owner of owners) {
-        if (!util.isValidOwner(owner)) {
-            throw new CouchError(`invalid owner: ${owner}`, 'invalid');
-        }
-    }
-    return owners;
-}
 
 module.exports = {
     methods

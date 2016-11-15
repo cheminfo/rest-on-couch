@@ -194,6 +194,21 @@ exports.getGroups = composeWithError(function*() {
     this.body = yield this.state.couch.getGroupsByRight(this.state.userEmail, right);
 });
 
+exports.getGroupUsers = composeWithError(function*() {
+    const group = yield this.state.couch.getDocByRights(this.params.uuid, this.state.userEmail, 'read', 'group');
+    this.body = group.users;
+});
+
+exports.addUserToGroup = composeWithError(function*() {
+    yield this.state.couch.addUsersToGroup(this.params.uuid, this.state.userEmail, this.params.username);
+    this.body = OK;
+});
+
+exports.removeUserFromGroup = composeWithError(function*() {
+    yield this.state.couch.removeUsersFromGroup(this.params.uuid, this.state.userEmail, this.params.username);
+    this.body = OK;
+});
+
 exports.getRights = composeWithError(function*() {
     const right = this.params.right;
     const uuid = this.params.uuid;
