@@ -142,7 +142,6 @@ const methods = {
         await this.open();
 
         options = options || {};
-        options.groups = options.groups || [];
         if (!entry.$content) throw new CouchError('entry has no content');
         if (options.groups !== undefined && !Array.isArray(options.groups)) throw new CouchError('options.groups should be an array if defined', 'invalid argument');
 
@@ -187,7 +186,9 @@ const methods = {
             }
             const res = await createNew(this, entry, user);
             action = 'created';
-            await util.addGroups(res, this, user, options.groups);
+            if (options.groups) {
+                await this.addOwnersToDoc(res.id, user, options.groups, 'entry');
+            }
             result = res;
         }
 
@@ -204,7 +205,9 @@ function onNotFound(ctx, entry, user, options) {
             }
 
             const res = await createNew(ctx, entry, user);
-            await util.addGroups(res, ctx, user, options.groups);
+            if (options.groups) {
+                await ctx.addOwnersToDoc(res.id, user, options.groups, 'entry');
+            }
             return res;
         } else {
             throw error;
@@ -257,7 +260,9 @@ async function updateEntry(ctx, oldDoc, newDoc, user, options) {
     // Doc validation will fail $kind changed
     oldDoc.$kind = newDoc.$kind;
     const res = await nanoMethods.saveEntry(ctx._db, oldDoc, user);
-    await util.addGroups(res, ctx, user, options.groups);
+    if (options.groups) {
+        await ctx.addOwnersToDoc(res.id, user, options.groups, 'entry');
+    }
     return res;
 }
 

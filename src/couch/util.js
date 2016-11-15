@@ -35,12 +35,6 @@ function isAllowedFirstLevelKey(key) {
     return includes(constants.allowedFirstLevelKeys, key);
 }
 
-async function addGroups(doc, ctx, user, groups) {
-    for (let i = 0; i < groups.length; i++) {
-        await ctx.addGroupToEntry(doc.id, user, groups[i]);
-    }
-}
-
 function isManagedDocumentType(type) {
     return type === 'entry' || type === 'group';
 }
@@ -53,6 +47,5 @@ module.exports = {
     isValidGlobalRightUser,
     isValidGlobalRightType,
     isAllowedFirstLevelKey,
-    addGroups,
     isManagedDocumentType
 };

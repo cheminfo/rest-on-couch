@@ -5,11 +5,9 @@ const data = require('../data/data');
 const authenticateAs = require('./authenticate');
 
 describe('rest api - manage owners', function () {
-    var id;
+    const id = 'A';
     before(function () {
-        return data().then(() => authenticateAs(request, 'b@b.com', '123')).then(() => {
-            return couch.getEntryById('A', 'b@b.com').then(entry => id = entry._id);
-        });
+        return data().then(() => authenticateAs(request, 'b@b.com', '123'));
     });
     it('get owners', function () {
         return request.get(`/db/test/entry/${id}/_owner`)
@@ -27,7 +25,7 @@ describe('rest api - manage owners', function () {
             });
     });
     it('remove owner', function () {
-        return couch.addGroupToEntry(id, 'b@b.com', 'testRemove')
+        return couch.addOwnersToDoc(id, 'b@b.com', 'testRemove', 'entry')
             .then(() => {
                 return request.del(`/db/test/entry/${id}/_owner/testRemove`)
                     .expect(200)

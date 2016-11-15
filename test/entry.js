@@ -155,7 +155,7 @@ describe('entry creation and editions', function () {
     });
 
     it('should add group to entry', function () {
-        return couch.addGroupToEntry('A', 'b@b.com', 'groupD')
+        return couch.addOwnersToDoc('A', 'b@b.com', 'groupD', 'entry')
             .then(() => couch.getEntry('A', 'b@b.com'))
             .then(doc => {
                 doc.$owners.indexOf('groupD').should.be.above(0);
@@ -163,8 +163,8 @@ describe('entry creation and editions', function () {
     });
 
     it('Add existing group to entry', function () {
-        return couch.addGroupToEntry('A', 'b@b.com', 'groupD')
-            .then(() => couch.addGroupToEntry('A', 'b@b.com', 'groupD'))
+        return couch.addOwnersToDoc('A', 'b@b.com', 'groupD', 'entry')
+            .then(() => couch.addOwnersToDoc('A', 'b@b.com', 'groupD', 'entry'))
             .then(() => couch.getEntry('A', 'b@b.com'))
             .then(entry => {
                 let count = 0;
@@ -176,8 +176,8 @@ describe('entry creation and editions', function () {
     });
 
     it('Add existing group to entry (2)', function () {
-        return couch.addGroupToEntry('A', 'b@b.com', 'anonymousRead')
-            .then(() => couch.addGroupToEntry('A', 'b@b.com', 'anonymousRead'))
+        return couch.addOwnersToDoc('A', 'b@b.com', 'anonymousRead', 'entry')
+            .then(() => couch.addOwnersToDoc('A', 'b@b.com', 'anonymousRead', 'entry'))
             .then(() => couch.getEntry('A', 'b@b.com'))
             .then(entry => {
                 let count = 0;
@@ -189,7 +189,8 @@ describe('entry creation and editions', function () {
     });
 
     it('should fail to add group to entry', function () {
-        return couch.addGroupToEntry('A', 'a@a.com', 'groupC').should.be.rejectedWith(/unauthorized/);
+        return couch.addOwnersToDoc('A', 'a@a.com', 'groupC', 'entry')
+            .should.be.rejectedWith(/user has no access/);
     });
 
     it('should remove group from entry', function () {

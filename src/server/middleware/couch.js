@@ -170,7 +170,7 @@ exports.getOwners = composeWithError(function*() {
 });
 
 exports.addOwner = composeWithError(function*() {
-    yield this.state.couch.addGroupToEntry(this.params.uuid, this.state.userEmail, this.params.owner);
+    yield this.state.couch.addOwnersToDoc(this.params.uuid, this.state.userEmail, this.params.owner, 'entry');
     this.body = OK;
 });
 
@@ -261,6 +261,7 @@ function onGetError(ctx, e, secure) {
         case 'forbidden':
             ctx.status = 403;
             ctx.body = e.message || statusMessages[403];
+            break;
         default:
             if (!handleCouchError(ctx, e, secure)) {
                 ctx.status = 500;
