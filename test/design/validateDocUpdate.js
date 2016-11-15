@@ -28,7 +28,7 @@ describe('validate_doc_update', function () {
             assert(addOwners(addDate({$type: 'entry', $id: ['a', 'c', 'd']})), doc, 'Cannot change the ID');
         });
         it('date', function () {
-            assert({$type: 'entry', $id: 'abc'}, null, /dates are mandatory/);
+            assert(addOwners({$type: 'entry', $id: 'abc'}), null, /dates are mandatory/);
             assert(addOwners(addTypeID({$creationDate: 100})), null, /dates are mandatory/);
             assert(addOwners(addTypeID({$creationDate: 100, $modificationDate: 50})), null, /cannot be before/);
             assert(addOwners(addTypeID({
@@ -46,8 +46,7 @@ describe('validate_doc_update', function () {
             assert(addDate(addTypeID({})), null, /Missing owners/);
         });
         it('group', function () {
-            addGroup({name: 'abc'});
-            assert(addGroup({name: 'a@a.com'}), null, /cannot be an email/);
+            assert(addDate(addOwners(addGroup({name: 'a@a.com', users: []}))), null, /only be alphanumerical/);
         });
         it('kind', function () {
             assert(
@@ -79,6 +78,7 @@ function assertNot(newDoc, oldDoc) {
 function addDate(doc) {
     doc.$creationDate = 100;
     doc.$modificationDate = 100;
+    doc.$lastModification = 'a@b.com';
     return doc;
 }
 

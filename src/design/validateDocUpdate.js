@@ -12,6 +12,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     var validRights = ['create', 'read', 'write', 'createGroup'];
     // see http://emailregex.com/
     var validEmail = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
+    var validName = /^[a-zA-Z_-]+$/;
 
     function validateOwners(doc) {
         if (!Array.isArray(doc.$owners)) {
@@ -20,6 +21,23 @@ module.exports = function (newDoc, oldDoc, userCtx) {
         if (!validEmail.test(doc.$owners[0])) {
             throw ({forbidden: 'First owner must be an email'});
         }
+        for (var i = 1; i < doc.$owners.length; i++) {
+            if (!validEmail.test(doc.$owners[i]) && !validName.test(doc.$owners[i])) {
+                throw ({forbidden: 'Owners must be valid emails or names'});
+            }
+        }
+    }
+
+    function validateName(name) {
+        if (!validName.test(name)) {
+            throw ({forbidden: 'Names can only be alphanumerical'});
+        }
+    }
+
+    function validateUser(user) {
+        if (!validEmail.test(user)) {
+            throw ({forbidden: 'Users can only be emails'});
+        }
     }
 
     function validateUsers(list) {
@@ -27,10 +45,29 @@ module.exports = function (newDoc, oldDoc, userCtx) {
             throw ({forbidden: 'Users list must be an array'});
         }
         for (var i = 0; i < list.length; i++) {
-            if (!validEmail.test(list[i])) {
-                throw ({forbidden: 'Users can only be emails'});
+            validateUser(list[i]);
+        }
+    }
+
+    function validateDates(newDoc, oldDoc) {
+        if (typeof newDoc.$creationDate !== 'number' || typeof newDoc.$modificationDate !== 'number') {
+            throw ({forbidden: 'Creation and modification dates are mandatory'});
+        }
+        if (newDoc.$modificationDate < newDoc.$creationDate) {
+            throw ({forbidden: 'Modification date cannot be before creation date'});
+        }
+        if (oldDoc) {
+            if (newDoc.$creationDate !== oldDoc.$creationDate) {
+                throw ({forbidden: 'Cannot change creation date'});
+            }
+            if (newDoc.$modificationDate < oldDoc.$modificationDate) {
+                throw ({forbidden: 'Modification date cannot change to the past'});
             }
         }
+        if (typeof newDoc.$lastModification !== 'string') {
+            throw ({forbidden: 'Missing last modification username'});
+        }
+        validateUser(newDoc.$lastModification);
     }
 
     if (!newDoc.$type || validTypes.indexOf(newDoc.$type) === -1) {
@@ -44,27 +81,15 @@ module.exports = function (newDoc, oldDoc, userCtx) {
         if (!newDoc.name) {
             throw ({forbidden: 'group must have a name'});
         }
-        if (validEmail.test(newDoc.name)) {
-            throw ({forbidden: 'group name cannot be an email'});
-        }
+        validateName(newDoc.name);
         validateOwners(newDoc);
         validateUsers(newDoc.users);
+        validateDates(newDoc, oldDoc);
     } else if (newDoc.$type === 'entry') {
-        if (typeof newDoc.$creationDate !== 'number' || typeof newDoc.$modificationDate !== 'number') {
-            throw ({forbidden: 'Creation and modification dates are mandatory'});
-        }
-        if (newDoc.$modificationDate < newDoc.$creationDate) {
-            throw ({forbidden: 'Modification date cannot be before creation date'});
-        }
         validateOwners(newDoc);
+        validateDates(newDoc, oldDoc);
         var i;
         if (oldDoc) {
-            if (newDoc.$creationDate !== oldDoc.$creationDate) {
-                throw ({forbidden: 'Cannot change creation date'});
-            }
-            if (newDoc.$modificationDate < oldDoc.$modificationDate) {
-                throw ({forbidden: 'Modification date cannot change to the past'});
-            }
             if (Array.isArray(newDoc.$id) && Array.isArray(oldDoc.$id)) {
                 if (newDoc.$id.length !== oldDoc.$id.length) {
                     throw ({forbidden: 'Cannot change the ID'});
