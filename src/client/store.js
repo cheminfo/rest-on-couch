@@ -1,6 +1,6 @@
 import {createStore, combineReducers, applyMiddleware} from 'redux';
 import promiseMiddleware from 'redux-promise-middleware';
-import {persistStore, autoRehydrate, createTransform} from 'redux-persist';
+import {persistStore, autoRehydrate} from 'redux-persist';
 
 import dbReducer from './reducers/db';
 import dbNameReducer from './reducers/dbName';
