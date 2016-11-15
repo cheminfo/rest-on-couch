@@ -17,6 +17,7 @@ const couchNeedsParse = ['key', 'startkey', 'endkey'];
 const statusMessages = {
     '400': 'bad request',
     '401': 'unauthorized',
+    '403': 'forbidden',
     '404': 'not found',
     '409': 'conflict',
     '500': 'internal server error'
@@ -257,6 +258,9 @@ function onGetError(ctx, e, secure) {
             ctx.status = 400;
             ctx.body = e.message || statusMessages[400];
             break;
+        case 'forbidden':
+            ctx.status = 403;
+            ctx.body = e.message || statusMessages[403];
         default:
             if (!handleCouchError(ctx, e, secure)) {
                 ctx.status = 500;
