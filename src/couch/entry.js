@@ -44,7 +44,7 @@ const methods = {
     async getEntryById(id, user, options) {
         await this.open();
         debug(`getEntryById (${id}, ${user})`);
-        const uuid = await nanoMethods.getUuidFromId(this._db, id, 'entry', user);
+        const uuid = await this.getDocUuidFromId(id, user, 'entry');
         return this.getDocByRights(uuid, user, 'owner', 'entry', options);
     },
 

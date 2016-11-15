@@ -164,20 +164,26 @@ exports.editUser = composeWithError(function*() {
     this.body = yield this.state.couch.editUser(this.state.userEmail, this.request.body);
 });
 
-exports.getOwners = composeWithError(function*() {
-    const doc = yield this.state.couch.getEntry(this.params.uuid, this.state.userEmail);
-    this.body = doc.$owners;
-});
+exports.getOwners = function (type) {
+    return composeWithError(function*() {
+        const doc = yield this.state.couch.getDocByRights(this.params.uuid, this.state.userEmail, 'read', type);
+        this.body = doc.$owners;
+    });
+};
 
-exports.addOwner = composeWithError(function*() {
-    yield this.state.couch.addOwnersToDoc(this.params.uuid, this.state.userEmail, this.params.owner, 'entry');
-    this.body = OK;
-});
+exports.addOwner = function (type) {
+    return composeWithError(function*() {
+        yield this.state.couch.addOwnersToDoc(this.params.uuid, this.state.userEmail, this.params.owner, type);
+        this.body = OK;
+    });
+};
 
-exports.removeOwner = composeWithError(function*() {
-    yield this.state.couch.removeOwnersFromDoc(this.params.uuid, this.state.userEmail, this.params.owner, 'entry');
-    this.body = OK;
-});
+exports.removeOwner = function (type) {
+    return composeWithError(function*() {
+        yield this.state.couch.removeOwnersFromDoc(this.params.uuid, this.state.userEmail, this.params.owner, type);
+        this.body = OK;
+    });
+};
 
 exports.getGroup = composeWithError(function*() {
     this.body = yield this.state.couch.getGroup(this.params.name, this.state.userEmail);

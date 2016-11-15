@@ -13,3 +13,8 @@ exports.parseRawBody = function (options) {
         yield next;
     };
 };
+
+exports.getUuidFromGroupName = function*(next) {
+    this.params.uuid = yield this.state.couch.getDocUuidFromId(this.params.name, this.state.userEmail, 'group');
+    yield next;
+};

@@ -13,6 +13,8 @@ router.use(couch.tokenLookup);
 const parseJson1mb = util.parseBody({jsonLimit: '1mb'});
 const parseJson100mb = util.parseBody({jsonLimit: '100mb'});
 
+const getUuidFromGroupName = util.getUuidFromGroupName;
+
 // Get list of all databases that ROC can handle
 router.get('/_all_dbs', couch.getAllDbs);
 
@@ -24,9 +26,9 @@ router.put('/:dbname/entry/:uuid', parseJson100mb, couch.updateEntry);
 router.delete('/:dbname/entry/:uuid', couch.deleteEntry);
 
 // Owners
-router.get('/:dbname/entry/:uuid/_owner', couch.getOwners);
-router.put('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.addOwner);
-router.delete('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.removeOwner);
+router.get('/:dbname/entry/:uuid/_owner', couch.getOwners('entry'));
+router.put('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.addOwner('entry'));
+router.delete('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.removeOwner('entry'));
 
 // Entry rights
 router.get('/:dbname/entry/:uuid/_rights/:right', couch.getRights);
@@ -58,6 +60,11 @@ router.get('/:dbname/group/:name', couch.getGroup);
 router.delete('/:dbname/group/:name', couch.deleteGroup);
 // router.put('/:dbname/group/:name/user/Username', couch.addUserToGroup);
 // router.delete('/:dbname/group/:name/user/:username', couch.deleteUserFromGroup);
+
+// Group owners
+router.get('/:dbname/group/:name/_owner', getUuidFromGroupName, couch.getOwners('group'));
+router.put('/:dbname/group/:name/_owner/:owner', getUuidFromGroupName, parseJson1mb, couch.addOwner('group'));
+router.delete('/:dbname/group/:name/_owner/:owner', getUuidFromGroupName, parseJson1mb, couch.removeOwner('group'));
 
 // Tokens
 router.post('/:dbname/entry/:uuid/_token', couch.createEntryToken);

@@ -12,6 +12,10 @@ const nanoMethods = require('./nano');
 const ensureStringArray = require('../util/ensureStringArray');
 
 const methods = {
+    async getDocUuidFromId(id, user, type) {
+        return nanoMethods.getUuidFromId(this._db, id, user, type);
+    },
+
     async getDocByRights(uuid, user, rights, type, options) {
         await this.open();
         debug.trace('getDocByRights');

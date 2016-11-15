@@ -61,7 +61,7 @@ async function saveWithFields(db, object, user) {
     return result;
 }
 
-async function getUuidFromId(db, id, type, user) {
+async function getUuidFromId(db, id, user, type) {
     switch (type) {
         case 'entry':
             return getUuidFromIdEntry(db, id, user);
