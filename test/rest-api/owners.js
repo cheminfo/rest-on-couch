@@ -21,17 +21,17 @@ describe('rest api - manage owners', function () {
     it('add owner', function () {
         return request.put(`/db/test/entry/${id}/_owner/test`)
             .expect(200)
-            .then(() => couch.getEntryByUuid(id, 'b@b.com'))
+            .then(() => couch.getEntry(id, 'b@b.com'))
             .then(entry => {
                 entry.$owners.should.containEql('test');
             });
     });
     it('remove owner', function () {
-        return couch.addGroupToEntryByUuid(id, 'b@b.com', 'testRemove')
+        return couch.addGroupToEntry(id, 'b@b.com', 'testRemove')
             .then(() => {
                 return request.del(`/db/test/entry/${id}/_owner/testRemove`)
                     .expect(200)
-                    .then(() => couch.getEntryByUuid(id, 'b@b.com'))
+                    .then(() => couch.getEntry(id, 'b@b.com'))
                     .then(entry => {
                         entry.$owners.should.not.containEql('testRemove');
                     });

@@ -6,37 +6,37 @@ const constants = require('./data/constants');
 describe('entry reads', function () {
     before(data);
     it('should grant read access to read-group member', function () {
-        return couch.getEntryByUuid('A', 'a@a.com').then(doc => {
+        return couch.getEntry('A', 'a@a.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });
     });
 
     it('should grant read access to owner', function () {
-        return couch.getEntryByUuid('A', 'b@b.com').then(doc => {
+        return couch.getEntry('A', 'b@b.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });
     });
 
     it('getEntryById should work for owner', function () {
-        return couch.getEntryByUuid('A', 'b@b.com').then(doc => {
+        return couch.getEntry('A', 'b@b.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });
     });
 
     it('should grant read access to entry with anonymous read', function () {
-        return couch.getEntryByUuid('anonymousEntry', 'anonymous').then(doc => {
+        return couch.getEntry('anonymousEntry', 'anonymous').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });
     });
 
     it('should get entry by uuid', function () {
-        return couch.getEntryByUuid('A', 'b@b.com').then(doc => {
+        return couch.getEntry('A', 'b@b.com').then(doc => {
             doc.should.be.an.instanceOf(Object);
         });
     });
 
     it('should not find document', function () {
-        return couch.getEntryByUuid('inexistant', 'b@b.com').should.be.rejectedWith(/not found/);
+        return couch.getEntry('inexistant', 'b@b.com').should.be.rejectedWith(/not found/);
     });
 
     it('should get all readable entries for a user', function () {
@@ -137,10 +137,10 @@ describe('entry creation and editions', function () {
     });
 
     it('should modify an entry', function () {
-        return couch.getEntryByUuid('A', 'a@a.com').then(doc => {
+        return couch.getEntry('A', 'a@a.com').then(doc => {
             doc.$content.abc = 'abc';
             return couch.insertEntry(doc, 'a@a.com').then(() => {
-                return couch.getEntryByUuid('A', 'a@a.com').then(entry => {
+                return couch.getEntry('A', 'a@a.com').then(entry => {
                     entry.$content.abc.should.equal('abc');
                 });
             });
@@ -148,24 +148,24 @@ describe('entry creation and editions', function () {
     });
 
     it('should delete an entry by uuid', function () {
-        return couch.deleteEntryByUuid('A', 'a@a.com')
+        return couch.deleteEntry('A', 'a@a.com')
             .then(() => {
-                return couch.getEntryByUuid('A', 'a@a.com').should.be.rejectedWith(/not found/);
+                return couch.getEntry('A', 'a@a.com').should.be.rejectedWith(/not found/);
             });
     });
 
     it('should add group to entry', function () {
-        return couch.addGroupToEntryByUuid('A', 'b@b.com', 'groupD')
-            .then(() => couch.getEntryByUuid('A', 'b@b.com'))
+        return couch.addGroupToEntry('A', 'b@b.com', 'groupD')
+            .then(() => couch.getEntry('A', 'b@b.com'))
             .then(doc => {
                 doc.$owners.indexOf('groupD').should.be.above(0);
             });
     });
 
     it('Add existing group to entry', function () {
-        return couch.addGroupToEntryByUuid('A', 'b@b.com', 'groupD')
-            .then(() => couch.addGroupToEntryByUuid('A', 'b@b.com', 'groupD'))
-            .then(() => couch.getEntryByUuid('A', 'b@b.com'))
+        return couch.addGroupToEntry('A', 'b@b.com', 'groupD')
+            .then(() => couch.addGroupToEntry('A', 'b@b.com', 'groupD'))
+            .then(() => couch.getEntry('A', 'b@b.com'))
             .then(entry => {
                 let count = 0;
                 for (let i = 0; i < entry.$owners.length; i++) {
@@ -176,9 +176,9 @@ describe('entry creation and editions', function () {
     });
 
     it('Add existing group to entry (2)', function () {
-        return couch.addGroupToEntryByUuid('A', 'b@b.com', 'anonymousRead')
-            .then(() => couch.addGroupToEntryByUuid('A', 'b@b.com', 'anonymousRead'))
-            .then(() => couch.getEntryByUuid('A', 'b@b.com'))
+        return couch.addGroupToEntry('A', 'b@b.com', 'anonymousRead')
+            .then(() => couch.addGroupToEntry('A', 'b@b.com', 'anonymousRead'))
+            .then(() => couch.getEntry('A', 'b@b.com'))
             .then(entry => {
                 let count = 0;
                 for (let i = 0; i < entry.$owners.length; i++) {
@@ -189,23 +189,23 @@ describe('entry creation and editions', function () {
     });
 
     it('should fail to add group to entry', function () {
-        return couch.addGroupToEntryByUuid('A', 'a@a.com', 'groupC').should.be.rejectedWith(/unauthorized/);
+        return couch.addGroupToEntry('A', 'a@a.com', 'groupC').should.be.rejectedWith(/unauthorized/);
     });
 
     it('should remove group from entry', function () {
-        return couch.removeGroupFromEntryByUuid('A', 'b@b.com', 'groupB')
-            .then(() => couch.getEntryByUuid('A', 'b@b.com'))
+        return couch.removeGroupFromEntry('A', 'b@b.com', 'groupB')
+            .then(() => couch.getEntry('A', 'b@b.com'))
             .then(doc => {
                 doc.$owners.indexOf('groupB').should.be.equal(-1);
             });
     });
 
     it('should fail to remove group from entry', function () {
-        return couch.removeGroupFromEntryByUuid('A', 'a@a.com', 'groupB').should.be.rejectedWith(/unauthorized/);
+        return couch.removeGroupFromEntry('A', 'a@a.com', 'groupB').should.be.rejectedWith(/unauthorized/);
     });
 
     it('should fail to remove primary owner', function () {
-        return couch.removeGroupFromEntryByUuid('A', 'b@b.com', 'b@b.com').should.be.rejectedWith(/cannot remove primary owner/);
+        return couch.removeGroupFromEntry('A', 'b@b.com', 'b@b.com').should.be.rejectedWith(/cannot remove primary owner/);
     });
 });
 

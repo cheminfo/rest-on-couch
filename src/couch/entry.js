@@ -8,8 +8,8 @@ const nanoMethods = require('./nano');
 const util = require('./util');
 
 const methods = {
-    async getEntryByUuidAndRights(uuid, user, rights, options = {}) {
-        debug(`getEntryByUuidAndRights (${uuid}, ${user}, ${rights})`);
+    async getEntryWithRights(uuid, user, rights, options = {}) {
+        debug(`getEntryWithRights (${uuid}, ${user}, ${rights})`);
         await this.open();
 
         const doc = await nanoPromise.getDocument(this._db, uuid);
@@ -36,8 +36,8 @@ const methods = {
         throw new CouchError('user has no access', 'unauthorized');
     },
 
-    getEntryByUuid(uuid, user, options) {
-        return this.getEntryByUuidAndRights(uuid, user, 'read', options);
+    getEntry(uuid, user, options) {
+        return this.getEntryWithRights(uuid, user, 'read', options);
     },
 
     // this function can only return an entry for its main owner
@@ -48,9 +48,9 @@ const methods = {
         return this.getDocByRights(uuid, user, 'owner', 'entry', options);
     },
 
-    async deleteEntryByUuid(uuid, user) {
-        debug(`deleteEntryByUuid (${uuid}, ${user})`);
-        await this.getEntryByUuidAndRights(uuid, user, 'delete');
+    async deleteEntry(uuid, user) {
+        debug(`deleteEntry (${uuid}, ${user})`);
+        await this.getEntryWithRights(uuid, user, 'delete');
         return nanoPromise.destroyDocument(this._db, uuid);
     },
 
@@ -127,9 +127,9 @@ const methods = {
         return Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
     },
 
-    async _doUpdateOnEntryByUuid(uuid, user, update, updateBody) {
+    async _doUpdateOnEntry(uuid, user, update, updateBody) {
         await this.open();
-        const doc = await this.getEntryByUuid(uuid, user);
+        const doc = await this.getEntry(uuid, user);
         const hasRight = validateMethods.isOwner(doc.$owners, user);
         if (!hasRight) {
             throw new CouchError('unauthorized to edit group (only owner can)', 'unauthorized');
@@ -157,7 +157,7 @@ const methods = {
         let action = 'updated';
         if (entry._id) {
             try {
-                const doc = await this.getEntryByUuidAndRights(entry._id, user, ['write']);
+                const doc = await this.getEntryWithRights(entry._id, user, ['write']);
                 result = await updateEntry(this, doc, entry, user, options);
             } catch (e) {
                 if (e.reason === 'not found') {

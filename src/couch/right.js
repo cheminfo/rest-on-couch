@@ -49,7 +49,7 @@ const methods = {
     async hasRightForEntry(uuid, user, right, options) {
         debug(`has right for entry (${uuid}, ${user}, ${right})`);
         try {
-            await this.getEntryByUuidAndRights(uuid, user, right, options);
+            await this.getEntryWithRights(uuid, user, right, options);
             return true;
         } catch (e) {
             if (e.reason === 'unauthorized') return false;

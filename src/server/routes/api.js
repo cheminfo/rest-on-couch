@@ -19,20 +19,20 @@ router.get('/_all_dbs', couch.getAllDbs);
 // Entries
 router.post('/:dbname/entry', parseJson100mb, couch.newOrUpdateEntry);
 router.get('/:dbname/entry/_all', couch.allEntries);
-router.get('/:dbname/entry/:uuid', couch.getDocumentByUuid);
+router.get('/:dbname/entry/:uuid', couch.getDocument);
 router.put('/:dbname/entry/:uuid', parseJson100mb, couch.updateEntry);
 router.delete('/:dbname/entry/:uuid', couch.deleteEntry);
 
 // Owners
-router.get('/:dbname/entry/:uuid/_owner', couch.getOwnersByUuid);
-router.put('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.addOwnerByUuid);
-router.delete('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.removeOwnerByUuid);
+router.get('/:dbname/entry/:uuid/_owner', couch.getOwners);
+router.put('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.addOwner);
+router.delete('/:dbname/entry/:uuid/_owner/:owner', parseJson1mb, couch.removeOwner);
 
 // Entry rights
 router.get('/:dbname/entry/:uuid/_rights/:right', couch.getRights);
 
 // Attachments
-router.get('/:dbname/entry/:uuid/:attachment+', couch.getAttachmentByUuid);
+router.get('/:dbname/entry/:uuid/:attachment+', couch.getAttachment);
 // Delete attachment slightly different from couchdb api. It does not require _rev in the query parameters.
 router.delete('/:dbname/entry/:uuid/:attachment+', couch.deleteAttachment);
 router.put('/:dbname/entry/:uuid/:attachment+', util.parseRawBody({limit: '100mb'}), couch.saveAttachment);

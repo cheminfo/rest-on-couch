@@ -49,14 +49,14 @@ const methods = {
         return this.editDefaultGroup(group, type, 'remove');
     },
 
-    addGroupToEntryByUuid(uuid, user, group) {
-        debug(`addGroupToEntryByUuid (${uuid}, ${user}, ${group})`);
-        return this._doUpdateOnEntryByUuid(uuid, user, 'addGroupToEntry', {group});
+    addGroupToEntry(uuid, user, group) {
+        debug(`addGroupToEntry (${uuid}, ${user}, ${group})`);
+        return this._doUpdateOnEntry(uuid, user, 'addGroupToEntry', {group});
     },
 
-    removeGroupFromEntryByUuid(uuid, user, group) {
-        debug(`removeGroupFromEntryByUuid (${uuid}, ${user}, ${group})`);
-        return this._doUpdateOnEntryByUuid(uuid, user, 'removeGroupFromEntry', {group});
+    removeGroupFromEntry(uuid, user, group) {
+        debug(`removeGroupFromEntry (${uuid}, ${user}, ${group})`);
+        return this._doUpdateOnEntry(uuid, user, 'removeGroupFromEntry', {group});
     },
 
     async deleteGroup(groupName, user) {

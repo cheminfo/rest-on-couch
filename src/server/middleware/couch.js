@@ -67,8 +67,8 @@ exports.getAllDbs = function*() {
     this.body = result;
 };
 
-exports.getDocumentByUuid = composeWithError(function*() {
-    this.body = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail, this.query);
+exports.getDocument = composeWithError(function*() {
+    this.body = yield this.state.couch.getEntry(this.params.uuid, this.state.userEmail, this.query);
 });
 
 exports.updateEntry = composeWithError(function*() {
@@ -80,7 +80,7 @@ exports.updateEntry = composeWithError(function*() {
 });
 
 exports.deleteEntry = composeWithError(function*() {
-    yield this.state.couch.deleteEntryByUuid(this.params.uuid, this.state.userEmail);
+    yield this.state.couch.deleteEntry(this.params.uuid, this.state.userEmail);
     this.body = OK;
 });
 
@@ -100,19 +100,19 @@ exports.newOrUpdateEntry = composeWithError(function*() {
 });
 
 exports.deleteAttachment = composeWithError(function*() {
-    this.body = yield this.state.couch.deleteAttachmentByUuid(this.params.uuid, this.state.userEmail, this.params.attachment);
+    this.body = yield this.state.couch.deleteAttachment(this.params.uuid, this.state.userEmail, this.params.attachment);
 });
 
 exports.saveAttachment = composeWithError(function*() {
-    this.body = yield this.state.couch.addAttachmentByUuid(this.params.uuid, this.state.userEmail, {
+    this.body = yield this.state.couch.addAttachment(this.params.uuid, this.state.userEmail, {
         name: this.params.attachment,
         data: this.request.body,
         content_type: this.get('Content-Type')
     });
 });
 
-exports.getAttachmentByUuid = composeWithError(function*() {
-    this.body = yield this.state.couch.getAttachmentByUuidAndName(this.params.uuid, this.params.attachment, this.state.userEmail, true, this.query);
+exports.getAttachment = composeWithError(function*() {
+    this.body = yield this.state.couch.getAttachmentByName(this.params.uuid, this.params.attachment, this.state.userEmail, true, this.query);
 });
 
 exports.allEntries = composeWithError(function*() {
@@ -163,18 +163,18 @@ exports.editUser = composeWithError(function*() {
     this.body = yield this.state.couch.editUser(this.state.userEmail, this.request.body);
 });
 
-exports.getOwnersByUuid = composeWithError(function*() {
-    const doc = yield this.state.couch.getEntryByUuid(this.params.uuid, this.state.userEmail);
+exports.getOwners = composeWithError(function*() {
+    const doc = yield this.state.couch.getEntry(this.params.uuid, this.state.userEmail);
     this.body = doc.$owners;
 });
 
-exports.addOwnerByUuid = composeWithError(function*() {
-    yield this.state.couch.addGroupToEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
+exports.addOwner = composeWithError(function*() {
+    yield this.state.couch.addGroupToEntry(this.params.uuid, this.state.userEmail, this.params.owner);
     this.body = OK;
 });
 
-exports.removeOwnerByUuid = composeWithError(function*() {
-    yield this.state.couch.removeGroupFromEntryByUuid(this.params.uuid, this.state.userEmail, this.params.owner);
+exports.removeOwner = composeWithError(function*() {
+    yield this.state.couch.removeGroupFromEntry(this.params.uuid, this.state.userEmail, this.params.owner);
     this.body = OK;
 });
 

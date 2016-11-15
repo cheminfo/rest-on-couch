@@ -8,18 +8,18 @@ const nanoPromise = require('../util/nanoPromise');
 const nanoMethods = require('./nano');
 
 const methods = {
-    async addAttachmentsByUuid(uuid, user, attachments) {
-        debug(`addAttachmentsByUuid (${uuid}, ${user})`);
+    async addAttachments(uuid, user, attachments) {
+        debug(`addAttachments (${uuid}, ${user})`);
         if (!Array.isArray(attachments)) {
             attachments = [attachments];
         }
-        const entry = await this.getEntryByUuidAndRights(uuid, user, ['write', 'addAttachment']);
+        const entry = await this.getEntryWithRights(uuid, user, ['write', 'addAttachment']);
         return nanoPromise.attachFiles(this._db, entry, attachments);
     },
 
-    async deleteAttachmentByUuid(uuid, user, attachmentName) {
-        debug(`deleteAttachmentByUuid (${uuid}, ${user})`);
-        const entry = await this.getEntryByUuidAndRights(uuid, user, ['delete', 'addAttachment']);
+    async deleteAttachment(uuid, user, attachmentName) {
+        debug(`deleteAttachment (${uuid}, ${user})`);
+        const entry = await this.getEntryWithRights(uuid, user, ['delete', 'addAttachment']);
         if (!entry._attachments[attachmentName]) {
             return false;
         }
@@ -27,9 +27,9 @@ const methods = {
         return nanoMethods.saveEntry(this._db, entry, user);
     },
 
-    async getAttachmentByUuidAndName(uuid, name, user, asStream, options) {
-        debug(`getAttachmentByUuidAndName (${uuid}, ${name}, ${user})`);
-        const entry = await this.getEntryByUuid(uuid, user, options);
+    async getAttachmentByName(uuid, name, user, asStream, options) {
+        debug(`getAttachmentByName (${uuid}, ${name}, ${user})`);
+        const entry = await this.getEntry(uuid, user, options);
         return getAttachmentFromEntry(entry, this, name, asStream);
     },
 
@@ -96,7 +96,7 @@ const methods = {
     }
 };
 
-methods.addAttachmentByUuid = methods.addAttachmentsByUuid;
+methods.addAttachment = methods.addAttachments;
 
 async function getAttachmentFromEntry(entry, ctx, name, asStream) {
     if (entry._attachments && entry._attachments[name]) {

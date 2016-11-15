@@ -35,7 +35,7 @@ function isAllowedFirstLevelKey(key) {
 
 async function addGroups(doc, ctx, user, groups) {
     for (let i = 0; i < groups.length; i++) {
-        await ctx.addGroupToEntryByUuid(doc.id, user, groups[i]);
+        await ctx.addGroupToEntry(doc.id, user, groups[i]);
     }
 }
 

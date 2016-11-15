@@ -9,7 +9,7 @@ const methods = {
         debug(`createEntryToken (${user}, ${uuid})`);
         await this.open();
         // We need write right to create a token. This will throw if not.
-        await this.getEntryByUuidAndRights(uuid, user, 'write');
+        await this.getEntryWithRights(uuid, user, 'write');
         return token.createEntryToken(this._db, user, uuid, 'read');
     },
 
