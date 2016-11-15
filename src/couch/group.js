@@ -49,11 +49,6 @@ const methods = {
         return this.editDefaultGroup(group, type, 'remove');
     },
 
-    removeGroupFromEntry(uuid, user, group) {
-        debug(`removeGroupFromEntry (${uuid}, ${user}, ${group})`);
-        return this._doUpdateOnEntry(uuid, user, 'removeGroupFromEntry', {group});
-    },
-
     async deleteGroup(groupName, user) {
         debug(`deleteGroup (${groupName}, ${user})`);
         await this.open();

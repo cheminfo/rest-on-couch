@@ -175,7 +175,7 @@ exports.addOwner = composeWithError(function*() {
 });
 
 exports.removeOwner = composeWithError(function*() {
-    yield this.state.couch.removeGroupFromEntry(this.params.uuid, this.state.userEmail, this.params.owner);
+    yield this.state.couch.removeOwnersFromDoc(this.params.uuid, this.state.userEmail, this.params.owner, 'entry');
     this.body = OK;
 });
 

@@ -50,7 +50,7 @@ const methods = {
         const doc = await this.getDocByRights(uuid, user, 'owner', type, options);
         const mainOwner = doc.$owners[0];
         if (includes(owners, mainOwner)) {
-            throw new CouchError('main owner cannot be removed', 'forbidden');
+            throw new CouchError('cannot remove primary owner', 'forbidden');
         }
         const newArray = _.pullAll(doc.$owners.slice(1), owners);
         newArray.unshift(doc.$owners[0]);

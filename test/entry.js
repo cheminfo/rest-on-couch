@@ -194,7 +194,7 @@ describe('entry creation and editions', function () {
     });
 
     it('should remove group from entry', function () {
-        return couch.removeGroupFromEntry('A', 'b@b.com', 'groupB')
+        return couch.removeOwnersFromDoc('A', 'b@b.com', 'groupB', 'entry')
             .then(() => couch.getEntry('A', 'b@b.com'))
             .then(doc => {
                 doc.$owners.indexOf('groupB').should.be.equal(-1);
@@ -202,11 +202,11 @@ describe('entry creation and editions', function () {
     });
 
     it('should fail to remove group from entry', function () {
-        return couch.removeGroupFromEntry('A', 'a@a.com', 'groupB').should.be.rejectedWith(/unauthorized/);
+        return couch.removeOwnersFromDoc('A', 'a@a.com', 'groupB', 'entry').should.be.rejectedWith(/user has no access/);
     });
 
     it('should fail to remove primary owner', function () {
-        return couch.removeGroupFromEntry('A', 'b@b.com', 'b@b.com').should.be.rejectedWith(/cannot remove primary owner/);
+        return couch.removeOwnersFromDoc('A', 'b@b.com', 'b@b.com', 'entry').should.be.rejectedWith(/cannot remove primary owner/);
     });
 });
 

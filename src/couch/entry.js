@@ -40,7 +40,7 @@ const methods = {
         return this.getEntryWithRights(uuid, user, 'read', options);
     },
 
-    // this function can only return an entry for its main owner
+    // this function can only return an entry for its primary owner
     async getEntryById(id, user, options) {
         await this.open();
         debug(`getEntryById (${id}, ${user})`);
