@@ -214,25 +214,6 @@ exports.getRights = composeWithError(function*() {
     this.body = yield this.state.couch.hasRightForEntry(uuid, this.state.userEmail, right, this.query);
 });
 
-/* todo implement it
-exports.createOrUpdateGroup = function *() {
-    try {
-        const group = yield this.state.couch.getGroup(this.params.name, this.state.userEmail);
-
-    } catch (e) {
-        if (e.reason === 'not found') {
-            try {
-                yield this.state.couch.createGroup(this.params.name, this.state.userEmail, this.body.rights);
-            } catch (e) {
-                onGetError(this, e);
-            }
-        } else {
-            onGetError(this, e);
-        }
-    }
-};*/
-
-
 exports.deleteGroup = composeWithError(function*() {
     yield this.state.couch.deleteGroup(this.params.name, this.state.userEmail);
     this.body = OK;
