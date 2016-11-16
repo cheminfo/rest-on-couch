@@ -14,6 +14,7 @@ export function apiFetch(path, options) {
 }
 
 export async function apiFetchJSON(path, options) {
+    path = path.replace(/^\/+/, '');
     const req = await apiFetch(path, options);
     return req.json();
 }

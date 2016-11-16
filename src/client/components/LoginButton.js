@@ -4,8 +4,8 @@ import {Link} from 'react-router';
 
 import {logout as logoutAction} from '../actions/login';
 
-const LoginButton = ({loggedIn, logout, username}) => {
-    if (loggedIn) {
+const LoginButton = ({logout, username}) => {
+    if (username) {
         return (
             <a href="#" onClick={logout}>
                 {username} - Logout
@@ -21,10 +21,11 @@ const LoginButton = ({loggedIn, logout, username}) => {
 };
 
 LoginButton.propTypes = {
-    loggedIn: PropTypes.bool.isRequired
+    logout: PropTypes.func.isRequired,
+    username: PropTypes.string
 };
 
 export default connect(
-    (state) => ({loggedIn: state.login.loggedIn, username: state.login.username}), // mapStateToProps
+    (state) => ({username: state.login.username}), // mapStateToProps
     (dispatch) => ({logout: () => dispatch(logoutAction())}) // mapDispatchToProps
 )(LoginButton);

@@ -38,13 +38,13 @@ class LoginLDAP extends React.Component {
                     <div className="col-md-4">
                         <div className="form-group">
                             <label>Username</label>
-                            <input name="username" type="text" className="form-control" value={this.state.username} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
+                            <input name="username" type="text" className="form-control" value={this.state.username} onChange={this.handleChange} onKeyPress={this.handleKeyPress} />
                         </div>
                     </div>
                     <div className="col-md-4">
                         <div className="form-group">
                             <label>Password</label>
-                            <input name="password" type="password" className="form-control" value={this.state.password} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
+                            <input name="password" type="password" className="form-control" value={this.state.password} onChange={this.handleChange} onKeyPress={this.handleKeyPress} />
                         </div>
                     </div>
                 </div>

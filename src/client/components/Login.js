@@ -18,7 +18,7 @@ const Login = (props) => (
                         <h4 className="title">Google login</h4>
                     </div>
                     <div className="content">
-                        <LoginGoogle/>
+                        <LoginGoogle />
                     </div>
                 </div> : ''
         }
