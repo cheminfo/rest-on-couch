@@ -75,7 +75,7 @@ const methods = {
 
         await this.open();
 
-        const hasRight = await validate.checkRightAnyGroup(this._db, user, 'createGroup');
+        const hasRight = await validate.checkRightAnyGroup(this, user, 'createGroup');
         if (!hasRight) throw new CouchError(`user ${user} does not have createGroup right`);
 
         const group = await nanoMethods.getGroup(this._db, groupName);

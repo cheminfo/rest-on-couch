@@ -8,11 +8,17 @@ const nanoPromise = require('../util/nanoPromise');
 const getGroup = require('./nano').getGroup;
 const ensureStringArray = require('../util/ensureStringArray');
 
-async function validateRights(db, ownerArrays, user, rights, type = 'entry') {
+async function validateRights(ctx, ownerArrays, user, rights, type = 'entry') {
     debug.trace('validateRights');
     if (!Array.isArray(ownerArrays[0])) {
         ownerArrays = [ownerArrays];
     }
+
+    if (ctx.isAdmin(user)) {
+        return ownerArrays.map(() => true);
+    }
+
+    const db = ctx._db;
 
     let areOwners = ownerArrays.map(owner => isOwner(owner, user));
 
@@ -32,7 +38,7 @@ async function validateRights(db, ownerArrays, user, rights, type = 'entry') {
     }
 
     async function doGlobalRightCheck(right) {
-        const hasGlobal = await checkGlobalRight(db, user, right);
+        const hasGlobal = await checkGlobalRight(ctx, user, right);
         if (hasGlobal) return ownerArrays.map(() => true);
 
         const [defaultGroups, groups] = await Promise.all([getDefaultGroups(db, user), nanoPromise.queryView(db, 'groupByUserAndRight', {key: [user, right]}, {onlyValue: true})]);
@@ -71,7 +77,7 @@ async function validateRights(db, ownerArrays, user, rights, type = 'entry') {
     });
 }
 
-async function validateTokenOrRights(db, uuid, owners, rights, user, token, type = 'entry') {
+async function validateTokenOrRights(ctx, uuid, owners, rights, user, token, type = 'entry') {
     rights = ensureStringArray(rights);
 
     if (token && token.$kind === type && token.uuid === uuid) {
@@ -81,7 +87,7 @@ async function validateTokenOrRights(db, uuid, owners, rights, user, token, type
             }
         }
     }
-    const ok = await validateRights(db, owners, user, rights, type);
+    const ok = await validateRights(ctx, owners, user, rights, type);
     return ok[0];
 }
 
@@ -94,9 +100,13 @@ function isOwner(owners, user) {
     return false;
 }
 
-async function checkGlobalRight(db, user, right) {
+async function checkGlobalRight(ctx, user, right) {
     debug.trace(`checkGlobalRight (${user}, ${right})`);
-    const result = await nanoPromise.queryView(db, 'globalRight', {key: right}, {onlyValue: true});
+    if (ctx.isAdmin(user)) {
+        return true;
+    }
+
+    const result = await nanoPromise.queryView(ctx._db, 'globalRight', {key: right}, {onlyValue: true});
     for (var i = 0; i < result.length; i++) {
         if (result[i] === 'anonymous' || result[i] === user || result[i] === 'anyuser' && user !== 'anonymous') {
             debug.trace(`user ${user} has global right`);
@@ -107,9 +117,10 @@ async function checkGlobalRight(db, user, right) {
     return false;
 }
 
-async function checkRightAnyGroup(db, user, right) {
+async function checkRightAnyGroup(ctx, user, right) {
     debug.trace(`checkRightAnyGroup (${user}, ${right}`);
-    const hasGlobal = await checkGlobalRight(db, user, right);
+    const db = ctx._db;
+    const hasGlobal = await checkGlobalRight(ctx, user, right);
     if (hasGlobal) return true;
 
     const defaultGroups = await getDefaultGroups(db, user);

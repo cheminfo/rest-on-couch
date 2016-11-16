@@ -31,7 +31,7 @@ const methods = {
         }
 
         const token = options ? options.token : null;
-        if (await validate.validateTokenOrRights(this._db, uuid, doc.$owners, rights, user, token, type)) {
+        if (await validate.validateTokenOrRights(this, uuid, doc.$owners, rights, user, token, type)) {
             return nanoPromise.getDocument(this._db, uuid, options);
         }
         throw new CouchError('user has no access', 'unauthorized');

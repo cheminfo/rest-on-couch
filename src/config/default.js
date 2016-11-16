@@ -6,6 +6,7 @@ module.exports = {
     logLevel: 'FATAL',
     authRenewal: 570,
     autoCreateDatabase: false,
+    administrators: [],
 
     // Server options
     port: 3000,

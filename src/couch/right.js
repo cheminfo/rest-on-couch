@@ -1,9 +1,11 @@
 'use strict';
 
+const includes = require('array-includes');
+
+const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:right');
 const nanoPromise = require('../util/nanoPromise');
-const constants = require('../constants');
 const util = require('./util');
 
 const methods = {
@@ -46,6 +48,19 @@ const methods = {
         return this.editGlobalRight(type, user, 'remove');
     },
 
+    /**
+     * Returns a list of the rights that the given user has globally
+     * @param {string} user
+     * @return {Array}
+     */
+    async getGlobalRights(user) {
+        if (this.isAdmin(user)) {
+            return constants.globalRightTypes.slice();
+        } else {
+            return [];
+        }
+    },
+
     async hasRightForEntry(uuid, user, right, options) {
         debug(`has right for entry (${uuid}, ${user}, ${right})`);
         try {
@@ -56,6 +71,10 @@ const methods = {
             // Propagate
             throw e;
         }
+    },
+
+    isAdmin(user) {
+        return includes(this._administrators, user);
     }
 };
 

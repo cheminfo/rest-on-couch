@@ -23,7 +23,7 @@ const methods = {
         }
 
         debug.trace('check rights');
-        if (await validateMethods.validateTokenOrRights(this._db, uuid, doc.$owners, rights, user, options.token)) {
+        if (await validateMethods.validateTokenOrRights(this, uuid, doc.$owners, rights, user, options.token)) {
             debug.trace(`user ${user} has access`);
             if (!options) {
                 return doc;
@@ -64,7 +64,7 @@ const methods = {
             include_docs: true
         });
         if (result.length === 0) {
-            const hasRight = await validateMethods.checkRightAnyGroup(this._db, user, 'create');
+            const hasRight = await validateMethods.checkRightAnyGroup(this, user, 'create');
             if (!hasRight) {
                 throw new CouchError('user is missing create right', 'unauthorized');
             }
@@ -116,7 +116,7 @@ const methods = {
         });
 
         // Check rights for current user and keep only documents with granted access
-        const hasRights = await validateMethods.validateRights(this._db, owners.map(r => r.value), user, rights || 'read');
+        const hasRights = await validateMethods.validateRights(this, owners.map(r => r.value), user, rights || 'read');
         let allowedDocs = owners.filter((r, idx) => hasRights[idx]);
 
         // Apply pagination options
@@ -217,7 +217,7 @@ function onNotFound(ctx, entry, user, options) {
 
 async function createNew(ctx, entry, user) {
     debug.trace('create new');
-    const ok = await validateMethods.checkGlobalRight(ctx._db, user, 'create');
+    const ok = await validateMethods.checkGlobalRight(ctx, user, 'create');
     if (ok) {
         debug.trace('has right, create new');
         const newEntry = {

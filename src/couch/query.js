@@ -18,7 +18,7 @@ const methods = {
         right = right || 'read';
 
         // First check if user has global right
-        const hasGlobalRight = await validateMethods.checkGlobalRight(this._db, user, right);
+        const hasGlobalRight = await validateMethods.checkGlobalRight(this, user, right);
         if (hasGlobalRight) {
             // When there is a global right, we cannot use queries because the first element of the
             // key will match all documents
@@ -105,7 +105,7 @@ const methods = {
             if (!rows.length) break;
 
             let owners = rows.map(r => r.doc.$owners);
-            let hasRights = await validateMethods.validateRights(this._db, owners, user, rights || 'read');
+            let hasRights = await validateMethods.validateRights(this, owners, user, rights || 'read');
             rows = rows.map(entry => entry.doc);
             rows = rows.filter((r, idx) => hasRights[idx]);
 
