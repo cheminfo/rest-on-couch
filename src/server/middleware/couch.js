@@ -219,6 +219,10 @@ exports.deleteGroup = composeWithError(function*() {
     this.body = OK;
 });
 
+exports.getGlobalRights = composeWithError(function*() {
+    this.body = yield this.state.couch.getGlobalRights(this.state.userEmail);
+});
+
 exports.createEntryToken = composeWithError(function*() {
     const token = yield this.state.couch.createEntryToken(this.state.userEmail, this.params.uuid);
     this.status = 201;

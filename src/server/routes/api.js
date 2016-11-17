@@ -69,6 +69,9 @@ router.get('/:dbname/group/:name/_owner', getUuidFromGroupName, couch.getOwners(
 router.put('/:dbname/group/:name/_owner/:owner', getUuidFromGroupName, parseJson1mb, couch.addOwner('group'));
 router.delete('/:dbname/group/:name/_owner/:owner', getUuidFromGroupName, parseJson1mb, couch.removeOwner('group'));
 
+// Global rights
+router.get('/:dbname/rights', couch.getGlobalRights);
+
 // Tokens
 router.post('/:dbname/entry/:uuid/_token', couch.createEntryToken);
 router.get('/:dbname/token', couch.getTokens);
