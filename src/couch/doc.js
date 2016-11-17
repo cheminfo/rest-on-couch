@@ -64,10 +64,18 @@ const methods = {
     async getDocsAsOwner(user, type, options) {
         debug.trace('getDocsAsOwner');
         await this.open();
-        return nanoPromise.queryView(this._db, 'documentByOwners', {
-            key: [type, user],
-            include_docs: true
-        }, options);
+        options = Object.assign({}, options);
+        if (this.isAdmin(user)) {
+            return nanoPromise.queryView(this._db, 'documentByType', {
+                key: type,
+                include_docs: true
+            }, options);
+        } else {
+            return nanoPromise.queryView(this._db, 'documentByOwners', {
+                key: [type, user],
+                include_docs: true
+            }, options);
+        }
     }
 };
 
