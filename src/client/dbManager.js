@@ -1,4 +1,8 @@
-import {setDbName, setUserGroups} from './actions/db';
+import {
+    setDbName,
+    setUserRights,
+    setUserGroups
+} from './actions/db';
 import {apiFetchJSON} from './api';
 
 export default class DbManager {
@@ -23,8 +27,14 @@ export default class DbManager {
     syncDb() {
         const db = this.currentDb;
         if (db) {
+            this.syncRights(db);
             this.syncGroups(db);
         }
+    }
+
+    async syncRights(db) {
+        const rights = await apiFetchJSON(`db/${db}/rights`);
+        this.store.dispatch(setUserRights(rights));
     }
 
     async syncGroups(db) {

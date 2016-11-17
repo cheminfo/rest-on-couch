@@ -13,5 +13,8 @@ export function getDbList(dispatch) {
 export const SET_DB_NAME = 'SET_DB_NAME';
 export const setDbName = createAction(SET_DB_NAME);
 
+export const SET_USER_RIGHTS = 'SET_USER_RIGHTS';
+export const setUserRights = createAction(SET_USER_RIGHTS);
+
 export const SET_USER_GROUPS = 'SET_USER_GROUPS';
 export const setUserGroups = createAction(SET_USER_GROUPS);
