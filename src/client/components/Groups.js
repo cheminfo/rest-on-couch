@@ -30,8 +30,8 @@ export default connect(
     (state) => ({
         userGroups: state.db.userGroups
     }),
-    (dispatch) => ({
-        addValueToGroup: (group, type, value) => (console.log('TODO: add value to group:', group.name, type, value)),
-        removeValueFromGroup: (group, type, value) => (console.log('TODO: remove value from group:', group.name, type, value))
-    })
+    // (dispatch) => ({
+    //     addValueToGroup: (group, type, value) => (console.log('TODO: add value to group:', group.name, type, value)),
+    //     removeValueFromGroup: (group, type, value) => (console.log('TODO: remove value from group:', group.name, type, value))
+    // })
 )(Groups);
