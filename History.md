@@ -1,3 +1,39 @@
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/cheminfo/rest-on-couch/compare/v1.2.0...v2.0.0) (2016-11-21)
+
+
+### Bug Fixes
+
+* **core:** use more common interpreter ([653ac29](https://github.com/cheminfo/rest-on-couch/commit/653ac29))
+* add array-includes for v4 compatibility ([29e11ab](https://github.com/cheminfo/rest-on-couch/commit/29e11ab))
+* **login:** recover existing session ([d52fd87](https://github.com/cheminfo/rest-on-couch/commit/d52fd87))
+* **server:** only serve bundle if it exists ([5460303](https://github.com/cheminfo/rest-on-couch/commit/5460303))
+
+
+### Code Refactoring
+
+* remove addGroupToEntry ([cee70f8](https://github.com/cheminfo/rest-on-couch/commit/cee70f8))
+* remove all methods that accept a $id ([a141dec](https://github.com/cheminfo/rest-on-couch/commit/a141dec))
+* remove removeGroupFromEntry ([e156587](https://github.com/cheminfo/rest-on-couch/commit/e156587))
+
+
+### Features
+
+* **api:** add getDocsAsOwner ([ba6fe67](https://github.com/cheminfo/rest-on-couch/commit/ba6fe67))
+* **api:** add owner management routes for groups ([6fa2aa8](https://github.com/cheminfo/rest-on-couch/commit/6fa2aa8))
+* **api:** add routes to add and remove users from groups ([9fcd324](https://github.com/cheminfo/rest-on-couch/commit/9fcd324))
+* **views:** allow reduce ([1c203d4](https://github.com/cheminfo/rest-on-couch/commit/1c203d4))
+
+
+### BREAKING CHANGES
+
+* it is now replaced by removeOwnersFromDoc
+* it is now replaced by addOwnersToDoc
+* All methods ending with "ById" are removed but one.
+getEntryById remains but only returns something if the user requesting the document is its original owner ($owners[0])
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/cheminfo/rest-on-couch/compare/v1.1.0...v1.2.0) (2016-10-21)
 
