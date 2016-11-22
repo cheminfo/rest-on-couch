@@ -38,7 +38,7 @@ exports.import = async function (database, importName, file) {
     const info = {};
     try {
         await getMetadata(info, getId, getOwner, filename, contents, couch);
-        await parseFile(info, parse, json, couch);
+        await parseFile(info, parse, json, filename, contents, couch);
         if (config.kind) {
             await getKind(info, config.kind, filename, contents, couch);
         }
