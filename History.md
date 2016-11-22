@@ -1,3 +1,8 @@
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/cheminfo/rest-on-couch/compare/v2.0.0...v2.0.1) (2016-11-22)
+
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/cheminfo/rest-on-couch/compare/v1.2.0...v2.0.0) (2016-11-21)
 
