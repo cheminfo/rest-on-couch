@@ -48,7 +48,6 @@ const importAll = co.wrap(function*() {
     const limit = program.limit || 0;
     debug(`limit is ${limit}`);
     const files = yield findFiles(homeDir, limit);
-    const limit = program.limit || files.length;
     debug(`${files.length} files to import`);
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
