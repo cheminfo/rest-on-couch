@@ -1,3 +1,13 @@
+<a name="2.1.1"></a>
+## [2.1.1](https://github.com/cheminfo/rest-on-couch/compare/v2.1.0...v2.1.1) (2016-11-28)
+
+
+### Bug Fixes
+
+* **import:** correct wrong condition ([fe0fb54](https://github.com/cheminfo/rest-on-couch/commit/fe0fb54))
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/cheminfo/rest-on-couch/compare/v2.0.2...v2.1.0) (2016-11-28)
 
