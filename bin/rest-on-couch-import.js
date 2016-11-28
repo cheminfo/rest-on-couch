@@ -24,8 +24,14 @@ program
     .option('-w, --watch', 'Watch files')
     .option('--continuous', 'Continuous mode. When import is finished, wait for some time and then import again')
     .option('--wait <time>', 'Wait time in seconds between imports for continuous mode (default: 60)', Number, 60)
+    .option('--sort <order>', 'Sorting order of the files when to_processed is walked (default: asc)', String, 'asc')
     .option('-c --config <path>', 'Path to custom config file')
     .parse(process.argv);
+
+if (program.sort !== 'asc' || program.sort !== 'desc') {
+    throw new Error('sort order must be "asc" or "desc"');
+}
+const sortWalk = program.sort === 'asc' ? 'shift' : 'pop';
 
 function doContinuous(waitTime) {
     importAll().then(
@@ -39,17 +45,18 @@ function doContinuous(waitTime) {
 
 const importAll = co.wrap(function*() {
     const homeDir = getHomeDir();
-    const files = yield findFiles(homeDir);
+    const limit = program.limit || 0;
+    debug(`limit is ${limit}`);
+    const files = yield findFiles(homeDir, limit);
     const limit = program.limit || files.length;
-    debug(`${files.length} files and limit is ${limit}`);
-    const min = Math.min(limit, files.length);
-    for (var i = 0; i < min; i++) {
+    debug(`${files.length} files to import`);
+    for (var i = 0; i < files.length; i++) {
         var file = files[i];
         yield processFile2(file.database, file.importName, file.path);
     }
 });
 
-const findFiles = co.wrap(function* (homeDir) {
+const findFiles = co.wrap(function* (homeDir, limit) {
     let files = [];
 
     const databases = yield fsp.readdir(homeDir);
@@ -76,9 +83,13 @@ const findFiles = co.wrap(function* (homeDir) {
                             const sourceToProcessPath = path.join(sourcePath, 'to_process');
                             const stat = yield fsp.stat(sourceToProcessPath);
                             if (stat.isDirectory()) {
-                                const fileList = yield getFilesToProcess(sourceToProcessPath);
+                                const maxElements = limit > 0 ? (limit - files.length) : 0;
+                                const fileList = yield getFilesToProcess(sourceToProcessPath, maxElements);
                                 const objFiles = fileList.map(file => ({database, importName, path: file}));
                                 files = files.concat(objFiles);
+                                if (limit > 0 && files.length >= limit) {
+                                    return files;
+                                }
                             }
                         } catch (e) {
                             // ignore
@@ -93,9 +104,13 @@ const findFiles = co.wrap(function* (homeDir) {
                 const toProcessPath = path.join(importNamePath, 'to_process');
                 const stat = yield fsp.stat(toProcessPath);
                 if (stat.isDirectory()) {
-                    const fileList = yield getFilesToProcess(toProcessPath);
+                    const maxElements = limit > 0 ? (limit - files.length) : 0;
+                    const fileList = yield getFilesToProcess(toProcessPath, maxElements);
                     const objFiles = fileList.map(file => ({database, importName, path: file}));
                     files = files.concat(objFiles);
+                    if (limit > 0 && files.length >= limit) {
+                        return files;
+                    }
                 }
             } catch (e) {
                 // ignore
@@ -106,14 +121,17 @@ const findFiles = co.wrap(function* (homeDir) {
     return files;
 });
 
-function getFilesToProcess(directory) {
+function getFilesToProcess(directory, maxElements) {
     return new Promise((resolve, reject) => {
         const items = [];
-        var readStream = fs.walk(directory);
+        var readStream = fs.walk(directory, {queueMethod: sortWalk});
         readStream
             .on('data', function (item) {
                 if (item.stats.isFile()) {
                     items.push(item.path);
+                    if (maxElements > 0 && items.length >= maxElements) {
+                        readStream.close();
+                    }
                 }
             })
             .on('end', function () {
