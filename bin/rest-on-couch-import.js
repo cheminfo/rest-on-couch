@@ -123,21 +123,25 @@ const findFiles = co.wrap(function* (homeDir, limit) {
 function getFilesToProcess(directory, maxElements) {
     return new Promise((resolve, reject) => {
         const items = [];
-        var readStream = fs.walk(directory, {queueMethod: sortWalk});
-        readStream
-            .on('data', function (item) {
+        const walkStream = fs.walk(directory, {queueMethod: sortWalk});
+        walkStream.close = function () {
+            // undocumented "feature". used to stop walking
+            // todo: PR to the klaw module to make an official API for it
+            this.paths = [];
+        };
+        walkStream
+            .on('data', (item) => {
                 if (item.stats.isFile()) {
                     items.push(item.path);
                     if (maxElements > 0 && items.length >= maxElements) {
-                        readStream.close();
+                        walkStream.close();
                     }
                 }
             })
-            .on('end', function () {
-                resolve(items);
-            })
-            .on('error', function (error) {
-                reject(error);
+            .on('end', () => resolve(items))
+            .on('error', function (err) {
+                this.close();
+                reject(err);
             });
     });
 }
