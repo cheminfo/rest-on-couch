@@ -28,7 +28,7 @@ program
     .option('-c --config <path>', 'Path to custom config file')
     .parse(process.argv);
 
-if (program.sort !== 'asc' || program.sort !== 'desc') {
+if (program.sort !== 'asc' && program.sort !== 'desc') {
     throw new Error('sort order must be "asc" or "desc"');
 }
 const sortWalk = program.sort === 'asc' ? 'shift' : 'pop';
