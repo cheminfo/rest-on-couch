@@ -29,7 +29,7 @@ exports.import = async function (database, importName, file) {
 
     if (typeof config.fullProcess === 'function') {
         isParse = true;
-        await fullyProcessResult(config.fullProcess, filename, contents, couch);
+        await fullyProcessResult(info, config.fullProcess, filename, contents, couch);
     } else {
         // Callbacks
         const getId = verifyConfig(config, 'getID', null, true);
