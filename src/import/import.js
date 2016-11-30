@@ -43,7 +43,7 @@ exports.import = async function (database, importName, file) {
             await getKind(info, config.kind, filename, contents, couch);
         }
         const docInfo = await checkDocumentExists(info, filename, contents, couch);
-        await updateDocument(info, docInfo, parse, json, info.kind, filename, contents, couch);
+        await updateDocument(info, docInfo, parse, json, filename, contents, couch);
         debug.trace(`import ${file} success`);
     } catch (e) {
         debug.error(`import ${file} failure: ${e.message}, ${e.stack}`);
@@ -110,6 +110,10 @@ async function parseFile(info, parse, json, filename, contents, couch) {
         info.field = result.field;
         info.reference = result.reference;
         info.content = result.content;
+        if (result.noUpload) {
+            info.noUpload = true;
+        }
+        info.attachments = result.attachments;
         return;
     } else if (json) {
         info.data = await json(filename, contents, couch);
@@ -136,26 +140,58 @@ async function checkDocumentExists(info, filename, contents, couch) {
     });
 }
 
-async function updateDocument(info, docInfo, parse, json, kind, filename, contents, couch) {
+async function updateDocument(info, docInfo, parse, json, filename, contents, couch) {
     debug.trace('updateDocument');
     if (parse) {
-        const goodFilename = fold(filename, '_');
-        return couch.addFileToJpath(info.id, info.owner, info.jpath, info.data, {
-            field: info.field,
-            reference: info.reference,
-            name: info.jpath.join('/') + '/' + goodFilename,
-            data: contents,
-            content_type: info.content_type
-        }, info.content);
+        const joined = info.jpath.join('/') + '/';
+        if (!info.noUpload) {
+            const goodFilename = fold(filename, '_');
+            await couch.addFileToJpath(info.id, info.owner, info.jpath, info.data, {
+                field: info.field,
+                reference: info.reference,
+                name: joined + goodFilename,
+                data: contents,
+                content_type: info.content_type
+            }, info.content);
+        } else {
+            await updateContent();
+        }
+        if (info.attachments && info.attachments.length) {
+            debug(`got ${info.attachments.length} more attachments`);
+            if (!info.reference) throw new Error('cannot upload more attachments without a reference');
+            for (const attachment of info.attachments) {
+                if (!attachment.field ||
+                    !attachment.filename ||
+                    !attachment.contents ||
+                    !attachment.content_type) {
+                    throw new Error('attachment is missing a field');
+                }
+            }
+            for (const attachment of info.attachments) {
+                const attachmentName = fold(attachment.filename, '_');
+                await couch.addFileToJpath(info.id, info.owner, info.jpath, attachment.data || {}, {
+                    field: attachment.field,
+                    reference: info.reference,
+                    name: joined + attachmentName,
+                    data: attachment.contents,
+                    content_type: attachment.content_type
+                });
+            }
+        }
+        return null;
     } else if (json) {
+        return updateContent();
+    }
+    throw new Error('unreachable');
+
+    function updateContent() {
         let entry = {
             $id: info.id,
-            $kind: kind,
+            $kind: info.kind,
             $content: info.data,
             _id: docInfo.id,
             _rev: docInfo.rev
         };
         return couch.insertEntry(entry, info.owner, {merge: true});
     }
-    throw new Error('unreachable');
 }

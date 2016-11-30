@@ -90,7 +90,7 @@ const methods = {
 
         entry._attachments[file.name] = {
             content_type: file.content_type,
-            data: file.data.toString('base64')
+            data: (typeof file.data === 'string') ? file.data : file.data.toString('base64')
         };
         return this.insertEntry(entry, user);
     }
