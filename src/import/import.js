@@ -22,28 +22,40 @@ exports.import = async function (database, importName, file) {
 
     const couch = Couch.get(database);
 
-    // Callbacks
-    const getId = verifyConfig(config, 'getID', null, true);
-    const getOwner = verifyConfig(config, 'getOwner', null, true);
-    let parse = null;
-    let json = null;
-    try {
-        parse = verifyConfig(config, 'parse', null, true);
-    } catch (e) {
-        json = verifyConfig(config, 'json', null, true);
-    }
-
-    if (json) contents = JSON.parse(contents);
-
     const info = {};
-    try {
+
+    let isParse = false;
+    let isJson = false;
+
+    if (typeof config.fullProcess === 'function') {
+        isParse = true;
+        await fullyProcessResult(config.fullProcess, filename, contents, couch);
+    } else {
+        // Callbacks
+        const getId = verifyConfig(config, 'getID', null, true);
+        const getOwner = verifyConfig(config, 'getOwner', null, true);
+        let parse = null;
+        let json = null;
+        try {
+            parse = verifyConfig(config, 'parse', null, true);
+            isParse = true;
+        } catch (e) {
+            json = verifyConfig(config, 'json', null, true);
+            isJson = true;
+        }
+
+        if (json) contents = JSON.parse(contents);
+
         await getMetadata(info, getId, getOwner, filename, contents, couch);
         await parseFile(info, parse, json, filename, contents, couch);
         if (config.kind) {
             await getKind(info, config.kind, filename, contents, couch);
         }
+    }
+
+    try {
         const docInfo = await checkDocumentExists(info, filename, contents, couch);
-        await updateDocument(info, docInfo, parse, json, filename, contents, couch);
+        await updateDocument(info, docInfo, isParse, isJson, filename, contents, couch);
         debug.trace(`import ${file} success`);
     } catch (e) {
         debug.error(`import ${file} failure: ${e.message}, ${e.stack}`);
@@ -73,47 +85,17 @@ async function getMetadata(info, getId, getOwner, filename, contents, couch) {
         getOwner(filename, contents, couch)
     ]);
     debug.trace(`id: ${id}, owner: ${owner}`);
-    let owners;
-    if (Array.isArray(owner)) {
-        owners = owner;
-        owner = owners[0];
-        owners = owners.slice(1);
-    }
+    const ownerData = getOwnerData(owner);
     info.id = id;
-    info.owner = owner;
-    info.owners = owners;
+    info.owner = ownerData.owner;
+    info.owners = ownerData.owners;
 }
 
 async function parseFile(info, parse, json, filename, contents, couch) {
     debug.trace('parse file contents');
     if (parse) {
         const result = await parse(filename, contents, couch);
-        if (result.skip) {
-            const error = new Error('skipped');
-            error.skip = true;
-            throw error;
-        }
-        if (typeof result.jpath !== 'string') {
-            throw new Error('parse: jpath must be a string');
-        }
-        if (typeof result.data !== 'object' || result.data === null) {
-            throw new Error('parse: data must be an object');
-        }
-        if (typeof result.field !== 'string') {
-            throw new Error('parse: field must be a string');
-        }
-
-        debug.trace(`jpath: ${result.jpath}`);
-        info.jpath = result.jpath.split('.');
-        info.data = result.data;
-        info.content_type = result.content_type || 'application/octet-stream';
-        info.field = result.field;
-        info.reference = result.reference;
-        info.content = result.content;
-        if (result.noUpload) {
-            info.noUpload = true;
-        }
-        info.attachments = result.attachments;
+        fillInfoWithResult(info, result);
         return;
     } else if (json) {
         info.data = await json(filename, contents, couch);
@@ -131,6 +113,58 @@ async function getKind(info, kind, filename, contents, couch) {
     }
 }
 
+async function fullyProcessResult(info, fullProcess, filename, contents, couch) {
+    const result = await fullProcess(filename, contents, couch);
+
+    if (!result.id) {
+        throw new Error('missing id');
+    }
+    info.id = result.id;
+
+    if (!result.owner) {
+        throw new Error('missing owner');
+    }
+    const ownerData = getOwnerData(result.owner);
+    info.owner = ownerData.owner;
+    info.owners = ownerData.owners;
+
+    fillInfoWithResult(info, result);
+
+    if (!result.kind) {
+        throw new Error('missing kind');
+    }
+    info.kind = result.kind;
+}
+
+function fillInfoWithResult(info, result) {
+    if (result.skip) {
+        const error = new Error('skipped');
+        error.skip = true;
+        throw error;
+    }
+    if (typeof result.jpath !== 'string') {
+        throw new Error('parse: jpath must be a string');
+    }
+    if (typeof result.data !== 'object' || result.data === null) {
+        throw new Error('parse: data must be an object');
+    }
+    if (typeof result.field !== 'string') {
+        throw new Error('parse: field must be a string');
+    }
+
+    debug.trace(`jpath: ${result.jpath}`);
+    info.jpath = result.jpath.split('.');
+    info.data = result.data;
+    info.content_type = result.content_type || 'application/octet-stream';
+    info.field = result.field;
+    info.reference = result.reference;
+    info.content = result.content;
+    if (result.noUpload) {
+        info.noUpload = true;
+    }
+    info.attachments = result.attachments;
+}
+
 async function checkDocumentExists(info, filename, contents, couch) {
     debug.trace('checkDocumentExists');
     return couch.createEntry(info.id, info.owner, {
@@ -140,9 +174,9 @@ async function checkDocumentExists(info, filename, contents, couch) {
     });
 }
 
-async function updateDocument(info, docInfo, parse, json, filename, contents, couch) {
+async function updateDocument(info, docInfo, isParse, isJson, filename, contents, couch) {
     debug.trace('updateDocument');
-    if (parse) {
+    if (isParse) {
         const joined = info.jpath.join('/') + '/';
         if (!info.noUpload) {
             const goodFilename = fold(filename, '_');
@@ -179,7 +213,7 @@ async function updateDocument(info, docInfo, parse, json, filename, contents, co
             }
         }
         return null;
-    } else if (json) {
+    } else if (isJson) {
         return updateContent();
     }
     throw new Error('unreachable');
@@ -194,4 +228,14 @@ async function updateDocument(info, docInfo, parse, json, filename, contents, co
         };
         return couch.insertEntry(entry, info.owner, {merge: true});
     }
+}
+
+function getOwnerData(owner) {
+    let owners;
+    if (Array.isArray(owner)) {
+        owners = owner;
+        owner = owners[0];
+        owners = owners.slice(1);
+    }
+    return {owner, owners};
 }
