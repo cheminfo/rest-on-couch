@@ -1,7 +1,6 @@
 'use strict';
 
 const _ = require('lodash');
-const includes = require('array-includes');
 const nano = require('nano');
 const objHash = require('object-hash');
 
@@ -101,7 +100,7 @@ const methods = {
 async function checkSecurity(db, admin) {
     debug.trace('check security');
     const security = await nanoPromise.getDocument(db, '_security');
-    if (!security.admins || !includes(security.admins.names, admin)) {
+    if (!security.admins || !security.admins.names.includes(admin)) {
         throw new CouchError(`${admin} is not an admin of ${db.config.db}`, 'fatal');
     }
 }

@@ -1,6 +1,5 @@
 'use strict';
 
-const includes = require('array-includes');
 const _ = require('lodash');
 
 const CouchError = require('../util/CouchError');
@@ -52,7 +51,7 @@ const methods = {
         owners = util.ensureOwnersArray(owners);
         const doc = await this.getDocByRights(uuid, user, 'owner', type, options);
         const mainOwner = doc.$owners[0];
-        if (includes(owners, mainOwner)) {
+        if (owners.includes(mainOwner)) {
             throw new CouchError('cannot remove primary owner', 'forbidden');
         }
         const newArray = _.pullAll(doc.$owners.slice(1), owners);

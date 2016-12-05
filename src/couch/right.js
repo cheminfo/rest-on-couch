@@ -1,7 +1,5 @@
 'use strict';
 
-const includes = require('array-includes');
-
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:right');
@@ -74,7 +72,7 @@ const methods = {
     },
 
     isAdmin(user) {
-        return includes(this._administrators, user);
+        return this._administrators.includes(user);
     }
 };
 

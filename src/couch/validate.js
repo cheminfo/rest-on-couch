@@ -1,7 +1,5 @@
 'use strict';
 
-const includes = require('array-includes');
-
 const constants = require('../constants');
 const debug = require('../util/debug')('main:validate');
 const nanoPromise = require('../util/nanoPromise');
@@ -45,9 +43,9 @@ async function validateRights(ctx, ownerArrays, user, rights, type = 'entry') {
         return ownerArrays.map((owners, idx) => {
             if (areOwners[idx]) return true;
             for (let j = 0; j < owners.length; j++) {
-                if (includes(groups, owners[j])) return true;
+                if (groups.includes(owners[j])) return true;
                 for (let k = 0; k < defaultGroups.length; k++) {
-                    if (includes(owners, defaultGroups[k].name) && includes(defaultGroups[k].rights, right)) {
+                    if (owners.includes(defaultGroups[k].name) && defaultGroups[k].rights.includes(right)) {
                         return true;
                     }
                 }
@@ -82,7 +80,7 @@ async function validateTokenOrRights(ctx, uuid, owners, rights, user, token, typ
 
     if (token && token.$kind === type && token.uuid === uuid) {
         for (var i = 0; i < rights.length; i++) {
-            if (includes(token.rights, rights[i])) {
+            if (token.rights.includes(rights[i])) {
                 return true;
             }
         }
@@ -125,7 +123,7 @@ async function checkRightAnyGroup(ctx, user, right) {
 
     const defaultGroups = await getDefaultGroups(db, user);
     for (let i = 0; i < defaultGroups.length; i++) {
-        if (includes(defaultGroups[i].rights, right)) {
+        if (defaultGroups[i].rights.includes(right)) {
             return true;
         }
     }

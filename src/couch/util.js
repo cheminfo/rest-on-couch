@@ -1,7 +1,5 @@
 'use strict';
 
-const includes = require('array-includes');
-
 const CouchError = require('../util/CouchError');
 const ensureStringArray = require('../util/ensureStringArray');
 const isEmail = require('../util/isEmail');
@@ -30,11 +28,11 @@ function isValidGlobalRightUser(user) {
 }
 
 function isValidGlobalRightType(type) {
-    return includes(constants.globalRightTypes, type);
+    return constants.globalRightTypes.includes(type);
 }
 
 function isAllowedFirstLevelKey(key) {
-    return includes(constants.allowedFirstLevelKeys, key);
+    return constants.allowedFirstLevelKeys.includes(key);
 }
 
 function isManagedDocumentType(type) {

@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
-import includes from 'array-includes';
 
 import {loginLDAP} from '../actions/login';
 import LoginGoogle from './LoginGoogle';
@@ -12,7 +11,7 @@ const Login = (props) => (
             props.loginProviders.length === 0 ? 'No login provider available' : ''
         }
         {
-            includes(props.loginProviders, 'google') ?
+            props.loginProviders.includes('google') ?
                 <div className="card">
                     <div className="header">
                         <h4 className="title">Google login</h4>
@@ -23,7 +22,7 @@ const Login = (props) => (
                 </div> : ''
         }
         {
-            includes(props.loginProviders, 'ldap') ?
+            props.loginProviders.includes('ldap') ?
                 <div className="card">
                     <div className="header">
                         <h4 className="title">LDAP Login</h4>
