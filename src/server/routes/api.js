@@ -56,7 +56,7 @@ router.post('/:dbname/_query/byOwnerAndId/:email', parseJson100mb, couch.entries
 // Groups
 router.get('/:dbname/groups', couch.getGroups);
 router.get('/:dbname/group/:name', couch.getGroup);
-//router.put('/:dbname/group/:name', parseJson1mb, couch.createOrUpdateGroup);
+router.put('/:dbname/group/:name', couch.createGroup);
 router.delete('/:dbname/group/:name', couch.deleteGroup);
 
 // Group users management

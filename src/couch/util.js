@@ -9,7 +9,7 @@ function isSpecialUser(user) {
     return user === 'anonymous' || user === 'anyuser';
 }
 
-const validName = /^[a-zA-Z_-]+$/;
+const validName = /^[0-9a-zA-Z_-]+$/;
 
 function isValidGroupName(groupName) {
     return validName.test(groupName) && !isSpecialUser(groupName) && !isEmail(groupName);

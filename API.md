@@ -53,7 +53,7 @@
 | Method | Route | Action | Description |
 | ------ | ----- | ------ | ----------- |
 | GET | `/db/:dbname/group/:name` | Get a group by name | |
-| PUT | `/db/:dbname/group/:name` | Create or update a group | |
+| PUT | `/db/:dbname/group/:name` | Create a group | |
 | DELETE | `/db/:dbname/group/:name` | Remove a group | |
 | PUT | `/db/:dbname/group/:name/user/:user` | Add a user to an existing group | Group must exist. No-op if user is already in group |
 | DELETE | `/db/:dbname/group/:name/user/:user` | Remove a user from an existing group | Group must exist. No-op if user is not in group |

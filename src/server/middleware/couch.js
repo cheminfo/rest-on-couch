@@ -189,6 +189,11 @@ exports.getGroup = composeWithError(function*() {
     this.body = yield this.state.couch.getGroup(this.params.name, this.state.userEmail);
 });
 
+exports.createGroup = composeWithError(function*() {
+    yield this.state.couch.createGroup(this.params.name, this.state.userEmail);
+    this.body = OK;
+});
+
 exports.getGroups = composeWithError(function*() {
     this.body = yield this.state.couch.getDocsAsOwner(this.state.userEmail, 'group', {onlyDoc: true});
 });

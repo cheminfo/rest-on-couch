@@ -71,7 +71,7 @@ const methods = {
 
     async createGroup(groupName, user, rights) {
         debug(`createGroup (${groupName}, ${user})`);
-        if (!Array.isArray(rights)) rights = ['read'];
+        if (!Array.isArray(rights)) rights = [];
 
         await this.open();
 
@@ -79,7 +79,7 @@ const methods = {
         if (!hasRight) throw new CouchError(`user ${user} does not have createGroup right`);
 
         const group = await nanoMethods.getGroup(this._db, groupName);
-        if (group) throw new CouchError(`group ${groupName} already exists`, 'exists');
+        if (group) throw new CouchError(`group ${groupName} already exists`, 'conflict');
 
         return nanoMethods.saveGroup(this._db, {
             $type: 'group',

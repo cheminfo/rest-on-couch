@@ -12,7 +12,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     var validRights = ['create', 'read', 'write', 'createGroup'];
     // see http://emailregex.com/
     var validEmail = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
-    var validName = /^[a-zA-Z_-]+$/;
+    var validName = /^[0-9a-zA-Z_-]+$/;
 
     function validateOwners(doc) {
         if (!Array.isArray(doc.$owners)) {

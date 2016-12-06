@@ -1,6 +1,13 @@
 import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
 
+import {
+    addValueToGroup,
+    removeValueFromGroup,
+    createGroup
+} from '../actions/db';
+
+import GroupCreator from './GroupCreator';
 import GroupEditor from './GroupEditor';
 
 const Groups = (props) => {
@@ -15,6 +22,7 @@ const Groups = (props) => {
     ));
     return (
         <div>
+            {props.hasCreateGroupRight ? <GroupCreator createGroup={props.createGroup} /> : null}
             {groups}
         </div>
     );
@@ -28,10 +36,12 @@ Groups.propTypes = {
 
 export default connect(
     (state) => ({
-        userGroups: state.db.userGroups
+        userGroups: state.db.userGroups,
+        hasCreateGroupRight: state.db.userRights.includes('createGroup')
     }),
-    // (dispatch) => ({
-    //     addValueToGroup: (group, type, value) => (console.log('TODO: add value to group:', group.name, type, value)),
-    //     removeValueFromGroup: (group, type, value) => (console.log('TODO: remove value from group:', group.name, type, value))
-    // })
+    (dispatch) => ({
+        addValueToGroup: (group, type, value) => dispatch(addValueToGroup(group, type, value)),
+        removeValueFromGroup: (group, type, value) => dispatch(removeValueFromGroup(group, type, value)),
+        createGroup: (group) => dispatch(createGroup(group))
+    })
 )(Groups);
