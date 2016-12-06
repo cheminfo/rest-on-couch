@@ -2,10 +2,15 @@ import React, {PropTypes} from 'react';
 
 import GroupDataEditor from './GroupDataEditor';
 
-const GroupEditor = ({group, addValueToGroup, removeValueFromGroup}) => (
+const GroupEditor = ({group, addValueToGroup, removeValueFromGroup, removeGroup}) => (
     <div>
         <div className="header">
-            <h4 className="title">{group.name}</h4>
+            <h4 className="title">
+                {group.name}
+                <button type="button" className="btn btn-danger btn-simple btn-s pull-right" onClick={() => removeGroup(group.name)}>
+                    REMOVE
+                </button>
+            </h4>
         </div>
         <div className="content">
             <div className="container-fluid">
@@ -35,6 +40,7 @@ const GroupEditor = ({group, addValueToGroup, removeValueFromGroup}) => (
 GroupEditor.propTypes = {
     group: PropTypes.object.isRequired,
     addValueToGroup: PropTypes.func.isRequired,
+    removeGroup: PropTypes.func.isRequired,
     removeValueFromGroup: PropTypes.func.isRequired
 };
 

@@ -2,7 +2,8 @@ import {
     GET_DB_LIST,
     SET_USER_RIGHTS,
     SET_USER_GROUPS,
-    CREATE_GROUP
+    CREATE_GROUP,
+    REMOVE_GROUP
 } from '../actions/db';
 
 const initialState = {
@@ -22,6 +23,10 @@ const dbReducer = (state = initialState, action) => {
         case `${CREATE_GROUP}_FULFILLED`: {
             const newGroupList = state.userGroups.slice();
             newGroupList.unshift(action.payload);
+            return Object.assign({}, state, {userGroups: newGroupList});
+        }
+        case `${REMOVE_GROUP}_FULFILLED`: {
+            const newGroupList = state.userGroups.filter(group => group.name !== action.meta);
             return Object.assign({}, state, {userGroups: newGroupList});
         }
         default:

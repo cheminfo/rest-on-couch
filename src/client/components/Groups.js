@@ -4,7 +4,8 @@ import {connect} from 'react-redux';
 import {
     addValueToGroup,
     removeValueFromGroup,
-    createGroup
+    createGroup,
+    removeGroup
 } from '../actions/db';
 
 import GroupCreator from './GroupCreator';
@@ -17,6 +18,7 @@ const Groups = (props) => {
                 group={group}
                 addValueToGroup={props.addValueToGroup}
                 removeValueFromGroup={props.removeValueFromGroup}
+                removeGroup={props.removeGroup}
             />
         </div>
     ));
@@ -31,7 +33,8 @@ const Groups = (props) => {
 Groups.propTypes = {
     userGroups: PropTypes.array.isRequired,
     addValueToGroup: PropTypes.func.isRequired,
-    removeValueFromGroup: PropTypes.func.isRequired
+    removeValueFromGroup: PropTypes.func.isRequired,
+    removeGroup: PropTypes.func.isRequired
 };
 
 export default connect(
@@ -42,6 +45,7 @@ export default connect(
     (dispatch) => ({
         addValueToGroup: (group, type, value) => dispatch(addValueToGroup(group, type, value)),
         removeValueFromGroup: (group, type, value) => dispatch(removeValueFromGroup(group, type, value)),
-        createGroup: (group) => dispatch(createGroup(group))
+        createGroup: (group) => dispatch(createGroup(group)),
+        removeGroup: (group) => dispatch(removeGroup(group))
     })
 )(Groups);

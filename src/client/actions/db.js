@@ -37,3 +37,13 @@ export function createGroup(groupName) {
             .then(() => apiFetchJSON(groupUrl))
     };
 }
+
+export const REMOVE_GROUP = 'REMOVE_GROUP';
+export function removeGroup(groupName) {
+    const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
+    return {
+        type: REMOVE_GROUP,
+        meta: groupName,
+        payload: apiFetchJSON(groupUrl, {method: 'DELETE'})
+    };
+}
