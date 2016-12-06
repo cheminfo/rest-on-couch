@@ -10,7 +10,7 @@
     "views"
   ],
   "scripts": {
-    "build": "npm run build:client && npm run build:server",
+    "build": "npm run build:server && npm run build:client",
     "build:client": "webpack",
     "build:server": "npm run compile",
     "compile": "babel src --out-dir lib --ignore src/client --quiet --plugins transform-async-to-generator",

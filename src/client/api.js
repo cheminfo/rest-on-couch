@@ -1,5 +1,5 @@
 // root of the ROC API server
-export const API_ROOT = 'http://localhost:3000/';
+export const API_ROOT = WP_API_ROOT_URL;
 
 export function apiFetch(path, options) {
     options = Object.assign({
