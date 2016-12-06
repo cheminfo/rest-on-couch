@@ -98,7 +98,7 @@ const methods = {
             debug.trace('group does not exist');
             throw new CouchError('group does not exist', 'not found');
         }
-        if (!validate.isOwner(doc.$owners, user)) {
+        if (!this.isAdmin(user) && !validate.isOwner(doc.$owners, user)) {
             debug.trace('not allowed to get group');
             throw new CouchError(`user ${user} is not an owner of the group`, 'unauthorized');
         }
@@ -137,6 +137,24 @@ const methods = {
         usernames = util.ensureUsersArray(usernames);
         const group = await this.getDocByRights(uuid, user, 'write', 'group');
         _.pullAll(group.users, usernames);
+        return nanoMethods.save(this._db, group, user);
+    },
+
+    async addRightsToGroup(uuid, user, rights) {
+        debug(`addRightsToGroup (${uuid}, ${user}, ${rights})`);
+        await this.open();
+        rights = util.ensureRightsArray(rights);
+        const group = await this.getDocByRights(uuid, user, 'write', 'group');
+        group.rights = _.union(group.rights, rights);
+        return nanoMethods.save(this._db, group, user);
+    },
+
+    async removeRightsFromGroup(uuid, user, rights) {
+        debug(`removeRightsFromGroup (${uuid}, ${user}, ${rights})`);
+        await this.open();
+        rights = util.ensureRightsArray(rights);
+        const group = await this.getDocByRights(uuid, user, 'write', 'group');
+        _.pullAll(group.rights, rights);
         return nanoMethods.save(this._db, group, user);
     }
 };

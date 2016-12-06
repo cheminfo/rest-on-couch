@@ -213,6 +213,21 @@ exports.removeUserFromGroup = composeWithError(function*() {
     this.body = OK;
 });
 
+exports.getGroupRights = composeWithError(function*() {
+    const group = yield this.state.couch.getDocByRights(this.params.uuid, this.state.userEmail, 'read', 'group');
+    this.body = group.rights;
+});
+
+exports.addRightToGroup = composeWithError(function*() {
+    yield this.state.couch.addRightsToGroup(this.params.uuid, this.state.userEmail, this.params.right);
+    this.body = OK;
+});
+
+exports.removeRightFromGroup = composeWithError(function*() {
+    yield this.state.couch.removeRightsFromGroup(this.params.uuid, this.state.userEmail, this.params.right);
+    this.body = OK;
+});
+
 exports.getRights = composeWithError(function*() {
     const right = this.params.right;
     const uuid = this.params.uuid;

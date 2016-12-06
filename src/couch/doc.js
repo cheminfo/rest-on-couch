@@ -11,6 +11,7 @@ const nanoMethods = require('./nano');
 
 const methods = {
     async getDocUuidFromId(id, user, type) {
+        await this.open();
         return nanoMethods.getUuidFromId(this._db, id, user, type);
     },
 

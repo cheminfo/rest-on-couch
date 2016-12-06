@@ -64,6 +64,11 @@ router.get('/:dbname/group/:name/users', getUuidFromGroupName, couch.getGroupUse
 router.put('/:dbname/group/:name/user/:username', getUuidFromGroupName, couch.addUserToGroup);
 router.delete('/:dbname/group/:name/user/:username', getUuidFromGroupName, couch.removeUserFromGroup);
 
+// Group rights management
+router.get('/:dbname/group/:name/rights', getUuidFromGroupName, couch.getGroupRights);
+router.put('/:dbname/group/:name/right/:right', getUuidFromGroupName, couch.addRightToGroup);
+router.delete('/:dbname/group/:name/right/:right', getUuidFromGroupName, couch.removeRightFromGroup);
+
 // Group owners
 router.get('/:dbname/group/:name/_owner', getUuidFromGroupName, couch.getOwners('group'));
 router.put('/:dbname/group/:name/_owner/:owner', getUuidFromGroupName, parseJson1mb, couch.addOwner('group'));

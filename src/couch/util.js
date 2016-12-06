@@ -59,6 +59,16 @@ function ensureUsersArray(users) {
     return users;
 }
 
+function ensureRightsArray(rights) {
+    rights = ensureStringArray(rights);
+    for (const right of rights) {
+        if (!isValidGlobalRightType(right)) {
+            throw new CouchError(`invalid right: ${right}`, 'invalid');
+        }
+    }
+    return rights;
+}
+
 module.exports = {
     isSpecialUser,
     isValidGroupName,
@@ -69,5 +79,6 @@ module.exports = {
     isAllowedFirstLevelKey,
     isManagedDocumentType,
     ensureOwnersArray,
-    ensureUsersArray
+    ensureUsersArray,
+    ensureRightsArray
 };
