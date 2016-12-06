@@ -39,7 +39,7 @@ const App = (props) => (
                             <Match pattern="/groups" component={Groups} />
                             <Match pattern="/login" render={() => {
                                 if (props.loggedIn) {
-                                    return <Redirect to="/dashboard" />;
+                                    return <Redirect to="/" />;
                                 } else {
                                     return <Login />;
                                 }
