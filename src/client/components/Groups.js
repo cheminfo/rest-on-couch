@@ -13,7 +13,7 @@ import GroupEditor from './GroupEditor';
 
 const Groups = (props) => {
     const groups = props.userGroups.map((group, i) => (
-        <div className="card" key={i}>
+        <div className="card" key={group.name}>
             <GroupEditor
                 group={group}
                 addValueToGroup={props.addValueToGroup}
