@@ -19,16 +19,16 @@ const GroupEditor = ({group, addValueToGroup, removeValueFromGroup, removeGroup}
                         <GroupDataEditor
                             type="users"
                             data={group.users}
-                            addValue={(value) => addValueToGroup(group, 'users', value)}
-                            removeValue={(value) => removeValueFromGroup(group, 'users', value)}
+                            addValue={(value) => addValueToGroup(group.name, 'users', value)}
+                            removeValue={(value) => removeValueFromGroup(group.name, 'users', value)}
                         />
                     </div>
                     <div className="col-md-6">
                         <GroupDataEditor
                             type="rights"
                             data={group.rights}
-                            addValue={(value) => addValueToGroup(group, 'rights', value)}
-                            removeValue={(value) => removeValueFromGroup(group, 'rights', value)}
+                            addValue={(value) => addValueToGroup(group.name, 'rights', value)}
+                            removeValue={(value) => removeValueFromGroup(group.name, 'rights', value)}
                         />
                     </div>
                 </div>
