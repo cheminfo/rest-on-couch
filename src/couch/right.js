@@ -9,6 +9,7 @@ const nano = require('./nano');
 
 const methods = {
     async editGlobalRight(type, user, action) {
+        await this.open();
         if (action !== 'add' && action !== 'remove') {
             throw new CouchError('Edit global right invalid action', 'bad argument');
         }
@@ -52,6 +53,7 @@ const methods = {
      * @return {Array}
      */
     async getGlobalRights(user) {
+        await this.open();
         if (this.isAdmin(user)) {
             return constants.globalRightTypes.slice();
         } else {
@@ -90,6 +92,7 @@ const methods = {
 
     async hasRightForEntry(uuid, user, right, options) {
         debug(`has right for entry (${uuid}, ${user}, ${right})`);
+        await this.open();
         try {
             await this.getEntryWithRights(uuid, user, right, options);
             return true;
