@@ -5,6 +5,7 @@ const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:right');
 const nanoPromise = require('../util/nanoPromise');
 const util = require('./util');
+const nano = require('./nano');
 
 const methods = {
     async editGlobalRight(type, user, action) {
@@ -16,8 +17,7 @@ const methods = {
             throw e;
         }
 
-        const doc = await nanoPromise.getDocument(this._db, constants.RIGHTS_DOC_ID);
-        if (!doc) throw new Error('Rights document should always exist', 'unreachable');
+        const doc = await getGlobalRightsDocument(this);
         if (action === 'add') {
             if (!doc[type]) doc[type] = [];
             if (doc[type].indexOf(user) === -1) {
@@ -55,7 +55,36 @@ const methods = {
         if (this.isAdmin(user)) {
             return constants.globalRightTypes.slice();
         } else {
-            return [];
+            const globalRightsDoc = await getGlobalRightsDocument(this);
+            const globalRightsKeys = Object.keys(globalRightsDoc).filter(key => constants.globalRightTypes.includes(key));
+            const userRights = new Set();
+            for (const right of globalRightsKeys) {
+                const users = globalRightsDoc[right];
+                if (Array.isArray(users)) {
+                    if (users.includes('anonymous') ||
+                        (user !== 'anonymous' && users.includes('anyuser')) ||
+                        users.includes(user)) {
+                        userRights.add(right);
+                        break;
+                    }
+                    // todo maybe allow global rights from groups ?
+                }
+            }
+
+            const defaultGroupsDoc = await getDefaultGroupsDocument(this);
+            const defaultGroups = new Set(defaultGroupsDoc.anonymous);
+            if (user !== 'anonymous') {
+                defaultGroupsDoc.anyuser.forEach(group => defaultGroups.add(group));
+            }
+
+            for (const group of defaultGroups) {
+                const groupObject = await nano.getGroup(this._db, group);
+                if (groupObject && groupObject.rights) {
+                    groupObject.rights.forEach(group => defaultGroups.add(group));
+                }
+            }
+
+            return Array.from(userRights);
         }
     },
 
@@ -75,6 +104,18 @@ const methods = {
         return this._administrators.includes(user);
     }
 };
+
+async function getDefaultGroupsDocument(couch) {
+    const doc = await nanoPromise.getDocument(couch._db, constants.DEFAULT_GROUPS_DOC_ID);
+    if (!doc) throw new Error('Default groups document should always exist', 'unreachable');
+    return doc;
+}
+
+async function getGlobalRightsDocument(couch) {
+    const doc = await nanoPromise.getDocument(couch._db, constants.RIGHTS_DOC_ID);
+    if (!doc) throw new Error('Rights document should always exist', 'unreachable');
+    return doc;
+}
 
 function checkGlobalTypeAndUser(type, user) {
     if (!util.isValidGlobalRightType(type)) {

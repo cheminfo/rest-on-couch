@@ -1,5 +1,5 @@
 // root of the ROC API server
-export const API_ROOT = WP_API_ROOT_URL;
+export const API_ROOT = WP_API_ROOT_URL; // eslint-disable-line no-undef
 
 export function apiFetch(path, options) {
     options = Object.assign({

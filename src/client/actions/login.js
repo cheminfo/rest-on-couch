@@ -1,4 +1,5 @@
 import {apiFetchJSON, apiFetchForm} from '../api';
+import {dbManager} from '../store';
 
 export const CHECK_LOGIN = 'CHECK_LOGIN';
 export function checkLogin(dispatch) {
@@ -22,9 +23,11 @@ export function doCheckLogin() {
 
 export const LOGOUT = 'LOGOUT';
 export function logout() {
+    const logoutRequest = doLogout();
+    logoutRequest.then(() => dbManager.syncDb());
     return {
         type: LOGOUT,
-        payload: doLogout()
+        payload: logoutRequest
     };
 }
 
@@ -35,9 +38,11 @@ async function doLogout() {
 export const LOGIN_LDAP = 'LOGIN_LDAP';
 export function loginLDAP(dispatch) {
     return (username, password) => {
+        const ldapLoginRequest = doLDAPLogin(username, password);
+        ldapLoginRequest.then(() => dbManager.syncDb());
         dispatch({
             type: LOGIN_LDAP,
-            payload: doLDAPLogin(username, password)
+            payload: ldapLoginRequest
         });
     };
 }

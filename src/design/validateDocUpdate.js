@@ -34,6 +34,15 @@ module.exports = function (newDoc, oldDoc, userCtx) {
         }
     }
 
+    function validateNames(list) {
+        if (!Array.isArray(list)) {
+            throw ({forbidden: 'Names list must be an array'});
+        }
+        for (var i = 0; i < list.length; i++) {
+            validateName(list[i]);
+        }
+    }
+
     function validateUser(user) {
         if (!validEmail.test(user)) {
             throw ({forbidden: 'Users can only be emails'});
@@ -117,9 +126,8 @@ module.exports = function (newDoc, oldDoc, userCtx) {
                 }
             }
         } else if (newDoc._id === 'defaultGroups') {
-            if (!Array.isArray(newDoc.anonymous) || !Array.isArray(newDoc.anyuser)) {
-                throw ({forbidden: 'defaultGroups document must have anonymous and anyuser arrays'});
-            }
+            validateNames(newDoc.anonymous);
+            validateNames(newDoc.anyuser);
         }
     } else if (newDoc.$type === 'user') {
         if (!newDoc.user || !validEmail.test(newDoc.user)) {

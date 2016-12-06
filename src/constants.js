@@ -4,6 +4,9 @@ const globalRightTypes = [
     'read',
     'write',
     'create',
+
+    'readGroup',
+    'writeGroup',
     'createGroup'
 ];
 
