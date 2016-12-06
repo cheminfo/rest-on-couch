@@ -12,7 +12,7 @@ import GroupCreator from './GroupCreator';
 import GroupEditor from './GroupEditor';
 
 const Groups = (props) => {
-    const groups = props.userGroups.map((group, i) => (
+    const groups = props.userGroups.map((group) => (
         <div className="card" key={group.name}>
             <GroupEditor
                 group={group}
