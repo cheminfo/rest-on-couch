@@ -13,4 +13,17 @@ exports.getConfig = function (database, customConfig) {
     return Object.assign({}, defaultConfig, homeConfig, dbConfig[database], envConfig, cliConfig, customConfig);
 };
 
-exports.globalConfig = exports.getConfig();
+const globalConfig = exports.getConfig();
+
+let proxyPrefix = globalConfig.proxyPrefix;
+    if (!proxyPrefix.startsWith('/')) {
+        proxyPrefix = '/' + proxyPrefix;
+    }
+    if (proxyPrefix.endsWith('/')) {
+        proxyPrefix = proxyPrefix.replace(/\/+$/, '');
+    }
+globalConfig.proxyPrefix = proxyPrefix;
+
+globalConfig.publicAddress = globalConfig.publicAddress.replace(/\/+$/, '') + proxyPrefix;
+
+exports.globalConfig = globalConfig;

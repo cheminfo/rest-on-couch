@@ -32,19 +32,12 @@ app.proxy = config.proxy;
 
 // support proxyPrefix in this.redirect()
 let proxyPrefix = config.proxyPrefix;
-if (!proxyPrefix.startsWith('/')) {
-    proxyPrefix = '/' + proxyPrefix;
-}
-if (!proxyPrefix.endsWith('/')) {
-    proxyPrefix = proxyPrefix + '/';
-}
-
 debug(`proxy prefix: ${proxyPrefix}`);
-if (proxyPrefix !== '/') {
+if (proxyPrefix !== '') {
     const _redirect = app.context.redirect;
     app.context.redirect = function (url, alt) {
         if (typeof url === 'string' && url.startsWith('/')) {
-            url = proxyPrefix + url.substring(1);
+            url = proxyPrefix + url;
         }
         return _redirect.call(this, url, alt);
     };
@@ -61,10 +54,10 @@ const bundlePath = path.join(__dirname, '../../public/bundle.js');
 if (fs.existsSync(bundlePath)) {
 // always render index.html unless it's an API route
     let indexHtml = fs.readFileSync(path.join(__dirname, '../../public/index.html'), 'utf8');
-    indexHtml = indexHtml.replace(/assets\//g, proxyPrefix + 'assets/');
+    indexHtml = indexHtml.replace(/assets\//g, proxyPrefix + '/assets/');
     const bundleJs = fs.readFileSync(bundlePath, 'utf8');
     app.use(function*(next) {
-        if (this.path.startsWith(`/db`) || this.path.startsWith(`/auth`)) {
+        if (this.path.startsWith('/db') || this.path.startsWith('/auth')) {
             yield next;
         } else if (this.path.endsWith('/bundle.js')) {
             this.body = bundleJs;

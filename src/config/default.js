@@ -16,7 +16,8 @@ module.exports = {
     },
     authServers: [],
     proxy: true,
-    proxyPrefix: '/',
+    proxyPrefix: '',
+    publicAddress: 'http://localhost:3000',
     keys: ['some secret'],
     sessionMaxAge: 24 * 60 * 60 * 1000, // One day
     allowedOrigins: [],

@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import {BrowserRouter, Match, Miss, Redirect} from 'react-router';
 import {connect} from 'react-redux';
 
+import {API_PROXY_PREFIX} from '../api';
 import {dbManager} from '../store';
 
 import DatabaseSelector from './DatabaseSelector';
@@ -13,7 +14,7 @@ import NoMatch from './NoMatch';
 import Sidebar from './Sidebar';
 
 const App = (props) => (
-    <BrowserRouter>
+    <BrowserRouter basename={API_PROXY_PREFIX}>
         <div>
             <div className="wrapper">
                 <Sidebar hasDb={props.hasDb} />
