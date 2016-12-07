@@ -64,7 +64,7 @@ if (fs.existsSync(bundlePath)) {
     indexHtml = indexHtml.replace(/assets\//g, proxyPrefix + 'assets/');
     const bundleJs = fs.readFileSync(bundlePath, 'utf8');
     app.use(function*(next) {
-        if (this.path.startsWith(`${proxyPrefix}db`) || this.path.startsWith(`${proxyPrefix}auth`)) {
+        if (this.path.startsWith(`/db`) || this.path.startsWith(`/auth`)) {
             yield next;
         } else if (this.path.endsWith('/bundle.js')) {
             this.body = bundleJs;
