@@ -1,3 +1,15 @@
+<a name="3.0.1"></a>
+## [3.0.1](https://github.com/cheminfo/rest-on-couch/compare/v3.0.0...v3.0.1) (2016-12-07)
+
+
+### Bug Fixes
+
+* normalize use of the proxy prefix ([f902010](https://github.com/cheminfo/rest-on-couch/commit/f902010))
+* **client:** google auth popup URL ([0ce760a](https://github.com/cheminfo/rest-on-couch/commit/0ce760a))
+* **server:** fix wrong routing in the presence of bundle.js ([adce947](https://github.com/cheminfo/rest-on-couch/commit/adce947))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/cheminfo/rest-on-couch/compare/v2.1.2...v3.0.0) (2016-12-07)
 
