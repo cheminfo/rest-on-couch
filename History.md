@@ -1,3 +1,22 @@
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/cheminfo/rest-on-couch/compare/v2.1.2...v3.0.0) (2016-12-07)
+
+
+### Features
+
+* **import:** allow to disable upload of main file and add more attachments ([a130482](https://github.com/cheminfo/rest-on-couch/commit/a130482))
+* **import:** allow to do everything in the same callback (fullProcess) ([0199155](https://github.com/cheminfo/rest-on-couch/commit/0199155))
+
+
+* remove support for Node.js v4 ([7acbddf](https://github.com/cheminfo/rest-on-couch/commit/7acbddf))
+
+
+### BREAKING CHANGES
+
+* Support for Node.js v4 has been dropped.
+
+
+
 <a name="2.1.2"></a>
 ## [2.1.2](https://github.com/cheminfo/rest-on-couch/compare/v2.1.1...v2.1.2) (2016-11-28)
 
