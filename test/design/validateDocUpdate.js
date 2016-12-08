@@ -46,7 +46,7 @@ describe('validate_doc_update', function () {
             assert(addDate(addTypeID({})), null, /Missing owners/);
         });
         it('group', function () {
-            assert(addDate(addOwners(addGroup({name: 'a@a.com', users: []}))), null, /only be alphanumerical/);
+            assert(addDate(addOwners(addGroup({name: 'a@a.com', users: []}))), null, /Names can only contain alphanumerical characters and _-\./);
         });
         it('kind', function () {
             assert(

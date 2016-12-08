@@ -20,7 +20,7 @@
     "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
     "start:dev": "webpack-dashboard -- webpack-dev-server --inline --content-base public/ --history-api-fallback",
     "start:prod": "npm run build && node bin/rest-on-couch-server.js",
-    "test": "npm run compile && npm run test-mocha && npm run eslint && sh test/checkOnly.sh",
+    "test": "npm run compile && (npm run test-mocha; npm run eslint)",
     "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup --reporter dot --recursive",
     "test-mocha": "mocha --timeout 5000 --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive",
     "watch": "npm run compile -- --watch"
