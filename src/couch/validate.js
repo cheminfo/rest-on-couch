@@ -148,7 +148,8 @@ async function getDefaultGroups(db, user, listOnly) {
     if (listOnly) {
         return Array.from(toGet);
     } else {
-        return Promise.all(Array.from(toGet).map(group => getGroup(db, group)));
+        const groups = await Promise.all(Array.from(toGet).map(group => getGroup(db, group)));
+        return groups.filter((group) => group !== null);
     }
 }
 

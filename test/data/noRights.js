@@ -29,7 +29,7 @@ function populate(db) {
     prom.push(insertDocument(db, {
         _id: 'defaultGroups',
         $type: 'db',
-        anonymous: ['defaultAnonymousRead'],
+        anonymous: ['defaultAnonymousRead', 'inexistantGroup'],
         anyuser: ['defaultAnyuserRead']
     }));
 
