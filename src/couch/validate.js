@@ -12,7 +12,7 @@ async function validateRights(ctx, ownerArrays, user, rights, type = 'entry') {
         ownerArrays = [ownerArrays];
     }
 
-    if (ctx.isAdmin(user)) {
+    if (ctx.isSuperAdmin(user)) {
         return ownerArrays.map(() => true);
     }
 
@@ -100,12 +100,14 @@ function isOwner(owners, user) {
 
 async function checkGlobalRight(ctx, user, right) {
     debug.trace(`checkGlobalRight (${user}, ${right})`);
-    if (ctx.isAdmin(user)) {
+    if (ctx.isSuperAdmin(user)) {
+        return true;
+    } else if (ctx.isAdmin(user) && constants.globalAdminRightTypes.includes(right)) {
         return true;
     }
 
     const result = await nanoPromise.queryView(ctx._db, 'globalRight', {key: right}, {onlyValue: true});
-    for (var i = 0; i < result.length; i++) {
+    for (let i = 0; i < result.length; i++) {
         if (result[i] === 'anonymous' || result[i] === user || result[i] === 'anyuser' && user !== 'anonymous') {
             debug.trace(`user ${user} has global right`);
             return true;

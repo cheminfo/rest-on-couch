@@ -69,6 +69,7 @@ class Couch {
         this._defaultEntry = config.defaultEntry || getDefaultEntry;
         this._rights = Object.assign({}, basicRights, config.rights || defaultRights);
         this._administrators = config.administrators || [];
+        this._superAdministrators = config.superAdministrators || [];
 
         this._nano = nano(this._couchOptions.url);
         this._db = null;
@@ -78,6 +79,7 @@ class Couch {
         this._authRenewal = null;
         this._authRenewalInterval = config.authRenewal;
         this.open().catch(() => {
+            // empty
         });
     }
 

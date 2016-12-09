@@ -65,7 +65,7 @@ const methods = {
         debug.trace('getDocsAsOwner');
         await this.open();
         options = Object.assign({}, options);
-        if (this.isAdmin(user)) {
+        if (this.isSuperAdmin(user)) {
             return nanoPromise.queryView(this._db, 'documentByType', {
                 key: type,
                 include_docs: true

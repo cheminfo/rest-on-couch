@@ -10,7 +10,7 @@ exports.handleError = function (ctx, code, error) {
     var errCode;
     switch (code) {
         case 'private':
-            err =  {
+            err = {
                 error: 'unauthorized',
                 reason: 'The resource is private'
             };

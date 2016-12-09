@@ -1,5 +1,6 @@
 'use strict';
 
+// super administrators have all these rights
 const globalRightTypes = [
     'read',
     'write',
@@ -7,6 +8,13 @@ const globalRightTypes = [
 
     'readGroup',
     'writeGroup',
+    'createGroup'
+];
+
+// administrators only have these rights
+const globalAdminRightTypes = [
+    'admin',
+    'create',
     'createGroup'
 ];
 
@@ -21,5 +29,6 @@ module.exports = {
     RIGHTS_DOC_ID: 'rights',
     DEFAULT_GROUPS_DOC_ID: 'defaultGroups',
     globalRightTypes,
+    globalAdminRightTypes,
     allowedFirstLevelKeys
 };

@@ -7,6 +7,7 @@ module.exports = {
     authRenewal: 570,
     autoCreateDatabase: false,
     administrators: [],
+    superAdministrators: [],
 
     // Server options
     port: 3000,

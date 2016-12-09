@@ -98,7 +98,7 @@ const methods = {
             debug.trace('group does not exist');
             throw new CouchError('group does not exist', 'not found');
         }
-        if (!this.isAdmin(user) && !validate.isOwner(doc.$owners, user)) {
+        if (!this.isSuperAdmin(user) && !validate.isOwner(doc.$owners, user)) {
             debug.trace('not allowed to get group');
             throw new CouchError(`user ${user} is not an owner of the group`, 'unauthorized');
         }

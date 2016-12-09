@@ -55,6 +55,8 @@ const methods = {
     async getGlobalRights(user) {
         await this.open();
         if (this.isAdmin(user)) {
+            return constants.globalAdminRightTypes.slice();
+        } else if (this.isSuperAdmin(user)) {
             return constants.globalRightTypes.slice();
         } else {
             const globalRightsDoc = await getGlobalRightsDocument(this);
@@ -105,6 +107,10 @@ const methods = {
 
     isAdmin(user) {
         return this._administrators.includes(user);
+    },
+
+    isSuperAdmin(user) {
+        return this._superAdministrators.includes(user);
     }
 };
 

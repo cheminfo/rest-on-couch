@@ -55,7 +55,7 @@ exports.tokenLookup = function* (next) {
 exports.getAllDbs = function*() {
     let allDbs = yield request.get(config.url + '/_all_dbs', {json: true});
     allDbs = allDbs.filter((dbname) => !dbname.startsWith('_'));
-    const result  = [];
+    const result = [];
     for (const dbname of allDbs) {
         const db = Couch.get(dbname);
         try {
