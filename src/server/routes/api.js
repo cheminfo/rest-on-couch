@@ -79,6 +79,8 @@ router.get('/:dbname/rights', couch.getGlobalRights);
 router.get('/:dbname/rights/doc/:right', couch.getGlobalRightsDocUsers);
 router.put('/:dbname/rights/doc/:right/:user', couch.addGlobalRightsDocUser);
 router.delete('/:dbname/rights/doc/:right/:user', couch.removeGlobalRightsDocUser);
+router.get('/:dbname/rights/defaultGroups', couch.getGlobalDefaultGroups);
+router.put('/:dbname/rights/defaultGroups', parseJson1mb, couch.setGlobalDefaultGroups);
 
 // Tokens
 router.post('/:dbname/entry/:uuid/_token', couch.createEntryToken);

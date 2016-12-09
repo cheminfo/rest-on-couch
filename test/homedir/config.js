@@ -5,6 +5,7 @@
 module.exports = {
     username: 'admin',
     password: 'admin',
+    administrators: ['admin@a.com'],
     autoCreateDatabase: true,
     customDesign: {
         views: {

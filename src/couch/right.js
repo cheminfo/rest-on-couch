@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:right');
@@ -57,13 +58,38 @@ const methods = {
     },
 
     async getGlobalRightUsers(user, type) {
+        await this.open();
         debug(`getGlobalRightUsers (${user}, ${type})`);
         if (!this.isAdmin(user)) {
-            throw new CouchError('Only administrators can change global rights', 'unauthorized');
+            throw new CouchError('Only administrators can get global rights', 'unauthorized');
         }
         checkGlobalType(type);
         const doc = await getGlobalRightsDocument(this);
         return doc[type] || [];
+    },
+
+    async getGlobalDefaultGroups(user) {
+        await this.open();
+        debug(`getGlobalDefaultGroups (${user})`);
+        if (!this.isAdmin(user)) {
+            throw new CouchError('Only administrators can get default groups', 'unauthorized');
+        }
+        return getDefaultGroupsDocument(this);
+    },
+
+    async setGlobalDefaultGroups(user, data) {
+        await this.open();
+        debug(`setGlobalDefaultGroups (${user})`);
+        if (!this.isAdmin(user)) {
+            throw new CouchError('Only administrators can set default groups', 'unauthorized');
+        }
+        if (!data) {
+            throw new CouchError('Missing data', 'invalid');
+        }
+        const doc = await getDefaultGroupsDocument(this);
+        doc.anonymous = data.anonymous;
+        doc.anyuser = data.anyuser;
+        return nanoPromise.insertDocument(this._db, doc);
     },
 
     /**
@@ -73,9 +99,7 @@ const methods = {
      */
     async getGlobalRights(user) {
         await this.open();
-        if (this.isAdmin(user)) {
-            return constants.globalAdminRightTypes.slice();
-        } else if (this.isSuperAdmin(user)) {
+        if (this.isSuperAdmin(user)) {
             return constants.globalRightTypes.slice();
         } else {
             const globalRightsDoc = await getGlobalRightsDocument(this);
@@ -107,7 +131,10 @@ const methods = {
                 }
             }
 
-            return Array.from(userRights);
+            const finalRights = Array.from(userRights);
+            return this.isAdmin(user) ?
+                _.union(finalRights, constants.globalAdminRightTypes) :
+                finalRights;
         }
     },
 

@@ -255,6 +255,14 @@ exports.removeGlobalRightsDocUser = composeWithError(function*() {
     this.body = yield this.state.couch.removeGlobalRight(this.state.userEmail, this.params.right, this.params.user);
 });
 
+exports.getGlobalDefaultGroups = composeWithError(function*() {
+    this.body = yield this.state.couch.getGlobalDefaultGroups(this.state.userEmail);
+});
+
+exports.setGlobalDefaultGroups = composeWithError(function*() {
+    this.body = yield this.state.couch.setGlobalDefaultGroups(this.state.userEmail, this.request.body);
+});
+
 exports.createEntryToken = composeWithError(function*() {
     const token = yield this.state.couch.createEntryToken(this.state.userEmail, this.params.uuid);
     this.status = 201;

@@ -19,8 +19,12 @@ describe('Access based on global rights', function () {
 describe('Edit global rights', function () {
     before(noRights);
 
+    it('Should refuse non-admins', function () {
+        return couch.addGlobalRight('a@a.com', 'read', 'a@a.com').should.be.rejectedWith(/Only administrators/);
+    });
+
     it('Should only accept valid types', function () {
-        return couch.addGlobalRight('unvalid', 'a@a.com').should.be.rejectedWith(/Invalid global right type/);
+        return couch.addGlobalRight('admin@a.com', 'invalid', 'a@a.com').should.be.rejectedWith(/Invalid global right type/);
     });
 
     it('Should not grant read before editing global right', function () {
@@ -28,13 +32,13 @@ describe('Edit global rights', function () {
     });
 
     it('Should add global read right and grant access', function () {
-        return couch.addGlobalRight('read', 'a@a.com')
+        return couch.addGlobalRight('admin@a.com', 'read', 'a@a.com')
             .then(() => couch.getEntry('B', 'a@a.com'))
             .should.eventually.be.an.instanceOf(Object);
     });
 
     it('Should remove global read right and not grant access anymore', function () {
-        return couch.removeGlobalRight('read', 'a@a.com')
+        return couch.removeGlobalRight('admin@a.com', 'read', 'a@a.com')
             .then(() => couch.getEntry('B', 'a@a.com'))
             .should.be.rejectedWith(/no access/);
     });
