@@ -1,3 +1,13 @@
+<a name="3.1.1"></a>
+## [3.1.1](https://github.com/cheminfo/rest-on-couch/compare/v3.1.0...v3.1.1) (2016-12-09)
+
+
+### Bug Fixes
+
+* **client:** only first owner cannot be removed ([c3dd5a6](https://github.com/cheminfo/rest-on-couch/commit/c3dd5a6))
+
+
+
 <a name="3.1.0"></a>
 # [3.1.0](https://github.com/cheminfo/rest-on-couch/compare/v3.0.1...v3.1.0) (2016-12-09)
 
