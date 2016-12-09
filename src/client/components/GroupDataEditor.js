@@ -12,7 +12,14 @@ const GroupDataEditor = ({type, data, addValue, removeValue}) => (
             </tr>
         </thead>
         <tbody>
-            {data.map((value, i) => (<GroupDataElement key={value} value={value} removeValue={removeValue} editable={i !== 0} />))}
+            {data.map((value, i) => (
+                <GroupDataElement
+                    key={value}
+                    value={value}
+                    removeValue={removeValue}
+                    editable={(type === 'owners') ? (i !== 0) : true}
+                />
+            ))}
             <tr>
                 <td>
                     <EnterTextField onSubmit={addValue} />
