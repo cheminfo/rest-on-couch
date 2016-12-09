@@ -36,15 +36,17 @@ function updateGroup(groupName, type, value, method) {
         throw new Error('wrong method');
     }
     const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
-    if (type === 'users') {
-        const url = `${groupUrl}/user/${value}`;
-        return updateGroupAction(apiFetchJSON(url, {method}).then(() => apiFetchJSON(groupUrl)));
+    let url;
+    if (type === 'owners') {
+        url = `${groupUrl}/_owner/${value}`;
+    } else if (type === 'users') {
+        url = `${groupUrl}/user/${value}`;
     } else if (type === 'rights') {
-        const url = `${groupUrl}/right/${value}`;
-        return updateGroupAction(apiFetchJSON(url, {method}).then(() => apiFetchJSON(groupUrl)));
+        url = `${groupUrl}/right/${value}`;
     } else {
         throw new Error('unreachable');
     }
+    return updateGroupAction(apiFetchJSON(url, {method}).then(() => apiFetchJSON(groupUrl)));
 }
 
 export const CREATE_GROUP = 'CREATE_GROUP';

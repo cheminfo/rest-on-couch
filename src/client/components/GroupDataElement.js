@@ -1,14 +1,19 @@
 import React from 'react';
 
-const GroupDataElement = ({value, removeValue}) => (
+const GroupDataElement = ({value, removeValue, editable}) => (
     <tr>
         <td>
             {value}
         </td>
         <td className="td-action">
-            <button type="button" className="btn btn-danger btn-simple btn-xs" onClick={() => removeValue(value)}>
-                <i className="fa fa-times" />
-            </button>
+            {
+                editable ?
+                    <button type="button" className="btn btn-danger btn-simple btn-xs" onClick={() => removeValue(value)}>
+                        <i className="fa fa-times" />
+                    </button> :
+                    null
+            }
+
         </td>
     </tr>
 );

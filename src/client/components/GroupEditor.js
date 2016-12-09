@@ -15,7 +15,16 @@ const GroupEditor = ({group, addValueToGroup, removeValueFromGroup, removeGroup}
         <div className="content">
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-4">
+                        <GroupDataEditor
+                            type="owners"
+                            owners={true}
+                            data={group.$owners}
+                            addValue={(value) => addValueToGroup(group.name, 'owners', value)}
+                            removeValue={(value) => removeValueFromGroup(group.name, 'owners', value)}
+                        />
+                    </div>
+                    <div className="col-md-4">
                         <GroupDataEditor
                             type="users"
                             data={group.users}
@@ -23,7 +32,7 @@ const GroupEditor = ({group, addValueToGroup, removeValueFromGroup, removeGroup}
                             removeValue={(value) => removeValueFromGroup(group.name, 'users', value)}
                         />
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-md-4">
                         <GroupDataEditor
                             type="rights"
                             data={group.rights}
