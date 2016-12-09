@@ -243,6 +243,18 @@ exports.getGlobalRights = composeWithError(function*() {
     this.body = yield this.state.couch.getGlobalRights(this.state.userEmail);
 });
 
+exports.getGlobalRightsDocUsers = composeWithError(function*() {
+    this.body = yield this.state.couch.getGlobalRightUsers(this.state.userEmail, this.params.right);
+});
+
+exports.addGlobalRightsDocUser = composeWithError(function*() {
+    this.body = yield this.state.couch.addGlobalRight(this.state.userEmail, this.params.right, this.params.user);
+});
+
+exports.removeGlobalRightsDocUser = composeWithError(function*() {
+    this.body = yield this.state.couch.removeGlobalRight(this.state.userEmail, this.params.right, this.params.user);
+});
+
 exports.createEntryToken = composeWithError(function*() {
     const token = yield this.state.couch.createEntryToken(this.state.userEmail, this.params.uuid);
     this.status = 201;

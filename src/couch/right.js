@@ -8,43 +8,62 @@ const util = require('./util');
 const nano = require('./nano');
 
 const methods = {
-    async editGlobalRight(type, user, action) {
+    async editGlobalRight(user, type, target, action) {
         await this.open();
+        if (!this.isAdmin(user)) {
+            throw new CouchError('Only administrators can change global rights', 'unauthorized');
+        }
         if (action !== 'add' && action !== 'remove') {
             throw new CouchError('Edit global right invalid action', 'bad argument');
         }
-        let e = checkGlobalTypeAndUser(type, user);
-        if (e) {
-            throw e;
-        }
+
+        checkGlobalType(type);
+        checkGlobalUser(target);
 
         const doc = await getGlobalRightsDocument(this);
+        let hasChanged = false;
         if (action === 'add') {
             if (!doc[type]) doc[type] = [];
-            if (doc[type].indexOf(user) === -1) {
-                doc[type].push(user);
+            if (!doc[type].includes(target)) {
+                doc[type].push(target);
+                hasChanged = true;
             }
         }
         if (action === 'remove') {
             if (doc[type]) {
-                const idx = doc[type].indexOf(user);
+                const idx = doc[type].indexOf(target);
                 if (idx !== -1) {
                     doc[type].splice(idx, 1);
+                    hasChanged = true;
                 }
             }
         }
 
-        return nanoPromise.insertDocument(this._db, doc);
+        if (hasChanged) {
+            return nanoPromise.insertDocument(this._db, doc);
+        } else {
+            return null;
+        }
     },
 
-    addGlobalRight(type, user) {
-        debug(`addGlobalRight (${type}, ${user})`);
-        return this.editGlobalRight(type, user, 'add');
+    addGlobalRight(user, type, target) {
+        debug(`addGlobalRight (${user}, ${type}, ${target})`);
+        return this.editGlobalRight(user, type, target, 'add');
     },
 
-    removeGlobalRight(type, user) {
-        debug(`addGlobalRight (${type}, ${user})`);
-        return this.editGlobalRight(type, user, 'remove');
+    removeGlobalRight(user, type, target) {
+        debug(`removeGlobalRight (${user}, ${type}, ${target})`);
+        return this.editGlobalRight(user, type, target, 'remove');
+    },
+
+    async getGlobalRightUsers(user, type) {
+        debug(`getGlobalRightUsers (${user}, ${type})`);
+        if (!this.isAdmin(user)) {
+            throw new CouchError('Only administrators can change global rights', 'unauthorized');
+        }
+        checkGlobalType(type);
+        const doc = await getGlobalRightsDocument(this);
+        return doc[type] || [];
     },
 
     /**
@@ -106,7 +125,7 @@ const methods = {
     },
 
     isAdmin(user) {
-        return this._administrators.includes(user);
+        return this._administrators.includes(user) || this.isSuperAdmin(user);
     },
 
     isSuperAdmin(user) {
@@ -126,14 +145,16 @@ async function getGlobalRightsDocument(couch) {
     return doc;
 }
 
-function checkGlobalTypeAndUser(type, user) {
+function checkGlobalType(type) {
     if (!util.isValidGlobalRightType(type)) {
-        return new CouchError('Invalid global right type', 'bad argument');
+        throw new CouchError('Invalid global right type', 'bad argument');
     }
+}
+
+function checkGlobalUser(user) {
     if (!util.isValidGlobalRightUser(user)) {
-        return new CouchError('Invalid global right user', 'bad argument');
+        throw new CouchError('Invalid global right user', 'bad argument');
     }
-    return null;
 }
 
 module.exports = {

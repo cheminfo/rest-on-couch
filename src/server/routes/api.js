@@ -76,6 +76,9 @@ router.delete('/:dbname/group/:name/_owner/:owner', getUuidFromGroupName, parseJ
 
 // Global rights
 router.get('/:dbname/rights', couch.getGlobalRights);
+router.get('/:dbname/rights/doc/:right', couch.getGlobalRightsDocUsers);
+router.put('/:dbname/rights/doc/:right/:user', couch.addGlobalRightsDocUser);
+router.delete('/:dbname/rights/doc/:right/:user', couch.removeGlobalRightsDocUser);
 
 // Tokens
 router.post('/:dbname/entry/:uuid/_token', couch.createEntryToken);
