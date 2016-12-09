@@ -1,3 +1,22 @@
+<a name="3.1.0"></a>
+# [3.1.0](https://github.com/cheminfo/rest-on-couch/compare/v3.0.1...v3.1.0) (2016-12-09)
+
+
+### Bug Fixes
+
+* allow any email address and allow a dot in group names ([c7a1ed6](https://github.com/cheminfo/rest-on-couch/commit/c7a1ed6))
+* don't throw if default group does not exist ([9e3aa62](https://github.com/cheminfo/rest-on-couch/commit/9e3aa62))
+
+
+### Features
+
+* add API to manage default groups doc ([321e951](https://github.com/cheminfo/rest-on-couch/commit/321e951))
+* **client:** add group owners edition ([2021a36](https://github.com/cheminfo/rest-on-couch/commit/2021a36))
+* **core:** move administrators to superAdministrators ([de79db2](https://github.com/cheminfo/rest-on-couch/commit/de79db2))
+* **server:** add API to manage global rights doc ([badfc64](https://github.com/cheminfo/rest-on-couch/commit/badfc64))
+
+
+
 <a name="3.0.1"></a>
 ## [3.0.1](https://github.com/cheminfo/rest-on-couch/compare/v3.0.0...v3.0.1) (2016-12-07)
 
