@@ -39,7 +39,7 @@ exports.init = function (passport, router, config, mainConfig) {
         new GoogleStrategy({
             clientID: config.clientID,
             clientSecret: config.clientSecret,
-            callbackURL: mainConfig.publicAddress + '/auth/login/google/callback'
+            callbackURL: `${mainConfig.publicAddress}/auth/login/google/callback`
         },
         function (accessToken, refreshToken, profile, done) {
             const email = profile.emails.find(email => email.type === 'account');

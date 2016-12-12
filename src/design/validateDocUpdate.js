@@ -81,7 +81,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     }
 
     if (!newDoc.$type || validTypes.indexOf(newDoc.$type) === -1) {
-        throw ({forbidden: 'Invalid type: ' + newDoc.$type});
+        throw ({forbidden: `Invalid type: ${newDoc.$type}`});
     }
     if (oldDoc && newDoc.$type !== oldDoc.$type) {
         throw ({forbidden: 'Cannot change the type of document'});

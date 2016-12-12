@@ -20,7 +20,7 @@ exports.init = function (passport, router) {
                 if (!isEmail(username)) {
                     return done(null, false, 'username must be an email');
                 }
-                var res = yield request.post(couchUrl + '/' + '_session', {
+                let res = yield request.post(`${couchUrl}/_session`, {
                     form: {
                         name: username,
                         password: password

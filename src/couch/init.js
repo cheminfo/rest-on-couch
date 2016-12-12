@@ -200,7 +200,7 @@ async function checkDesignDoc(couch) {
                 designDoc.views[viewName] = custom.views[viewName];
             }
         }
-        designDoc._id = '_design/' + designName;
+        designDoc._id = `_design/${designName}`;
         return designDoc;
     }
 }

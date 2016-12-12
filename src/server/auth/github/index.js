@@ -57,13 +57,13 @@ exports.init = function (passport, router, config) {
         function (accessToken, refreshToken, profile, done) {
             // Get the user's email
             co(function*() {
-                var answer = yield request({
-                    url: 'https://api.github.com/user/emails?access_token=' + accessToken,
+                const answer = yield request({
+                    url: `https://api.github.com/user/emails?access_token=${accessToken}`,
                     headers: {
                         'User-Agent': 'request'
                     }
                 });
-                var email = answer.filter(function (val) {
+                const email = answer.filter(function (val) {
                     return val.primary === true;
                 });
                 if (email.length === 0 && answer[0] && answer[0].email) profile.email = answer[0].email;
@@ -78,7 +78,7 @@ exports.init = function (passport, router, config) {
     ));
 
     router.get(config.loginURL, function*(next) {
-        this.session.redirect = config.successRedirect + '?' + this.request.querystring;
+        this.session.redirect = `${config.successRedirect}?${this.request.querystring}`;
         yield next;
     }, passport.authenticate('github', {scope: ['user:email']}));
 

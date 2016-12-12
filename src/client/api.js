@@ -11,7 +11,7 @@ export function apiFetch(path, options) {
             'Content-Type': 'application/json'
         }
     }, options);
-    return fetch(API_ROOT + '/' + path, options);
+    return fetch(`${API_ROOT}/${path}`, options);
 }
 
 export async function apiFetchJSON(path, options) {

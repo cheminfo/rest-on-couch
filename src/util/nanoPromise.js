@@ -7,7 +7,7 @@ const getConfig = require('../config/config').getConfig;
 
 exports.authenticate = function (nano, user, password) {
     return new Promise((resolve, reject) => {
-        debug.trace('auth ' + user);
+        debug.trace(`auth ${user}`);
         nano.auth(user, password, (err, body, headers) => {
             if (err) {
                 debug.warn('auth failed');
@@ -24,7 +24,7 @@ exports.authenticate = function (nano, user, password) {
 
 exports.getDatabase = function (nano, database) {
     return new Promise((resolve, reject) => {
-        debug.trace('getDatabase ' + database);
+        debug.trace(`getDatabase ${database}`);
         nano.db.get(database, (err) => {
             if (err) {
                 if (err.reason === 'no_db_file') {
@@ -42,7 +42,7 @@ exports.getDatabase = function (nano, database) {
 
 exports.createDatabase = function (nano, database) {
     return new Promise((resolve, reject) => {
-        debug.trace('createDatabase ' + database);
+        debug.trace(`createDatabase ${database}`);
         nano.db.create(database, (err) => {
             if (err) {
                 debug.warn('create failed');
@@ -114,7 +114,7 @@ exports.queryView = function (db, view, params, options) {
 
 exports.destroyDatabase = function (nano, dbName) {
     return new Promise((resolve, reject) => {
-        debug('destroy database ' + dbName);
+        debug(`destroy database ${dbName}`);
         nano.db.destroy(dbName, (err, body) => {
             if (err) reject(err);
             else resolve(body);

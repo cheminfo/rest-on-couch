@@ -49,7 +49,7 @@ exports.init = function (passport, router, config) {
     ));
 
     router.get(config.loginURL, function*(next) {
-        this.session.redirect = config.successRedirect + '?' + this.request.querystring;
+        this.session.redirect = `${config.successRedirect}?${this.request.querystring}`;
         yield next;
     }, passport.authenticate('facebook', {scope: ['email']}));
 

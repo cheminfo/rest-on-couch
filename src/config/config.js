@@ -17,7 +17,7 @@ const globalConfig = exports.getConfig();
 
 let proxyPrefix = globalConfig.proxyPrefix;
 if (!proxyPrefix.startsWith('/')) {
-    proxyPrefix = '/' + proxyPrefix;
+    proxyPrefix = `/${proxyPrefix}`;
 }
 if (proxyPrefix.endsWith('/')) {
     proxyPrefix = proxyPrefix.replace(/\/+$/, '');

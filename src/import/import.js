@@ -70,7 +70,7 @@ function verifyConfig(config, name, defaultValue, mustBeFunction) {
         if (defaultValue) {
             return defaultValue;
         }
-        throw new Error('missing configuration value: ' + name);
+        throw new Error(`missing configuration value: ${name}`);
     }
     if (mustBeFunction && typeof value !== 'function') {
         throw new Error(`configuration value ${name} must be a function`);
@@ -177,7 +177,7 @@ async function checkDocumentExists(info, filename, contents, couch) {
 async function updateDocument(info, docInfo, isParse, isJson, filename, contents, couch) {
     debug.trace('updateDocument');
     if (isParse) {
-        const joined = info.jpath.join('/') + '/';
+        const joined = `${info.jpath.join('/')}/`;
         if (!info.noUpload) {
             const goodFilename = fold(filename, '_');
             await couch.addFileToJpath(info.id, info.owner, info.jpath, info.data, {

@@ -6,7 +6,7 @@
  */
 module.exports = function (message) {
     if (message) {
-        process.stderr.write('rest-on-couch: ' + message + '\n');
+        process.stderr.write(`rest-on-couch: ${message}\n`);
     }
     process.exit(1);
 };

@@ -9,7 +9,7 @@ const getConfig = require('./config/config').getConfig;
 const log = require('./couch/log');
 
 process.on('unhandledRejection', function (err) {
-    debug.error('unhandled rejection: ' + err.stack);
+    debug.error(`unhandled rejection: ${err.stack}`);
 });
 
 const basicRights = {

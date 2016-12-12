@@ -53,7 +53,7 @@ exports.tokenLookup = function* (next) {
 };
 
 exports.getAllDbs = function*() {
-    let allDbs = yield request.get(config.url + '/_all_dbs', {json: true});
+    let allDbs = yield request.get(`${config.url}/_all_dbs`, {json: true});
     allDbs = allDbs.filter((dbname) => !dbname.startsWith('_'));
     const result = [];
     for (const dbname of allDbs) {
@@ -398,7 +398,7 @@ function processQuery(ctx) {
     } else {
         if (type === 'string') {
             query.startkey = q;
-            query.endkey = q + '\ufff0';
+            query.endkey = `${q}\ufff0`;
         } else {
             query.key = q;
         }

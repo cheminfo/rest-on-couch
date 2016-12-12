@@ -54,7 +54,7 @@ const bundlePath = path.join(__dirname, '../../public/bundle.js');
 if (fs.existsSync(bundlePath)) {
 // always render index.html unless it's an API route
     let indexHtml = fs.readFileSync(path.join(__dirname, '../../public/index.html'), 'utf8');
-    indexHtml = indexHtml.replace(/assets\//g, proxyPrefix + '/assets/');
+    indexHtml = indexHtml.replace(/assets\//g, `${proxyPrefix}/assets/`);
     const bundleJs = fs.readFileSync(bundlePath, 'utf8');
     app.use(function*(next) {
         if (this.path.startsWith('/db') || this.path.startsWith('/auth')) {
@@ -118,7 +118,7 @@ if (config.debugrest) {
             yield next;
         } catch (err) {
             this.status = err.status || 500;
-            this.body = err.message + '\n' + err.stack;
+            this.body = `${err.message}\n${err.stack}`;
             printError(err);
         }
     });
@@ -133,7 +133,7 @@ module.exports.start = function () {
     if (_started) return _started;
     _started = new Promise(function (resolve) {
         http.createServer(app.callback()).listen(config.port, function () {
-            debug.warn('running on localhost:' + config.port);
+            debug.warn(`running on localhost: ${config.port}`);
             resolve(app);
         });
     });
@@ -143,5 +143,5 @@ module.exports.start = function () {
 module.exports.app = app;
 
 function printError(err) {
-    debug.error('unexpected error: ' + (err.stack || err));
+    debug.error(`unexpected error: ${err.stack || err}`);
 }
