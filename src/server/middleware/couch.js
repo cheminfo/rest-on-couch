@@ -315,8 +315,11 @@ function onGetError(ctx, e, secure) {
             }
             break;
     }
+    if (e.message) {
+        ctx.body += `: ${e.message}`;
+    }
     if (config.debugrest) {
-        ctx.body += '\n\n' + e + '\n' + e.stack;
+        ctx.body += `\n\n$%{e}\n${e.stack}`;
     }
 }
 
