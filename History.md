@@ -1,3 +1,14 @@
+<a name="3.1.2"></a>
+## [3.1.2](https://github.com/cheminfo/rest-on-couch/compare/v3.1.1...v3.1.2) (2016-12-15)
+
+
+### Bug Fixes
+
+* do not use ES6 in design doc ([f7f3a95](https://github.com/cheminfo/rest-on-couch/commit/f7f3a95))
+* **security:** give no default right when a database is created ([191c900](https://github.com/cheminfo/rest-on-couch/commit/191c900))
+
+
+
 <a name="3.1.1"></a>
 ## [3.1.1](https://github.com/cheminfo/rest-on-couch/compare/v3.1.0...v3.1.1) (2016-12-09)
 
