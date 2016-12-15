@@ -124,17 +124,13 @@ function getFilesToProcess(directory, maxElements) {
     return new Promise((resolve, reject) => {
         const items = [];
         const walkStream = fs.walk(directory, {queueMethod: sortWalk});
-        walkStream.close = function () {
-            // undocumented "feature". used to stop walking
-            // todo: PR to the klaw module to make an official API for it
-            this.paths = [];
-        };
         walkStream
-            .on('data', (item) => {
+            .on('data', function (item) {
                 if (item.stats.isFile()) {
                     items.push(item.path);
                     if (maxElements > 0 && items.length >= maxElements) {
-                        walkStream.close();
+                        this.pause();
+                        resolve(items);
                     }
                 }
             })
