@@ -26,6 +26,13 @@ const authPlugins = [
 const enabledAuthPlugins = [];
 const showLoginAuthPlugins = [];
 
+const defaultAuthPluginConfig = {
+    ldap: {
+        title: 'LDAP login'
+    }
+};
+const authPluginConfig = {};
+
 if (config.auth) {
     authPlugins.forEach((authPlugin) => {
         const pluginConfig = config.auth[authPlugin];
@@ -33,6 +40,7 @@ if (config.auth) {
             debug(`plugin ${authPlugin} not configured`);
             return;
         }
+        authPluginConfig[authPlugin] = Object.assign({}, defaultAuthPluginConfig[authPlugin], pluginConfig);
         try {
             debug(`loading auth plugin: ${authPlugin}`);
             require(`../auth/${authPlugin}/index.js`).init(passport, router, config.auth[authPlugin], config);
@@ -69,6 +77,7 @@ router.get('/login', function*() {
     } else {
         this.session.popup = false;
         this.state.enabledAuthPlugins = showLoginAuthPlugins;
+        this.state.pluginConfig = authPluginConfig;
         yield this.render('login');
     }
 });

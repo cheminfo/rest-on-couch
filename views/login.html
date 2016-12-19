@@ -25,7 +25,7 @@
     {% endif %}
 
     {% if "ldap" in enabledAuthPlugins %}
-        <h3>LDAP login</h3>
+        <h3>{{ pluginConfig.ldap.title }}</h3>
         <p>
             <form method="post" action="login/ldap">
                 <label for="ldap-username">Username</label>
