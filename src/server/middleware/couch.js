@@ -164,6 +164,10 @@ exports.editUser = composeWithError(function*() {
     this.body = yield this.state.couch.editUser(this.state.userEmail, this.request.body);
 });
 
+exports.getUserInfo = composeWithError(function*() {
+    this.body = yield this.state.couch.getUserInfo(this.state.userEmail);
+});
+
 exports.getOwners = function (type) {
     return composeWithError(function*() {
         const doc = yield this.state.couch.getDocByRights(this.params.uuid, this.state.userEmail, 'read', type);

@@ -23,5 +23,8 @@ module.exports = {
     sessionMaxAge: 24 * 60 * 60 * 1000, // One day
     allowedOrigins: [],
     debugrest: false,
-    rights: {}
+    rights: {},
+    getUserInfo(email) {
+        return {email};
+    }
 };

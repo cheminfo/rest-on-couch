@@ -29,5 +29,11 @@ module.exports = {
     },
     auth: {
         couchdb: {}
+    },
+    getUserInfo(email) {
+        return Promise.resolve({
+            email,
+            value: 42
+        });
     }
 };

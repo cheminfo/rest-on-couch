@@ -7,7 +7,7 @@ const simpleMerge = require('../util/simpleMerge');
 
 const methods = {
     async editUser(user, data) {
-        debug(`edit user (${user})`);
+        debug(`editUser (${user})`);
         if (typeof data !== 'object' || data === null) {
             throw new CouchError('user data should be an object', 'bad argument');
         }
@@ -27,9 +27,14 @@ const methods = {
     },
 
     async getUser(user) {
-        debug(`get user (${user})`);
+        debug(`getUser (${user})`);
         await this.open();
         return getUser(this._db, user);
+    },
+
+    async getUserInfo(user) {
+        debug(`getUserInfo (${user})`);
+        return this._getUserInfo(user);
     }
 };
 

@@ -42,4 +42,11 @@ describe('Couch user API', function () {
                 });
             });
     });
+
+    it('getUserInfo', function () {
+        return couch.getUserInfo('user@test.com').then(user => {
+            user.email.should.equal('user@test.com');
+            user.value.should.equal(42);
+        });
+    });
 });

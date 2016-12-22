@@ -62,6 +62,8 @@ class Couch {
             }
         }
 
+        this._getUserInfo = config.getUserInfo;
+
         this._defaultEntry = config.defaultEntry || getDefaultEntry;
         this._rights = Object.assign({}, basicRights, config.rights);
         this._administrators = config.administrators || [];
