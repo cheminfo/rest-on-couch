@@ -1,3 +1,13 @@
+<a name="3.2.0"></a>
+# [3.2.0](https://github.com/cheminfo/rest-on-couch/compare/v3.1.3...v3.2.0) (2016-12-22)
+
+
+### Features
+
+* add getUserInfo ([b25c1e9](https://github.com/cheminfo/rest-on-couch/commit/b25c1e9))
+
+
+
 <a name="3.1.3"></a>
 ## [3.1.3](https://github.com/cheminfo/rest-on-couch/compare/v3.1.2...v3.1.3) (2016-12-19)
 
