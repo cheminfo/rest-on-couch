@@ -1,3 +1,13 @@
+<a name="3.3.0"></a>
+# [3.3.0](https://github.com/cheminfo/rest-on-couch/compare/v3.2.0...v3.3.0) (2017-01-17)
+
+
+### Features
+
+* add custom title for CouchDB login ([6661378](https://github.com/cheminfo/rest-on-couch/commit/6661378))
+
+
+
 <a name="3.2.0"></a>
 # [3.2.0](https://github.com/cheminfo/rest-on-couch/compare/v3.1.3...v3.2.0) (2016-12-22)
 
