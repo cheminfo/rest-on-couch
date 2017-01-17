@@ -29,6 +29,9 @@ const showLoginAuthPlugins = [];
 const defaultAuthPluginConfig = {
     ldap: {
         title: 'LDAP login'
+    },
+    couchdb: {
+        title: 'CouchDB login'
     }
 };
 const authPluginConfig = {};
