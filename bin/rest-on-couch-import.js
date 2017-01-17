@@ -6,6 +6,7 @@ const chokidar = require('chokidar');
 const co = require('co');
 const fs = require('fs-extra');
 const fsp = require('thenify-all')(fs);
+const klaw = require('klaw');
 const path = require('path');
 const program = require('commander');
 
@@ -123,7 +124,7 @@ const findFiles = co.wrap(function* (homeDir, limit) {
 function getFilesToProcess(directory, maxElements) {
     return new Promise((resolve, reject) => {
         const items = [];
-        const walkStream = fs.walk(directory, {queueMethod: sortWalk});
+        const walkStream = klaw(directory, {queueMethod: sortWalk});
         walkStream
             .on('data', function (item) {
                 if (item.stats.isFile()) {
