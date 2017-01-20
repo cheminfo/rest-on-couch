@@ -20,25 +20,30 @@ exports.init = function (passport, router) {
                 if (!isEmail(username)) {
                     return done(null, false, 'username must be an email');
                 }
-                let res = yield request.post(`${couchUrl}/_session`, {
-                    form: {
-                        name: username,
-                        password: password
-                    },
-                    resolveWithFullResponse: true
-                });
-                if (res[0] instanceof Error) {
-                    return done(res[0]);
-                }
-                res = JSON.parse(res.body);
+                try {
+                    let res = yield request.post(`${couchUrl}/_session`, {
+                        form: {
+                            name: username,
+                            password: password
+                        },
+                        resolveWithFullResponse: true
+                    });
 
-                if (res.error) {
-                    return done(null, false, res.reason);
+                    res = JSON.parse(res.body);
+                    return done(null, {
+                        email: res.name,
+                        provider: 'local'
+                    });
+                } catch (e) {
+                    if (!e || !e.body) return done(null, false, 'unknown error');
+
+                    try {
+                        let res = JSON.parse(e.body);
+                        return done(null, false, res.reason);
+                    } catch (e) {
+                        return done(null, false, 'unknown error');
+                    }
                 }
-                return done(null, {
-                    email: res.name,
-                    provider: 'local'
-                });
             });
         }));
 
