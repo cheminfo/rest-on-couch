@@ -320,9 +320,9 @@ if (program.args[0]) {
     const file = path.resolve(program.args[0]);
     const database = program.args[1];
     const kind = program.args[2];
-    return imp.import(database, kind, file, {dryRun: program.dryRun})
-        .then(() => console.error('Imported successfully'))
-        .catch((e) => console.error(`Import error:\n${e.stack}`));
+    imp.import(database, kind, file, {dryRun: program.dryRun})
+        .then(() => debug('Imported successfully'))
+        .catch((e) => debug.error(`Import error:\n${e.stack}`));
 } else if (program.watch) {
     // watch files to import
     let homeDir = getHomeDir();
