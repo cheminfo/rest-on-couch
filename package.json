@@ -9,6 +9,9 @@
     "lib",
     "views"
   ],
+  "bin": {
+    "rest-on-couch-import": "./bin/rest-on-couch-import.js"
+  },
   "scripts": {
     "build": "npm run build:server && npm run build:client",
     "build:client": "webpack",
