@@ -1,3 +1,19 @@
+<a name="3.4.0"></a>
+# [3.4.0](https://github.com/cheminfo/rest-on-couch/compare/v3.3.0...v3.4.0) (2017-01-25)
+
+
+### Bug Fixes
+
+* **login:** return a response when couchDB login fails ([39f8b02](https://github.com/cheminfo/rest-on-couch/commit/39f8b02))
+
+
+### Features
+
+* **bin:** add rest-on-couch-import global script ([ae1ca45](https://github.com/cheminfo/rest-on-couch/commit/ae1ca45))
+* **import:** add dryRun option and enable single file import ([6a28969](https://github.com/cheminfo/rest-on-couch/commit/6a28969))
+
+
+
 <a name="3.3.0"></a>
 # [3.3.0](https://github.com/cheminfo/rest-on-couch/compare/v3.2.0...v3.3.0) (2017-01-17)
 
