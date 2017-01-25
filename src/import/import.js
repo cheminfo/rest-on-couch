@@ -8,8 +8,11 @@ const Couch = require('../index');
 const debug = require('../util/debug')('import');
 const getConfig = require('../config/config').getConfig;
 
-exports.import = async function (database, importName, file) {
+exports.import = async function (database, importName, file, options) {
     debug(`import ${file} (${database}, ${importName})`);
+
+    options = options || {};
+    const dryRun = !!options.dryRun;
 
     const filename = path.parse(file).base;
     let contents = fs.readFileSync(file);
@@ -52,6 +55,8 @@ exports.import = async function (database, importName, file) {
             await getKind(info, config.kind, filename, contents, couch);
         }
     }
+
+    if (dryRun) return;
 
     try {
         const docInfo = await checkDocumentExists(info, filename, contents, couch);

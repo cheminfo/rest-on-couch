@@ -20,13 +20,14 @@ const importFiles = {};
 const createdDirs = {};
 
 program
-    .usage('<file>')
+    .usage('<file> <database> <kind>')
     .option('-l, --limit <number>', 'Limit of files to import', Number)
     .option('-w, --watch', 'Watch files')
     .option('--continuous', 'Continuous mode. When import is finished, wait for some time and then import again')
     .option('--wait <time>', 'Wait time in seconds between imports for continuous mode (default: 60)', Number, 60)
     .option('--sort <order>', 'Sorting order of the files when to_processed is walked (default: asc)', String, 'asc')
     .option('-c --config <path>', 'Path to custom config file')
+    .option('--dry-run', 'Do all the steps without updating the database')
     .parse(process.argv);
 
 if (program.sort !== 'asc' && program.sort !== 'desc') {
@@ -312,11 +313,16 @@ function shouldIgnore(name) {
 }
 
 if (program.args[0]) {
-    debug(`file argument: ${program.args[0]}`);
-    // TODO add 2 arguments: db and import names
-    throw new Error('not ready');
-    //const file = path.resolve(program.args[0]);
-    //imp.import(config, file);
+    if (program.args.length !== 3) {
+        program.help();
+    }
+    debug(`Import with arguments: ${program.args.join(' ')}`);
+    const file = path.resolve(program.args[0]);
+    const database = program.args[1];
+    const kind = program.args[2];
+    return imp.import(database, kind, file, {dryRun: program.dryRun})
+        .then(() => console.error('Imported successfully'))
+        .catch((e) => console.error(`Import error:\n${e.stack}`));
 } else if (program.watch) {
     // watch files to import
     let homeDir = getHomeDir();
