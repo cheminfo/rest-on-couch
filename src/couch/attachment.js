@@ -33,17 +33,17 @@ const methods = {
         return getAttachmentFromEntry(entry, this, name, asStream);
     },
 
-    async addFileToJpath(id, user, jpath, json, file, newContent) {
+    async addFileToJpath(id, user, jpath, json, file, newContent, noFile) {
         if (!Array.isArray(jpath)) {
             throw new CouchError('jpath must be an array');
         }
         if (typeof json !== 'object') {
             throw new CouchError('json must be an object');
         }
-        if (typeof file !== 'object') {
+        if (typeof file !== 'object' || file === null) {
             throw new CouchError('file must be an object');
         }
-        if (!file.field || !file.name || !file.data) {
+        if (!noFile && !file.field || !file.name || !file.data) {
             throw new CouchError('file must have field, name and data properties');
         }
 
@@ -82,16 +82,18 @@ const methods = {
             current.push(json);
         }
 
-        json[file.field] = {
-            filename: file.name
-        };
+        if (!noFile) {
+            json[file.field] = {
+                filename: file.name
+            };
 
-        if (!entry._attachments) entry._attachments = {};
+            if (!entry._attachments) entry._attachments = {};
 
-        entry._attachments[file.name] = {
-            content_type: file.content_type,
-            data: (typeof file.data === 'string') ? file.data : file.data.toString('base64')
-        };
+            entry._attachments[file.name] = {
+                content_type: file.content_type,
+                data: (typeof file.data === 'string') ? file.data : file.data.toString('base64')
+            };
+        }
         return this.insertEntry(entry, user);
     }
 };

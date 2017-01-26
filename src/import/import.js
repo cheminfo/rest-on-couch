@@ -147,26 +147,24 @@ function fillInfoWithResult(info, result) {
         error.skip = true;
         throw error;
     }
-    if (typeof result.jpath !== 'string') {
+    if (typeof result.jpath !== 'string' && typeof result.jpath !== 'undefined') {
         throw new Error('parse: jpath must be a string');
     }
     if (typeof result.data !== 'object' || result.data === null) {
         throw new Error('parse: data must be an object');
     }
-    if (typeof result.field !== 'string') {
+    if (typeof result.field !== 'string' && typeof result.field !== 'undefined') {
         throw new Error('parse: field must be a string');
     }
 
     debug.trace(`jpath: ${result.jpath}`);
-    info.jpath = result.jpath.split('.');
+    if (result.jpath) info.jpath = result.jpath.split('.');
     info.data = result.data;
     info.content_type = result.content_type || 'application/octet-stream';
     info.field = result.field;
     info.reference = result.reference;
     info.content = result.content;
-    if (result.noUpload) {
-        info.noUpload = true;
-    }
+    info.noUpload = !!result.noUpload;
     info.attachments = result.attachments;
 }
 
@@ -182,8 +180,8 @@ async function checkDocumentExists(info, filename, contents, couch) {
 async function updateDocument(info, docInfo, isParse, isJson, filename, contents, couch) {
     debug.trace('updateDocument');
     if (isParse) {
-        const joined = `${info.jpath.join('/')}/`;
-        if (!info.noUpload) {
+        const joined = info.jpath ? `${info.jpath.join('/')}/` : '';
+        if (!info.noUpload && info.jpath) {
             const goodFilename = fold(filename, '_');
             await couch.addFileToJpath(info.id, info.owner, info.jpath, info.data, {
                 field: info.field,
@@ -192,6 +190,8 @@ async function updateDocument(info, docInfo, isParse, isJson, filename, contents
                 data: contents,
                 content_type: info.content_type
             }, info.content);
+        } else if (info.jpath) {
+            await couch.addFileToJpath(info.id, info.owner, info.jpath, info.data, {reference: info.reference}, info.content, true);
         } else {
             await updateContent();
         }
