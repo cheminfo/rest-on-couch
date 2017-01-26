@@ -354,7 +354,7 @@ if (program.args[0]) {
     importAll().then(function (dbs) {
         debug('finished');
         for (const db of dbs) {
-            Couch.get('db').close();
+            Couch.get(db).close();
         }
     }, function (err) {
         die(err.message || err);
