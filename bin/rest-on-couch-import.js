@@ -52,10 +52,13 @@ const importAll = co.wrap(function*() {
     debug(`limit is ${limit}`);
     const files = yield findFiles(homeDir, limit);
     debug(`${files.length} files to import`);
+    const dbs = new Set();
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
+        dbs.add(file.database);
         yield processFile2(file.database, file.importName, file.path);
     }
+    return dbs;
 });
 
 const findFiles = co.wrap(function* (homeDir, limit) {
@@ -348,8 +351,11 @@ if (program.args[0]) {
     doContinuous(waitTime);
 } else {
     debug('no watch');
-    importAll().then(function () {
+    importAll().then(function (dbs) {
         debug('finished');
+        for (const db of dbs) {
+            Couch.get('db').close();
+        }
     }, function (err) {
         die(err.message || err);
     });
