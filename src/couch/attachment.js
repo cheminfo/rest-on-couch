@@ -43,7 +43,7 @@ const methods = {
         if (typeof file !== 'object' || file === null) {
             throw new CouchError('file must be an object');
         }
-        if (!noFile && !file.field || !file.name || !file.data) {
+        if (!noFile && (!file.field || !file.name || !file.data)) {
             throw new CouchError('file must have field, name and data properties');
         }
 
