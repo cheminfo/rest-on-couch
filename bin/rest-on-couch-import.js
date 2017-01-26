@@ -10,6 +10,7 @@ const klaw = require('klaw');
 const path = require('path');
 const program = require('commander');
 
+const Couch = require('../lib/index');
 const debug = require('../lib/util/debug')('bin:import');
 const die = require('../lib/util/die');
 const home = require('../lib/config/home');
@@ -321,7 +322,10 @@ if (program.args[0]) {
     const database = program.args[1];
     const kind = program.args[2];
     imp.import(database, kind, file, {dryRun: program.dryRun})
-        .then(() => debug('Imported successfully'))
+        .then(() => {
+            debug('Imported successfully');
+            Couch.get(database).close();
+        })
         .catch((e) => debug.error(`Import error:\n${e.stack}`));
 } else if (program.watch) {
     // watch files to import
