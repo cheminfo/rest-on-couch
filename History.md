@@ -1,3 +1,13 @@
+<a name="3.4.1"></a>
+## [3.4.1](https://github.com/cheminfo/rest-on-couch/compare/v3.4.0...v3.4.1) (2017-01-26)
+
+
+### Bug Fixes
+
+* **import:** allow noUpload with and without jpath or without field ([7fbd4da](https://github.com/cheminfo/rest-on-couch/commit/7fbd4da))
+
+
+
 <a name="3.4.0"></a>
 # [3.4.0](https://github.com/cheminfo/rest-on-couch/compare/v3.3.0...v3.4.0) (2017-01-25)
 
