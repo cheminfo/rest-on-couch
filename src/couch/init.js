@@ -164,8 +164,10 @@ async function checkDesignDoc(couch) {
             var newDesignDoc = getNewDesignDoc(designName);
             await createDesignDoc(db, designDocs[idx] && designDocs[idx]._rev || null, newDesignDoc);
             if (newDesignDoc.views) {
+                // The lib view is special, it contains libraries' code
                 var keys = Object.keys(newDesignDoc.views).filter(v => v !== 'lib');
                 if (keys.length) {
+                    // Call a view to auto-trigger index update
                     await nanoPromise.queryView(db, keys[0], {limit: 1});
                 }
             }
@@ -184,6 +186,7 @@ async function checkDesignDoc(couch) {
         return null;
     }
 
+    // Generates design document from customViews config
     function getNewDesignDoc(designName) {
         if (designName === constants.DESIGN_DOC_NAME) {
             var designDoc = Object.assign({}, custom);

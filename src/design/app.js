@@ -25,6 +25,8 @@ const mapTpl = function (doc) {
     customMap(doc);
 }.toString();
 
+// Extends design doc with default views
+// Adds the special lib view to the design doc
 module.exports = function (custom, db) {
     custom = custom || {};
 
