@@ -1,3 +1,8 @@
+<a name="3.5.0"></a>
+# [3.5.0](https://github.com/cheminfo/rest-on-couch/compare/v3.4.1...v3.5.0) (2017-01-30)
+
+
+
 <a name="3.4.1"></a>
 ## [3.4.1](https://github.com/cheminfo/rest-on-couch/compare/v3.4.0...v3.4.1) (2017-01-26)
 
