@@ -1,6 +1,5 @@
 'use strict';
 
-const _ = require('lodash');
 const nano = require('nano');
 const objHash = require('object-hash');
 
@@ -106,84 +105,32 @@ async function checkSecurity(db, admin) {
 }
 
 async function checkDesignDoc(couch) {
+    debug.trace('check design documents');
     var db = couch._db;
+    var dbName = db.config.db;
     var custom = couch._customDesign;
     custom.views = custom.views || {};
-    var toUpdate = new Set();
-    debug.trace('check _design/app design doc');
-    const doc = await nanoPromise.getDocument(db, constants.DESIGN_DOC_ID);
-    if (doc === null) {
-        toUpdate.add(constants.DESIGN_DOC_NAME);
-        debug.trace(`${constants.DESIGN_DOC_ID} missing`);
-    } else if (
-        (!doc.version || doc.version < constants.DESIGN_DOC_VERSION) ||
-        (custom && typeof custom.version === 'number' && (!doc.customVersion || doc.customVersion < custom.version))
-    ) {
-        debug.trace(`${constants.DESIGN_DOC_ID} needs update`);
-        toUpdate.add(constants.DESIGN_DOC_NAME);
-    }
-
-    debug.trace('check other custom design docs');
-    var viewNames = Object.keys(custom.views);
-    if (viewNames.indexOf(constants.DESIGN_DOC_NAME) > -1) {
-        let idx = viewNames.indexOf(constants.DESIGN_DOC_NAME);
-        viewNames.splice(idx, 1);
-    }
-    var designNames = viewNames.map(vn => custom.views[vn].designDoc);
-    var uniqDesignNames = _.uniq(designNames);
-    uniqDesignNames = uniqDesignNames.filter(d => d && d !== constants.DESIGN_DOC_NAME);
-    var designDocs = await Promise.all(uniqDesignNames.map(name => nanoPromise.getDocument(db, `_design/${name}`)));
-    uniqDesignNames.push(constants.DESIGN_DOC_NAME);
-    designDocs.push(doc);
-
-    for (var i = 0; i < viewNames.length; i++) {
-        let view = custom.views[viewNames[i]];
-        var hash = objHash(view);
-        var dbView = getDBView(viewNames[i]);
-        if (!dbView) {
-            if (view.designDoc) {
-                debug.trace(`design doc ${view.designDoc} not found, will create it`);
-                toUpdate.add(view.designDoc);
-            }
-        } else {
-
-            if (dbView.hash !== hash) {
-                if (view.designDoc) {
-                    debug.trace(`design doc ${view.designDoc} changed, will update it`);
-                    toUpdate.add(view.designDoc);
-                }
-            }
-        }
-        view.hash = hash;
-    }
-
-    debug.trace(`Update ${toUpdate.size} design documents`);
-    for (var designName of toUpdate.keys()) {
-        var idx = uniqDesignNames.indexOf(designName);
-        if (idx > -1 || designName === constants.DESIGN_DOC_NAME) {
-            var newDesignDoc = getNewDesignDoc(designName);
-            await createDesignDoc(db, designDocs[idx] && designDocs[idx]._rev || null, newDesignDoc);
-            if (newDesignDoc.views) {
-                // The lib view is special, it contains libraries' code
-                var keys = Object.keys(newDesignDoc.views).filter(v => v !== 'lib');
-                if (keys.length) {
-                    // Call a view to auto-trigger index update
-                    await nanoPromise.queryView(db, keys[0], {limit: 1});
-                }
-            }
-
-        } else {
-            debug.error('Expected to be unreachable');
+    const designNames = new Set();
+    designNames.add(constants.DESIGN_DOC_NAME);
+    let viewNames = Object.keys(custom.views);
+    for (let key of viewNames) {
+        if (custom.views[key].designDoc) {
+            designNames.add(custom.views[key].designDoc);
         }
     }
 
-    function getDBView(viewName) {
-        for (var i = 0; i < designDocs.length; i++) {
-            if (designDocs[i] && designDocs[i].views && designDocs[i].views[viewName]) {
-                return designDocs[i].views[viewName];
-            }
+    // Create the new design doc that would be stored upstream for comparison
+    for (let designName of designNames) {
+        const newDesignDoc = getNewDesignDoc(designName);
+        const oldDesignDoc = await nanoPromise.getDocument(db, `_design/${designName}`);
+        if (designDocNeedsUpdate(newDesignDoc, oldDesignDoc)) {
+            await createDesignDoc(db, oldDesignDoc && oldDesignDoc._rev || null, newDesignDoc);
         }
-        return null;
+    }
+
+    function designDocNeedsUpdate(newDesignDoc, oldDesignDoc) {
+        if (!oldDesignDoc) return true;
+        return newDesignDoc.hash !== oldDesignDoc.hash;
     }
 
     // Generates design document from customViews config
@@ -204,13 +151,19 @@ async function checkDesignDoc(couch) {
             }
         }
         designDoc._id = `_design/${designName}`;
+        designDoc = getDesignDoc(designDoc, dbName);
+        designDoc.hash = objHash(designDoc);
         return designDoc;
     }
 }
 
-async function createDesignDoc(db, revID, custom) {
+async function createDesignDoc(db, revID, designDoc) {
     debug.trace('create design doc');
-    var designDoc = getDesignDoc(custom, db.config.db);
+    const hashDoc = Object.assign({}, designDoc);
+    delete hashDoc._rev;
+    delete hashDoc.hash;
+    const hash = objHash(hashDoc);
+    designDoc.hash = hash;
     if (revID) {
         designDoc._rev = revID;
     }

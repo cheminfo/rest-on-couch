@@ -27,13 +27,10 @@ const mapTpl = function (doc) {
 
 // Extends design doc with default views
 // Adds the special lib view to the design doc
-module.exports = function (custom, db) {
+module.exports = function (custom, dbName) {
     custom = custom || {};
-
-    const config = getConfig(db);
-
+    const config = getConfig(dbName);
     processViews(custom, config);
-
     if (custom.designDoc === 'app') {
         return {
             _id: constants.DESIGN_DOC_ID,
@@ -69,9 +66,24 @@ function processViews(custom, config) {
         custom.views.lib = {};
         const view = config.customDesign.views.lib;
         for (const libName in view) {
-            const lib = view[libName];
-            if (typeof lib === 'string' && lib.endsWith('.js')) {
-                custom.views.lib[libName] = fs.readFileSync(path.resolve(config.homeDir, config.database, lib), 'utf8');
+            let lib = view[libName];
+            if (!Array.isArray(lib)) {
+                lib = [lib];
+            }
+            let libCode = lib[0];
+            if (typeof libCode === 'string') {
+                if (libCode.endsWith('.js')) {
+                    libCode = fs.readFileSync(path.resolve(config.homeDir, config.database, libCode), 'utf8');
+                }
+                if (lib.length === 1) {
+                    custom.views.lib[libName] = libCode;
+                } else {
+                    for (let i = 1; i < lib.length; i++) {
+                        if (custom._id === `_design/${lib[i]}`) {
+                            custom.views.lib[libName] = libCode;
+                        }
+                    }
+                }
             }
         }
     }

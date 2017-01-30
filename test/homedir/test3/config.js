@@ -5,7 +5,7 @@ module.exports = {
         version: 8,
         views: {
             lib: {
-                test: 'lib.js'
+                test: ['lib.js']
             },
             test: {
                 map: function (doc) {
