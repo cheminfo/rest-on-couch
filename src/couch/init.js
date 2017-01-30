@@ -105,9 +105,9 @@ async function checkSecurity(db, admin) {
 }
 
 async function checkDesignDoc(couch) {
-    debug.trace('check design documents');
-    var db = couch._db;
-    var dbName = db.config.db;
+    const db = couch._db;
+    const dbName = db.config.db;
+    debug.trace(`check design documents for database ${dbName}`);
     var custom = couch._customDesign;
     custom.views = custom.views || {};
     const designNames = new Set();
@@ -124,6 +124,7 @@ async function checkDesignDoc(couch) {
         const newDesignDoc = getNewDesignDoc(designName);
         const oldDesignDoc = await nanoPromise.getDocument(db, `_design/${designName}`);
         if (designDocNeedsUpdate(newDesignDoc, oldDesignDoc)) {
+            debug.trace(`design doc ${designName} needs update, saving new revision`);
             await createDesignDoc(db, oldDesignDoc && oldDesignDoc._rev || null, newDesignDoc);
         }
     }
