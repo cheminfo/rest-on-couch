@@ -65,7 +65,7 @@ function readImportConfig(databasePath, databaseConfig) {
                 if (e.code !== 'MODULE_NOT_FOUND') {
                     debug.trace(e.stack || e);
                 } else {
-                    debug.trace(e);
+                    debug.warn(e);
                 }
                 continue;
             }
