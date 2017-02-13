@@ -17,16 +17,24 @@ exports.import = async function (database, importName, file, options) {
     const parsedFilename = path.parse(file);
     const filedir = parsedFilename.dir;
     const filename = parsedFilename.base;
+    let config = getConfig(database);
+    const couch = Couch.get(database);
+    const shouldIgnore = verifyConfig(config, 'shouldIgnore', null, true);
 
+    // Give an opportunity to ignore before even reading the file
+    if(shouldIgnore) {
+        const ignore = await shouldIgnore(filename, couch, filedir);
+        if(ignore) {
+            debug.debug(`Ignore file ${file}`);
+            return;
+        }
+    }
     let contents = fs.readFileSync(file);
 
-    let config = getConfig(database);
     if (!config.import || !config.import[importName]) {
         throw new Error(`no import config for ${database}/${importName}`);
     }
     config = config.import[importName];
-
-    const couch = Couch.get(database);
 
     const info = {};
 
