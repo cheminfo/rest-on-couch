@@ -15,6 +15,7 @@ const debug = require('../lib/util/debug')('bin:import');
 const die = require('../lib/util/die');
 const home = require('../lib/config/home');
 const imp = require('../lib/import/import');
+const getConfig = require('../lib/config/config').getConfig;
 
 var processChain = Promise.resolve();
 const importFiles = {};
@@ -180,6 +181,11 @@ function processFile(database, importName, homeDir, p) {
         return imp.import(database, importName, p);
     }).then(() => {
         // mv to processed
+        const config = getConfig(database);
+        // check if importation should be done without moving files afterwards
+        if (config.import[importName].noFileMove) {
+            return null;
+        }
         return new Promise(function (resolve, reject) {
             let dir = path.join(parsedPath.dir, '../processed/' + getDatePath());
             createDir(dir);
