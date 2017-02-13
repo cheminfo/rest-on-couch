@@ -14,7 +14,10 @@ exports.import = async function (database, importName, file, options) {
     options = options || {};
     const dryRun = !!options.dryRun;
 
-    const filename = path.parse(file).base;
+    const parsedFilename = path.parse(file);
+    const filedir = parsedFilename.dir;
+    const filename = parsedFilename.base;
+
     let contents = fs.readFileSync(file);
 
     let config = getConfig(database);
@@ -32,7 +35,7 @@ exports.import = async function (database, importName, file, options) {
 
     if (typeof config.fullProcess === 'function') {
         isParse = true;
-        await fullyProcessResult(info, config.fullProcess, filename, contents, couch);
+        await fullyProcessResult(info, config.fullProcess, filename, contents, couch, filedir);
     } else {
         // Callbacks
         const getId = verifyConfig(config, 'getID', null, true);
@@ -49,10 +52,10 @@ exports.import = async function (database, importName, file, options) {
 
         if (json) contents = JSON.parse(contents);
 
-        await getMetadata(info, getId, getOwner, filename, contents, couch);
-        await parseFile(info, parse, json, filename, contents, couch);
+        await getMetadata(info, getId, getOwner, filename, contents, couch, filedir);
+        await parseFile(info, parse, json, filename, contents, couch, filedir);
         if (config.kind) {
-            await getKind(info, config.kind, filename, contents, couch);
+            await getKind(info, config.kind, filename, contents, couch, filedir);
         }
     }
 
@@ -83,11 +86,11 @@ function verifyConfig(config, name, defaultValue, mustBeFunction) {
     return value;
 }
 
-async function getMetadata(info, getId, getOwner, filename, contents, couch) {
+async function getMetadata(info, getId, getOwner, filename, contents, couch, filedir) {
     debug.trace('get metadata');
     let [id, owner] = await Promise.all([
-        getId(filename, contents, couch),
-        getOwner(filename, contents, couch)
+        getId(filename, contents, couch, filedir),
+        getOwner(filename, contents, couch, filedir)
     ]);
     debug.trace(`id: ${id}, owner: ${owner}`);
     const ownerData = getOwnerData(owner);
@@ -96,30 +99,30 @@ async function getMetadata(info, getId, getOwner, filename, contents, couch) {
     info.owners = ownerData.owners;
 }
 
-async function parseFile(info, parse, json, filename, contents, couch) {
+async function parseFile(info, parse, json, filename, contents, couch, filedir) {
     debug.trace('parse file contents');
     if (parse) {
-        const result = await parse(filename, contents, couch);
+        const result = await parse(filename, contents, couch, filedir);
         fillInfoWithResult(info, result);
         return;
     } else if (json) {
-        info.data = await json(filename, contents, couch);
+        info.data = await json(filename, contents, couch, filedir);
         return;
     }
     throw new Error('unreachable');
 }
 
-async function getKind(info, kind, filename, contents, couch) {
+async function getKind(info, kind, filename, contents, couch, filedir) {
     debug.trace('getKind');
     if (typeof kind !== 'function') {
         info.kind = kind;
     } else {
-        info.kind = await kind(filename, contents, couch);
+        info.kind = await kind(filename, contents, couch, filedir);
     }
 }
 
-async function fullyProcessResult(info, fullProcess, filename, contents, couch) {
-    const result = await fullProcess(filename, contents, couch);
+async function fullyProcessResult(info, fullProcess, filename, contents, couch, filedir) {
+    const result = await fullProcess(filename, contents, couch, filedir);
 
     if (!result.id) {
         throw new Error('missing id');
