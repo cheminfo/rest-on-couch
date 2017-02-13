@@ -19,16 +19,22 @@ exports.import = async function (database, importName, file, options) {
     const filename = parsedFilename.base;
     let config = getConfig(database);
     const couch = Couch.get(database);
-    const shouldIgnore = verifyConfig(config, 'shouldIgnore', null, true);
-
-    // Give an opportunity to ignore before even reading the file
-    if(shouldIgnore) {
+    try {
+        // Give an opportunity to ignore before even reading the file
+        const shouldIgnore = verifyConfig(config, 'shouldIgnore', null, true);
         const ignore = await shouldIgnore(filename, couch, filedir);
         if(ignore) {
             debug.debug(`Ignore file ${file}`);
             return;
         }
+    } catch(e) {
+        // Throw if abnormal error
+        if(!e.message.match('missing configuration value')) {
+            throw e;
+        }
+        // Go on normally if this configuration is missing
     }
+
     let contents = fs.readFileSync(file);
 
     if (!config.import || !config.import[importName]) {
