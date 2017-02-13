@@ -23,13 +23,13 @@ exports.import = async function (database, importName, file, options) {
         // Give an opportunity to ignore before even reading the file
         const shouldIgnore = verifyConfig(config, 'shouldIgnore', null, true);
         const ignore = await shouldIgnore(filename, couch, filedir);
-        if(ignore) {
+        if (ignore) {
             debug.debug(`Ignore file ${file}`);
             return;
         }
-    } catch(e) {
+    } catch (e) {
         // Throw if abnormal error
-        if(!e.message.match('missing configuration value')) {
+        if (!e.message.match('missing configuration value')) {
             throw e;
         }
         // Go on normally if this configuration is missing
