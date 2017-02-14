@@ -9,6 +9,7 @@ var importCouch;
 // The file in most test cases does not matter
 // We just have to pick an existing file
 const textFile = path.resolve(__dirname, '../homedir/test-import/parse/to_process/test.txt');
+const jsonFile = path.resolve(__dirname, '../homedir/test-import/json/to_process/test.json')
 
 describe('import', function () {
     before(initCouch);
@@ -21,6 +22,13 @@ describe('import', function () {
     it('ignore import', function () {
         return imp.import('test-import', 'ignore', textFile).then(() => {
            return importCouch.getEntryById('ignored', 'test-import@test.com').should.eventually.be.rejectedWith(/not found/);
+        });
+    });
+
+
+    it('import json textFile', function () {
+        return imp.import('test-import', 'json', jsonFile).then(() => {
+            return importCouch.getEntryById('json', 'test-import@test.com').should.eventually.be.an.Object();
         });
     });
 });
