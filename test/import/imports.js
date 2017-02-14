@@ -15,18 +15,28 @@ describe('import', function () {
     before(initCouch);
     it('parse', function () {
         return imp.import('test-import', 'parse', textFile).then(() => {
-            return importCouch.getEntryById('xyz', 'test-import@test.com').should.eventually.be.an.Object();
+            return importCouch.getEntryById('parse', 'test-import@test.com').then(data => {
+                data.should.be.an.Object();
+                data.$content.should.be.an.Object();
+                data.$content.txt.should.be.an.Array();
+                const txt = data.$content.txt[0];
+                txt.should.be.an.Object();
+                txt.abc.should.be.equal('test');
+                txt.filename.should.equal('test.txt');
+                txt.txt.should.be.an.Object();
+                txt.contents.should.be.equal('Content of test file');
+            });
         });
     });
 
     it('ignore import', function () {
         return imp.import('test-import', 'ignore', textFile).then(() => {
-            return importCouch.getEntryById('ignored', 'test-import@test.com').should.eventually.be.rejectedWith(/not found/);
+            return importCouch.getEntryById('ignored', 'test-import@test.com').should.be.rejectedWith(/not found/);
         });
     });
 
 
-    it('import json textFile', function () {
+    it('import json file', function () {
         return imp.import('test-import', 'json', jsonFile).then(() => {
             return importCouch.getEntryById('json', 'test-import@test.com').should.eventually.be.an.Object();
         });

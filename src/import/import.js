@@ -18,6 +18,11 @@ exports.import = async function (database, importName, file, options) {
     const filedir = parsedFilename.dir;
     const filename = parsedFilename.base;
     let config = getConfig(database);
+
+    if (!config.import || !config.import[importName]) {
+        throw new Error(`no import config for ${database}/${importName}`);
+    }
+
     config = config.import[importName];
     const couch = Couch.get(database);
     try {
@@ -37,10 +42,6 @@ exports.import = async function (database, importName, file, options) {
     }
 
     let contents = fs.readFileSync(file);
-
-    if (!config.import || !config.import[importName]) {
-        throw new Error(`no import config for ${database}/${importName}`);
-    }
 
     const info = {};
 
@@ -64,7 +65,7 @@ exports.import = async function (database, importName, file, options) {
             isJson = true;
         }
 
-        if (json) contents = JSON.parse(contents);
+        if (json) contents = JSON.parse(contents.toString());
 
         await getMetadata(info, getId, getOwner, filename, contents, couch, filedir);
         await parseFile(info, parse, json, filename, contents, couch, filedir);
