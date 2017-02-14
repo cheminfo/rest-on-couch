@@ -5,7 +5,7 @@ module.exports = {
         return 'xyz';
     },
     getOwner: function () {
-        return 'abc@xyz.com';
+        return 'test-import@test.com';
     },
     parse: function () {
         return {

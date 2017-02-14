@@ -2,12 +2,9 @@
 
 module.exports = {
     defaultEntry: {
-        molecule: function () {
+        test: function () {
             return {
-                parent: [],
-                name: [],
-                molecule: [],
-                nmr: []
+                defaultField: 'default'
             };
         }
     },

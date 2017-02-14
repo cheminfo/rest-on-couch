@@ -18,6 +18,7 @@ exports.import = async function (database, importName, file, options) {
     const filedir = parsedFilename.dir;
     const filename = parsedFilename.base;
     let config = getConfig(database);
+    config = config.import[importName];
     const couch = Couch.get(database);
     try {
         // Give an opportunity to ignore before even reading the file
@@ -40,7 +41,6 @@ exports.import = async function (database, importName, file, options) {
     if (!config.import || !config.import[importName]) {
         throw new Error(`no import config for ${database}/${importName}`);
     }
-    config = config.import[importName];
 
     const info = {};
 
