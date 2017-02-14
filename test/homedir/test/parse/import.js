@@ -9,15 +9,15 @@ module.exports = {
     },
     parse: function () {
         return {
-            jpath: 'nmr',
+            jpath: 'txt',
             data: {
                 abc: 'test'
             },
-            field: 'jcamp',
-            content_type: 'chemical/x-jcamp-dx'
+            field: 'txt',
+            content_type: 'text/plain'
         };
     },
     kind: function () {
-        return 'molecule';
+        return 'test';
     }
 };

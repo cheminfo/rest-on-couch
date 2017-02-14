@@ -5,7 +5,7 @@ const path = require('path');
 
 // The file in most test cases does not matter
 // We just have to pick an existing file
-const file = path.resolve(__dirname, '../homedir/test/parse/to_process/104-55-2_zg.parse');
+const file = path.resolve(__dirname, '../homedir/test/parse/to_process/test.txt');
 
 describe('import', function () {
     it('import parse file', function () {
