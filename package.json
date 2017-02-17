@@ -52,6 +52,7 @@
     "extend": "^3.0.0",
     "fold-to-ascii": "^4.0.0",
     "fs-extra": "^2.0.0",
+    "fs-promise": "^2.0.0",
     "has-own": "^1.0.0",
     "if-env": "^1.0.0",
     "jquery": "^3.1.1",
@@ -96,7 +97,6 @@
     "style-loader": "^0.13.1",
     "superagent": "^3.1.0",
     "superagent-promise": "^1.1.0",
-    "thenify-all": "^1.6.0",
     "whatwg-fetch": "^2.0.0"
   },
   "devDependencies": {
