@@ -24,23 +24,23 @@ exports.okOrRedirect = function (ctx) {
     }
 };
 
-exports.afterSuccess = function* () {
-    exports.okOrRedirect(this);
+exports.afterSuccess = (ctx) => {
+    exports.okOrRedirect(ctx);
 };
 
-exports.afterFailure = function* (next) {
-    yield next;
-    if (this.status === 401) { // authentication failed with passport
-        exports.okOrRedirect(this);
+exports.afterFailure = async (ctx, next) => {
+    await next();
+    if (ctx.status === 401) { // authentication failed with passport
+        exports.okOrRedirect(ctx);
     }
 };
 
-exports.ensureAuthenticated = function* (next) {
-    if (this.isAuthenticated()) {
-        yield next;
+exports.ensureAuthenticated = async (ctx, next) => {
+    if (ctx.isAuthenticated()) {
+        await next();
         return;
     }
-    this.status = 401;
+    ctx.status = 401;
 };
 
 exports.getUserEmail = async function (ctx) {

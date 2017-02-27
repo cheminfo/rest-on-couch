@@ -7,7 +7,7 @@ const router = require('koa-router')({
 const couch = require('../middleware/couch');
 const util = require('../middleware/util');
 
-router.use(couch.setupCouch);
+router.use('/:dbname', couch.setupCouch);
 router.use(couch.tokenLookup);
 
 const parseJson1mb = util.parseBody({jsonLimit: '1mb'});
