@@ -25,265 +25,263 @@ const statusMessages = {
 
 const OK = {ok: true};
 
-exports.setupCouch = function*(next) {
-    if (this.params.dbname) {
-        const dbname = this.params.dbname;
-        this.state.dbName = dbname;
-        this.state.userEmail = this.query.asAnonymous ? 'anonymous' : yield auth.getUserEmail(this);
-        this.state.couch = Couch.get(dbname);
-        processCouchQuery(this);
-    }
-    yield next;
+exports.setupCouch = async (ctx, next) => {
+    const dbname = ctx.params.dbname;
+    ctx.state.dbName = dbname;
+    ctx.state.userEmail = ctx.query.asAnonymous ? 'anonymous' : await auth.getUserEmail(ctx);
+    ctx.state.couch = Couch.get(dbname);
+    processCouchQuery(ctx);
+    await next();
 };
 
-exports.tokenLookup = function* (next) {
-    if (this.query.token) {
+exports.tokenLookup = async (ctx, next) => {
+    if (ctx.query.token) {
         try {
-            this.query.token = yield this.state.couch.getToken(this.query.token);
+            ctx.query.token = await ctx.state.couch.getToken(ctx.query.token);
         } catch (e) {
             if (e.reason === 'not found') {
-                onGetError(this, new CouchError('token not found', 'unauthorized'));
+                onGetError(ctx, new CouchError('token not found', 'unauthorized'));
             } else {
-                onGetError(this, e);
+                onGetError(ctx, e);
             }
             return;
         }
     }
-    yield next;
+    await next();
 };
 
-exports.getAllDbs = function*() {
-    let allDbs = yield request.get(`${config.url}/_all_dbs`, {json: true});
+exports.getAllDbs = async (ctx) => {
+    let allDbs = await request.get(`${config.url}/_all_dbs`, {json: true});
     allDbs = allDbs.filter((dbname) => !dbname.startsWith('_'));
     const result = [];
     for (const dbname of allDbs) {
         const db = Couch.get(dbname);
         try {
-            yield db.open();
+            await db.open();
             result.push(dbname);
         } catch (e) {
             // ignore error (means that database is not handled by ROC)
         }
     }
-    this.body = result;
+    ctx.body = result;
 };
 
-exports.getDocument = composeWithError(function*() {
-    this.body = yield this.state.couch.getEntry(this.params.uuid, this.state.userEmail, this.query);
+exports.getDocument = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getEntry(ctx.params.uuid, ctx.state.userEmail, ctx.query);
 });
 
-exports.updateEntry = composeWithError(function*() {
-    const body = this.request.body;
-    if (body) body._id = this.params.uuid;
-    const result = yield this.state.couch.insertEntry(body, this.state.userEmail, {isUpdate: true});
+exports.updateEntry = composeWithError(async (ctx) => {
+    const body = ctx.request.body;
+    if (body) body._id = ctx.params.uuid;
+    const result = await ctx.state.couch.insertEntry(body, ctx.state.userEmail, {isUpdate: true});
     assert.strictEqual(result.action, 'updated');
-    this.body = result.info;
+    ctx.body = result.info;
 });
 
-exports.deleteEntry = composeWithError(function*() {
-    yield this.state.couch.deleteEntry(this.params.uuid, this.state.userEmail);
-    this.body = OK;
+exports.deleteEntry = composeWithError(async (ctx) => {
+    await ctx.state.couch.deleteEntry(ctx.params.uuid, ctx.state.userEmail);
+    ctx.body = OK;
 });
 
-exports.newOrUpdateEntry = composeWithError(function*() {
+exports.newOrUpdateEntry = composeWithError(async (ctx) => {
     const options = {};
-    if (this.request.body.$owners) {
-        options.groups = this.request.body.$owners;
+    if (ctx.request.body.$owners) {
+        options.groups = ctx.request.body.$owners;
     }
-    const result = yield this.state.couch.insertEntry(this.request.body, this.state.userEmail, options);
-    this.body = result.info;
+    const result = await ctx.state.couch.insertEntry(ctx.request.body, ctx.state.userEmail, options);
+    ctx.body = result.info;
     if (result.action === 'created') {
-        this.status = 201;
-        this.set('Location', `${this.state.urlPrefix}db/${this.state.dbName}/entry/${result.info.id}`);
+        ctx.status = 201;
+        ctx.set('Location', `${ctx.state.urlPrefix}db/${ctx.state.dbName}/entry/${result.info.id}`);
     } else {
-        this.status = 200;
+        ctx.status = 200;
     }
 });
 
-exports.deleteAttachment = composeWithError(function*() {
-    this.body = yield this.state.couch.deleteAttachment(this.params.uuid, this.state.userEmail, this.params.attachment);
+exports.deleteAttachment = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.deleteAttachment(ctx.params.uuid, ctx.state.userEmail, ctx.params.attachment);
 });
 
-exports.saveAttachment = composeWithError(function*() {
-    this.body = yield this.state.couch.addAttachment(this.params.uuid, this.state.userEmail, {
-        name: this.params.attachment,
-        data: this.request.body,
-        content_type: this.get('Content-Type')
+exports.saveAttachment = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.addAttachment(ctx.params.uuid, ctx.state.userEmail, {
+        name: ctx.params.attachment,
+        data: ctx.request.body,
+        content_type: ctx.get('Content-Type')
     });
 });
 
-exports.getAttachment = composeWithError(function*() {
-    this.body = yield this.state.couch.getAttachmentByName(this.params.uuid, this.params.attachment, this.state.userEmail, true, this.query);
+exports.getAttachment = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getAttachmentByName(ctx.params.uuid, ctx.params.attachment, ctx.state.userEmail, true, ctx.query);
 });
 
-exports.allEntries = composeWithError(function*() {
-    const right = this.query.right || 'read';
-    this.body = yield this.state.couch.getEntriesByUserAndRights(this.state.userEmail, right, this.query);
+exports.allEntries = composeWithError(async (ctx) => {
+    const right = ctx.query.right || 'read';
+    ctx.body = await ctx.state.couch.getEntriesByUserAndRights(ctx.state.userEmail, right, ctx.query);
 });
 
-exports.queryEntriesByUser = composeWithError(function*() {
-    if (this.query.reduce) {
-        this.body = yield this.state.couch.queryViewByUser(this.state.userEmail, this.params.view, this.query);
+exports.queryEntriesByUser = composeWithError(async (ctx) => {
+    if (ctx.query.reduce) {
+        ctx.body = await ctx.state.couch.queryViewByUser(ctx.state.userEmail, ctx.params.view, ctx.query);
     } else {
-        this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, this.params.view, this.query);
+        ctx.body = await ctx.state.couch.queryEntriesByUser(ctx.state.userEmail, ctx.params.view, ctx.query);
     }
 });
 
-exports.queryEntriesByRight = composeWithError(function*() {
-    this.body = yield this.state.couch.queryEntriesByRight(this.state.userEmail, this.params.view, this.query.right, this.query);
+exports.queryEntriesByRight = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.queryEntriesByRight(ctx.state.userEmail, ctx.params.view, ctx.query.right, ctx.query);
 });
 
-exports.entriesByKindAndId = composeWithError(function*() {
+exports.entriesByKindAndId = composeWithError(async (ctx) => {
     for (let i = 0; i < couchNeedsParse.length; i++) {
-        let queryParam = this.query[couchNeedsParse[i]];
-        let bodyParam = this.request.body[couchNeedsParse[i]];
+        let queryParam = ctx.query[couchNeedsParse[i]];
+        let bodyParam = ctx.request.body[couchNeedsParse[i]];
         if (queryParam || bodyParam) {
-            this.query[couchNeedsParse[i]] = [this.params.kind, queryParam ? queryParam : bodyParam];
+            ctx.query[couchNeedsParse[i]] = [ctx.params.kind, queryParam ? queryParam : bodyParam];
         }
     }
 
-    this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, 'entryByKindAndId', this.query);
+    ctx.body = await ctx.state.couch.queryEntriesByUser(ctx.state.userEmail, 'entryByKindAndId', ctx.query);
 });
 
-exports.entriesByOwnerAndId = composeWithError(function*() {
+exports.entriesByOwnerAndId = composeWithError(async (ctx) => {
     for (let i = 0; i < couchNeedsParse.length; i++) {
-        let queryParam = this.query[couchNeedsParse[i]];
-        let bodyParam = this.request.body[couchNeedsParse[i]];
+        let queryParam = ctx.query[couchNeedsParse[i]];
+        let bodyParam = ctx.request.body[couchNeedsParse[i]];
         if (queryParam || bodyParam) {
-            this.query[couchNeedsParse[i]] = [this.params.email, queryParam ? queryParam : bodyParam];
+            ctx.query[couchNeedsParse[i]] = [ctx.params.email, queryParam ? queryParam : bodyParam];
         }
     }
-    this.body = yield this.state.couch.queryEntriesByUser(this.state.userEmail, 'entryByOwnerAndId', this.query);
+    ctx.body = await ctx.state.couch.queryEntriesByUser(ctx.state.userEmail, 'entryByOwnerAndId', ctx.query);
 });
 
-exports.getUser = composeWithError(function*() {
-    this.body = yield this.state.couch.getUser(this.state.userEmail);
+exports.getUser = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getUser(ctx.state.userEmail);
 });
 
-exports.editUser = composeWithError(function*() {
-    this.body = yield this.state.couch.editUser(this.state.userEmail, this.request.body);
+exports.editUser = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.editUser(ctx.state.userEmail, ctx.request.body);
 });
 
-exports.getUserInfo = composeWithError(function*() {
-    this.body = yield this.state.couch.getUserInfo(this.state.userEmail);
+exports.getUserInfo = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getUserInfo(ctx.state.userEmail);
 });
 
 exports.getOwners = function (type) {
-    return composeWithError(function*() {
-        const doc = yield this.state.couch.getDocByRights(this.params.uuid, this.state.userEmail, 'read', type);
-        this.body = doc.$owners;
+    return composeWithError(async (ctx) => {
+        const doc = await ctx.state.couch.getDocByRights(ctx.params.uuid, ctx.state.userEmail, 'read', type);
+        ctx.body = doc.$owners;
     });
 };
 
 exports.addOwner = function (type) {
-    return composeWithError(function*() {
-        yield this.state.couch.addOwnersToDoc(this.params.uuid, this.state.userEmail, this.params.owner, type);
-        this.body = OK;
+    return composeWithError(async (ctx) => {
+        await ctx.state.couch.addOwnersToDoc(ctx.params.uuid, ctx.state.userEmail, ctx.params.owner, type);
+        ctx.body = OK;
     });
 };
 
 exports.removeOwner = function (type) {
-    return composeWithError(function*() {
-        yield this.state.couch.removeOwnersFromDoc(this.params.uuid, this.state.userEmail, this.params.owner, type);
-        this.body = OK;
+    return composeWithError(async (ctx) => {
+        await ctx.state.couch.removeOwnersFromDoc(ctx.params.uuid, ctx.state.userEmail, ctx.params.owner, type);
+        ctx.body = OK;
     });
 };
 
-exports.getGroup = composeWithError(function*() {
-    this.body = yield this.state.couch.getGroup(this.params.name, this.state.userEmail);
+exports.getGroup = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getGroup(ctx.params.name, ctx.state.userEmail);
 });
 
-exports.createGroup = composeWithError(function*() {
-    yield this.state.couch.createGroup(this.params.name, this.state.userEmail);
-    this.body = OK;
+exports.createGroup = composeWithError(async (ctx) => {
+    await ctx.state.couch.createGroup(ctx.params.name, ctx.state.userEmail);
+    ctx.body = OK;
 });
 
-exports.getGroups = composeWithError(function*() {
-    this.body = yield this.state.couch.getDocsAsOwner(this.state.userEmail, 'group', {onlyDoc: true});
+exports.getGroups = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getDocsAsOwner(ctx.state.userEmail, 'group', {onlyDoc: true});
 });
 
-exports.getGroupUsers = composeWithError(function*() {
-    const group = yield this.state.couch.getDocByRights(this.params.uuid, this.state.userEmail, 'read', 'group');
-    this.body = group.users;
+exports.getGroupUsers = composeWithError(async (ctx) => {
+    const group = await ctx.state.couch.getDocByRights(ctx.params.uuid, ctx.state.userEmail, 'read', 'group');
+    ctx.body = group.users;
 });
 
-exports.addUserToGroup = composeWithError(function*() {
-    yield this.state.couch.addUsersToGroup(this.params.uuid, this.state.userEmail, this.params.username);
-    this.body = OK;
+exports.addUserToGroup = composeWithError(async (ctx) => {
+    await ctx.state.couch.addUsersToGroup(ctx.params.uuid, ctx.state.userEmail, ctx.params.username);
+    ctx.body = OK;
 });
 
-exports.removeUserFromGroup = composeWithError(function*() {
-    yield this.state.couch.removeUsersFromGroup(this.params.uuid, this.state.userEmail, this.params.username);
-    this.body = OK;
+exports.removeUserFromGroup = composeWithError(async (ctx) => {
+    await ctx.state.couch.removeUsersFromGroup(ctx.params.uuid, ctx.state.userEmail, ctx.params.username);
+    ctx.body = OK;
 });
 
-exports.getGroupRights = composeWithError(function*() {
-    const group = yield this.state.couch.getDocByRights(this.params.uuid, this.state.userEmail, 'read', 'group');
-    this.body = group.rights;
+exports.getGroupRights = composeWithError(async (ctx) => {
+    const group = await ctx.state.couch.getDocByRights(ctx.params.uuid, ctx.state.userEmail, 'read', 'group');
+    ctx.body = group.rights;
 });
 
-exports.addRightToGroup = composeWithError(function*() {
-    yield this.state.couch.addRightsToGroup(this.params.uuid, this.state.userEmail, this.params.right);
-    this.body = OK;
+exports.addRightToGroup = composeWithError(async (ctx) => {
+    await ctx.state.couch.addRightsToGroup(ctx.params.uuid, ctx.state.userEmail, ctx.params.right);
+    ctx.body = OK;
 });
 
-exports.removeRightFromGroup = composeWithError(function*() {
-    yield this.state.couch.removeRightsFromGroup(this.params.uuid, this.state.userEmail, this.params.right);
-    this.body = OK;
+exports.removeRightFromGroup = composeWithError(async (ctx) => {
+    await ctx.state.couch.removeRightsFromGroup(ctx.params.uuid, ctx.state.userEmail, ctx.params.right);
+    ctx.body = OK;
 });
 
-exports.getRights = composeWithError(function*() {
-    const right = this.params.right;
-    const uuid = this.params.uuid;
-    this.body = yield this.state.couch.hasRightForEntry(uuid, this.state.userEmail, right, this.query);
+exports.getRights = composeWithError(async (ctx) => {
+    const right = ctx.params.right;
+    const uuid = ctx.params.uuid;
+    ctx.body = await ctx.state.couch.hasRightForEntry(uuid, ctx.state.userEmail, right, ctx.query);
 });
 
-exports.deleteGroup = composeWithError(function*() {
-    yield this.state.couch.deleteGroup(this.params.name, this.state.userEmail);
-    this.body = OK;
+exports.deleteGroup = composeWithError(async (ctx) => {
+    await ctx.state.couch.deleteGroup(ctx.params.name, ctx.state.userEmail);
+    ctx.body = OK;
 });
 
-exports.getGlobalRights = composeWithError(function*() {
-    this.body = yield this.state.couch.getGlobalRights(this.state.userEmail);
+exports.getGlobalRights = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getGlobalRights(ctx.state.userEmail);
 });
 
-exports.getGlobalRightsDocUsers = composeWithError(function*() {
-    this.body = yield this.state.couch.getGlobalRightUsers(this.state.userEmail, this.params.right);
+exports.getGlobalRightsDocUsers = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getGlobalRightUsers(ctx.state.userEmail, ctx.params.right);
 });
 
-exports.addGlobalRightsDocUser = composeWithError(function*() {
-    this.body = yield this.state.couch.addGlobalRight(this.state.userEmail, this.params.right, this.params.user);
+exports.addGlobalRightsDocUser = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.addGlobalRight(ctx.state.userEmail, ctx.params.right, ctx.params.user);
 });
 
-exports.removeGlobalRightsDocUser = composeWithError(function*() {
-    this.body = yield this.state.couch.removeGlobalRight(this.state.userEmail, this.params.right, this.params.user);
+exports.removeGlobalRightsDocUser = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.removeGlobalRight(ctx.state.userEmail, ctx.params.right, ctx.params.user);
 });
 
-exports.getGlobalDefaultGroups = composeWithError(function*() {
-    this.body = yield this.state.couch.getGlobalDefaultGroups(this.state.userEmail);
+exports.getGlobalDefaultGroups = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getGlobalDefaultGroups(ctx.state.userEmail);
 });
 
-exports.setGlobalDefaultGroups = composeWithError(function*() {
-    this.body = yield this.state.couch.setGlobalDefaultGroups(this.state.userEmail, this.request.body);
+exports.setGlobalDefaultGroups = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.setGlobalDefaultGroups(ctx.state.userEmail, ctx.request.body);
 });
 
-exports.createEntryToken = composeWithError(function*() {
-    const token = yield this.state.couch.createEntryToken(this.state.userEmail, this.params.uuid);
-    this.status = 201;
-    this.body = token;
+exports.createEntryToken = composeWithError(async (ctx) => {
+    const token = await ctx.state.couch.createEntryToken(ctx.state.userEmail, ctx.params.uuid);
+    ctx.status = 201;
+    ctx.body = token;
 });
 
-exports.getTokens = composeWithError(function*() {
-    this.body = yield this.state.couch.getTokens(this.state.userEmail);
+exports.getTokens = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getTokens(ctx.state.userEmail);
 });
 
-exports.getTokenById = composeWithError(function*() {
-    this.body = yield this.state.couch.getToken(this.params.tokenid);
+exports.getTokenById = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getToken(ctx.params.tokenid);
 });
 
-exports.deleteTokenById = composeWithError(function*() {
-    yield this.state.couch.deleteToken(this.state.userEmail, this.params.tokenid);
-    this.body = OK;
+exports.deleteTokenById = composeWithError(async (ctx) => {
+    await ctx.state.couch.deleteToken(ctx.state.userEmail, ctx.params.tokenid);
+    ctx.body = OK;
 });
 
 function onGetError(ctx, e, secure) {
@@ -447,11 +445,11 @@ function getViewType(ctx) {
     return 'unknown';
 }
 
-function* errorMiddleware(next) {
+async function errorMiddleware(ctx, next) {
     try {
-        yield next;
+        await next();
     } catch (e) {
-        onGetError(this, e);
+        onGetError(ctx, e);
     }
 }
 

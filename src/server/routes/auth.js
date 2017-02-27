@@ -5,9 +5,9 @@ const router = require('koa-router')({
     prefix: '/auth'
 });
 
-router.use(function*(next) {
-    this.session.continue = this.query.continue || this.session.continue;
-    yield next;
+router.use(async (ctx, next) => {
+    ctx.session.continue = ctx.query.continue || ctx.session.continue;
+    await next();
 });
 
 const auth = require('../middleware/auth');
@@ -61,8 +61,8 @@ if (config.auth) {
     }
 }
 
-router.get('/providers', function*() {
-    this.body = enabledAuthPlugins.map(plugin => {
+router.get('/providers', (ctx) => {
+    ctx.body = enabledAuthPlugins.map(plugin => {
         return {
             name: plugin,
             visible: enabledAuthPlugins.includes(plugin)
@@ -70,33 +70,33 @@ router.get('/providers', function*() {
     });
 });
 
-router.get('/login', function*() {
-    if (this.isAuthenticated() && !this.session.popup) {
-        this.redirect(this.session.continue || '/');
-        this.session.continue = null;
-    } else if (this.isAuthenticated() && this.session.popup) {
-        this.session.popup = false;
-        this.body = '<script>window.close();</script>';
+router.get('/login', async (ctx) => {
+    if (ctx.isAuthenticated() && !ctx.session.popup) {
+        ctx.redirect(ctx.session.continue || '/');
+        ctx.session.continue = null;
+    } else if (ctx.isAuthenticated() && ctx.session.popup) {
+        ctx.session.popup = false;
+        ctx.body = '<script>window.close();</script>';
     } else {
-        this.session.popup = false;
-        this.state.enabledAuthPlugins = showLoginAuthPlugins;
-        this.state.pluginConfig = authPluginConfig;
-        yield this.render('login');
+        ctx.session.popup = false;
+        ctx.state.enabledAuthPlugins = showLoginAuthPlugins;
+        ctx.state.pluginConfig = authPluginConfig;
+        await ctx.render('login');
     }
 });
 
-router.get('/logout', function*() {
-    this.logout();
-    auth.okOrRedirect(this);
+router.get('/logout', (ctx) => {
+    ctx.logout();
+    auth.okOrRedirect(ctx);
 });
 
-router.get('/session', function*() {
+router.get('/session', async (ctx) => {
     // Check if session exists
-    const email = yield auth.getUserEmail(this);
-    this.body = {
+    const email = await auth.getUserEmail(ctx);
+    ctx.body = {
         ok: true,
         username: email,
-        authenticated: this.isAuthenticated()
+        authenticated: ctx.isAuthenticated()
     };
 });
 

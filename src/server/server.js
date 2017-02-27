@@ -1,14 +1,16 @@
 'use strict';
 
-const app = require('koa')();
-const compress = require('koa-compress');
-const cors = require('kcors');
 const fs = require('fs');
 const http = require('http');
-const passport = require('koa-passport');
 const path = require('path');
+
+const compress = require('koa-compress');
+const convert = require('koa-convert');
+const cors = require('kcors');
+const Koa = require('koa');
+const koaStatic = require('koa-static');
+const passport = require('koa-passport');
 const responseTime = require('koa-response-time');
-const serve = require('koa-serve');
 const session = require('koa-session');
 
 const api = require('./routes/api');
@@ -17,11 +19,13 @@ const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
 const nunjucks = require('./nunjucks');
 
+const app = new Koa();
+
 let _started;
 
-app.use(function *(next) {
-    debug.trace(`Method: ${this.method}; Path: ${this.path}`);
-    yield next;
+app.use(async function (ctx, next) {
+    debug.trace(`Method: ${ctx.method}; Path: ${ctx.path}`);
+    await next();
 });
 
 app.use(compress());
@@ -48,7 +52,7 @@ nunjucks(app, {
     ext: 'html'
 });
 
-app.use(serve('assets', path.join(__dirname, '../../public')));
+app.use(koaStatic(path.resolve(__dirname, '../../public')));
 
 const bundlePath = path.join(__dirname, '../../public/bundle.js');
 if (fs.existsSync(bundlePath)) {
@@ -56,13 +60,13 @@ if (fs.existsSync(bundlePath)) {
     let indexHtml = fs.readFileSync(path.join(__dirname, '../../public/index.html'), 'utf8');
     indexHtml = indexHtml.replace(/assets\//g, `${proxyPrefix}/assets/`);
     const bundleJs = fs.readFileSync(bundlePath, 'utf8');
-    app.use(function*(next) {
-        if (this.path.startsWith('/db') || this.path.startsWith('/auth')) {
-            yield next;
-        } else if (this.path.endsWith('/bundle.js')) {
-            this.body = bundleJs;
+    app.use(async (ctx, next) => {
+        if (ctx.path.startsWith('/db') || ctx.path.startsWith('/auth')) {
+            await next();
+        } else if (ctx.path.endsWith('/bundle.js')) {
+            ctx.body = bundleJs;
         } else {
-            this.body = indexHtml;
+            ctx.body = indexHtml;
         }
     });
 }
@@ -83,7 +87,7 @@ app.use(cors({
 }));
 
 app.keys = config.keys;
-app.use(session({
+app.use(convert(session({
     key: 'roc:sess',
     maxAge: config.sessionMaxAge,
     path: '/',
@@ -92,20 +96,20 @@ app.use(session({
     httpOnly: true,
     signed: true
 
-}, app));
+}, app)));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(function*(next) {
-    yield next;
+app.use(async (ctx, next) => {
+    await next();
     // Force a session change to renew the cookie
-    this.session.time = Date.now();
+    ctx.session.time = Date.now();
 });
 
-app.use(function*(next) {
-    this.state.pathPrefix = proxyPrefix;
-    this.state.urlPrefix = this.origin + proxyPrefix;
-    yield next;
+app.use(async (ctx, next) => {
+    ctx.state.pathPrefix = proxyPrefix;
+    ctx.state.urlPrefix = ctx.origin + proxyPrefix;
+    await next();
 });
 
 app.on('error', printError);
@@ -113,12 +117,12 @@ app.on('error', printError);
 //Unhandled errors
 if (config.debugrest) {
     // In debug mode, show unhandled errors to the user
-    app.use(function *(next) {
+    app.use(async (ctx, next) => {
         try {
-            yield next;
+            await next();
         } catch (err) {
-            this.status = err.status || 500;
-            this.body = `${err.message}\n${err.stack}`;
+            ctx.status = err.status || 500;
+            ctx.body = `${err.message}\n${err.stack}`;
             printError(err);
         }
     });
