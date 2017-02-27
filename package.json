@@ -39,7 +39,6 @@
   "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
   "dependencies": {
     "chokidar": "^1.4.2",
-    "co": "^4.6.0",
     "co-sleep": "0.0.1",
     "commander": "^2.9.0",
     "debug": "^2.2.0",

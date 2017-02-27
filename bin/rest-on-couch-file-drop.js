@@ -2,7 +2,8 @@
 
 'use strict';
 
-const app = require('koa')();
+const Koa = require('koa');
+const app = new Koa();
 const http = require('http');
 const path = require('path');
 const home = require('../src/config/home');
@@ -14,34 +15,34 @@ const fs = require('fs-extra');
 
 app.proxy = config.fileDropProxy;
 
-function *getHomeDir(next) {
+async function getHomeDir(ctx, next) {
     let homeDir = home.homeDir;
     if (!homeDir) {
-        this.body = 'No homeDir';
-        this.status = 500;
+        ctx.body = 'No homeDir';
+        ctx.status = 500;
         return;
     }
-    this.state.homeDir = homeDir;
-    yield next;
+    ctx.state.homeDir = homeDir;
+    await next();
 }
 
-router.get('/', function* () {
-    this.body = 'hello world';
-    this.status = 200;
+router.get('/', (ctx) => {
+    ctx.body = 'hello world';
+    ctx.status = 200;
 });
 
-router.post('/upload/:database/:kind/:filename', getHomeDir, function*() {
-    const dir = path.join(this.state.homeDir, this.params.database, this.params.kind, 'to_process');
-    var tmpDir = path.join(this.state.homeDir, this.params.database, this.params.kind, 'tmp');
+router.post('/upload/:database/:kind/:filename', getHomeDir, async (ctx) => {
+    const dir = path.join(ctx.state.homeDir, ctx.params.database, ctx.params.kind, 'to_process');
+    const tmpDir = path.join(ctx.state.homeDir, ctx.params.database, ctx.params.kind, 'tmp');
     fs.mkdirpSync(tmpDir);
 
     const uploadDir = fs.mkdtempSync(path.join(tmpDir, 'roc-upload-'));
-    const uploadPath = path.join(uploadDir, this.params.filename);
-    const file = path.join(dir, this.params.filename);
-    var write = fs.createWriteStream(uploadPath);
+    const uploadPath = path.join(uploadDir, ctx.params.filename);
+    const file = path.join(dir, ctx.params.filename);
+    const write = fs.createWriteStream(uploadPath);
 
     try {
-        yield new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
             write.on('finish', () => {
                 try {
                     fs.mkdirpSync(dir);
@@ -58,21 +59,21 @@ router.post('/upload/:database/:kind/:filename', getHomeDir, function*() {
                 fs.rmdirSync(uploadDir);
             });
 
-            this.req.pipe(write);
+            ctx.req.pipe(write);
         });
-        this.body = 'ok';
-        this.status = 200;
+        ctx.body = 'ok';
+        ctx.status = 200;
     } catch (e) {
-        this.body = 'error';
-        this.status = 500;
+        ctx.body = 'error';
+        ctx.status = 500;
     }
 });
 
 
-// app.use(function*(next) {
-//     this.state.pathPrefix = proxyPrefix;
-//     this.state.urlPrefix = this.origin + proxyPrefix;
-//     yield next;
+// app.use(async (ctx, next) => {
+//     ctx.state.pathPrefix = proxyPrefix;
+//     ctx.state.urlPrefix = ctx.origin + proxyPrefix;
+//     await next();
 // });
 
 app.on('error', printError);
