@@ -9,8 +9,8 @@
 const co = require('co');
 const request = require('request-promise');
 const program = require('commander');
-const nanoPromise = require('../../lib/util/nanoPromise');
-const getConfig = require('../../lib/config/config').getConfig;
+const nanoPromise = require('../../src/util/nanoPromise');
+const getConfig = require('../../src/config/config').getConfig;
 
 program
     .option('-c --config <path>', 'Path to custom config file')

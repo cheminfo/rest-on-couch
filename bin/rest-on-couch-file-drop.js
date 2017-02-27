@@ -5,10 +5,10 @@
 const app = require('koa')();
 const http = require('http');
 const path = require('path');
-const home = require('../lib/config/home');
+const home = require('../src/config/home');
 
-const config = require('../lib/config/config').globalConfig;
-const debug = require('../lib/util/debug')('server');
+const config = require('../src/config/config').globalConfig;
+const debug = require('../src/util/debug')('server');
 const router = require('koa-router')();
 const fs = require('fs-extra');
 

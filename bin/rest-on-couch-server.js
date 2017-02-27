@@ -4,18 +4,9 @@
 
 const program = require('commander');
 
-let debug, server;
-
-if (process.env.REST_ON_COUCH_ASYNC_AWAIT) {
-    debug = require('../src/util/debug')('bin:server');
-    server = require('../src/server/server');
-    require('../src/util/load')();
-    debug('starting app with async/await support');
-} else {
-    debug = require('../lib/util/debug')('bin:server');
-    server = require('../lib/server/server');
-    require('../lib/util/load');
-}
+const debug = require('../src/util/debug')('bin:server');
+const server = require('../src/server/server');
+require('../src/util/load')();
 
 program
     .option('-c --config <path>', 'Path to custom config file')
