@@ -10,12 +10,12 @@ const klaw = require('klaw');
 const path = require('path');
 const program = require('commander');
 
-const Couch = require('../lib/index');
-const debug = require('../lib/util/debug')('bin:import');
-const die = require('../lib/util/die');
-const home = require('../lib/config/home');
-const imp = require('../lib/import/import');
-const getConfig = require('../lib/config/config').getConfig;
+const Couch = require('../src/index');
+const debug = require('../src/util/debug')('bin:import');
+const die = require('../src/util/die');
+const home = require('../src/config/home');
+const imp = require('../src/import/import');
+const getConfig = require('../src/config/config').getConfig;
 
 var processChain = Promise.resolve();
 const importFiles = {};

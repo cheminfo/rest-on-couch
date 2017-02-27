@@ -2,31 +2,26 @@
   "name": "rest-on-couch",
   "version": "3.5.0",
   "description": "Interface to CouchDB that allows the control of permissions on the documents",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "files": [
-    "public",
     "bin",
-    "lib",
+    "public",
+    "src",
     "views"
   ],
   "bin": {
     "rest-on-couch-import": "./bin/rest-on-couch-import.js"
   },
   "scripts": {
-    "build": "npm run build:server && npm run build:client",
-    "build:client": "webpack",
-    "build:server": "npm run compile",
-    "compile": "babel src --out-dir lib --ignore src/client --quiet --plugins transform-async-to-generator",
+    "build": "webpack",
     "eslint": "eslint src bin test --cache",
     "eslint-fix": "npm run eslint -- --fix",
-    "prepare": "npm run compile",
     "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
     "start:dev": "webpack-dashboard -- webpack-dev-server --inline --content-base public/ --history-api-fallback",
     "start:prod": "npm run build && node bin/rest-on-couch-server.js",
-    "test": "npm run compile && npm run test-mocha && npm run eslint",
+    "test": "npm run test-mocha && npm run eslint",
     "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup --reporter dot --recursive",
-    "test-mocha": "mocha --timeout 5000 --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive",
-    "watch": "npm run compile -- --watch"
+    "test-mocha": "mocha --timeout 5000 --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive"
   },
   "repository": {
     "type": "git",

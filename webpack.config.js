@@ -1,7 +1,7 @@
 'use strict';
 
 const isProduction = process.env.NODE_ENV === 'production';
-const config = require('./lib/config/config').globalConfig;
+const config = require('./src/config/config').globalConfig;
 const webpack = require('webpack');
 
 let babelConfig = 'babel-loader?plugins[]=transform-async-to-generator&plugins[]=transform-es2015-modules-commonjs&presets[]=react';
