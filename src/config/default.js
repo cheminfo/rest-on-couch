@@ -20,7 +20,12 @@ module.exports = {
     proxyPrefix: '',
     publicAddress: 'http://localhost:3000',
     keys: ['some secret'],
+
+    sessionKey: 'roc:sess',
     sessionMaxAge: 24 * 60 * 60 * 1000, // One day
+    sessionPath: '/',
+    sessionSecure: false,
+
     allowedOrigins: [],
     debugrest: false,
     rights: {},
