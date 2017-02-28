@@ -25,11 +25,18 @@ const statusMessages = {
 
 const OK = {ok: true};
 
+const invalidDbName = 'invalid database name';
 exports.setupCouch = async (ctx, next) => {
     const dbname = ctx.params.dbname;
     ctx.state.dbName = dbname;
     ctx.state.userEmail = ctx.query.asAnonymous ? 'anonymous' : await auth.getUserEmail(ctx);
-    ctx.state.couch = Couch.get(dbname);
+    try {
+        ctx.state.couch = Couch.get(dbname);
+    } catch (e) {
+        if (e.message === invalidDbName) {
+            throw new CouchError(invalidDbName, 'forbidden');
+        }
+    }
     processCouchQuery(ctx);
     await next();
 };
