@@ -47,6 +47,18 @@ describe('basic rest-api as anonymous (noRights)', function () {
     it('get group without permission', function () {
         return request.get('/db/test/group/groupA').expect(401);
     });
+
+    it('_all_dbs', function () {
+        return request.get('/db/_all_dbs').expect(200).then((data) => {
+            data.body.should.be.an.Array();
+        });
+    });
+
+    it('forbidden datbase names', function () {
+        return request.get('/db/_a$aa/entry/aaa').expect(403).then((data) => {
+            data.text.should.equal('invalid database name');
+        });
+    });
 });
 
 describe('rest-api as b@b.com (noRights)', function () {

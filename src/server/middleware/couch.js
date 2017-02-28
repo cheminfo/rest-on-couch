@@ -34,7 +34,8 @@ exports.setupCouch = async (ctx, next) => {
         ctx.state.couch = Couch.get(dbname);
     } catch (e) {
         if (e.message === invalidDbName) {
-            throw new CouchError(invalidDbName, 'forbidden');
+            onGetError(ctx, new CouchError(invalidDbName, 'forbidden'));
+            return;
         }
     }
     processCouchQuery(ctx);
@@ -324,7 +325,7 @@ function onGetError(ctx, e, secure) {
             }
             break;
     }
-    if (e.message) {
+    if (e.message && e.message !== ctx.body) {
         ctx.body += `: ${e.message}`;
     }
     if (config.debugrest) {
