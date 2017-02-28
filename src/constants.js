@@ -28,7 +28,10 @@ module.exports = {
     DESIGN_DOC_VERSION: 22,
     RIGHTS_DOC_ID: 'rights',
     DEFAULT_GROUPS_DOC_ID: 'defaultGroups',
+
     globalRightTypes,
     globalAdminRightTypes,
-    allowedFirstLevelKeys
+    allowedFirstLevelKeys,
+
+    kEntryUnicity: Symbol('entryUnicity')
 };

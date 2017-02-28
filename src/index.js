@@ -69,6 +69,8 @@ class Couch {
         this._administrators = config.administrators || [];
         this._superAdministrators = config.superAdministrators || [];
 
+        this[constants.kEntryUnicity] = config.entryUnicity || 'byOwner';
+
         this._nano = nano(this._couchOptions.url);
         this._db = null;
         this._lastAuth = 0;
