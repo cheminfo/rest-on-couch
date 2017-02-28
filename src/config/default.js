@@ -26,5 +26,6 @@ module.exports = {
     rights: {},
     getUserInfo(email) {
         return {email};
-    }
+    },
+    entryUnicity: 'byOwner' // can be byOwner or global
 };
