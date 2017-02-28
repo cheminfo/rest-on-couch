@@ -88,14 +88,13 @@ app.use(cors({
 
 app.keys = config.keys;
 app.use(convert(session({
-    key: 'roc:sess',
+    key: config.sessionKey,
     maxAge: config.sessionMaxAge,
-    path: '/',
+    path: config.sessionPath,
     domain: config.sessionDomain,
     secure: config.sessionSecure,
     httpOnly: true,
     signed: true
-
 }, app)));
 app.use(passport.initialize());
 app.use(passport.session());

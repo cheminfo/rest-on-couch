@@ -95,6 +95,18 @@ Type: string
 Default: `undefined`  
 Domain of the session cookie.
 
+##### sessionKey
+
+Type: string
+Default: `'roc:sess'`
+Key of the session cookie.
+
+##### sessionPath
+
+Type: string
+Default: `'/'`
+Path of the session cookie.
+
 ##### sessionSecure
 
 Type: boolean  
