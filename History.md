@@ -1,3 +1,14 @@
+<a name="4.0.1"></a>
+## [4.0.1](https://github.com/cheminfo/rest-on-couch/compare/v4.0.0...v4.0.1) (2017-03-01)
+
+
+### Bug Fixes
+
+* **init:** make sure to update nano and db instances on open ([54060a0](https://github.com/cheminfo/rest-on-couch/commit/54060a0))
+* update react-router and fix webpack configuration ([c416082](https://github.com/cheminfo/rest-on-couch/commit/c416082))
+
+
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/cheminfo/rest-on-couch/compare/v3.5.0...v4.0.0) (2017-03-01)
 
