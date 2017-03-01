@@ -101,12 +101,6 @@ Type: boolean
 Default: `false`  
 Set to `true` if the cookie should only be valid on secure URLs.
 
-##### sessionSecureProxy
-
-Type: boolean  
-Default: `false`  
-Set to `true` if the cookie is secure and SSL is handled by a proxy.
-
 ##### debugrest
 
 Type: boolean  
