@@ -13,7 +13,7 @@ const nanoPromise = require('../util/nanoPromise');
 const methods = {
     async open() {
         const _nano = await connect.open();
-        if(this._nano !== _nano) {
+        if (this._nano !== _nano) {
             this._nano = _nano;
             this._db = this._nano.db.use(this._databaseName);
         }
