@@ -128,7 +128,7 @@ exports.changePassword = async (ctx) => {
         try {
             currentUser = await nanoPromise.getDocument(db, `org.couchdb.user:${email}`);
         } catch (e) {
-            debug.error(`ROC user does not have access to _users database`);
+            debug.error('ROC user does not have access to _users database');
             ctx.body = {error: 'internal server error'};
             ctx.status = 500;
             return;
