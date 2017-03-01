@@ -4,7 +4,6 @@ const fs = require('fs');
 const hasOwn = require('has-own');
 const path = require('path');
 
-const debug = require('../util/debug')('config:db');
 const die = require('../util/die');
 
 const dbConfig = module.exports = {};
@@ -34,7 +33,9 @@ if (homeDir) {
                     }
                     databaseConfig.designDocNames = designDocNames;
                 } catch (e) {
-                    // database config is not mandatory
+                    if (e.code !== 'MODULE_NOT_FOUND') {
+                        throw e;
+                    }
                 }
                 if (!databaseConfig.import) {
                     databaseConfig.import = {};
@@ -47,8 +48,8 @@ if (homeDir) {
             }
         }
     } catch (e) {
-        debug.error(e);
-        die(`could not read databases from ${homeDir}`);
+        console.error(e.stack || e); // eslint-disable-line no-console
+        die(`could not read database configurations from ${homeDir}`);
     }
 }
 
@@ -63,9 +64,7 @@ function readImportConfig(databasePath, databaseConfig) {
                 importConfig = require(path.join(importPath, 'import'));
             } catch (e) {
                 if (e.code !== 'MODULE_NOT_FOUND') {
-                    debug.trace(e.stack || e);
-                } else {
-                    debug.warn(e);
+                    throw e;
                 }
                 continue;
             }
