@@ -3045,9 +3045,9 @@ koa-is-json@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/koa-is-json/-/koa-is-json-1.0.0.tgz#273c07edcdcb8df6a2c1ab7d59ee76491451ec14"
 
-koa-passport@3.0.0-rc.3:
-  version "3.0.0-rc.3"
-  resolved "https://registry.yarnpkg.com/koa-passport/-/koa-passport-3.0.0-rc.3.tgz#f53f28c8b522719ad2cc3c828778a8f8c8b08abd"
+koa-passport@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/koa-passport/-/koa-passport-3.0.0.tgz#6d184bb48d19c812c4163f5757760eed85cc8d02"
   dependencies:
     passport "^0.3.2"
 
@@ -3634,9 +3634,9 @@ object-component@0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/object-component/-/object-component-0.0.3.tgz#f0c69aa50efc95b866c186f400a33769cb2f1291"
 
-object-hash@^1.1.4:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-1.1.5.tgz#bdd844e030d0861b692ca175c6cab6868ec233d7"
+object-hash@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-1.1.6.tgz#826fd161372e826bd124a85b7e67710d14146f65"
 
 object-keys@^1.0.10, object-keys@^1.0.8:
   version "1.0.11"
