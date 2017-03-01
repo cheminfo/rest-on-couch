@@ -14,6 +14,7 @@ const auth = require('../middleware/auth');
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
 const die = require('../../util/die');
+const util = require('../middleware/util');
 
 const authPlugins = [
     'couchdb',
@@ -99,5 +100,7 @@ router.get('/session', async (ctx) => {
         authenticated: ctx.isAuthenticated()
     };
 });
+
+router.post('/password', util.parseBody(({jsonLimit: '1kb'})), auth.changePassword);
 
 module.exports = router;
