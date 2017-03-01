@@ -3,13 +3,14 @@
 'use strict';
 
 const chokidar = require('chokidar');
+const delay = require('delay');
 const fs = require('fs-extra');
 const fsp = require('thenify-all')(fs);
 const klaw = require('klaw');
 const path = require('path');
 const program = require('commander');
 
-const Couch = require('../src/index');
+const connect = require('../src/connect');
 const debug = require('../src/util/debug')('bin:import');
 const die = require('../src/util/die');
 const home = require('../src/config/home');
@@ -36,14 +37,12 @@ if (program.sort !== 'asc' && program.sort !== 'desc') {
 }
 const sortWalk = program.sort === 'asc' ? 'shift' : 'pop';
 
-function doContinuous(waitTime) {
-    importAll().then(
-        () => {
-            debug('now waiting');
-            setTimeout(() => doContinuous(waitTime), waitTime);
-        },
-        err => die(err.message || err)
-    );
+async function doContinuous(waitTime) {
+    while (true) {
+        await importAll();
+        debug('now waiting');
+        await delay(waitTime);
+    }
 }
 
 async function importAll() {
@@ -312,7 +311,7 @@ function createDir(dir) {
 }
 
 function getDatePath() {
-    var now = new Date();
+    const now = new Date();
     return now.getUTCFullYear() + '/' + ('0' + (now.getUTCMonth() + 1)).slice(-2) + '/' + ('0' + now.getUTCDate()).slice(-2);
 }
 
@@ -321,47 +320,42 @@ function shouldIgnore(name) {
         name.startsWith('.');
 }
 
-if (program.args[0]) {
-    if (program.args.length !== 3) {
-        program.help();
-    }
-    debug(`Import with arguments: ${program.args.join(' ')}`);
-    const file = path.resolve(program.args[0]);
-    const database = program.args[1];
-    const kind = program.args[2];
-    imp.import(database, kind, file, {dryRun: program.dryRun})
-        .then(() => {
-            debug('Imported successfully');
-            Couch.get(database).close();
-        })
-        .catch((e) => debug.error(`Import error:\n${e.stack}`));
-} else if (program.watch) {
-    // watch files to import
-    let homeDir = getHomeDir();
-    debug(`watch ${homeDir}`);
-    chokidar.watch(homeDir, {
-        ignored: /[\/\\](\.|processed|errored|node_modules)/,
-        persistent: true
-    }).on('all', function (event, p) {
-        debug.trace(`watch event: ${event} - ${p}`);
-        let file = checkFile(homeDir, p);
-        if (event !== 'add' && event !== 'change' || !file) {
-            return;
+(async () => {
+    if (program.args[0]) {
+        if (program.args.length !== 3) {
+            program.help();
         }
-        processFile(file.database, file.importName, homeDir, p);
-    });
-} else if (program.continuous) {
-    const waitTime = program.wait * 1000;
-    debug(`continuous import. Wait time is ${program.wait}`);
-    doContinuous(waitTime);
-} else {
-    debug('no watch');
-    importAll().then(function (dbs) {
+        debug(`Import with arguments: ${program.args.join(' ')}`);
+        const file = path.resolve(program.args[0]);
+        const database = program.args[1];
+        const kind = program.args[2];
+        await imp.import(database, kind, file, {dryRun: program.dryRun});
+        debug('Imported successfully');
+    } else if (program.watch) {
+        // watch files to import
+        let homeDir = getHomeDir();
+        debug(`watch ${homeDir}`);
+        chokidar.watch(homeDir, {
+            ignored: /[\/\\](\.|processed|errored|node_modules)/,
+            persistent: true
+        }).on('all', function (event, p) {
+            debug.trace(`watch event: ${event} - ${p}`);
+            let file = checkFile(homeDir, p);
+            if (event !== 'add' && event !== 'change' || !file) {
+                return;
+            }
+            processFile(file.database, file.importName, homeDir, p);
+        });
+    } else if (program.continuous) {
+        const waitTime = program.wait * 1000;
+        debug(`continuous import. Wait time is ${program.wait}`);
+        await doContinuous(waitTime);
+    } else {
+        debug('no watch');
+        await importAll();
         debug('finished');
-        for (const db of dbs) {
-            Couch.get(db).close();
-        }
-    }, function (err) {
-        die(err.message || err);
-    });
-}
+    }
+})().then(() => connect.close()).catch((err) => {
+    connect.close();
+    die(err.message || err)
+});
