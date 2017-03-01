@@ -1,10 +1,16 @@
 'use strict';
 
+const path = require('path');
+
 const isProduction = process.env.NODE_ENV === 'production';
 const config = require('./src/config/config').globalConfig;
 const webpack = require('webpack');
+const BabiliPlugin = require('babili-webpack-plugin');
 
-let babelConfig = 'babel-loader?plugins[]=transform-async-to-generator&plugins[]=transform-es2015-modules-commonjs&presets[]=react';
+const babelConfig = {
+    plugins: ['transform-async-to-generator', 'transform-es2015-modules-commonjs'],
+    presets: ['react']
+};
 const entry = ['whatwg-fetch', './src/client/index.js'];
 
 const plugins = [
@@ -18,22 +24,20 @@ const plugins = [
 ];
 
 if (isProduction) {
-    babelConfig += '&presets[]=es2015';
+    babelConfig.presets.push(['env', {
+        targets: {
+            browsers: ['chrome >= 51', 'last 2 firefox versions', 'last 1 safari version', 'last 2 edge versions']
+        }
+    }]);
     entry.unshift('regenerator-runtime/runtime');
-   plugins.push(
-       new webpack.optimize.DedupePlugin(),
-       new webpack.optimize.OccurrenceOrderPlugin(),
-       new webpack.optimize.UglifyJsPlugin()
-   );
-} else {
-    plugins.push(new (require('webpack-dashboard/plugin')));
+    plugins.push(new BabiliPlugin())
 }
 
 module.exports = {
     entry: entry,
 
     output: {
-        path: 'public',
+        path: path.resolve(__dirname, 'public'),
         filename: 'bundle.js',
         publicPath: '/'
     },
@@ -41,9 +45,17 @@ module.exports = {
     plugins: plugins,
 
     module: {
-        loaders: [
-            { test: /\.js$/, exclude: /node_modules/, loader: babelConfig },
-            { test: /\.css$/, loader: 'style-loader!css-loader' },
+        rules: [
+            {
+                loader: 'babel-loader',
+                test: /\.js$/,
+                exclude: /node_modules/,
+                options: babelConfig
+            },
+            {
+                use: ['style-loader', 'css-loader'],
+                test: /\.css$/
+            }
         ]
     }
 };

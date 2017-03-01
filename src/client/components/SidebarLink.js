@@ -1,11 +1,11 @@
 import React from 'react';
-import {Link} from 'react-router';
+import {NavLink} from 'react-router-dom';
 
 export default ({to, icon, text}) => (
     <li>
-        <Link to={to} activeClassName="active">
+        <NavLink to={to} activeClassName="active">
             <i className={`fa fa-${icon}`} />
             <p>{text}</p>
-        </Link>
+        </NavLink>
     </li>
 );
