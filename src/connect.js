@@ -14,6 +14,7 @@ async function open() {
     if (globalNano) {
         return globalNano;
     }
+    debug('initialize connection to CouchDB');
     authInterval = setInterval(() => {
         globalNano = getGlobalNano();
     }, config.authRenewal * 1000);
@@ -21,9 +22,8 @@ async function open() {
 }
 
 async function getGlobalNano() {
-    debug('initialize connection to CouchDB');
+    debug.trace('renew CouchDB cookie');
     if (config.url && config.username && config.password) {
-        debug.trace('config is complete');
         let _nano = nano(config.url);
         const cookie = await nanoPromise.authenticate(
             _nano,
