@@ -12,6 +12,12 @@ const nanoPromise = require('../util/nanoPromise');
 
 const methods = {
     async open() {
+        const _nano = await connect.open();
+        if(this._nano !== _nano) {
+            this._nano = _nano;
+            this._db = this._nano.db.use(this._databaseName);
+        }
+
         if (this._initPromise) {
             return this._initPromise;
         }
@@ -24,8 +30,6 @@ const methods = {
 
     async getInitPromise() {
         debug(`initialize db ${this._databaseName}`);
-        this._nano = await connect.open();
-        this._db = this._nano.db.use(this._databaseName);
         const db = await nanoPromise.getDatabase(this._nano, this._databaseName);
         if (!db) {
             if (this._couchOptions.autoCreate) {
