@@ -357,5 +357,5 @@ function shouldIgnore(name) {
     }
 })().then(() => connect.close()).catch((err) => {
     connect.close();
-    die(err.message || err)
+    die(err.message || err);
 });
