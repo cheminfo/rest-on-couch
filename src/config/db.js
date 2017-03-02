@@ -15,15 +15,16 @@ if (homeDir) {
         for (const database of databases) {
             if (shouldIgnore(database)) continue;
             const databasePath = path.join(homeDir, database);
+            const databaseConfigPath = path.join(databasePath, 'config.js');
             if (fs.statSync(databasePath).isDirectory()) {
                 let databaseConfig = {};
-                try {
-                    databaseConfig = require(path.join(databasePath, 'config'));
-                    var designDocNames = {};
+                if (fs.existsSync(databaseConfigPath)) {
+                    databaseConfig = require(databaseConfigPath);
+                    const designDocNames = {};
                     databaseConfig.designDocNames = [];
                     if (databaseConfig.customDesign && databaseConfig.customDesign.views) {
-                        var views = databaseConfig.customDesign.views;
-                        for (var key in views) {
+                        const views = databaseConfig.customDesign.views;
+                        for (const key in views) {
                             if (hasOwn(key, views)) {
                                 if (views[key].designDoc) {
                                     designDocNames[key] = views[key].designDoc;
@@ -32,10 +33,6 @@ if (homeDir) {
                         }
                     }
                     databaseConfig.designDocNames = designDocNames;
-                } catch (e) {
-                    if (e.code !== 'MODULE_NOT_FOUND') {
-                        throw e;
-                    }
                 }
                 if (!databaseConfig.import) {
                     databaseConfig.import = {};
@@ -58,15 +55,11 @@ function readImportConfig(databasePath, databaseConfig) {
     for (const importDir of imports) {
         if (shouldIgnore(importDir)) continue;
         const importPath = path.join(databasePath, importDir);
+        const importConfigPath = path.join(importPath, 'import.js');
         if (fs.statSync(importPath).isDirectory()) {
             let importConfig = {};
-            try {
-                importConfig = require(path.join(importPath, 'import'));
-            } catch (e) {
-                if (e.code !== 'MODULE_NOT_FOUND') {
-                    throw e;
-                }
-                continue;
+            if (fs.existsSync(importConfigPath)) {
+                importConfig = require(importConfigPath);
             }
             databaseConfig.import[importDir] = Object.assign({}, databaseConfig.import[importDir], importConfig);
         }
