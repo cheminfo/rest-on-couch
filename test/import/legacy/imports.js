@@ -1,17 +1,17 @@
 'use strict';
 
-const imp = require('../../src/import/import');
+const imp = require('../../../src/import/import');
 const path = require('path');
-const Couch = require('../..');
-const nanoPromise = require('../../src/util/nanoPromise');
+const Couch = require('../../..');
+const nanoPromise = require('../../../src/util/nanoPromise');
 
 var importCouch;
 // The file in most test cases does not matter
 // We just have to pick an existing file
-const textFile = path.resolve(__dirname, '../homedir/test-import/parse/to_process/test.txt');
-const jsonFile = path.resolve(__dirname, '../homedir/test-import/json/to_process/test.json');
+const textFile = path.resolve(__dirname, '../../homedir/test-import/parse/to_process/test.txt');
+const jsonFile = path.resolve(__dirname, '../../homedir/test-import/json/to_process/test.json');
 
-describe('import', function () {
+describe('legacy import', function () {
     before(initCouch);
     it('parse', function () {
         return imp.import('test-import', 'parse', textFile).then(() => {

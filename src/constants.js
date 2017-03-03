@@ -22,6 +22,10 @@ const allowedFirstLevelKeys = [
     '$deleted'
 ];
 
+const IMPORT_UPDATE_FULL = 'IMPORT_UPDATE_FULL';
+const IMPORT_UPDATE_WITHOUT_ATTACHMENT = 'IMPORT_UPDATE_FULL';
+const IMPORT_UPDATE_$CONTENT_ONLY = 'IMPORT_UPDATE_$CONTENT_ONLY';
+
 module.exports = {
     DESIGN_DOC_NAME: 'app',
     DESIGN_DOC_ID: '_design/app',
@@ -33,5 +37,8 @@ module.exports = {
     globalAdminRightTypes,
     allowedFirstLevelKeys,
 
-    kEntryUnicity: Symbol('entryUnicity')
+    kEntryUnicity: Symbol('entryUnicity'),
+    IMPORT_UPDATE_FULL,
+    IMPORT_UPDATE_WITHOUT_ATTACHMENT,
+    IMPORT_UPDATE_$CONTENT_ONLY
 };

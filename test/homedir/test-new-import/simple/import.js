@@ -1,27 +1,31 @@
 'use strict';
 
-// module.exports = function (BaseImport) {
-//     class NMRImport extends BaseImport {
-//         async process() {
-//             if (!this.fileName.endsWith('dx')) {
-//                 return this.skip();
-//             }
-//         }
-//     }
-//
-//     return NMRImport;
-// };
-
 module.exports = async function nmrImport(ctx, result) {
-    if (!ctx.fileName.endsWith('dx')) {
-        return result.skip();
-    }
-
-    const nmr = await ctx.getContents('latin1');
-
     result.kind = 'sample';
-    result.id = ['123456', 'f1'];
-    result.owner = ['a@test.com', 'group1'];
-
+    result.$id = ctx.fileName;
+    result.owner = 'a@a.com';
+    result.reference = ctx.fileName;
+    result.field = 'field';
+    result.jpath = ['jpath', 'in', 'document'];
+    if(ctx.fileExt === '.txt') {
+        result.content_type = 'plain/text';
+    }
+    result.$content = {
+        sideEffect: true
+    };
+    result.addAttachment({
+        jpath: ['other','jpath'],
+        metadata: {hasMetadata: true},
+        reference: 'testRef',
+        contents: new Buffer('other attachment content', 'utf-8'),
+        field: 'testField',
+        filename: 'testFilename.txt',
+        content_type: 'plain/text'
+    });
+    result.metadata = {
+        hasMetadata: true
+    };
+    result.addGroup('group1');
+    result.addGroups(['group2', 'group3']);
 
 };

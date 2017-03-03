@@ -55,6 +55,7 @@ const methods = {
         return nanoPromise.destroyDocument(this._db, uuid);
     },
 
+    // Create entry if does not exist
     async createEntry(id, user, options) {
         options = options || {};
         debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);

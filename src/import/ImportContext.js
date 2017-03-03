@@ -8,24 +8,16 @@ const Couch = require('..');
 const kFilePath = Symbol('filePath');
 const kContents = Symbol('contents');
 const kDB = Symbol('db');
-const kSkip = Symbol('skip');
 
-module.exports = class BaseImport {
+module.exports = class ImportContext {
     constructor(filePath, database) {
         this[kFilePath] = filePath;
         this[kContents] = {};
         this[kDB] = database;
-
-        // Values that can be set by the implementer
-        this[kSkip] = false;
     }
 
     static getSource() {
         return [];
-    }
-
-    get filePath() {
-        return this[kFilePath];
     }
 
     get fileName() {
@@ -34,6 +26,10 @@ module.exports = class BaseImport {
 
     get fileDir() {
         return path.parse(this[kFilePath]).dir;
+    }
+
+    get fileExt() {
+        return path.parse(this[kFilePath]).ext;
     }
 
     get couch() {
@@ -49,12 +45,5 @@ module.exports = class BaseImport {
         } else {
             return fs.readFile(this[kFilePath], encoding);
         }
-    }
-
-    /**
-     * Don't import the file and keep it where it is
-     */
-    skip() {
-        this[kSkip] = true;
     }
 };

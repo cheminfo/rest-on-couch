@@ -61,7 +61,11 @@ function readImportConfig(databasePath, databaseConfig) {
             if (fs.existsSync(importConfigPath)) {
                 importConfig = require(importConfigPath);
             }
-            databaseConfig.import[importDir] = Object.assign({}, databaseConfig.import[importDir], importConfig);
+            if (typeof importConfig === 'function') { // New import
+                databaseConfig.import[importDir] = importConfig;
+            } else { // Legacy import
+                databaseConfig.import[importDir] = Object.assign({}, databaseConfig.import[importDir], importConfig);
+            }
         }
     }
 }
