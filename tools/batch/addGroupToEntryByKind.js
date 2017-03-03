@@ -6,11 +6,10 @@
     This script allows to add group(s) to entries matching a list of kinds
  */
 
-const co = require('co');
 const request = require('request-promise');
 const program = require('commander');
-const nanoPromise = require('../../lib/util/nanoPromise');
-const getConfig = require('../../lib/config/config').getConfig;
+const nanoPromise = require('../../src/util/nanoPromise');
+const getConfig = require('../../src/config/config').getConfig;
 
 program
     .option('-c --config <path>', 'Path to custom config file')
@@ -29,21 +28,21 @@ const suffixes = program.suffix.split(',');
 const Couch = require('../..');
 const couch = Couch.get(program.db);
 
-co(function*() {
+(async function () {
 
-    yield couch.open();
+    await couch.open();
     const db = couch._db;
     for (const kind of kinds) {
         console.log(`treating kind ${kind}`);
         const owners = suffixes.map(suffix => kind + suffix);
         const body = {group: owners};
-        const docs = yield nanoPromise.queryView(db, 'entryByKind', {key: kind});
+        const docs = await nanoPromise.queryView(db, 'entryByKind', {key: kind});
         console.log(`${docs.length} documents match`);
         for (const {id} of docs) {
-            yield nanoPromise.updateWithHandler(db, 'addGroupToEntry', id, body);
+            await nanoPromise.updateWithHandler(db, 'addGroupToEntry', id, body);
         }
     }
 
-}).catch(console.error).then(function () {
+})().catch(console.error).then(function () {
     couch.close();
 });

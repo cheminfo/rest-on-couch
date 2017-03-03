@@ -1,3 +1,56 @@
+<a name="4.0.1"></a>
+## [4.0.1](https://github.com/cheminfo/rest-on-couch/compare/v4.0.0...v4.0.1) (2017-03-01)
+
+
+### Bug Fixes
+
+* **init:** make sure to update nano and db instances on open ([54060a0](https://github.com/cheminfo/rest-on-couch/commit/54060a0))
+* update react-router and fix webpack configuration ([c416082](https://github.com/cheminfo/rest-on-couch/commit/c416082))
+
+
+
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/cheminfo/rest-on-couch/compare/v3.5.0...v4.0.0) (2017-03-01)
+
+
+* upgrade koa to 2.0.1 ([c1ae71b](https://github.com/cheminfo/rest-on-couch/commit/c1ae71b))
+
+
+### Bug Fixes
+
+* **import:** fix error in shouldIgnore step ([33b2a1c](https://github.com/cheminfo/rest-on-couch/commit/33b2a1c))
+* **import:** fix import ([16e7239](https://github.com/cheminfo/rest-on-couch/commit/16e7239))
+* **import:** fix import ([5245848](https://github.com/cheminfo/rest-on-couch/commit/5245848))
+* terminate process if config loading generates an error ([1b36055](https://github.com/cheminfo/rest-on-couch/commit/1b36055))
+
+
+### Code Refactoring
+
+* move connection to CouchDB to a global state ([cdc4c60](https://github.com/cheminfo/rest-on-couch/commit/cdc4c60))
+
+
+### Features
+
+* **import:** add filedir to config callbacks ([ee4704b](https://github.com/cheminfo/rest-on-couch/commit/ee4704b))
+* **import:** add noFileMove option ([26ce803](https://github.com/cheminfo/rest-on-couch/commit/26ce803))
+* **import:** add shouldIgnore config callback ([ef25e39](https://github.com/cheminfo/rest-on-couch/commit/ef25e39))
+* add entryUnicity option ([34ba61e](https://github.com/cheminfo/rest-on-couch/commit/34ba61e))
+* add route to change CouchDB password ([e073e64](https://github.com/cheminfo/rest-on-couch/commit/e073e64))
+* add sessionKey and sessionPath to server options ([4655fcd](https://github.com/cheminfo/rest-on-couch/commit/4655fcd))
+
+
+### BREAKING CHANGES
+
+* Before this change, the config would be silently skipped.
+Now an Error is thrown and its stack trace printed.
+* From now on, only one CouchDB connection per ROC instance will be supported.
+It was possible to specify different CouchDB URLs or credentials in each database config but
+this was never used.
+* From now on, the project will only be compatible with Node.js >= 7.6.0
+because of the use of async functions.
+
+
+
 <a name="3.5.0"></a>
 # [3.5.0](https://github.com/cheminfo/rest-on-couch/compare/v3.4.1...v3.5.0) (2017-01-30)
 

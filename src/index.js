@@ -1,7 +1,6 @@
 'use strict';
 
 const debug = require('./util/debug')('main');
-const nano = require('nano');
 
 const CouchError = require('./util/CouchError');
 const constants = require('./constants');
@@ -69,13 +68,11 @@ class Couch {
         this._administrators = config.administrators || [];
         this._superAdministrators = config.superAdministrators || [];
 
-        this._nano = nano(this._couchOptions.url);
+        this[constants.kEntryUnicity] = config.entryUnicity || 'byOwner';
+
+        this._nano = null;
         this._db = null;
-        this._lastAuth = 0;
         this._initPromise = null;
-        this._currentAuth = null;
-        this._authRenewal = null;
-        this._authRenewalInterval = config.authRenewal;
         this.open().catch(() => {
             // empty
         });

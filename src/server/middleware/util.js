@@ -8,13 +8,13 @@ exports.parseBody = function (options) {
 };
 
 exports.parseRawBody = function (options) {
-    return function*(next) {
-        this.request.body = yield rawBody(this.req, options);
-        yield next;
+    return async (ctx, next) => {
+        ctx.request.body = await rawBody(ctx.req, options);
+        await next();
     };
 };
 
-exports.getUuidFromGroupName = function*(next) {
-    this.params.uuid = yield this.state.couch.getDocUuidFromId(this.params.name, this.state.userEmail, 'group');
-    yield next;
+exports.getUuidFromGroupName = async (ctx, next) => {
+    ctx.params.uuid = await ctx.state.couch.getDocUuidFromId(ctx.params.name, ctx.state.userEmail, 'group');
+    await next();
 };

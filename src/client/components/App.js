@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import {BrowserRouter, Match, Miss, Redirect} from 'react-router';
+import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
 import {connect} from 'react-redux';
 
 import {API_PROXY_PREFIX} from '../api';
@@ -36,16 +36,18 @@ const App = (props) => (
 
                     <div className="content">
                         <div className="container-fluid">
-                            <Match exactly pattern="/" component={Home} />
-                            <Match pattern="/groups" component={Groups} />
-                            <Match pattern="/login" render={() => {
-                                if (props.loggedIn) {
-                                    return <Redirect to="/" />;
-                                } else {
-                                    return <Login />;
-                                }
-                            }} />
-                            <Miss component={NoMatch} />
+                            <Switch>
+                                <Route path="/" exact component={Home} />
+                                <Route path="/groups" component={Groups} />
+                                <Route path="/login" render={() => {
+                                    if (props.loggedIn) {
+                                        return <Redirect to="/" />;
+                                    } else {
+                                        return <Login />;
+                                    }
+                                }} />
+                                <Route component={NoMatch} />
+                            </Switch>
                         </div>
                     </div>
                 </div>

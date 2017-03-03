@@ -9,12 +9,16 @@ module.exports = {
             },
             test: {
                 map: function (doc) {
-                    emit(doc._id);
+                    if (doc.$type === 'entry') {
+                        emit(doc._id);
+                    }
                 }
             },
             testCustom: {
                 map: function (doc) {
-                    emit(doc._id);
+                    if (doc.$type === 'entry') {
+                        emit(doc._id);
+                    }
                 },
                 designDoc: 'custom'
             }
@@ -25,5 +29,6 @@ module.exports = {
                 return doc.$type === 'log';
             }
         }
-    }
+    },
+    entryUnicity: 'global'
 };

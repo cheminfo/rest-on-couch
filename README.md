@@ -95,17 +95,23 @@ Type: string
 Default: `undefined`  
 Domain of the session cookie.
 
+##### sessionKey
+
+Type: string
+Default: `'roc:sess'`
+Key of the session cookie.
+
+##### sessionPath
+
+Type: string
+Default: `'/'`
+Path of the session cookie.
+
 ##### sessionSecure
 
 Type: boolean  
 Default: `false`  
 Set to `true` if the cookie should only be valid on secure URLs.
-
-##### sessionSecureProxy
-
-Type: boolean  
-Default: `false`  
-Set to `true` if the cookie is secure and SSL is handled by a proxy.
 
 ##### debugrest
 

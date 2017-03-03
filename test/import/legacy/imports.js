@@ -1,9 +1,9 @@
 'use strict';
 
-const imp = require('../../lib/import/import');
+const imp = require('../../src/import/import');
 const path = require('path');
 const Couch = require('../..');
-const nanoPromise = require('../../lib/util/nanoPromise');
+const nanoPromise = require('../../src/util/nanoPromise');
 
 var importCouch;
 // The file in most test cases does not matter

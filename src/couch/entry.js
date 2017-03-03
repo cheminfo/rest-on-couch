@@ -6,6 +6,7 @@ const nanoPromise = require('../util/nanoPromise');
 const validateMethods = require('./validate');
 const nanoMethods = require('./nano');
 const util = require('./util');
+const kEntryUnicity = require('../constants').kEntryUnicity;
 
 const methods = {
     async getEntryWithRights(uuid, user, rights, options = {}) {
@@ -58,12 +59,9 @@ const methods = {
         options = options || {};
         debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
         await this.open();
-        const result = await nanoPromise.queryView(this._db, 'entryByOwnerAndId', {
-            key: [user, id],
-            reduce: false,
-            include_docs: true
-        });
-        if (result.length === 0) {
+        const result = await getUniqueEntryById(this, user, id);
+
+        if (result === undefined) {
             const hasRight = await validateMethods.checkRightAnyGroup(this, user, 'create');
             if (!hasRight) {
                 throw new CouchError('user is missing create right', 'unauthorized');
@@ -95,10 +93,10 @@ const methods = {
         // Return something similar to insertDocument
         return {
             ok: true,
-            id: result[0].doc._id,
-            rev: result[0].doc._rev,
-            $modificationDate: result[0].doc.$modificationDate,
-            $creationDate: result[0].doc.$creationDate
+            id: result.doc._id,
+            rev: result.doc._rev,
+            $modificationDate: result.doc.$modificationDate,
+            $creationDate: result.doc.$creationDate
         };
     },
 
@@ -168,16 +166,11 @@ const methods = {
             }
         } else if (entry.$id) {
             debug.trace('entry has no _id but has $id');
-            try {
-                await this.getEntryById(entry.$id, user);
+            if (await getUniqueEntryById(this, user, entry.$id)) {
                 throw new CouchError('entry already exists', 'conflict');
-            } catch (e) {
-                if (e.reason === 'not found') {
-                    result = await notFound(e);
-                    action = 'created';
-                } else {
-                    throw e;
-                }
+            } else {
+                result = await notFound({reason: 'not found'});
+                action = 'created';
             }
         } else {
             debug.trace('entry has no _id nor $id');
@@ -264,6 +257,27 @@ async function updateEntry(ctx, oldDoc, newDoc, user, options) {
         await ctx.addOwnersToDoc(res.id, user, options.groups, 'entry');
     }
     return res;
+}
+
+// Resolves with an entry if this ID is already in the DB given the current entryUnicity option.
+async function getUniqueEntryById(ctx, user, id) {
+    let result;
+    if (ctx[kEntryUnicity] === 'byOwner') {
+        result = await nanoPromise.queryView(ctx._db, 'entryByOwnerAndId', {
+            key: [user, id],
+            reduce: false,
+            include_docs: true
+        });
+    } else if (ctx[kEntryUnicity] === 'global') {
+        result = await nanoPromise.queryView(ctx._db, 'entryById', {
+            key: id,
+            reduce: false,
+            include_docs: true
+        });
+    } else {
+        throw new Error('wrong entryUnicity value: ' + ctx[kEntryUnicity]);
+    }
+    return result[0];
 }
 
 module.exports = {

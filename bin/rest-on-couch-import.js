@@ -3,19 +3,19 @@
 'use strict';
 
 const chokidar = require('chokidar');
-const co = require('co');
+const delay = require('delay');
 const fs = require('fs-extra');
 const fsp = require('fs-promise');
 const klaw = require('klaw');
 const path = require('path');
 const program = require('commander');
 
-const Couch = require('../lib/index');
-const debug = require('../lib/util/debug')('bin:import');
-const die = require('../lib/util/die');
-const home = require('../lib/config/home');
-const imp = require('../lib/import/import');
-const getConfig = require('../lib/config/config').getConfig;
+const connect = require('../src/connect');
+const debug = require('../src/util/debug')('bin:import');
+const die = require('../src/util/die');
+const home = require('../src/config/home');
+const imp = require('../src/import/import');
+const getConfig = require('../src/config/config').getConfig;
 
 var processChain = Promise.resolve();
 const importFiles = {};
@@ -37,46 +37,44 @@ if (program.sort !== 'asc' && program.sort !== 'desc') {
 }
 const sortWalk = program.sort === 'asc' ? 'shift' : 'pop';
 
-function doContinuous(waitTime) {
-    importAll().then(
-        () => {
-            debug('now waiting');
-            setTimeout(() => doContinuous(waitTime), waitTime);
-        },
-        err => die(err.message || err)
-    );
+async function doContinuous(waitTime) {
+    while (true) {
+        await importAll();
+        debug('now waiting');
+        await delay(waitTime);
+    }
 }
 
-const importAll = co.wrap(function*() {
+async function importAll() {
     const homeDir = getHomeDir();
     const limit = program.limit || 0;
     debug(`limit is ${limit}`);
-    const files = yield findFiles(homeDir, limit);
+    const files = await findFiles(homeDir, limit);
     debug(`${files.length} files to import`);
     const dbs = new Set();
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
         dbs.add(file.database);
-        yield processFile2(file.database, file.importName, file.path);
+        await processFile2(file.database, file.importName, file.path);
     }
     return dbs;
-});
+}
 
-const findFiles = co.wrap(function* (homeDir, limit) {
+async function findFiles(homeDir, limit) {
     let files = [];
 
-    const databases = yield fsp.readdir(homeDir);
+    const databases = await fsp.readdir(homeDir);
     for (const database of databases) {
         if (shouldIgnore(database)) continue;
         const databasePath = path.join(homeDir, database);
-        const stat = yield fsp.stat(databasePath);
+        const stat = await fsp.stat(databasePath);
         if (!stat.isDirectory()) continue;
 
-        const importNames = yield fsp.readdir(databasePath);
+        const importNames = await fsp.readdir(databasePath);
         for (const importName of importNames) {
             if (shouldIgnore(importName)) continue;
             const importNamePath = path.join(databasePath, importName);
-            const stat = yield fsp.stat(importNamePath);
+            const stat = await fsp.stat(importNamePath);
             if (!stat.isDirectory()) continue;
 
             try {
@@ -87,10 +85,10 @@ const findFiles = co.wrap(function* (homeDir, limit) {
                         try {
                             const sourcePath = path.resolve(importNamePath, source);
                             const sourceToProcessPath = path.join(sourcePath, 'to_process');
-                            const stat = yield fsp.stat(sourceToProcessPath);
+                            const stat = await fsp.stat(sourceToProcessPath);
                             if (stat.isDirectory()) {
                                 const maxElements = limit > 0 ? (limit - files.length) : 0;
-                                const fileList = yield getFilesToProcess(sourceToProcessPath, maxElements);
+                                const fileList = await getFilesToProcess(sourceToProcessPath, maxElements);
                                 const objFiles = fileList.map(file => ({database, importName, path: file}));
                                 files = files.concat(objFiles);
                                 if (limit > 0 && files.length >= limit) {
@@ -108,10 +106,10 @@ const findFiles = co.wrap(function* (homeDir, limit) {
 
             try {
                 const toProcessPath = path.join(importNamePath, 'to_process');
-                const stat = yield fsp.stat(toProcessPath);
+                const stat = await fsp.stat(toProcessPath);
                 if (stat.isDirectory()) {
                     const maxElements = limit > 0 ? (limit - files.length) : 0;
-                    const fileList = yield getFilesToProcess(toProcessPath, maxElements);
+                    const fileList = await getFilesToProcess(toProcessPath, maxElements);
                     const objFiles = fileList.map(file => ({database, importName, path: file}));
                     files = files.concat(objFiles);
                     if (limit > 0 && files.length >= limit) {
@@ -125,7 +123,7 @@ const findFiles = co.wrap(function* (homeDir, limit) {
     }
 
     return files;
-});
+}
 
 function getFilesToProcess(directory, maxElements) {
     return new Promise((resolve, reject) => {
@@ -210,7 +208,7 @@ function processFile(database, importName, homeDir, p) {
     return processChain;
 }
 
-function* processFile2(database, importName, filePath) {
+async function processFile2(database, importName, filePath) {
     debug.trace(`process file ${filePath}`);
     const parsedPath = path.parse(filePath);
     const splitParsedPath = parsedPath.dir.split('/');
@@ -220,9 +218,9 @@ function* processFile2(database, importName, filePath) {
     }
 
     try {
-        yield imp.import(database, importName, filePath);
+        await imp.import(database, importName, filePath);
         // success, move to processed
-        yield moveFile(filePath, parsedPath.base, splitParsedPath, toProcess, 'processed');
+        await moveFile(filePath, parsedPath.base, splitParsedPath, toProcess, 'processed');
     } catch (e) {
         if (e.skip) return;
         // error, move to errored
@@ -231,11 +229,11 @@ function* processFile2(database, importName, filePath) {
             return;
         }
         debug.error(e + '\n' + e.stack);
-        yield moveFile(filePath, parsedPath.base, splitParsedPath, toProcess, 'errored');
+        await moveFile(filePath, parsedPath.base, splitParsedPath, toProcess, 'errored');
     }
 }
 
-function* moveFile(filePath, fileName, splitParsedPath, toProcess, dest) {
+async function moveFile(filePath, fileName, splitParsedPath, toProcess, dest) {
     const base = splitParsedPath.slice(0, toProcess).join('/');
     let subdir;
     if (splitParsedPath.length - toProcess > 1) {
@@ -244,10 +242,10 @@ function* moveFile(filePath, fileName, splitParsedPath, toProcess, dest) {
         subdir = getDatePath();
     }
     const destination = path.join(base, dest, subdir, fileName);
-    yield tryMove(filePath, destination);
+    await tryMove(filePath, destination);
 }
 
-function* tryMove(from, to, suffix) {
+async function tryMove(from, to, suffix) {
     if (suffix > 1000) {
         throw new Error('tryMove: too many retries');
     }
@@ -259,12 +257,12 @@ function* tryMove(from, to, suffix) {
         newTo += '.' + suffix;
     }
     try {
-        yield fsp.move(from, newTo);
+        await fsp.move(from, newTo);
     } catch (e) {
         if (e.code !== 'EEXIST') {
             throw new Error(`Could could rename ${from} to ${newTo}: ${e}`);
         }
-        yield tryMove(from, to, ++suffix);
+        await tryMove(from, to, ++suffix);
     }
 }
 
@@ -313,7 +311,7 @@ function createDir(dir) {
 }
 
 function getDatePath() {
-    var now = new Date();
+    const now = new Date();
     return now.getUTCFullYear() + '/' + ('0' + (now.getUTCMonth() + 1)).slice(-2) + '/' + ('0' + now.getUTCDate()).slice(-2);
 }
 
@@ -322,47 +320,42 @@ function shouldIgnore(name) {
         name.startsWith('.');
 }
 
-if (program.args[0]) {
-    if (program.args.length !== 3) {
-        program.help();
-    }
-    debug(`Import with arguments: ${program.args.join(' ')}`);
-    const file = path.resolve(program.args[0]);
-    const database = program.args[1];
-    const kind = program.args[2];
-    imp.import(database, kind, file, {dryRun: program.dryRun})
-        .then(() => {
-            debug('Imported successfully');
-            Couch.get(database).close();
-        })
-        .catch((e) => debug.error(`Import error:\n${e.stack}`));
-} else if (program.watch) {
-    // watch files to import
-    let homeDir = getHomeDir();
-    debug(`watch ${homeDir}`);
-    chokidar.watch(homeDir, {
-        ignored: /[\/\\](\.|processed|errored|node_modules)/,
-        persistent: true
-    }).on('all', function (event, p) {
-        debug.trace(`watch event: ${event} - ${p}`);
-        let file = checkFile(homeDir, p);
-        if (event !== 'add' && event !== 'change' || !file) {
-            return;
+(async () => {
+    if (program.args[0]) {
+        if (program.args.length !== 3) {
+            program.help();
         }
-        processFile(file.database, file.importName, homeDir, p);
-    });
-} else if (program.continuous) {
-    const waitTime = program.wait * 1000;
-    debug(`continuous import. Wait time is ${program.wait}`);
-    doContinuous(waitTime);
-} else {
-    debug('no watch');
-    importAll().then(function (dbs) {
+        debug(`Import with arguments: ${program.args.join(' ')}`);
+        const file = path.resolve(program.args[0]);
+        const database = program.args[1];
+        const kind = program.args[2];
+        await imp.import(database, kind, file, {dryRun: program.dryRun});
+        debug('Imported successfully');
+    } else if (program.watch) {
+        // watch files to import
+        let homeDir = getHomeDir();
+        debug(`watch ${homeDir}`);
+        chokidar.watch(homeDir, {
+            ignored: /[\/\\](\.|processed|errored|node_modules)/,
+            persistent: true
+        }).on('all', function (event, p) {
+            debug.trace(`watch event: ${event} - ${p}`);
+            let file = checkFile(homeDir, p);
+            if (event !== 'add' && event !== 'change' || !file) {
+                return;
+            }
+            processFile(file.database, file.importName, homeDir, p);
+        });
+    } else if (program.continuous) {
+        const waitTime = program.wait * 1000;
+        debug(`continuous import. Wait time is ${program.wait}`);
+        await doContinuous(waitTime);
+    } else {
+        debug('no watch');
+        await importAll();
         debug('finished');
-        for (const db of dbs) {
-            Couch.get(db).close();
-        }
-    }, function (err) {
-        die(err.message || err);
-    });
-}
+    }
+})().then(() => connect.close()).catch((err) => {
+    connect.close();
+    die(err.message || err);
+});

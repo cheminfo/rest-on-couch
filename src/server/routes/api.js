@@ -7,9 +7,6 @@ const router = require('koa-router')({
 const couch = require('../middleware/couch');
 const util = require('../middleware/util');
 
-router.use(couch.setupCouch);
-router.use(couch.tokenLookup);
-
 const parseJson1mb = util.parseBody({jsonLimit: '1mb'});
 const parseJson100mb = util.parseBody({jsonLimit: '100mb'});
 
@@ -17,6 +14,10 @@ const getUuidFromGroupName = util.getUuidFromGroupName;
 
 // Get list of all databases that ROC can handle
 router.get('/_all_dbs', couch.getAllDbs);
+
+// All subsequent routes require :dbname
+router.use('/:dbname', couch.setupCouch);
+router.use(couch.tokenLookup);
 
 // Entries
 router.post('/:dbname/entry', parseJson100mb, couch.newOrUpdateEntry);

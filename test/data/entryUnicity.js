@@ -22,14 +22,14 @@ function populate(db) {
 }
 
 module.exports = function () {
-    global.couch = new Couch({database: 'test'});
+    global.couch = new Couch({database: 'test3'});
     return global.couch.open()
         .then(() => destroy(global.couch._nano, global.couch._databaseName))
         .then(() => {
             global.couch = new Couch({
-                database: 'test',
+                database: 'test3',
                 rights: {
-                    read: ['anyuser']
+                    create: ['anyuser']
                 }
             });
             return global.couch.open();

@@ -1,6 +1,5 @@
 'use strict';
 
-const co = require('co');
 const LocalStrategy = require('passport-local').Strategy;
 const request = require('request-promise');
 
@@ -16,12 +15,12 @@ exports.init = function (passport, router) {
             passwordField: 'password'
         },
         function (username, password, done) {
-            co(function*() {
+            (async function () {
                 if (!isEmail(username)) {
                     return done(null, false, 'username must be an email');
                 }
                 try {
-                    let res = yield request.post(`${couchUrl}/_session`, {
+                    let res = await request.post(`${couchUrl}/_session`, {
                         form: {
                             name: username,
                             password: password
@@ -44,7 +43,7 @@ exports.init = function (passport, router) {
                         return done(null, false, 'unknown error');
                     }
                 }
-            });
+            })();
         }));
 
     router.post('/login/couchdb',

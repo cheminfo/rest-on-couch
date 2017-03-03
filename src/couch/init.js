@@ -1,10 +1,10 @@
 'use strict';
 
-const nano = require('nano');
 const objHash = require('object-hash');
 
 const getDesignDoc = require('../design/app');
 
+const connect = require('../connect');
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:init');
@@ -12,6 +12,12 @@ const nanoPromise = require('../util/nanoPromise');
 
 const methods = {
     async open() {
+        const _nano = await connect.open();
+        if (this._nano !== _nano) {
+            this._nano = _nano;
+            this._db = this._nano.db.use(this._databaseName);
+        }
+
         if (this._initPromise) {
             return this._initPromise;
         }
@@ -19,12 +25,11 @@ const methods = {
     },
 
     close() {
-        clearInterval(this._authRenewal);
+        return connect.close();
     },
 
     async getInitPromise() {
         debug(`initialize db ${this._databaseName}`);
-        await this._authenticate();
         const db = await nanoPromise.getDatabase(this._nano, this._databaseName);
         if (!db) {
             if (this._couchOptions.autoCreate) {
@@ -58,41 +63,6 @@ const methods = {
             checkRightsDoc(this._db, this._rights),
             checkDefaultGroupsDoc(this._db)
         ]);
-        this._renewAuthentication();
-    },
-
-    _renewAuthentication() {
-        if (this._authRenewal) {
-            clearInterval(this._authRenewal);
-        }
-        this._authRenewal = setInterval(() => {
-            this._currentAuth = this.getAuthenticationPromise();
-        }, this._authRenewalInterval * 1000);
-    },
-
-    _authenticate() {
-        if (this._currentAuth) {
-            return this._currentAuth;
-        }
-        return this._currentAuth = this.getAuthenticationPromise();
-    },
-
-    async getAuthenticationPromise() {
-        if (this._couchOptions.username) {
-            debug.trace('authenticate to CouchDB');
-            const cookie = await nanoPromise.authenticate(
-                this._nano,
-                this._couchOptions.username,
-                this._couchOptions.password
-            );
-            this._nano = nano({
-                url: this._couchOptions.url,
-                cookie
-            });
-        } else {
-            throw new CouchError('rest-on-couch cannot be used without credentials', 'fatal');
-        }
-        this._db = this._nano.db.use(this._databaseName);
     }
 };
 
