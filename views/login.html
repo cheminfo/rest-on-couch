@@ -26,6 +26,7 @@
 
     {% if "ldap" in enabledAuthPlugins %}
         <h3>{{ pluginConfig.ldap.title }}</h3>
+        <div>{{ pluginConfig.ldap.description | safe }}</div>
         <p>
             <form method="post" action="login/ldap">
                 <label for="ldap-username">Username</label>
