@@ -1,3 +1,13 @@
+<a name="4.0.2"></a>
+## [4.0.2](https://github.com/cheminfo/rest-on-couch/compare/v4.0.1...v4.0.2) (2017-03-09)
+
+
+### Bug Fixes
+
+* more fixes to database config loader ([b203410](https://github.com/cheminfo/rest-on-couch/commit/b203410))
+
+
+
 <a name="4.0.1"></a>
 ## [4.0.1](https://github.com/cheminfo/rest-on-couch/compare/v4.0.0...v4.0.1) (2017-03-01)
 
