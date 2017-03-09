@@ -1,3 +1,13 @@
+## Building
+
+Install cheminfo-tools:
+`npm install -g cheminfo-tools`
+
+Make a release:
+`cheminfo publish` https://github.com/cheminfo/tools#publish
+
+## Testing
+
 You are able to test the importation file direct from the terminal
 
 Install globally rest-on-couch
