@@ -5,7 +5,6 @@
 const chokidar = require('chokidar');
 const delay = require('delay');
 const fs = require('fs-extra');
-const fsp = require('thenify-all')(fs);
 const klaw = require('klaw');
 const path = require('path');
 const program = require('commander');
@@ -16,6 +15,8 @@ const die = require('../src/util/die');
 const home = require('../src/config/home');
 const imp = require('../src/import/import');
 const getConfig = require('../src/config/config').getConfig;
+const tryMove = require('../src/util/tryMove');
+const fsp = require('../src/util/fs-extra-promise');
 
 var processChain = Promise.resolve();
 const importFiles = {};
@@ -63,18 +64,18 @@ async function importAll() {
 async function findFiles(homeDir, limit) {
     let files = [];
 
-    const databases = await fsp.readdir(homeDir);
+    const databases = await fsp.readdirAsync(homeDir);
     for (const database of databases) {
         if (shouldIgnore(database)) continue;
         const databasePath = path.join(homeDir, database);
-        const stat = await fsp.stat(databasePath);
+        const stat = await fsp.statAsync(databasePath);
         if (!stat.isDirectory()) continue;
 
-        const importNames = await fsp.readdir(databasePath);
+        const importNames = await fsp.readdirAsync(databasePath);
         for (const importName of importNames) {
             if (shouldIgnore(importName)) continue;
             const importNamePath = path.join(databasePath, importName);
-            const stat = await fsp.stat(importNamePath);
+            const stat = await fsp.statAsync(importNamePath);
             if (!stat.isDirectory()) continue;
 
             try {
@@ -85,7 +86,7 @@ async function findFiles(homeDir, limit) {
                         try {
                             const sourcePath = path.resolve(importNamePath, source);
                             const sourceToProcessPath = path.join(sourcePath, 'to_process');
-                            const stat = await fsp.stat(sourceToProcessPath);
+                            const stat = await fsp.statAsync(sourceToProcessPath);
                             if (stat.isDirectory()) {
                                 const maxElements = limit > 0 ? (limit - files.length) : 0;
                                 const fileList = await getFilesToProcess(sourceToProcessPath, maxElements);
@@ -106,7 +107,7 @@ async function findFiles(homeDir, limit) {
 
             try {
                 const toProcessPath = path.join(importNamePath, 'to_process');
-                const stat = await fsp.stat(toProcessPath);
+                const stat = await fsp.statAsync(toProcessPath);
                 if (stat.isDirectory()) {
                     const maxElements = limit > 0 ? (limit - files.length) : 0;
                     const fileList = await getFilesToProcess(toProcessPath, maxElements);
@@ -243,27 +244,6 @@ async function moveFile(filePath, fileName, splitParsedPath, toProcess, dest) {
     }
     const destination = path.join(base, dest, subdir, fileName);
     await tryMove(filePath, destination);
-}
-
-async function tryMove(from, to, suffix) {
-    if (suffix > 1000) {
-        throw new Error('tryMove: too many retries');
-    }
-    if (!suffix) {
-        suffix = 0;
-    }
-    var newTo = to;
-    if (suffix > 0) {
-        newTo += '.' + suffix;
-    }
-    try {
-        await fsp.move(from, newTo);
-    } catch (e) {
-        if (e.code !== 'EEXIST') {
-            throw new Error(`Could could rename ${from} to ${newTo}: ${e}`);
-        }
-        await tryMove(from, to, ++suffix);
-    }
 }
 
 function tryRename(from, to, resolve, reject, suffix) {

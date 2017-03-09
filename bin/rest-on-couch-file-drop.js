@@ -6,17 +6,17 @@ const Koa = require('koa');
 const app = new Koa();
 const http = require('http');
 const path = require('path');
-const home = require('../src/config/home');
+const router = require('koa-router')();
 
 const config = require('../src/config/config').globalConfig;
 const debug = require('../src/util/debug')('server');
-const router = require('koa-router')();
-const fs = require('fs-extra');
+const fs = require('../src/util/fs-extra-promise');
+const tryMove = require('../src/util/tryMove');
 
 app.proxy = config.fileDropProxy;
 
 async function getHomeDir(ctx, next) {
-    let homeDir = home.homeDir;
+    let homeDir = config.homeDir;
     if (!homeDir) {
         ctx.body = 'No homeDir';
         ctx.status = 500;
@@ -34,29 +34,29 @@ router.get('/', (ctx) => {
 router.post('/upload/:database/:kind/:filename', getHomeDir, async (ctx) => {
     const dir = path.join(ctx.state.homeDir, ctx.params.database, ctx.params.kind, 'to_process');
     const tmpDir = path.join(ctx.state.homeDir, ctx.params.database, ctx.params.kind, 'tmp');
-    fs.mkdirpSync(tmpDir);
-
-    const uploadDir = fs.mkdtempSync(path.join(tmpDir, 'roc-upload-'));
+    await fs.mkdirpAsync(tmpDir);
+    const uploadDir = await fs.mkdtempAsync(path.join(tmpDir, 'roc-upload-'));
     const uploadPath = path.join(uploadDir, ctx.params.filename);
     const file = path.join(dir, ctx.params.filename);
     const write = fs.createWriteStream(uploadPath);
-
     try {
         await new Promise((resolve, reject) => {
-            write.on('finish', () => {
+            write.on('finish', async () => {
                 try {
-                    fs.mkdirpSync(dir);
+                    await tryMove(uploadPath, file);
+                    await fs.rmdirAsync(uploadDir);
+                    resolve();
                 } catch (e) {
-                    debug.trace('dir already exists');
+                    reject(e);
                 }
-                fs.renameSync(uploadPath, file);
-                fs.rmdirSync(uploadDir);
-                resolve();
             });
 
-            write.on('error', () => {
-                reject();
-                fs.rmdirSync(uploadDir);
+            write.on('error', async (e) => {
+                try {
+                    await fs.rmdirAsync(uploadDir);
+                } finally {
+                    reject(e);
+                }
             });
 
             ctx.req.pipe(write);
@@ -68,13 +68,6 @@ router.post('/upload/:database/:kind/:filename', getHomeDir, async (ctx) => {
         ctx.status = 500;
     }
 });
-
-
-// app.use(async (ctx, next) => {
-//     ctx.state.pathPrefix = proxyPrefix;
-//     ctx.state.urlPrefix = ctx.origin + proxyPrefix;
-//     await next();
-// });
 
 app.on('error', printError);
 

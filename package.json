@@ -38,6 +38,7 @@
   },
   "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
   "dependencies": {
+    "bluebird": "^3.5.0",
     "chokidar": "^1.4.2",
     "co-sleep": "0.0.1",
     "commander": "^2.9.0",
@@ -92,7 +93,6 @@
     "style-loader": "^0.13.1",
     "superagent": "^3.1.0",
     "superagent-promise": "^1.1.0",
-    "thenify-all": "^1.6.0",
     "whatwg-fetch": "^2.0.0"
   },
   "devDependencies": {
