@@ -11,7 +11,7 @@ describe('ImportContext', function () {
         const fileContents = await fs.readFileSync(file, 'utf-8');
         const databaseName = 'test-new-import';
         const ctx = new ImportContext(file, databaseName);
-        ctx.fileName.should.equal('test.txt');
+        ctx.filename.should.equal('test.txt');
         ctx.fileExt.should.equal('.txt');
         ctx.fileDir.should.endWith('homedir/test-new-import/simple/to_process');
         ctx.couch.should.be.an.instanceOf(Couch);

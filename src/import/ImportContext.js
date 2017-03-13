@@ -20,7 +20,7 @@ module.exports = class ImportContext {
         return [];
     }
 
-    get fileName() {
+    get filename() {
         return path.parse(this[kFilePath]).base;
     }
 

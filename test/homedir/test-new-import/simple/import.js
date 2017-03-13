@@ -2,9 +2,9 @@
 
 module.exports = async function nmrImport(ctx, result) {
     result.kind = 'sample';
-    result.id = ctx.fileName;
+    result.id = ctx.filename;
     result.owner = 'a@a.com';
-    result.reference = ctx.fileName;
+    result.reference = ctx.filename;
     result.field = 'field';
     result.jpath = ['jpath', 'in', 'document'];
     if(ctx.fileExt === '.txt') {
