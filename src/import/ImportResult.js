@@ -7,7 +7,7 @@ module.exports = class ImportResult {
         this.attachments = [];
         this.content_type = 'application/octet-stream';
         this.groups = [];
-        this.$content = {};
+        this.content = {};
     }
 
     skip() {
@@ -32,11 +32,11 @@ module.exports = class ImportResult {
         const updateType = this.getUpdateType();
 
         // Always required
-        assertDefined(this.$id, '$id');
+        assertDefined(this.id, 'id');
         assertType(this.owner, 'String', 'owner');
         assertType(this.kind, 'String', 'kind');
         assertType(this.groups, 'Array', 'groups');
-        assertType(this.$content, 'Object', '$content');
+        assertType(this.content, 'Object', 'content');
         assertType(this.attachments, 'Array', 'attachments');
         for (let i = 0; i < this.attachments.length; i++) {
             assertType(this.attachments[i].field, 'String', 'In attachment: field');

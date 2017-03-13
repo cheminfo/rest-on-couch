@@ -9,7 +9,7 @@ function getValidResult(importType) {
     switch (importType) {
         case constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT:
             Object.assign(result, {
-                $id: 'test',
+                id: 'test',
                 kind: 'test',
                 reference: 'testRef',
                 owner: 'a@a.com',
@@ -24,7 +24,7 @@ function getValidResult(importType) {
             break;
         case constants.IMPORT_UPDATE_$CONTENT_ONLY:
             Object.assign(result, {
-                $id: 'test',
+                id: 'test',
                 kind: 'test',
                 reference: 'testRef',
                 owner: 'a@a.com'
@@ -34,7 +34,7 @@ function getValidResult(importType) {
             break;
         default:
             Object.assign(result, {
-                $id: 'test',
+                id: 'test',
                 kind: 'test',
                 reference: 'testRef',
                 owner: 'a@a.com',
@@ -79,7 +79,7 @@ describe('ImportResult', function () {
 
     it('throws when fields are missing - full upload', function () {
         // Mandotory fields
-        checkWithoutPropShouldThrow('$id', '$id should be defined');
+        checkWithoutPropShouldThrow('id', 'id should be defined');
         checkWithoutPropShouldThrow('kind', 'kind should be String');
         checkWithoutPropShouldThrow('owner', 'owner should be String');
         checkWithoutPropShouldThrow('groups', 'groups should be Array');
@@ -103,14 +103,14 @@ describe('ImportResult', function () {
     });
 
     it('throws when fields are missing - without attachment', function () {
-        checkWithoutPropShouldThrow('$id', '$id should be defined', constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT);
+        checkWithoutPropShouldThrow('id', 'id should be defined', constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT);
         checkWithoutPropShouldThrow('kind', 'kind should be String', constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT);
         checkWithoutPropShouldThrow('owner', 'owner should be String', constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT);
         checkWithoutPropShouldThrow('groups', 'groups should be Array', constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT);
     });
 
     it('throws when fields aer missing - content only', function () {
-        checkWithoutPropShouldThrow('$id', '$id should be defined', constants.IMPORT_UPDATE_$CONTENT_ONLY);
+        checkWithoutPropShouldThrow('id', 'id should be defined', constants.IMPORT_UPDATE_$CONTENT_ONLY);
         checkWithoutPropShouldThrow('kind', 'kind should be String', constants.IMPORT_UPDATE_$CONTENT_ONLY);
         checkWithoutPropShouldThrow('owner', 'owner should be String', constants.IMPORT_UPDATE_$CONTENT_ONLY);
         checkWithoutPropShouldThrow('groups', 'groups should be Array', constants.IMPORT_UPDATE_$CONTENT_ONLY);

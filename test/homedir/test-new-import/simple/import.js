@@ -2,7 +2,7 @@
 
 module.exports = async function nmrImport(ctx, result) {
     result.kind = 'sample';
-    result.$id = ctx.fileName;
+    result.id = ctx.fileName;
     result.owner = 'a@a.com';
     result.reference = ctx.fileName;
     result.field = 'field';
@@ -10,7 +10,7 @@ module.exports = async function nmrImport(ctx, result) {
     if(ctx.fileExt === '.txt') {
         result.content_type = 'plain/text';
     }
-    result.$content = {
+    result.content = {
         sideEffect: true
     };
     result.addAttachment({

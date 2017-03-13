@@ -8,7 +8,7 @@ module.exports = async function saveResult(importBase, result) {
     if (result.isSkipped) return;
 
     // Create the new document if it does not exist
-    const document = await couch.createEntry(result.$id, result.owner, {
+    const document = await couch.createEntry(result.id, result.owner, {
         kind: result.kind,
         owners: result.groups
     });
@@ -22,7 +22,7 @@ module.exports = async function saveResult(importBase, result) {
     switch (result.getUpdateType()) {
         case constants.IMPORT_UPDATE_FULL:
             await couch.addFileToJpath(
-                result.$id,
+                result.id,
                 result.owner,
                 result.jpath,
                 result.metadata,
@@ -33,27 +33,27 @@ module.exports = async function saveResult(importBase, result) {
                     reference: result.reference,
                     content_type: result.content_type
                 },
-                result.$content
+                result.content
             );
             break;
         case constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT:
             await couch.addFileToJpath(
-                result.$id,
+                result.id,
                 result.owner,
                 result.jpath,
                 result.metadata,
                 {
                     reference: result.reference
                 },
-                result.$content,
+                result.content,
                 true
             );
             break;
         case constants.IMPORT_UPDATE_$CONTENT_ONLY:
             await couch.insertEntry({
-                $id: result.$id,
+                $id: result.id,
                 $kind: result.$kind,
-                $content: result.$content,
+                $content: result.content,
                 _id: document.id,
                 _rev: document.rev
             });
@@ -65,7 +65,7 @@ module.exports = async function saveResult(importBase, result) {
     // Upload additional attachments with metadata
     for (const attachment of result.attachments) {
         await couch.addFileToJpath(
-            result.$id,
+            result.id,
             result.owner,
             attachment.jpath,
             attachment.metadata,
