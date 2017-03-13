@@ -7,6 +7,9 @@ const fold = require('fold-to-ascii').fold;
 const Couch = require('../index');
 const debug = require('../util/debug')('import');
 const getConfig = require('../config/config').getConfig;
+const BaseImport = require('./ImportContext');
+const ImportResult = require('./ImportResult');
+const saveResult = require('./saveResult');
 
 exports.import = async function (database, importName, file, options) {
     debug(`import ${file} (${database}, ${importName})`);
@@ -14,78 +17,90 @@ exports.import = async function (database, importName, file, options) {
     options = options || {};
     const dryRun = !!options.dryRun;
 
-    const parsedFilename = path.parse(file);
-    const filedir = parsedFilename.dir;
-    const filename = parsedFilename.base;
     let config = getConfig(database);
+    const couch = Couch.get(database);
 
     if (!config.import || !config.import[importName]) {
         throw new Error(`no import config for ${database}/${importName}`);
     }
 
     config = config.import[importName];
-    const couch = Couch.get(database);
-    try {
-        // Give an opportunity to ignore before even reading the file
-        const shouldIgnore = verifyConfig(config, 'shouldIgnore', null, true);
-        const ignore = await shouldIgnore(filename, couch, filedir);
-        if (ignore) {
-            debug.debug(`Ignore file ${file}`);
-            return;
+    if (typeof config === 'function') {
+        const baseImport = new BaseImport(file, database);
+        const result = new ImportResult();
+        await config(baseImport, result);
+        if (result.isSkipped) return;
+        // Check that required properties have been set on the result
+        result.check();
+        if (dryRun) return;
+        await saveResult(baseImport, result);
+    } else {
+        const parsedFilename = path.parse(file);
+        const filedir = parsedFilename.dir;
+        const filename = parsedFilename.base;
+        try {
+            // Give an opportunity to ignore before even reading the file
+            const shouldIgnore = verifyConfig(config, 'shouldIgnore', null, true);
+            const ignore = await shouldIgnore(filename, couch, filedir);
+            if (ignore) {
+                debug.debug(`Ignore file ${file}`);
+                return;
+            }
+        } catch (e) {
+            // Throw if abnormal error
+            if (!e.message.match('missing configuration value')) {
+                throw e;
+            }
+            // Go on normally if this configuration is missing
         }
-    } catch (e) {
-        // Throw if abnormal error
-        if (!e.message.match('missing configuration value')) {
+
+        let contents = fs.readFileSync(file);
+
+        const info = {};
+
+        let isParse = false;
+        let isJson = false;
+
+        if (typeof config.fullProcess === 'function') {
+            isParse = true;
+            await fullyProcessResult(info, config.fullProcess, filename, contents, couch, filedir);
+        } else {
+            // Callbacks
+            const getId = verifyConfig(config, 'getID', null, true);
+            const getOwner = verifyConfig(config, 'getOwner', null, true);
+            let parse = null;
+            let json = null;
+            try {
+                parse = verifyConfig(config, 'parse', null, true);
+                isParse = true;
+            } catch (e) {
+                json = verifyConfig(config, 'json', null, true);
+                isJson = true;
+            }
+
+            if (json) contents = JSON.parse(contents.toString());
+
+            await getMetadata(info, getId, getOwner, filename, contents, couch, filedir);
+            await parseFile(info, parse, json, filename, contents, couch, filedir);
+            if (config.kind) {
+                await getKind(info, config.kind, filename, contents, couch, filedir);
+            }
+        }
+
+        if (dryRun) return;
+
+        try {
+            const docInfo = await checkDocumentExists(info, filename, contents, couch);
+            await updateDocument(info, docInfo, isParse, isJson, filename, contents, couch);
+            debug.trace(`import ${file} success`);
+        } catch (e) {
+            debug.error(`import ${file} failure: ${e.message}, ${e.stack}`);
             throw e;
         }
-        // Go on normally if this configuration is missing
-    }
-
-    let contents = fs.readFileSync(file);
-
-    const info = {};
-
-    let isParse = false;
-    let isJson = false;
-
-    if (typeof config.fullProcess === 'function') {
-        isParse = true;
-        await fullyProcessResult(info, config.fullProcess, filename, contents, couch, filedir);
-    } else {
-        // Callbacks
-        const getId = verifyConfig(config, 'getID', null, true);
-        const getOwner = verifyConfig(config, 'getOwner', null, true);
-        let parse = null;
-        let json = null;
-        try {
-            parse = verifyConfig(config, 'parse', null, true);
-            isParse = true;
-        } catch (e) {
-            json = verifyConfig(config, 'json', null, true);
-            isJson = true;
-        }
-
-        if (json) contents = JSON.parse(contents.toString());
-
-        await getMetadata(info, getId, getOwner, filename, contents, couch, filedir);
-        await parseFile(info, parse, json, filename, contents, couch, filedir);
-        if (config.kind) {
-            await getKind(info, config.kind, filename, contents, couch, filedir);
-        }
-    }
-
-    if (dryRun) return;
-
-    try {
-        const docInfo = await checkDocumentExists(info, filename, contents, couch);
-        await updateDocument(info, docInfo, isParse, isJson, filename, contents, couch);
-        debug.trace(`import ${file} success`);
-    } catch (e) {
-        debug.error(`import ${file} failure: ${e.message}, ${e.stack}`);
-        throw e;
     }
 
 };
+
 
 function verifyConfig(config, name, defaultValue, mustBeFunction) {
     const value = config[name];

@@ -33,7 +33,18 @@ const methods = {
         return getAttachmentFromEntry(entry, this, name, asStream);
     },
 
+    // - id: used to find the appropriate document. Method will throw if document is not found
+    // - json: the content to push into the array pointed by the jpath,
+    //   or to merge into an existing element with the same reference
+    // - file: object containing:
+    //   - reference: reference of this attachment
+    //   - name: name of the attachment
+    //   - data: content of the attachment
+    //   - field: field in the json in which a ref to the attachment filename should be added
+    // - newContent: object to deep-merge with the found document. New content precedes over old content
+    // - noFile: set to true if the attachment should not be added to the document
     async addFileToJpath(id, user, jpath, json, file, newContent, noFile) {
+        debug(`addFileToJpath (${id}, ${user}`);
         if (!Array.isArray(jpath)) {
             throw new CouchError('jpath must be an array');
         }
@@ -50,10 +61,12 @@ const methods = {
         const entry = await this.getEntryById(id, user);
         let current = entry.$content || {};
 
+        debug.trace('extend current content with new content');
         if (newContent) {
             extend(current, newContent);
         }
 
+        debug.trace('create structure to jpath');
         for (var i = 0; i < jpath.length; i++) {
             let newCurrent = current[jpath[i]];
             if (!newCurrent) {
@@ -69,6 +82,7 @@ const methods = {
             throw new CouchError('jpath must point to an array');
         }
 
+        debug.trace('set metadata');
         if (file.reference) {
             let found = current.find(el => el.reference === file.reference);
             if (found) {
@@ -83,6 +97,7 @@ const methods = {
         }
 
         if (!noFile) {
+            debug.trace('add attachment');
             json[file.field] = {
                 filename: file.name
             };
