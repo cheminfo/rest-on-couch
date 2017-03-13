@@ -8,6 +8,7 @@ module.exports = class ImportResult {
         this.content_type = 'application/octet-stream';
         this.groups = [];
         this.content = {};
+        this.metadata = {};
     }
 
     skip() {
