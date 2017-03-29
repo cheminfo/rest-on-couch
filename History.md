@@ -1,3 +1,18 @@
+<a name="4.1.0"></a>
+# [4.1.0](https://github.com/cheminfo/rest-on-couch/compare/v4.0.2...v4.1.0) (2017-03-29)
+
+
+### Bug Fixes
+
+* **import:** error in update type constants ([fbece32](https://github.com/cheminfo/rest-on-couch/commit/fbece32))
+
+
+### Features
+
+* **import:** add new importation method ([0813df0](https://github.com/cheminfo/rest-on-couch/commit/0813df0))
+
+
+
 <a name="4.0.2"></a>
 ## [4.0.2](https://github.com/cheminfo/rest-on-couch/compare/v4.0.1...v4.0.2) (2017-03-09)
 
