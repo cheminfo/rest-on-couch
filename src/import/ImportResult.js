@@ -65,6 +65,7 @@ module.exports = class ImportResult {
     }
 
     addAttachment(attachment) {
+        attachment.metadata = attachment.metadata || {};
         this.attachments.push(attachment);
     }
 

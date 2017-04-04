@@ -46,7 +46,6 @@ function getValidResult(importType) {
                 }
             });
             result.addAttachment({
-                metadata: {},
                 jpath: ['jpath'],
                 content_type: 'text/plain',
                 contents: new Buffer('the contents', 'utf-8'),
