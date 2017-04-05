@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('./fs-extra-promise');
+const fs = require('fs-promise');
 
 module.exports = async function tryMove(from, to, suffix = 0) {
     if (suffix > 1000) {
@@ -11,7 +11,7 @@ module.exports = async function tryMove(from, to, suffix = 0) {
         newTo += '.' + suffix;
     }
     try {
-        await fs.moveAsync(from, newTo);
+        await fs.move(from, newTo);
     } catch (e) {
         if (e.code !== 'EEXIST') {
             throw new Error(`Could could rename ${from} to ${newTo}: ${e}`);

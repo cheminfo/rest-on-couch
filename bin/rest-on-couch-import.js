@@ -16,7 +16,7 @@ const home = require('../src/config/home');
 const imp = require('../src/import/import');
 const getConfig = require('../src/config/config').getConfig;
 const tryMove = require('../src/util/tryMove');
-const fsp = require('../src/util/fs-extra-promise');
+const fsp = require('fs-promise');
 
 var processChain = Promise.resolve();
 const importFiles = {};
@@ -64,18 +64,18 @@ async function importAll() {
 async function findFiles(homeDir, limit) {
     let files = [];
 
-    const databases = await fsp.readdirAsync(homeDir);
+    const databases = await fsp.readdir(homeDir);
     for (const database of databases) {
         if (shouldIgnore(database)) continue;
         const databasePath = path.join(homeDir, database);
-        const stat = await fsp.statAsync(databasePath);
+        const stat = await fsp.stat(databasePath);
         if (!stat.isDirectory()) continue;
 
-        const importNames = await fsp.readdirAsync(databasePath);
+        const importNames = await fsp.readdir(databasePath);
         for (const importName of importNames) {
             if (shouldIgnore(importName)) continue;
             const importNamePath = path.join(databasePath, importName);
-            const stat = await fsp.statAsync(importNamePath);
+            const stat = await fsp.stat(importNamePath);
             if (!stat.isDirectory()) continue;
 
             try {
@@ -86,7 +86,7 @@ async function findFiles(homeDir, limit) {
                         try {
                             const sourcePath = path.resolve(importNamePath, source);
                             const sourceToProcessPath = path.join(sourcePath, 'to_process');
-                            const stat = await fsp.statAsync(sourceToProcessPath);
+                            const stat = await fsp.stat(sourceToProcessPath);
                             if (stat.isDirectory()) {
                                 const maxElements = limit > 0 ? (limit - files.length) : 0;
                                 const fileList = await getFilesToProcess(sourceToProcessPath, maxElements);
@@ -107,7 +107,7 @@ async function findFiles(homeDir, limit) {
 
             try {
                 const toProcessPath = path.join(importNamePath, 'to_process');
-                const stat = await fsp.statAsync(toProcessPath);
+                const stat = await fsp.stat(toProcessPath);
                 if (stat.isDirectory()) {
                     const maxElements = limit > 0 ? (limit - files.length) : 0;
                     const fileList = await getFilesToProcess(toProcessPath, maxElements);

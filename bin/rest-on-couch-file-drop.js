@@ -10,7 +10,7 @@ const router = require('koa-router')();
 
 const config = require('../src/config/config').globalConfig;
 const debug = require('../src/util/debug')('server');
-const fs = require('../src/util/fs-extra-promise');
+const fs = require('fs-promise');
 const tryMove = require('../src/util/tryMove');
 
 app.proxy = config.fileDropProxy;
@@ -34,8 +34,8 @@ router.get('/', (ctx) => {
 router.post('/upload/:database/:kind/:filename', getHomeDir, async (ctx) => {
     const dir = path.join(ctx.state.homeDir, ctx.params.database, ctx.params.kind, 'to_process');
     const tmpDir = path.join(ctx.state.homeDir, ctx.params.database, ctx.params.kind, 'tmp');
-    await fs.mkdirpAsync(tmpDir);
-    const uploadDir = await fs.mkdtempAsync(path.join(tmpDir, 'roc-upload-'));
+    await fs.mkdirp(tmpDir);
+    const uploadDir = await fs.mkdtemp(path.join(tmpDir, 'roc-upload-'));
     const uploadPath = path.join(uploadDir, ctx.params.filename);
     const file = path.join(dir, ctx.params.filename);
     const write = fs.createWriteStream(uploadPath);
@@ -44,7 +44,7 @@ router.post('/upload/:database/:kind/:filename', getHomeDir, async (ctx) => {
             write.on('finish', async () => {
                 try {
                     await tryMove(uploadPath, file);
-                    await fs.rmdirAsync(uploadDir);
+                    await fs.rmdir(uploadDir);
                     resolve();
                 } catch (e) {
                     reject(e);
@@ -53,7 +53,7 @@ router.post('/upload/:database/:kind/:filename', getHomeDir, async (ctx) => {
 
             write.on('error', async (e) => {
                 try {
-                    await fs.rmdirAsync(uploadDir);
+                    await fs.rmdir(uploadDir);
                 } finally {
                     reject(e);
                 }
