@@ -12,7 +12,8 @@ describe('server/routes/auth', function () {
                     res.body.should.eql({
                         ok: true,
                         authenticated: false,
-                        username: 'anonymous'
+                        username: 'anonymous',
+                        provider: null
                     });
                 });
         });
