@@ -47,6 +47,28 @@ export function loginLDAP(dispatch) {
     };
 }
 
+export const LOGIN_COUCHDB = 'LOGIN_COUCHDB';
+export function loginCouchDB(dispatch) {
+    return (username, password) => {
+        const req = doCouchDBLogin(username, password);
+        req.then(() => dbManager.syncDb());
+        dispatch({
+            type: LOGIN_COUCHDB,
+            payload: req
+        });
+    };
+}
+
+async function doCouchDBLogin(username, password) {
+    await apiFetchForm('auth/login/couchdb', {username, password});
+    const data = await doCheckLogin();
+    if (data.authenticated) {
+        return data.username;
+    } else {
+        return false;
+    }
+}
+
 async function doLDAPLogin(username, password) {
     await apiFetchForm('auth/login/ldap', {username, password});
     const data = await doCheckLogin();

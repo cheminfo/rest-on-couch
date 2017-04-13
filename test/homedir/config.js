@@ -28,7 +28,10 @@ module.exports = {
         }
     },
     auth: {
-        couchdb: {}
+        couchdb: {
+            title: 'CouchDB authentication',
+            showLogin: true
+        }
     },
     getUserInfo(email) {
         return Promise.resolve({

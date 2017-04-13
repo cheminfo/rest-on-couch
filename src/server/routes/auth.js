@@ -52,6 +52,7 @@ if (config.auth) {
             if (pluginConfig.showLogin !== false) {
                 showLoginAuthPlugins.push(authPlugin);
             }
+            debug('auth plugin successfully loaded');
         } catch (e) {
             debug.error(e);
             die(`could not init auth middleware: ${e.message}`);
@@ -76,6 +77,7 @@ router.get('/login', async (ctx) => {
         ctx.redirect(ctx.session.continue || '/');
         ctx.session.continue = null;
     } else if (ctx.isAuthenticated() && ctx.session.popup) {
+
         ctx.session.popup = false;
         ctx.body = '<script>window.close();</script>';
     } else {

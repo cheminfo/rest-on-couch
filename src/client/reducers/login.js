@@ -1,4 +1,4 @@
-import {CHECK_LOGIN, LOGIN_LDAP, LOGOUT, GET_LOGIN_PROVIDERS} from '../actions/login';
+import {CHECK_LOGIN, LOGIN_LDAP, LOGIN_COUCHDB, LOGOUT, GET_LOGIN_PROVIDERS} from '../actions/login';
 
 const initialState = {
     loginProviders: [],
@@ -17,6 +17,8 @@ const loginReducer = (state = initialState, action) => {
         }
         case `${LOGIN_LDAP}_FULFILLED`:
             return Object.assign({}, state, onLogin('ldap', action.payload));
+        case `${LOGIN_COUCHDB}_FULFILLED`:
+            return Object.assign({}, state, onLogin('couchdb', action.payload));
         case `${LOGOUT}_FULFILLED`:
             return Object.assign({}, state, {errors: {}, username: null});
         case `${GET_LOGIN_PROVIDERS}_FULFILLED`:

@@ -1,6 +1,6 @@
 import React from 'react';
 
-class LoginLDAP extends React.Component {
+class LoginGeneric extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -56,4 +56,4 @@ class LoginLDAP extends React.Component {
     }
 }
 
-export default LoginLDAP;
+export default LoginGeneric;
