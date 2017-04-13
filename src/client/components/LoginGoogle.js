@@ -28,7 +28,7 @@ export default connect(
 
             function checkWindowStatus() {
                 if (win.closed) {
-                    checkLogin(dispatch);
+                    checkLogin(dispatch, 'google');
                 } else {
                     setTimeout(checkWindowStatus, 250);
                 }

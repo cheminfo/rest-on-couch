@@ -64,6 +64,15 @@ exports.getUserEmail = async function (ctx) {
     return email || 'anonymous';
 };
 
+exports.getProvider = function (ctx) {
+    let user;
+    if (ctx.session.passport && (user = ctx.session.passport.user)) {
+        return user.provider;
+    } else {
+        return null;
+    }
+};
+
 async function getUserEmailFromToken(ctx) {
     if (!config.authServers.length) return 'anonymous';
 

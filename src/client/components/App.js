@@ -17,7 +17,7 @@ const App = (props) => (
     <BrowserRouter basename={API_PROXY_PREFIX}>
         <div>
             <div className="wrapper">
-                <Sidebar hasDb={props.hasDb} />
+                <Sidebar hasDb={props.hasDb} loggedIn={props.loggedIn} loginProvider={props.loginProvider} />
                 <div className="main-panel">
                     <nav className="navbar navbar-default navbar-fixed">
                         <div className="container-fluid">
@@ -63,6 +63,7 @@ App.propTypes = {
 export default connect(
     (state) => ({
         loggedIn: !!state.login.username,
+        loginProvider: state.login.provider,
         dbList: state.db.dbList,
         dbName: state.dbName,
         hasDb: !!state.dbName

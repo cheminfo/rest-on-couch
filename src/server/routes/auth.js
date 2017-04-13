@@ -99,6 +99,7 @@ router.get('/session', async (ctx) => {
     ctx.body = {
         ok: true,
         username: email,
+        provider: auth.getProvider(ctx),
         authenticated: ctx.isAuthenticated()
     };
 });

@@ -2,23 +2,18 @@ import {apiFetchJSON, apiFetchForm} from '../api';
 import {dbManager} from '../store';
 
 export const CHECK_LOGIN = 'CHECK_LOGIN';
-export function checkLogin(dispatch) {
+export function checkLogin(dispatch, provider) {
     dispatch({
         type: CHECK_LOGIN,
-        payload: checkTheLogin()
+        payload: checkTheLogin(provider)
     });
 }
 
-async function checkTheLogin() {
-    const data = await doCheckLogin();
-    if (data.authenticated) {
-        return data.username;
-    }
-    return false;
-}
-
-export function doCheckLogin() {
-    return apiFetchJSON('auth/session');
+export function checkTheLogin(provider) {
+    return apiFetchJSON('auth/session').then(session => {
+        if (!session.provider) session.provider = provider;
+        return session;
+    });
 }
 
 export const LOGOUT = 'LOGOUT';
@@ -35,48 +30,36 @@ async function doLogout() {
     await apiFetchJSON('auth/logout');
 }
 
-export const LOGIN_LDAP = 'LOGIN_LDAP';
 export function loginLDAP(dispatch) {
     return (username, password) => {
-        const ldapLoginRequest = doLDAPLogin(username, password);
-        ldapLoginRequest.then(() => dbManager.syncDb());
+        const loginRequest = doLDAPLogin(username, password);
+        loginRequest.then(() => dbManager.syncDb());
         dispatch({
-            type: LOGIN_LDAP,
-            payload: ldapLoginRequest
+            type: CHECK_LOGIN,
+            payload: loginRequest
         });
     };
 }
 
-export const LOGIN_COUCHDB = 'LOGIN_COUCHDB';
 export function loginCouchDB(dispatch) {
     return (username, password) => {
-        const req = doCouchDBLogin(username, password);
-        req.then(() => dbManager.syncDb());
+        const loginRequest = doCouchDBLogin(username, password);
+        loginRequest.then(() => dbManager.syncDb());
         dispatch({
-            type: LOGIN_COUCHDB,
-            payload: req
+            type: CHECK_LOGIN,
+            payload: loginRequest
         });
     };
 }
 
 async function doCouchDBLogin(username, password) {
     await apiFetchForm('auth/login/couchdb', {username, password});
-    const data = await doCheckLogin();
-    if (data.authenticated) {
-        return data.username;
-    } else {
-        return false;
-    }
+    return checkTheLogin('couchdb');
 }
 
 async function doLDAPLogin(username, password) {
     await apiFetchForm('auth/login/ldap', {username, password});
-    const data = await doCheckLogin();
-    if (data.authenticated) {
-        return data.username;
-    } else {
-        return false;
-    }
+    return checkTheLogin('ldap');
 }
 
 export const GET_LOGIN_PROVIDERS = 'GET_LOGIN_PROVIDERS';

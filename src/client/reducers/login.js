@@ -1,4 +1,4 @@
-import {CHECK_LOGIN, LOGIN_LDAP, LOGIN_COUCHDB, LOGOUT, GET_LOGIN_PROVIDERS} from '../actions/login';
+import {CHECK_LOGIN, LOGOUT, GET_LOGIN_PROVIDERS} from '../actions/login';
 
 const initialState = {
     loginProviders: [],
@@ -9,18 +9,10 @@ const initialState = {
 const loginReducer = (state = initialState, action) => {
     switch (action.type) {
         case `${CHECK_LOGIN}_FULFILLED`: {
-            if (action.payload) {
-                return Object.assign({}, state, onLogin(null, action.payload));
-            } else { // checkLogin returned false but this is not an error
-                return state;
-            }
+            return Object.assign({}, state, onLogin(action.payload));
         }
-        case `${LOGIN_LDAP}_FULFILLED`:
-            return Object.assign({}, state, onLogin('ldap', action.payload));
-        case `${LOGIN_COUCHDB}_FULFILLED`:
-            return Object.assign({}, state, onLogin('couchdb', action.payload));
         case `${LOGOUT}_FULFILLED`:
-            return Object.assign({}, state, {errors: {}, username: null});
+            return Object.assign({}, state, {errors: {}, username: null, provider: null});
         case `${GET_LOGIN_PROVIDERS}_FULFILLED`:
             return Object.assign({}, state, {loginProviders: action.payload});
         default:
@@ -30,10 +22,10 @@ const loginReducer = (state = initialState, action) => {
 
 export default loginReducer;
 
-function onLogin(type, result) {
-    if (!result) {
-        return {errors: {[type]: true}};
+function onLogin(result) {
+    if (!result.authenticated) {
+        return {errors: {[result.provider]: true}};
     } else {
-        return {errors: {}, username: result};
+        return {errors: {}, username: result.username, provider: result.provider};
     }
 }
