@@ -7,6 +7,9 @@
 
 Interface to CouchDB that allows the control of permissions on the documents.
 
+### REST API
+[API documentation](API.md)
+
 ### Configuration
 
 The configuration is being read on load from many sources, in the following order (ascending priority):
