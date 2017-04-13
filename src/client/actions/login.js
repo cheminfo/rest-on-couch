@@ -1,4 +1,4 @@
-import {apiFetchJSON, apiFetchForm} from '../api';
+import {apiFetchJSON, apiFetchForm, apiFetchFormJSON} from '../api';
 import {dbManager} from '../store';
 
 export const CHECK_LOGIN = 'CHECK_LOGIN';
@@ -68,4 +68,12 @@ export function getLoginProviders(dispatch) {
         type: GET_LOGIN_PROVIDERS,
         payload: apiFetchJSON('auth/providers')
     });
+}
+
+export const CHANGE_COUCHDB_PASSWORD = 'CHANGE_COUCHDB_PASSWORD';
+export function changeCouchDBPassword(oldPassword, newPassword) {
+    return {
+        type: CHANGE_COUCHDB_PASSWORD,
+        payload: apiFetchFormJSON('auth/password', {oldPassword, newPassword})
+    };
 }

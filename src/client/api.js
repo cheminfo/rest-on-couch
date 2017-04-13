@@ -27,3 +27,8 @@ export async function apiFetchForm(path, data) {
     }
     return apiFetch(path, {method: 'POST', body: formData, redirect: 'manual', headers: {}});
 }
+
+export async function apiFetchFormJSON(path, data) {
+    const req = await apiFetchForm(path, data);
+    return req.json();
+}

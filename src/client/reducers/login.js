@@ -1,4 +1,4 @@
-import {CHECK_LOGIN, LOGOUT, GET_LOGIN_PROVIDERS} from '../actions/login';
+import {CHECK_LOGIN, LOGOUT, GET_LOGIN_PROVIDERS, CHANGE_COUCHDB_PASSWORD} from '../actions/login';
 
 const initialState = {
     loginProviders: [],
@@ -15,6 +15,8 @@ const loginReducer = (state = initialState, action) => {
             return Object.assign({}, state, {errors: {}, username: null, provider: null});
         case `${GET_LOGIN_PROVIDERS}_FULFILLED`:
             return Object.assign({}, state, {loginProviders: action.payload});
+        case `${CHANGE_COUCHDB_PASSWORD}_FULFILLED`:
+            return Object.assign({}, state, {errors: {changePassword: action.payload.error || {}}});
         default:
             return state;
     }

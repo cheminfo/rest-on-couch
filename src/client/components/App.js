@@ -9,6 +9,7 @@ import DatabaseSelector from './DatabaseSelector';
 import Home from './Home';
 import Groups from './Groups';
 import Login from './Login';
+import ChangePassword from './ChangePassword';
 import LoginButton from './LoginButton';
 import NoMatch from './NoMatch';
 import Sidebar from './Sidebar';
@@ -46,6 +47,7 @@ const App = (props) => (
                                         return <Login />;
                                     }
                                 }} />
+                                <Route path="/password/change" component={ChangePassword} />
                                 <Route component={NoMatch} />
                             </Switch>
                         </div>
