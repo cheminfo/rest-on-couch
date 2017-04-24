@@ -9,6 +9,8 @@ const util = require('../../middleware/util');
 const auth = require('../../middleware/auth');
 
 exports.init = function (passport, router) {
+    router.post('/couchdb/user', util.parseBody(), auth.ensureAdministrator, auth.createUser);
+
     passport.use(
         new LocalStrategy({
             usernameField: 'username',

@@ -38,6 +38,22 @@ exports.afterFailure = async (ctx, next) => {
     }
 };
 
+exports.ensureAdministrator = async (ctx, next) => {
+    // Don't allow tokens to check for admins
+    if (ctx.isAuthenticated()) {
+        const email = ctx.session.passport.user.email;
+
+        if (config.administrators.includes(email)) {
+            await next();
+            return;
+        }
+    }
+    ctx.status = 401;
+    ctx.body = {
+        error: 'You are not an administrator'
+    };
+};
+
 exports.ensureAuthenticated = async (ctx, next) => {
     if (ctx.isAuthenticated()) {
         await next();
@@ -92,6 +108,35 @@ async function getUserEmailFromToken(ctx) {
     return 'anonymous';
 }
 
+exports.createUser = async ctx => {
+    const {email, password} = ctx.request.body;
+    let currentUser;
+    try {
+        currentUser = await getCouchdbUser(email);
+    } catch (e) {
+        userDatabaseDenied(ctx);
+        return;
+    }
+
+    if (currentUser !== null) {
+        debug.debug('Cannot create couchdb user, user already exists');
+        ctx.body = {error: 'user already exists'};
+        ctx.status = 400;
+        return;
+    }
+
+    await updateCouchdbUser({
+        _id: `org.couchdb.user:${email}`,
+        name: email,
+        password,
+        type: 'user',
+        roles: []
+    });
+
+    ctx.status = 201;
+    ctx.body = {ok: true};
+};
+
 exports.changePassword = async (ctx) => {
     const body = ctx.request.body;
     if (!body.oldPassword || !body.newPassword) {
@@ -112,9 +157,6 @@ exports.changePassword = async (ctx) => {
 
     const {email, provider} = ctx.session.passport.user;
     if (provider === 'local') {
-        const nano = await connect.open();
-        const db = nano.db.use('_users');
-
         // check oldPassword
         try {
             await request.post(`${config.url}/_session`, {
@@ -135,19 +177,36 @@ exports.changePassword = async (ctx) => {
 
         let currentUser;
         try {
-            currentUser = await nanoPromise.getDocument(db, `org.couchdb.user:${email}`);
+            currentUser = await getCouchdbUser(email);
         } catch (e) {
-            debug.error('ROC user does not have access to _users database');
-            ctx.body = {error: 'internal server error'};
-            ctx.status = 500;
+            userDatabaseDenied(ctx);
             return;
         }
 
         currentUser.password = String(body.newPassword);
-        await nanoPromise.insertDocument(db, currentUser);
+        await updateCouchdbUser(currentUser);
         ctx.body = {ok: true};
     } else {
         ctx.body = {error: `login provider "${provider} does not support password change`};
         ctx.body = 403;
     }
 };
+
+async function getCouchdbUser(email) {
+    const nano = await connect.open();
+    const db = nano.db.use('_users');
+    return nanoPromise.getDocument(db, `org.couchdb.user:${email}`);
+}
+
+function userDatabaseDenied(ctx) {
+    debug.error('ROC user does not have access to _users database');
+    ctx.body = {error: 'internal server error'};
+    ctx.status = 500;
+}
+
+async function updateCouchdbUser(user) {
+    const nano = await connect.open();
+    const db = nano.db.use('_users');
+    return nanoPromise.insertDocument(db, user);
+
+}
