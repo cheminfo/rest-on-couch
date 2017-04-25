@@ -10,6 +10,7 @@ import loginReducer from './reducers/login';
 
 import {getDbList} from './actions/db';
 import {checkLogin, getLoginProviders} from './actions/login';
+import {setDbName} from './actions/db';
 
 const composeStoreWithMiddleware = applyMiddleware(
     promiseMiddleware()
@@ -38,5 +39,13 @@ export default store;
 export const dbManager = new DbManager(store);
 
 function onRehydrated() {
+    function getParameterByName(name) {
+        var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
+    // If url has a database name, we override the persisted database name
+    const initialDbName = getParameterByName('database');
+    if(initialDbName) store.dispatch(setDbName(initialDbName));
     dbManager.syncDb();
 }
