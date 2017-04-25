@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 
 import SidebarLink from './SidebarLink';
 
-export default ({hasDb, loggedIn, loginProvider}) => (
+export default ({hasDb, loggedIn, loginProvider, isAdmin}) => (
     <div className="sidebar" data-color="blue">
         <div className="sidebar-wrapper">
             <div className="logo">
@@ -15,6 +15,9 @@ export default ({hasDb, loggedIn, loginProvider}) => (
                     : null }
                 { loggedIn && loginProvider === 'local' ?
                     <SidebarLink to="/password/change" icon="key" text="Change Password" />
+                    : null}
+                { isAdmin ?
+                    <SidebarLink to="/user/create" icon="plus" text="New user" />
                     : null}
             </ul>
 

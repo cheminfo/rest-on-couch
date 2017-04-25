@@ -9,7 +9,7 @@ const util = require('../../middleware/util');
 const auth = require('../../middleware/auth');
 
 exports.init = function (passport, router) {
-    router.post('/couchdb/user', util.parseBody(), auth.ensureAdmin, auth.createUser);
+    router.post('/couchdb/user', util.parseBody({jsonLimit: '1kb'}), auth.ensureAdmin, auth.createUser);
 
     passport.use(
         new LocalStrategy({

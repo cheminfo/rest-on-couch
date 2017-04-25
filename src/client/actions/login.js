@@ -77,3 +77,11 @@ export function changeCouchDBPassword(oldPassword, newPassword) {
         payload: apiFetchFormJSON('auth/password', {oldPassword, newPassword})
     };
 }
+
+export const CREATE_COUCHDB_USER = 'CREATE_COUCHDB_USER';
+export function createCouchDBUser(email, password) {
+    return {
+        type: CREATE_COUCHDB_USER,
+        payload: apiFetchFormJSON('auth/couchdb/user', {email, password})
+    };
+}

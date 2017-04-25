@@ -11,6 +11,7 @@ import Groups from './Groups';
 import Login from './Login';
 import ChangePassword from './ChangePassword';
 import LoginButton from './LoginButton';
+import CreateUser from './CreateUser';
 import NoMatch from './NoMatch';
 import Sidebar from './Sidebar';
 
@@ -18,7 +19,7 @@ const App = (props) => (
     <BrowserRouter basename={API_PROXY_PREFIX}>
         <div>
             <div className="wrapper">
-                <Sidebar hasDb={props.hasDb} loggedIn={props.loggedIn} loginProvider={props.loginProvider} />
+                <Sidebar hasDb={props.hasDb} loggedIn={props.loggedIn} loginProvider={props.loginProvider} isAdmin={props.isAdmin} />
                 <div className="main-panel">
                     <nav className="navbar navbar-default navbar-fixed">
                         <div className="container-fluid">
@@ -40,6 +41,7 @@ const App = (props) => (
                             <Switch>
                                 <Route path="/" exact component={Home} />
                                 <Route path="/groups" component={Groups} />
+                                <Route path="/user/create" component={CreateUser} />
                                 <Route path="/login" render={() => {
                                     if (props.loggedIn) {
                                         return <Redirect to="/" />;
@@ -66,6 +68,7 @@ export default connect(
     (state) => ({
         loggedIn: !!state.login.username,
         loginProvider: state.login.provider,
+        isAdmin: state.login.admin,
         dbList: state.db.dbList,
         dbName: state.dbName,
         hasDb: !!state.dbName
