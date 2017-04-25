@@ -333,7 +333,7 @@ function onGetError(ctx, e, secure) {
         ctx.body += `: ${e.message}`;
     }
     if (config.debugrest) {
-        ctx.body += `\n\n$%{e}\n${e.stack}`;
+        ctx.body += `\n\n${e}\n${e.stack}`;
     }
 }
 
