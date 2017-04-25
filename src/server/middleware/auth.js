@@ -38,20 +38,26 @@ exports.afterFailure = async (ctx, next) => {
     }
 };
 
-exports.ensureAdministrator = async (ctx, next) => {
+exports.ensureAdmin = async (ctx, next) => {
+    if (exports.isAdmin(ctx)) {
+        await next();
+    } else {
+        ctx.status = 401;
+        ctx.body = {
+            error: 'You are not an administrator'
+        };
+    }
+};
+
+exports.isAdmin = function (ctx) {
     // Don't allow tokens to check for admins
     if (ctx.isAuthenticated()) {
         const email = ctx.session.passport.user.email;
-
         if (config.administrators.includes(email)) {
-            await next();
-            return;
+            return true;
         }
     }
-    ctx.status = 401;
-    ctx.body = {
-        error: 'You are not an administrator'
-    };
+    return false;
 };
 
 exports.ensureAuthenticated = async (ctx, next) => {

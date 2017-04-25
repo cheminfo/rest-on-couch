@@ -95,10 +95,10 @@ router.get('/logout', (ctx) => {
 
 router.get('/session', async (ctx) => {
     // Check if session exists
-    const email = await auth.getUserEmail(ctx);
     ctx.body = {
         ok: true,
-        username: email,
+        username: await auth.getUserEmail(ctx),
+        admin: auth.isAdmin(ctx),
         provider: auth.getProvider(ctx),
         authenticated: ctx.isAuthenticated()
     };

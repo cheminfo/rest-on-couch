@@ -13,7 +13,8 @@ describe('server/routes/auth', function () {
                         ok: true,
                         authenticated: false,
                         username: 'anonymous',
-                        provider: null
+                        provider: null,
+                        admin: false
                     });
                 });
         });
