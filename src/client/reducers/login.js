@@ -24,9 +24,9 @@ const loginReducer = (state = initialState, action) => {
         case `${GET_LOGIN_PROVIDERS}_FULFILLED`:
             return Object.assign({}, state, {loginProviders: action.payload});
         case `${CHANGE_COUCHDB_PASSWORD}_FULFILLED`:
-            return Object.assign({}, state, {errors: {changePassword: action.payload.error || {}}});
+            return Object.assign({}, state, {errors: {changePassword: action.payload.error || ''}});
         case `${CREATE_COUCHDB_USER}_FULFILLED`:
-            return Object.assign({}, state, {errors: {createUser: action.payload.error || {}}});
+            return Object.assign({}, state, {errors: {createUser: action.payload.error || ''}});
         default:
             return state;
     }
