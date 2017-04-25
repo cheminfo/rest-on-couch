@@ -44,6 +44,7 @@ router.put('/:dbname/entry/:uuid/:attachment+', util.parseRawBody({limit: '100mb
 router.get('/:dbname/user/_me', couch.getUser);
 router.post('/:dbname/user/_me', parseJson1mb, couch.editUser);
 router.get('/:dbname/userInfo/_me', couch.getUserInfo);
+router.get('/:dbname/user/_me/groups', couch.getUserGroups); // Get groups the user is part of
 
 // Get a view
 router.get('/:dbname/_view/:view', couch.queryEntriesByUser);

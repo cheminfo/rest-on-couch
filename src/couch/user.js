@@ -35,6 +35,12 @@ const methods = {
     async getUserInfo(user) {
         debug(`getUserInfo (${user})`);
         return this._getUserInfo(user);
+    },
+
+    async getUserGroups(user) {
+        await this.open();
+        const groups = await nanoPromise.queryView(this._db, 'groupByUser', {key: user});
+        return groups.map(doc => doc.value);
     }
 };
 

@@ -213,6 +213,10 @@ exports.getGroupUsers = composeWithError(async (ctx) => {
     ctx.body = group.users;
 });
 
+exports.getUserGroups = composeWithError(async ctx => {
+   ctx.body = await ctx.state.couch.getUserGroups(ctx.state.userEmail);
+});
+
 exports.addUserToGroup = composeWithError(async (ctx) => {
     await ctx.state.couch.addUsersToGroup(ctx.params.uuid, ctx.state.userEmail, ctx.params.username);
     ctx.body = OK;

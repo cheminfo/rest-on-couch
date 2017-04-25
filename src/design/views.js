@@ -102,7 +102,10 @@ views.groupByUser = {
     map: function (doc) {
         if (doc.$type !== 'group') return;
         for (var i = 0; i < doc.users.length; i++) {
-            emit(doc.users[i]);
+            emit(doc.users[i], {
+                name: doc.name,
+                rights: doc.rights
+            });
         }
     },
     reduce: '_count'
