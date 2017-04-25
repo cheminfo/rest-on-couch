@@ -2,12 +2,13 @@
 
 const passport = require('koa-passport');
 const superagent = require('superagent-promise')(require('superagent'), Promise);
+const request = require('request-promise');
 
 const connect = require('../../connect');
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
 const nanoPromise = require('../../util/nanoPromise');
-const request = require('request-promise');
+const isEmail = require('../../util/isEmail');
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -116,6 +117,12 @@ async function getUserEmailFromToken(ctx) {
 
 exports.createUser = async ctx => {
     const {email, password} = ctx.request.body;
+    if (!isEmail(email)) {
+        ctx.body = {error: 'username must be an email address'};
+        ctx.status = 400;
+        return;
+    }
+
     let currentUser;
     try {
         currentUser = await getCouchdbUser(email);
