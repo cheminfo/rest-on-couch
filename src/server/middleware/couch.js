@@ -214,7 +214,7 @@ exports.getGroupUsers = composeWithError(async (ctx) => {
 });
 
 exports.getUserGroups = composeWithError(async ctx => {
-   ctx.body = await ctx.state.couch.getUserGroups(ctx.state.userEmail);
+    ctx.body = await ctx.state.couch.getUserGroups(ctx.state.userEmail);
 });
 
 exports.addUserToGroup = composeWithError(async (ctx) => {
