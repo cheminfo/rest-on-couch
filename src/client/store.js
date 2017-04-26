@@ -46,6 +46,6 @@ function onRehydrated() {
 
     // If url has a database name, we override the persisted database name
     const initialDbName = getParameterByName('database');
-    if(initialDbName) store.dispatch(setDbName(initialDbName));
+    if (initialDbName) store.dispatch(setDbName(initialDbName));
     dbManager.syncDb();
 }
