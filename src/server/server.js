@@ -5,7 +5,6 @@ const http = require('http');
 const path = require('path');
 
 const compress = require('koa-compress');
-const convert = require('koa-convert');
 const cors = require('kcors');
 const Koa = require('koa');
 const koaStatic = require('koa-static');
@@ -87,7 +86,7 @@ app.use(cors({
 }));
 
 app.keys = config.keys;
-app.use(convert(session({
+app.use(session({
     key: config.sessionKey,
     maxAge: config.sessionMaxAge,
     path: config.sessionPath,
@@ -95,7 +94,7 @@ app.use(convert(session({
     secure: config.sessionSecure,
     httpOnly: true,
     signed: true
-}, app)));
+}, app));
 app.use(passport.initialize());
 app.use(passport.session());
 
