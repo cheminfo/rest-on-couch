@@ -2,7 +2,7 @@ import React from 'react';
 import {createCouchDBUser} from '../actions/login';
 import {connect} from 'react-redux';
 
-class ChangePassword extends React.Component {
+class CreateUser extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -69,4 +69,4 @@ function mapStateToProps(state) {
 }
 
 
-export default connect(mapStateToProps, {createCouchDBUser})(ChangePassword);
+export default connect(mapStateToProps, {createCouchDBUser})(CreateUser);
