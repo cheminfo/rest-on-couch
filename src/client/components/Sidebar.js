@@ -3,14 +3,14 @@ import {Link} from 'react-router-dom';
 
 import SidebarLink from './SidebarLink';
 
-export default ({hasDb, loggedIn, loginProvider, isAdmin, userRights}) => (
+export default ({hasDb, loggedIn, loginProvider, isAdmin, userRights, isGroupOwner}) => (
     <div className="sidebar" data-color="blue">
         <div className="sidebar-wrapper">
             <div className="logo">
                 <Link to="/" className="simple-text">rest-on-couch</Link>
             </div>
             <ul className="nav">
-                { hasDb ?
+                { userRights.includes('createGroup') || isGroupOwner ?
                     <SidebarLink to="/groups" icon="users" text="Groups" />
                     : null }
                 { loggedIn && loginProvider === 'local' ?

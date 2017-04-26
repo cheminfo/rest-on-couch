@@ -20,7 +20,7 @@ const App = (props) => (
     <BrowserRouter basename={API_PROXY_PREFIX}>
         <div>
             <div className="wrapper">
-                <Sidebar hasDb={props.hasDb} loggedIn={props.loggedIn} loginProvider={props.loginProvider} isAdmin={props.isAdmin} userRights={props.userRights} />
+                <Sidebar hasDb={props.hasDb} loggedIn={props.loggedIn} loginProvider={props.loginProvider} isAdmin={props.isAdmin} userRights={props.userRights} isGroupOwner={props.isGroupOwner}/>
                 <div className="main-panel">
                     <nav className="navbar navbar-default navbar-fixed">
                         <div className="container-fluid">
@@ -41,9 +41,21 @@ const App = (props) => (
                         <div className="container-fluid">
                             <Switch>
                                 <Route path="/" exact component={Home} />
-                                <Route path="/groups" component={Groups} />
+                                <Route path="/groups" render={ () => {
+                                    if(props.userRights.includes('createGroup') || props.isGroupOwner) {
+                                        return <Groups />
+                                    } else {
+                                        return <Redirect to="/" />
+                                    }
+                                }} />
                                 <Route path="/create_user" component={CreateUser} />
-                                <Route path="/manage_database" component={DatabaseAdministration} />
+                                <Route path="/manage_database" render={ () => {
+                                    if(props.userRights.includes('admin')) {
+                                        return <DatabaseAdministration />
+                                    } else {
+                                        return <Redirect to="/" />
+                                    }
+                                }} />
                                 <Route path="/login" render={() => {
                                     if (props.loggedIn) {
                                         return <Redirect to="/" />;
@@ -72,6 +84,7 @@ export default connect(
         loginProvider: state.login.provider,
         isAdmin: state.login.admin,
         userRights: state.db.userRights,
+        isGroupOwner: state.db.userGroups.length !== 0,
         dbList: state.db.dbList,
         dbName: state.dbName,
         hasDb: !!state.dbName
