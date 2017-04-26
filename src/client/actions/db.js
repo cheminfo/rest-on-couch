@@ -26,6 +26,9 @@ export const setDefaultGroups = createAction(SET_DEFAULT_GROUPS);
 export const SET_GLOBAL_RIGHTS = 'SET_GLOBAL_RIGHTS';
 export const setGlobalRights = createAction(SET_GLOBAL_RIGHTS);
 
+export const SET_MEMBERSHIPS = 'SET_MEMBERSHIPS';
+export const setMemberships = createAction(SET_MEMBERSHIPS);
+
 export const UPDATE_GROUP = 'UPDATE_GROUP';
 const updateGroupAction = createAction(UPDATE_GROUP);
 

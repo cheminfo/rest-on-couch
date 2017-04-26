@@ -22,6 +22,7 @@ export default ({loggedIn, loginProvider, isAdmin, userRights, isGroupOwner}) =>
                 { userRights && userRights.includes('admin') ?
                     <SidebarLink to="/manage_database" icon="database" text="DB administration" />
                     : null}
+                <SidebarLink to="/group_memberships" icon="user" text="Group memberships" />
             </ul>
 
         </div>

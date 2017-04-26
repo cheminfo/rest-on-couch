@@ -15,6 +15,7 @@ import CreateUser from './CreateUser';
 import NoMatch from './NoMatch';
 import Sidebar from './Sidebar';
 import DatabaseAdministration from './DatabaseAdministration';
+import GroupMemberships from './GroupMemberships';
 
 const App = (props) => (
     <BrowserRouter basename={API_PROXY_PREFIX}>
@@ -64,6 +65,7 @@ const App = (props) => (
                                     }
                                 }} />
                                 <Route path="/change_password" component={ChangePassword} />
+                                <Route path="/group_memberships" component={GroupMemberships} />
                                 <Route component={NoMatch} />
                             </Switch>
                         </div>

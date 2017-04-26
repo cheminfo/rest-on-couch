@@ -3,7 +3,8 @@ import {
     setUserRights,
     setUserGroups,
     setDefaultGroups,
-    setGlobalRights
+    setGlobalRights,
+    setMemberships
 } from './actions/db';
 import {apiFetchJSON} from './api';
 
@@ -35,6 +36,7 @@ export default class DbManager {
                 this.syncDefaultGroups();
                 this.syncGlobalRights();
             }
+            this.syncMemberships();
         }
     }
 
@@ -48,6 +50,11 @@ export default class DbManager {
     async syncGroups() {
         const groups = await apiFetchJSON(`db/${this.currentDb}/groups`);
         this.store.dispatch(setUserGroups(groups));
+    }
+
+    async syncMemberships() {
+        const memberships = await apiFetchJSON(`db/${this.currentDb}/user/_me/groups`);
+        this.store.dispatch(setMemberships(memberships));
     }
 
     async syncDefaultGroups() {
