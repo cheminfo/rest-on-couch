@@ -7,6 +7,7 @@ module.exports = {
     password: 'admin',
     administrators: ['admin@a.com'],
     autoCreateDatabase: true,
+    allowedOrigins: ['http://localhost:8080'],
     customDesign: {
         views: {
             entryIdByRight: {
