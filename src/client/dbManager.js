@@ -35,6 +35,9 @@ export default class DbManager {
             if (rights.includes('admin')) {
                 this.syncDefaultGroups();
                 this.syncGlobalRights();
+            } else {
+                this.resetDefaultGroups();
+                this.resetGlobalRights();
             }
             this.syncMemberships();
         }
@@ -65,5 +68,13 @@ export default class DbManager {
     async syncGlobalRights() {
         const globalRights = await apiFetchJSON(`db/${this.currentDb}/rights/doc`);
         this.store.dispatch(setGlobalRights(globalRights));
+    }
+
+    resetDefaultGroups() {
+        this.store.dispatch(setDefaultGroups([]));
+    }
+
+    resetGlobalRights() {
+        this.store.dispatch(setGlobalRights([]));
     }
 }
