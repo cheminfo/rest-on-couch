@@ -84,6 +84,8 @@ router.put('/:dbname/rights/doc/:right/:user', couch.addGlobalRightsDocUser);
 router.delete('/:dbname/rights/doc/:right/:user', couch.removeGlobalRightsDocUser);
 router.get('/:dbname/rights/defaultGroups', couch.getGlobalDefaultGroups);
 router.put('/:dbname/rights/defaultGroups', parseJson1mb, couch.setGlobalDefaultGroups);
+router.put('/:dbname/rights/defaultGroups/:user/:group', couch.addGlobalDefaultGroup);
+router.delete('/:dbname/rights/defaultGroups/:user/:group', couch.removeGlobalDefaultGroup);
 
 // Tokens
 router.post('/:dbname/entry/:uuid/_token', couch.createEntryToken);

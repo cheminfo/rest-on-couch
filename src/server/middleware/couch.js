@@ -277,6 +277,15 @@ exports.setGlobalDefaultGroups = composeWithError(async (ctx) => {
     ctx.body = await ctx.state.couch.setGlobalDefaultGroups(ctx.state.userEmail, ctx.request.body);
 });
 
+exports.addGlobalDefaultGroup = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.addGlobalDefaultGroup(ctx.state.userEmail, ctx.params.user, ctx.params.group);
+});
+
+exports.removeGlobalDefaultGroup = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.removeGlobalDefaultGroup(ctx.state.userEmail, ctx.params.user, ctx.params.group);
+});
+
+
 exports.createEntryToken = composeWithError(async (ctx) => {
     const token = await ctx.state.couch.createEntryToken(ctx.state.userEmail, ctx.params.uuid);
     ctx.status = 201;

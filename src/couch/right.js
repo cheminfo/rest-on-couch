@@ -92,6 +92,39 @@ const methods = {
         return nanoPromise.insertDocument(this._db, doc);
     },
 
+    async editGlobalDefaultGroup(user, genUser, group, action) {
+        await this.open();
+        debug(`addGlobalDefaultGroup (${user}, ${genUser}, ${group})`);
+        if(action !== 'add' && action !== 'remove') {
+            throw new CouchError('Edit global default group invalid action', 'bad argument');
+        }
+        if(!this.isAdmin(user)) {
+            throw new CouchError('Only administrators can change default groups', 'unauthorized');
+        }
+        if(!util.isSpecialUser(genUser)) {
+            throw new CouchError('User is not a valid special user', 'bad argument');
+        }
+        const doc = await getDefaultGroupsDocument(this);
+        if(action === 'add') {
+            doc[genUser] = _.union(doc[genUser], [group]);
+        } else {
+            doc[genUser] = _.difference(doc[genUser], [group]);
+        }
+        return nanoPromise.insertDocument(this._db, doc);
+    },
+
+    async removeGlobalDefaultGroup(user, genUser, group) {
+        await this.open();
+        debug(`removeGlobalDefaultGroup (${user}, ${genUser}, ${group})`);
+        return await this.editGlobalDefaultGroup(user, genUser, group, 'remove');
+    },
+
+    async addGlobalDefaultGroup(user, genUser, group) {
+        await this.open();
+        debug(`addGlobalDefaultGroup (${user}, ${genUser}, ${group})`);
+        return await this.editGlobalDefaultGroup(user, genUser, group, 'add');
+    },
+
     /**
      * Returns a list of the rights that the given user has globally
      * @param {string} user
