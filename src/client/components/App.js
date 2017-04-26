@@ -41,7 +41,7 @@ const App = (props) => (
                     <div className="content">
                         <div className="container-fluid">
                             <Switch>
-                                <Route path="/" exact component={Home} />
+                                <Route path="/" exact render={() => (<Home user={props.loggedUser} provider={props.loginProvider} dbName={props.dbName} isAdmin={props.isAdmin} />)} />
                                 <Route path="/groups" render={() => {
                                     if (props.userRights.includes('createGroup') || props.isGroupOwner) {
                                         return <Groups />;
@@ -82,6 +82,7 @@ App.propTypes = {
 
 export default connect(
     (state) => ({
+        loggedUser: state.login.username,
         loggedIn: !!state.login.username,
         loginProvider: state.login.provider,
         isAdmin: state.login.admin,
