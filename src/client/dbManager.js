@@ -11,6 +11,7 @@ export default class DbManager {
         this.store = store;
     }
 
+
     get currentDb() {
         return this.store.getState().dbName;
     }
@@ -25,27 +26,29 @@ export default class DbManager {
         }
     }
 
-    syncDb() {
-        const db = this.currentDb;
-        if (db) {
-            this.syncRights(db);
-            this.syncGroups(db);
-            this.syncDefaultGroups(db);
+    async syncDb() {
+        if (this.currentDb) {
+            const rights = await this.syncRights();
+            this.syncGroups();
+            if(rights.includes('admin')) {
+                this.syncDefaultGroups();
+            }
         }
     }
 
     async syncRights(db) {
-        const rights = await apiFetchJSON(`db/${db}/rights`);
+        const rights = await apiFetchJSON(`db/${this.currentDb}/rights`);
         this.store.dispatch(setUserRights(rights));
+        return rights;
     }
 
     async syncGroups(db) {
-        const groups = await apiFetchJSON(`db/${db}/groups`);
+        const groups = await apiFetchJSON(`db/${this.currentDb}/groups`);
         this.store.dispatch(setUserGroups(groups));
     }
 
     async syncDefaultGroups(db) {
-        const defaultGroups = await apiFetchJSON(`db/${db}/rights/defaultGroups`);
+        const defaultGroups = await apiFetchJSON(`db/${this.currentDb}/rights/defaultGroups`);
         this.store.dispatch(setDefaultGroups(defaultGroups));
     }
 }
