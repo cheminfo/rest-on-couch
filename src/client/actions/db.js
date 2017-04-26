@@ -20,6 +20,9 @@ export const setUserRights = createAction(SET_USER_RIGHTS);
 export const SET_USER_GROUPS = 'SET_USER_GROUPS';
 export const setUserGroups = createAction(SET_USER_GROUPS);
 
+export const SET_DEFAULT_GROUPS = 'SET_DEFAULT_GROUPS';
+export const setDefaultGroups = createAction(SET_DEFAULT_GROUPS);
+
 export const UPDATE_GROUP = 'UPDATE_GROUP';
 const updateGroupAction = createAction(UPDATE_GROUP);
 
@@ -59,6 +62,7 @@ export function createGroup(groupName) {
     };
 }
 
+
 export const REMOVE_GROUP = 'REMOVE_GROUP';
 export function removeGroup(groupName) {
     const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
@@ -68,3 +72,27 @@ export function removeGroup(groupName) {
         payload: apiFetchJSON(groupUrl, {method: 'DELETE'})
     };
 }
+
+export function addDefaultGroup(user, group) {
+    return editDefaultGroup(user, group, 'add');
+}
+
+export function removeDefaultGroup(user, group) {
+    return editDefaultGroup(user, group, 'remove');
+}
+
+function editDefaultGroup(user, group, action) {
+    const defaultGroupsUrl = `db/${dbManager.currentDb}/rights/defaultGroups`;
+    const url = `${defaultGroupsUrl}/${user}/${group}`;
+    return async function(dispatch) {
+        if(action === 'add') {
+            await apiFetchJSON(url, {method: 'PUT'});
+        } else if(action === 'remove') {
+            await apiFetchJSON(url, {method: 'DELETE'});
+        }
+        const defaultGroups = await apiFetchJSON(defaultGroupsUrl);
+        dispatch(setDefaultGroups(defaultGroups));
+    }
+
+}
+

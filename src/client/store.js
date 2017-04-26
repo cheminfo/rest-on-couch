@@ -1,5 +1,6 @@
 import {createStore, combineReducers, applyMiddleware} from 'redux';
 import promiseMiddleware from 'redux-promise-middleware';
+import thunkMiddleware from 'redux-thunk';
 import {persistStore, autoRehydrate} from 'redux-persist';
 
 import DbManager from './dbManager';
@@ -13,7 +14,8 @@ import {checkLogin, getLoginProviders} from './actions/login';
 import {setDbName} from './actions/db';
 
 const composeStoreWithMiddleware = applyMiddleware(
-    promiseMiddleware()
+    promiseMiddleware(),
+    thunkMiddleware
 )(createStore);
 
 const store = composeStoreWithMiddleware(

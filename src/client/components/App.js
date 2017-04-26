@@ -14,12 +14,13 @@ import LoginButton from './LoginButton';
 import CreateUser from './CreateUser';
 import NoMatch from './NoMatch';
 import Sidebar from './Sidebar';
+import DatabaseAdministration from './DatabaseAdministration';
 
 const App = (props) => (
     <BrowserRouter basename={API_PROXY_PREFIX}>
         <div>
             <div className="wrapper">
-                <Sidebar hasDb={props.hasDb} loggedIn={props.loggedIn} loginProvider={props.loginProvider} isAdmin={props.isAdmin} />
+                <Sidebar hasDb={props.hasDb} loggedIn={props.loggedIn} loginProvider={props.loginProvider} isAdmin={props.isAdmin} userRights={props.userRights} />
                 <div className="main-panel">
                     <nav className="navbar navbar-default navbar-fixed">
                         <div className="container-fluid">
@@ -41,7 +42,8 @@ const App = (props) => (
                             <Switch>
                                 <Route path="/" exact component={Home} />
                                 <Route path="/groups" component={Groups} />
-                                <Route path="/user/create" component={CreateUser} />
+                                <Route path="/create_user" component={CreateUser} />
+                                <Route path="/manage_database" component={DatabaseAdministration} />
                                 <Route path="/login" render={() => {
                                     if (props.loggedIn) {
                                         return <Redirect to="/" />;
@@ -49,7 +51,7 @@ const App = (props) => (
                                         return <Login />;
                                     }
                                 }} />
-                                <Route path="/password/change" component={ChangePassword} />
+                                <Route path="/change_password" component={ChangePassword} />
                                 <Route component={NoMatch} />
                             </Switch>
                         </div>
@@ -69,6 +71,7 @@ export default connect(
         loggedIn: !!state.login.username,
         loginProvider: state.login.provider,
         isAdmin: state.login.admin,
+        userRights: state.db.userRights,
         dbList: state.db.dbList,
         dbName: state.dbName,
         hasDb: !!state.dbName

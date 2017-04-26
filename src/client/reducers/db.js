@@ -4,7 +4,10 @@ import {
     SET_USER_GROUPS,
     CREATE_GROUP,
     REMOVE_GROUP,
-    UPDATE_GROUP
+    UPDATE_GROUP,
+    SET_DEFAULT_GROUPS,
+    ADD_DEFAULT_GROUP,
+    REMOVE_DEFAULT_GROUP
 } from '../actions/db';
 
 const initialState = {
@@ -12,6 +15,8 @@ const initialState = {
     userRights: [],
     userGroups: []
 };
+
+import dbManager from '../dbManager';
 
 const dbReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -39,6 +44,9 @@ const dbReducer = (state = initialState, action) => {
             const newGroupList = state.userGroups.slice();
             newGroupList[index] = action.payload;
             return Object.assign({}, state, {userGroups: newGroupList});
+        }
+        case `${SET_DEFAULT_GROUPS}`: {
+            return Object.assign({}, state, {defaultGroups: action.payload});
         }
         default:
             return state;
