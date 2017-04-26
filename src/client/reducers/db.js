@@ -2,10 +2,11 @@ import {
     GET_DB_LIST,
     SET_USER_RIGHTS,
     SET_USER_GROUPS,
+    SET_DEFAULT_GROUPS,
+    SET_GLOBAL_RIGHTS,
     CREATE_GROUP,
     REMOVE_GROUP,
-    UPDATE_GROUP,
-    SET_DEFAULT_GROUPS
+    UPDATE_GROUP
 } from '../actions/db';
 
 const initialState = {
@@ -43,6 +44,9 @@ const dbReducer = (state = initialState, action) => {
         }
         case `${SET_DEFAULT_GROUPS}`: {
             return Object.assign({}, state, {defaultGroups: action.payload});
+        }
+        case `${SET_GLOBAL_RIGHTS}`: {
+            return Object.assign({}, state, {globalRights: action.payload});
         }
         default:
             return state;

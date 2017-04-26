@@ -11,9 +11,7 @@ const nano = require('./nano');
 const methods = {
     async editGlobalRight(user, type, target, action) {
         await this.open();
-        if (!this.isAdmin(user)) {
-            throw new CouchError('Only administrators can change global rights', 'unauthorized');
-        }
+        checkAdmin(this, user);
         if (action !== 'add' && action !== 'remove') {
             throw new CouchError('Edit global right invalid action', 'bad argument');
         }
@@ -57,12 +55,17 @@ const methods = {
         return this.editGlobalRight(user, type, target, 'remove');
     },
 
+    async getGlobalRightsDocument(user) {
+        await this.open();
+        debug(`getGlobalRightsDocument (${user})`);
+        checkAdmin(this, user);
+        return getGlobalRightsDocument(this);
+    },
+
     async getGlobalRightUsers(user, type) {
         await this.open();
         debug(`getGlobalRightUsers (${user}, ${type})`);
-        if (!this.isAdmin(user)) {
-            throw new CouchError('Only administrators can get global rights', 'unauthorized');
-        }
+        checkAdmin(this, user);
         checkGlobalType(type);
         const doc = await getGlobalRightsDocument(this);
         return doc[type] || [];
@@ -71,18 +74,14 @@ const methods = {
     async getGlobalDefaultGroups(user) {
         await this.open();
         debug(`getGlobalDefaultGroups (${user})`);
-        if (!this.isAdmin(user)) {
-            throw new CouchError('Only administrators can get default groups', 'unauthorized');
-        }
+        checkAdmin(this, user);
         return getDefaultGroupsDocument(this);
     },
 
     async setGlobalDefaultGroups(user, data) {
         await this.open();
         debug(`setGlobalDefaultGroups (${user})`);
-        if (!this.isAdmin(user)) {
-            throw new CouchError('Only administrators can set default groups', 'unauthorized');
-        }
+        checkAdmin(this, user);
         if (!data) {
             throw new CouchError('Missing data', 'invalid');
         }
@@ -98,9 +97,7 @@ const methods = {
         if (action !== 'add' && action !== 'remove') {
             throw new CouchError('Edit global default group invalid action', 'bad argument');
         }
-        if (!this.isAdmin(user)) {
-            throw new CouchError('Only administrators can change default groups', 'unauthorized');
-        }
+        checkAdmin(this, user);
         if (!util.isSpecialUser(genUser)) {
             throw new CouchError('User is not a valid special user', 'bad argument');
         }
@@ -214,6 +211,12 @@ function checkGlobalType(type) {
 function checkGlobalUser(user) {
     if (!util.isValidGlobalRightUser(user)) {
         throw new CouchError('Invalid global right user', 'bad argument');
+    }
+}
+
+function checkAdmin(ctx, user) {
+    if (!ctx.isAdmin(user)) {
+        throw new CouchError('Restricted to database administrators', 'unauthorized');
     }
 }
 

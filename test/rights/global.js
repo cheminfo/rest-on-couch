@@ -20,7 +20,7 @@ describe('Edit global rights', function () {
     before(noRights);
 
     it('Should refuse non-admins', function () {
-        return couch.addGlobalRight('a@a.com', 'read', 'a@a.com').should.be.rejectedWith(/Only administrators/);
+        return couch.addGlobalRight('a@a.com', 'read', 'a@a.com').should.be.rejectedWith(/administrators/);
     });
 
     it('Should only accept valid types', function () {

@@ -257,6 +257,10 @@ exports.getGlobalRights = composeWithError(async (ctx) => {
     ctx.body = await ctx.state.couch.getGlobalRights(ctx.state.userEmail);
 });
 
+exports.getGlobalRightsDoc = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.getGlobalRightsDocument(ctx.state.userEmail);
+});
+
 exports.getGlobalRightsDocUsers = composeWithError(async (ctx) => {
     ctx.body = await ctx.state.couch.getGlobalRightUsers(ctx.state.userEmail, ctx.params.right);
 });

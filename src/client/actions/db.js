@@ -23,6 +23,9 @@ export const setUserGroups = createAction(SET_USER_GROUPS);
 export const SET_DEFAULT_GROUPS = 'SET_DEFAULT_GROUPS';
 export const setDefaultGroups = createAction(SET_DEFAULT_GROUPS);
 
+export const SET_GLOBAL_RIGHTS = 'SET_GLOBAL_RIGHTS';
+export const setGlobalRights = createAction(SET_GLOBAL_RIGHTS);
+
 export const UPDATE_GROUP = 'UPDATE_GROUP';
 const updateGroupAction = createAction(UPDATE_GROUP);
 
@@ -92,6 +95,29 @@ function editDefaultGroup(user, group, action) {
         }
         const defaultGroups = await apiFetchJSON(defaultGroupsUrl);
         dispatch(setDefaultGroups(defaultGroups));
+    };
+}
+
+export function addGlobalRight(right, user) {
+    return editGlobalRight(right, user, 'add');
+}
+
+export function removeGlobalRight(right, user) {
+    return editGlobalRight(right, user, 'remove');
+}
+
+function editGlobalRight(right, user, action) {
+    const globalRightsUrl = `db/${dbManager.currentDb}/rights/doc`;
+    const url = `${globalRightsUrl}/${right}/${user}`;
+    return async function (dispatch) {
+        if (action === 'add') {
+            await apiFetchJSON(url, {method: 'PUT'});
+        } else if (action === 'remove') {
+            await apiFetchJSON(url, {method: 'DELETE'});
+        }
+
+        const globalRights = await apiFetchJSON(globalRightsUrl);
+        dispatch(setGlobalRights(globalRights));
     };
 
 }

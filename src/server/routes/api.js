@@ -79,9 +79,12 @@ router.delete('/:dbname/group/:name/_owner/:owner', getUuidFromGroupName, parseJ
 
 // Global rights
 router.get('/:dbname/rights', couch.getGlobalRights);
+router.get('/:dbname/rights/doc', couch.getGlobalRightsDoc);
 router.get('/:dbname/rights/doc/:right', couch.getGlobalRightsDocUsers);
 router.put('/:dbname/rights/doc/:right/:user', couch.addGlobalRightsDocUser);
 router.delete('/:dbname/rights/doc/:right/:user', couch.removeGlobalRightsDocUser);
+
+// Default groups
 router.get('/:dbname/rights/defaultGroups', couch.getGlobalDefaultGroups);
 router.put('/:dbname/rights/defaultGroups', parseJson1mb, couch.setGlobalDefaultGroups);
 router.put('/:dbname/rights/defaultGroups/:user/:group', couch.addGlobalDefaultGroup);
