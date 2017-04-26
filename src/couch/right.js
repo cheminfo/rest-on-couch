@@ -95,17 +95,17 @@ const methods = {
     async editGlobalDefaultGroup(user, genUser, group, action) {
         await this.open();
         debug(`addGlobalDefaultGroup (${user}, ${genUser}, ${group})`);
-        if(action !== 'add' && action !== 'remove') {
+        if (action !== 'add' && action !== 'remove') {
             throw new CouchError('Edit global default group invalid action', 'bad argument');
         }
-        if(!this.isAdmin(user)) {
+        if (!this.isAdmin(user)) {
             throw new CouchError('Only administrators can change default groups', 'unauthorized');
         }
-        if(!util.isSpecialUser(genUser)) {
+        if (!util.isSpecialUser(genUser)) {
             throw new CouchError('User is not a valid special user', 'bad argument');
         }
         const doc = await getDefaultGroupsDocument(this);
-        if(action === 'add') {
+        if (action === 'add') {
             doc[genUser] = _.union(doc[genUser], [group]);
         } else {
             doc[genUser] = _.difference(doc[genUser], [group]);
@@ -116,13 +116,13 @@ const methods = {
     async removeGlobalDefaultGroup(user, genUser, group) {
         await this.open();
         debug(`removeGlobalDefaultGroup (${user}, ${genUser}, ${group})`);
-        return await this.editGlobalDefaultGroup(user, genUser, group, 'remove');
+        return this.editGlobalDefaultGroup(user, genUser, group, 'remove');
     },
 
     async addGlobalDefaultGroup(user, genUser, group) {
         await this.open();
         debug(`addGlobalDefaultGroup (${user}, ${genUser}, ${group})`);
-        return await this.editGlobalDefaultGroup(user, genUser, group, 'add');
+        return this.editGlobalDefaultGroup(user, genUser, group, 'add');
     },
 
     /**

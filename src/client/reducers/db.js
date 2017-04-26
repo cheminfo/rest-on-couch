@@ -5,9 +5,7 @@ import {
     CREATE_GROUP,
     REMOVE_GROUP,
     UPDATE_GROUP,
-    SET_DEFAULT_GROUPS,
-    ADD_DEFAULT_GROUP,
-    REMOVE_DEFAULT_GROUP
+    SET_DEFAULT_GROUPS
 } from '../actions/db';
 
 const initialState = {
@@ -15,8 +13,6 @@ const initialState = {
     userRights: [],
     userGroups: []
 };
-
-import dbManager from '../dbManager';
 
 const dbReducer = (state = initialState, action) => {
     switch (action.type) {

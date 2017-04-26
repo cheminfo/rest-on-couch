@@ -2,10 +2,10 @@ import React from 'react';
 
 import DefaultGroups from './DefaultGroups';
 
-export default function() {
+export default function () {
     return (
         <div>
-            <DefaultGroups/>
+            <DefaultGroups />
         </div>
     );
 }

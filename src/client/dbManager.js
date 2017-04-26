@@ -30,24 +30,24 @@ export default class DbManager {
         if (this.currentDb) {
             const rights = await this.syncRights();
             this.syncGroups();
-            if(rights.includes('admin')) {
+            if (rights.includes('admin')) {
                 this.syncDefaultGroups();
             }
         }
     }
 
-    async syncRights(db) {
+    async syncRights() {
         const rights = await apiFetchJSON(`db/${this.currentDb}/rights`);
         this.store.dispatch(setUserRights(rights));
         return rights;
     }
 
-    async syncGroups(db) {
+    async syncGroups() {
         const groups = await apiFetchJSON(`db/${this.currentDb}/groups`);
         this.store.dispatch(setUserGroups(groups));
     }
 
-    async syncDefaultGroups(db) {
+    async syncDefaultGroups() {
         const defaultGroups = await apiFetchJSON(`db/${this.currentDb}/rights/defaultGroups`);
         this.store.dispatch(setDefaultGroups(defaultGroups));
     }

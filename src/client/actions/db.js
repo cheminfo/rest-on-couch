@@ -84,15 +84,15 @@ export function removeDefaultGroup(user, group) {
 function editDefaultGroup(user, group, action) {
     const defaultGroupsUrl = `db/${dbManager.currentDb}/rights/defaultGroups`;
     const url = `${defaultGroupsUrl}/${user}/${group}`;
-    return async function(dispatch) {
-        if(action === 'add') {
+    return async function (dispatch) {
+        if (action === 'add') {
             await apiFetchJSON(url, {method: 'PUT'});
-        } else if(action === 'remove') {
+        } else if (action === 'remove') {
             await apiFetchJSON(url, {method: 'DELETE'});
         }
         const defaultGroups = await apiFetchJSON(defaultGroupsUrl);
         dispatch(setDefaultGroups(defaultGroups));
-    }
+    };
 
 }
 

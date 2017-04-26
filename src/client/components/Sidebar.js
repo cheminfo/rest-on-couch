@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 
 import SidebarLink from './SidebarLink';
 
-export default ({hasDb, loggedIn, loginProvider, isAdmin, userRights, isGroupOwner}) => (
+export default ({loggedIn, loginProvider, isAdmin, userRights, isGroupOwner}) => (
     <div className="sidebar" data-color="blue">
         <div className="sidebar-wrapper">
             <div className="logo">
@@ -20,7 +20,7 @@ export default ({hasDb, loggedIn, loginProvider, isAdmin, userRights, isGroupOwn
                     <SidebarLink to="/create_user" icon="plus" text="New user" />
                     : null}
                 { userRights && userRights.includes('admin') ?
-                    <SidebarLink to="/manage_database" icon="database" text="DB administration"/>
+                    <SidebarLink to="/manage_database" icon="database" text="DB administration" />
                     : null}
             </ul>
 
