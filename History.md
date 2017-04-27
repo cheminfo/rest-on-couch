@@ -1,3 +1,23 @@
+<a name="4.2.0"></a>
+# [4.2.0](https://github.com/cheminfo/rest-on-couch/compare/v4.1.0...v4.2.0) (2017-04-27)
+
+
+### Bug Fixes
+
+* debugrest typo ([7c8ade4](https://github.com/cheminfo/rest-on-couch/commit/7c8ade4))
+* default error message should be an empty string ([e05c760](https://github.com/cheminfo/rest-on-couch/commit/e05c760))
+
+
+### Features
+
+* add group membership page ([847d57c](https://github.com/cheminfo/rest-on-couch/commit/847d57c))
+* api to add and remove groups from defaultGroups ([639a707](https://github.com/cheminfo/rest-on-couch/commit/639a707))
+* global right administration ([9214c4c](https://github.com/cheminfo/rest-on-couch/commit/9214c4c)), closes [#47](https://github.com/cheminfo/rest-on-couch/issues/47)
+* route to get groups a user is member of ([4ce6fda](https://github.com/cheminfo/rest-on-couch/commit/4ce6fda)), closes [#69](https://github.com/cheminfo/rest-on-couch/issues/69)
+* set selected database via query parameter ([7641069](https://github.com/cheminfo/rest-on-couch/commit/7641069)), closes [#48](https://github.com/cheminfo/rest-on-couch/issues/48)
+
+
+
 <a name="4.1.0"></a>
 # [4.1.0](https://github.com/cheminfo/rest-on-couch/compare/v4.0.2...v4.1.0) (2017-03-29)
 
