@@ -1,7 +1,7 @@
 'use strict';
 
 const ImportContext = require('../../src/import/ImportContext');
-const fs = require('fs-promise');
+const fs = require('fs-extra');
 const path = require('path');
 const Couch = require('../..');
 

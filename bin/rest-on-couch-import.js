@@ -16,7 +16,7 @@ const home = require('../src/config/home');
 const imp = require('../src/import/import');
 const getConfig = require('../src/config/config').getConfig;
 const tryMove = require('../src/util/tryMove');
-const fsp = require('fs-promise');
+const fsp = require('fs-extra');
 
 var processChain = Promise.resolve();
 const importFiles = {};

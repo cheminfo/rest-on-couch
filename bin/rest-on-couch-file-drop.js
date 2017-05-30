@@ -6,11 +6,11 @@ const Koa = require('koa');
 const app = new Koa();
 const http = require('http');
 const path = require('path');
+const fs = require('fs-extra');
 const router = require('koa-router')();
 
 const config = require('../src/config/config').globalConfig;
 const debug = require('../src/util/debug')('server');
-const fs = require('fs-promise');
 const tryMove = require('../src/util/tryMove');
 
 app.proxy = config.fileDropProxy;

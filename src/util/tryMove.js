@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs-promise');
+const fs = require('fs-extra');
 
 module.exports = async function tryMove(from, to, suffix = 0) {
     if (suffix > 1000) {

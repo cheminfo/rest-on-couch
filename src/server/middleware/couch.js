@@ -15,12 +15,12 @@ const CouchError = require('../../util/CouchError');
 const couchNeedsParse = ['key', 'startkey', 'endkey'];
 
 const statusMessages = {
-    '400': 'bad request',
-    '401': 'unauthorized',
-    '403': 'forbidden',
-    '404': 'not found',
-    '409': 'conflict',
-    '500': 'internal server error'
+    400: 'bad request',
+    401: 'unauthorized',
+    403: 'forbidden',
+    404: 'not found',
+    409: 'conflict',
+    500: 'internal server error'
 };
 
 const OK = {ok: true};
