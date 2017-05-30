@@ -7,18 +7,21 @@ const CouchError = require('./util/CouchError');
 const debug = require('./util/debug')('main:connect');
 const nanoPromise = require('./util/nanoPromise');
 
-let authInterval;
+const authRenewal = config.authRenewal * 1000;
+
 let globalNano;
+let lastAuthentication = 0;
 
 async function open() {
-    if (globalNano) {
-        return globalNano;
-    }
-    debug('initialize connection to CouchDB');
-    authInterval = setInterval(() => {
+    const currentDate = Date.now();
+    if (currentDate - lastAuthentication > authRenewal) {
+        if (lastAuthentication === 0) {
+            debug('initialize connection to CouchDB');
+        }
         globalNano = getGlobalNano();
-    }, config.authRenewal * 1000);
-    return globalNano = getGlobalNano();
+        lastAuthentication = currentDate;
+    }
+    return globalNano;
 }
 
 async function getGlobalNano() {
@@ -40,8 +43,6 @@ async function getGlobalNano() {
 }
 
 function close() {
-    clearInterval(authInterval);
-    authInterval = null;
     globalNano = null;
 }
 
