@@ -66,6 +66,22 @@ describe('rest-api as b@b.com (noRights)', function () {
         return noRights().then(() => authenticateAs(request, 'b@b.com', '123'));
     });
 
+    it('query view with owner, wrong key', function () {
+        return request.get('/db/test/_query/entryIdByRight?key=xxx')
+            .expect(200)
+            .then(rows => {
+                rows.text.should.equal('[]');
+            });
+    });
+
+    it('query view with owner', function () {
+        return request.get('/db/test/_query/entryIdByRight?key=' + encodeURIComponent(JSON.stringify(['x', 'y', 'z'])))
+            .expect(200)
+            .then(rows => {
+                rows.text.should.not.equal('[]');
+            });
+    });
+
     it('get an entry authenticated', function () {
         return request.get('/db/test/entry/B')
             .expect(200);
