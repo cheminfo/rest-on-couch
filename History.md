@@ -1,3 +1,13 @@
+<a name="4.2.2"></a>
+## [4.2.2](https://github.com/cheminfo/rest-on-couch/compare/v4.2.1...v4.2.2) (2017-06-12)
+
+
+### Bug Fixes
+
+* do not wrap key in an array for queryEntriesByRight ([ffe6fd8](https://github.com/cheminfo/rest-on-couch/commit/ffe6fd8))
+
+
+
 <a name="4.2.1"></a>
 ## [4.2.1](https://github.com/cheminfo/rest-on-couch/compare/v4.2.0...v4.2.1) (2017-05-30)
 
