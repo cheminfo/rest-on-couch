@@ -46,8 +46,8 @@ const methods = {
 
 
         const data = new Map();
-        const userStartKey = options.key ? [options.key] : (options.startkey ? options.startkey : []);
-        const userEndKey = options.key ? [options.key] : (options.endkey ? options.endkey : []);
+        const userStartKey = options.key ? options.key : (options.startkey ? options.startkey : []);
+        const userEndKey = options.key ? options.key : (options.endkey ? options.endkey : []);
 
 
         for (const group of userGroups) {
