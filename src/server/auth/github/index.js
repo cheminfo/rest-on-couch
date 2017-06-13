@@ -73,8 +73,8 @@ exports.init = function (passport, router, config) {
                 });
             })();
 
-        }
-    ));
+        })
+    );
 
     router.get(config.loginURL, async (ctx, next) => {
         ctx.session.redirect = `${config.successRedirect}?${ctx.request.querystring}`;

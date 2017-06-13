@@ -70,7 +70,7 @@ function populate(db) {
         $id: 'entryWithAttachment',
         _attachments: {
             'test.txt': {
-                content_type: 'text\/plain',
+                content_type: 'text/plain',
                 data: 'VEhJUyBJUyBBIFRFU1Q='
             }
         }

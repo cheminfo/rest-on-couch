@@ -316,7 +316,7 @@ function shouldIgnore(name) {
         let homeDir = getHomeDir();
         debug(`watch ${homeDir}`);
         chokidar.watch(homeDir, {
-            ignored: /[\/\\](\.|processed|errored|node_modules)/,
+            ignored: /[/\\](\.|processed|errored|node_modules)/,
             persistent: true
         }).on('all', function (event, p) {
             debug.trace(`watch event: ${event} - ${p}`);

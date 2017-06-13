@@ -191,7 +191,7 @@ const methods = {
 };
 
 function onNotFound(ctx, entry, user, options) {
-    return async(error) => {
+    return async (error) => {
         if (error.reason === 'not found') {
             debug.trace('doc not found');
             if (options.isUpdate) {

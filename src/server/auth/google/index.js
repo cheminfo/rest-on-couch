@@ -52,8 +52,8 @@ exports.init = function (passport, router, config, mainConfig) {
                 });
                 return true;
             }
-        }
-    ));
+        })
+    );
 
     router.get('/login/google/popup', (ctx) => {
         ctx.session.popup = true;

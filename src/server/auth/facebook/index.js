@@ -45,8 +45,8 @@ exports.init = function (passport, router, config) {
                 provider: 'facebook',
                 email: profile._json.email
             });
-        }
-    ));
+        })
+    );
 
     router.get(config.loginURL, async (ctx, next) => {
         ctx.session.redirect = `${config.successRedirect}?${ctx.request.querystring}`;
