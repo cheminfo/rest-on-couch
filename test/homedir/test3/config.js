@@ -9,8 +9,9 @@ module.exports = {
             },
             test: {
                 map: function (doc) {
+                    const libTest = require('views/lib/test');
                     if (doc.$type === 'entry') {
-                        emit(doc._id);
+                        emit(doc._id, libTest.fortyTwo());
                     }
                 }
             },
