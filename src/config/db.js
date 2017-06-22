@@ -5,6 +5,7 @@ const hasOwn = require('has-own');
 const path = require('path');
 
 const die = require('../util/die');
+const constants = require('../constants');
 
 const dbConfig = module.exports = {};
 const homeDir = require('./home').homeDir;
@@ -26,9 +27,10 @@ if (homeDir) {
                         const views = databaseConfig.customDesign.views;
                         for (const key in views) {
                             if (hasOwn(key, views)) {
-                                if (views[key].designDoc) {
-                                    designDocNames[key] = views[key].designDoc;
+                                if (!views[key].designDoc) {
+                                    views[key].designDoc = constants.CUSTOM_DESIGN_DOC_NAME;
                                 }
+                                designDocNames[key] = views[key].designDoc;
                             }
                         }
                     }
