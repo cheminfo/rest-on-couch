@@ -1,3 +1,17 @@
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/cheminfo/rest-on-couch/compare/v4.2.2...v5.0.0) (2017-06-22)
+
+
+* put all custom CouchDB views in another design doc by default ([eb17185](https://github.com/cheminfo/rest-on-couch/commit/eb17185))
+
+
+### BREAKING CHANGES
+
+* * Custom CouchDB views are now put in a design doc called "customApp". This change should only affect scripts that work directly with CouchDB instead of ROC.
+* In the administration UI, the URLs are now using a HashRouter instead of a BrowserRouter to avoid any issue with proxies.
+
+
+
 <a name="4.2.2"></a>
 ## [4.2.2](https://github.com/cheminfo/rest-on-couch/compare/v4.2.1...v4.2.2) (2017-06-12)
 
