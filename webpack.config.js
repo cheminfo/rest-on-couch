@@ -3,7 +3,6 @@
 const path = require('path');
 
 const isProduction = process.env.NODE_ENV === 'production';
-const config = require('./src/config/config').globalConfig;
 const webpack = require('webpack');
 const BabiliPlugin = require('babili-webpack-plugin');
 
