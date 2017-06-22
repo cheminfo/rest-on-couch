@@ -17,9 +17,7 @@ const plugins = [
     new webpack.DefinePlugin({
         'process.env': {
             'NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'dev')
-        },
-        WP_API_ROOT_URL: JSON.stringify(config.publicAddress),
-        WP_API_PROXY_PREFIX: JSON.stringify(config.proxyPrefix)
+        }
     })
 ];
 

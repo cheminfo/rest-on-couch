@@ -1,6 +1,5 @@
-// root of the ROC API server
-export const API_PROXY_PREFIX = WP_API_PROXY_PREFIX; // eslint-disable-line no-undef
-export const API_ROOT = WP_API_ROOT_URL; // eslint-disable-line no-undef
+const location = window.location;
+export const API_ROOT = location.origin + location.pathname;
 
 export function apiFetch(path, options) {
     options = Object.assign({
@@ -11,7 +10,7 @@ export function apiFetch(path, options) {
             'Content-Type': 'application/json'
         }
     }, options);
-    return fetch(`${API_ROOT}/${path}`, options);
+    return fetch(`${API_ROOT}${path}`, options);
 }
 
 export async function apiFetchJSON(path, options) {
