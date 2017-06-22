@@ -4,6 +4,7 @@ const Couch = require('..');
 const nanoPromise = require('../src/util/nanoPromise');
 const assert = require('assert');
 const entryUnicity = require('./data/entryUnicity');
+const constants = require('../src/constants');
 
 process.on('unhandledRejection', function (err) {
     throw err;
@@ -39,11 +40,15 @@ describe('basic initialization with custom design docs', function () {
     beforeEach(entryUnicity);
 
     it('should load the design doc files at initialization', function () {
-        const app = nanoPromise.getDocument(couch._db, '_design/app')
+        const app = nanoPromise.getDocument(couch._db, `_design/${constants.DESIGN_DOC_NAME}`)
+            .then(app => {
+                assert.notEqual(app, null);
+                assert.ok(app.filters.abc);
+            });
+        const customApp = nanoPromise.getDocument(couch._db, `_design/${constants.CUSTOM_DESIGN_DOC_NAME}`)
             .then(app => {
                 assert.notEqual(app, null);
                 assert.ok(app.views.test);
-                assert.ok(app.filters.abc);
             });
         const custom = nanoPromise.getDocument(couch._db, '_design/custom')
             .then(custom => {
@@ -51,7 +56,7 @@ describe('basic initialization with custom design docs', function () {
                 assert.ok(custom.views.testCustom);
             });
 
-        return Promise.all([app, custom]);
+        return Promise.all([app, customApp, custom]);
     });
 
     it('should query a custom design document', function () {

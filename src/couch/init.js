@@ -82,13 +82,10 @@ async function checkDesignDoc(couch) {
     custom.views = custom.views || {};
     const designNames = new Set();
     designNames.add(constants.DESIGN_DOC_NAME);
-    designNames.add(constants.CUSTOM_DESIGN_DOC_NAME);
     let viewNames = Object.keys(custom.views);
     for (let key of viewNames) {
         if (custom.views[key].designDoc) {
             designNames.add(custom.views[key].designDoc);
-        } else {
-            custom.views[key].designDoc = constants.CUSTOM_DESIGN_DOC_NAME;
         }
     }
 

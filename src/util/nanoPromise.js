@@ -96,6 +96,7 @@ exports.queryView = function (db, view, params, options) {
         cleanOptions(params);
         var config = getConfig(db.config.db);
         var designDoc = config.designDocNames && config.designDocNames[view] || constants.DESIGN_DOC_NAME;
+        debug.trace(`designDoc: ${designDoc}`);
         db.view(designDoc, view, params, (err, body) => {
             if (err) {
                 reject(err);
