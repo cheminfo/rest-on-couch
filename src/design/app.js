@@ -31,12 +31,10 @@ module.exports = function (custom, dbName) {
     custom = custom || {};
     const config = getConfig(dbName);
     processViews(custom, config);
-    if (custom.designDoc === 'app') {
+    if (custom.designDoc === constants.DESIGN_DOC_NAME) {
         return {
             _id: constants.DESIGN_DOC_ID,
             language: 'javascript',
-            version: constants.DESIGN_DOC_VERSION,
-            customVersion: custom.version,
             filters: Object.assign({}, custom.filters, filters),
             updates: Object.assign({}, custom.updates, updates),
             views: Object.assign({}, custom.views, views),

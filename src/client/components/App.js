@@ -1,8 +1,7 @@
 import React, {PropTypes} from 'react';
-import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
+import {HashRouter, Route, Redirect, Switch} from 'react-router-dom';
 import {connect} from 'react-redux';
 
-import {API_PROXY_PREFIX} from '../api';
 import {dbManager} from '../store';
 
 import DatabaseSelector from './DatabaseSelector';
@@ -18,7 +17,7 @@ import DatabaseAdministration from './DatabaseAdministration';
 import GroupMemberships from './GroupMemberships';
 
 const App = (props) => (
-    <BrowserRouter basename={API_PROXY_PREFIX}>
+    <HashRouter>
         <div>
             <div className="wrapper">
                 <Sidebar hasDb={props.hasDb} loggedIn={props.loggedIn} loginProvider={props.loginProvider} isAdmin={props.isAdmin} userRights={props.userRights} isGroupOwner={props.isGroupOwner} />
@@ -73,7 +72,7 @@ const App = (props) => (
                 </div>
             </div>
         </div>
-    </BrowserRouter>
+    </HashRouter>
 );
 
 App.propTypes = {

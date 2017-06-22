@@ -22,7 +22,7 @@ export default connect(
             const width = 450;
             const left = Math.round(window.outerWidth / 2 - width / 2);
             const top = Math.round(window.outerHeight / 2 - height / 2);
-            const win = window.open(`${API_ROOT}/auth/login/google/popup`, 'loginPopup', `location=1,scrollbars=1,height=${height},width=${width},left=${left},top=${top}`);
+            const win = window.open(`${API_ROOT}auth/login/google/popup`, 'loginPopup', `location=1,scrollbars=1,height=${height},width=${width},left=${left},top=${top}`);
             if (win.focus) win.focus();
             checkWindowStatus();
 
