@@ -15,6 +15,12 @@ exports.init = function (passport, router, config) {
                 email: user.mail,
                 info: {}
             };
+            if (typeof config.getUserEmail === 'function') {
+                data.email = config.getUserEmail(data.email);
+            }
+            if (typeof data.email !== 'string') {
+                return done(new Error(`LDAP email must be a string. Saw ${data.email} instead.`));
+            }
             if (typeof config.getUserInfo === 'function') {
                 return Promise.resolve(config.getUserInfo(user)).then(info => {
                     data.info = info;
