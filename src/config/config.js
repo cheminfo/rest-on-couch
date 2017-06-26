@@ -8,9 +8,19 @@ const dbConfig = require('./db');
 const envConfig = require('./env');
 const cliConfig = require('./cli');
 
+const configStore = {};
+
+// TODO: would be preferable if returned data was immutable to prevent side effects
 exports.getConfig = function (database, customConfig) {
     debug.trace(`getConfig - db:${database}`);
-    return Object.assign({}, defaultConfig, homeConfig, dbConfig[database], envConfig, cliConfig, customConfig);
+    if (!configStore[database]) {
+        configStore[database] = Object.assign({}, defaultConfig, homeConfig, dbConfig[database], envConfig, cliConfig);
+    }
+    if (!customConfig) {
+        return configStore[database];
+    } else {
+        return Object.assign({}, configStore[database], customConfig);
+    }
 };
 
 const globalConfig = exports.getConfig();
