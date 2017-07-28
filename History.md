@@ -1,3 +1,14 @@
+<a name="5.1.1"></a>
+## [5.1.1](https://github.com/cheminfo/rest-on-couch/compare/v5.1.0...v5.1.1) (2017-07-28)
+
+
+### Bug Fixes
+
+* pass full user info to getLDAPUserEmail ([1318f22](https://github.com/cheminfo/rest-on-couch/commit/1318f22))
+* **import:** insert entry with appropriate user ([3b1bc5e](https://github.com/cheminfo/rest-on-couch/commit/3b1bc5e))
+
+
+
 <a name="5.1.0"></a>
 # [5.1.0](https://github.com/cheminfo/rest-on-couch/compare/v5.0.1...v5.1.0) (2017-06-26)
 
