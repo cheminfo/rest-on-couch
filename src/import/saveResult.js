@@ -56,10 +56,10 @@ module.exports = async function saveResult(importBase, result) {
                 $content: result.content,
                 _id: document.id,
                 _rev: document.rev
-            });
+            }, result.owner);
             break;
         default:
-            throw new Error('Unreaachable');
+            throw new Error('Unreachable');
     }
 
     // Upload additional attachments with metadata
