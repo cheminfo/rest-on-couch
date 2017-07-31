@@ -7,11 +7,11 @@ import {dbManager} from '../store';
 
 class GroupMemberships extends Component {
     render() {
-            return (
-                <div>
-                    <DisplayGroupList groups={this.props.groups} />
-                </div>
-            );
+        return (
+            <div>
+                <DisplayGroupList groups={this.props.groups} />
+            </div>
+        );
     }
 
     componentWillMount() {
