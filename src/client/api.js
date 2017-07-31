@@ -1,5 +1,13 @@
 const location = window.location;
-export const API_ROOT = location.origin + location.pathname;
+
+let API_ROOT;
+if(process.env.NODE_ENV === 'production') {
+    API_ROOT = location.origin + location.pathname;
+} else {
+    API_ROOT = location.origin.replace(/:\d+/, ':' + 3000) + location.pathname;
+}
+
+export {API_ROOT};
 
 export function apiFetch(path, options) {
     options = Object.assign({

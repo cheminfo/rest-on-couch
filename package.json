@@ -18,6 +18,7 @@
     "eslint-fix": "npm run eslint -- --fix",
     "start:dev": "webpack-dev-server --inline --content-base public/ --history-api-fallback",
     "start:prod": "NODE_ENV=production npm run build && node bin/rest-on-couch-server.js",
+    "start:devserver": "node bin/rest-on-couch-server.js --config=conf/devConfig.js",
     "test": "npm run test-mocha && npm run eslint",
     "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup --reporter dot --recursive",
     "test-mocha": "mocha --timeout 5000 --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive"
