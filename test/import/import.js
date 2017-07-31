@@ -55,4 +55,33 @@ describe('import', function () {
             });
         });
     });
+
+    it('All attachments and metadata are separate', function () {
+        return imp.import(databaseName, 'separate', textFile).then(() => {
+            return importCouch.getEntryById('separate', 'a@a.com').then(data => {
+                data.should.be.an.Object();
+                data.$content.should.be.an.Object();
+
+                // Check that new content has been merged
+                data.$content.sideEffect.should.equal(true);
+
+                // Check that the correct owners have been added
+                data.$owners.should.deepEqual(['a@a.com', 'group1', 'group2', 'group3']);
+
+
+                // Additional metadata
+                var metadata = data.$content.other.jpath[0];
+                metadata.should.be.an.Object();
+                metadata.hasMetadata.should.equal(true);
+                metadata.reference.should.equal('testRef');
+                metadata.testField.filename.should.equal('other/jpath/test.txt');
+
+                // check attachmentss
+                const secondaryAttachment = data._attachments['other/jpath/test.txt'];
+                secondaryAttachment.should.be.an.Object();
+                secondaryAttachment.content_type.should.equal('plain/text');
+            });
+
+        });
+    });
 });

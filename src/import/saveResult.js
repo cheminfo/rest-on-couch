@@ -8,14 +8,14 @@ module.exports = async function saveResult(importBase, result) {
     if (result.isSkipped) return;
 
     // Create the new document if it does not exist
-    const document = await couch.createEntry(result.id, result.owner, {
+    let document = await couch.createEntry(result.id, result.owner, {
         kind: result.kind,
         owners: result.groups
     });
 
     // In case the document already existed, we need update the  list of owners
     if (result.groups.length) {
-        await couch.addOwnersToDoc(document.id, result.owner, result.groups, 'entry');
+        document = await couch.addOwnersToDoc(document.id, result.owner, result.groups, 'entry');
     }
 
 
@@ -52,7 +52,7 @@ module.exports = async function saveResult(importBase, result) {
         case constants.IMPORT_UPDATE_$CONTENT_ONLY:
             await couch.insertEntry({
                 $id: result.id,
-                $kind: result.$kind,
+                $kind: result.kind,
                 $content: result.content,
                 _id: document.id,
                 _rev: document.rev
