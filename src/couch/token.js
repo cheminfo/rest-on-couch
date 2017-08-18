@@ -3,10 +3,14 @@
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:token');
 const token = require('../util/token');
+const {isValidUsername} = require('./util');
 
 const methods = {
     async createEntryToken(user, uuid) {
         debug(`createEntryToken (${user}, ${uuid})`);
+        if (!isValidUsername(user)) {
+            throw new CouchError('only a user can create a token', 'unauthorized');
+        }
         await this.open();
         // We need write right to create a token. This will throw if not.
         await this.getEntryWithRights(uuid, user, 'write');
@@ -15,6 +19,9 @@ const methods = {
 
     async createUserToken(user, rights = ['read']) {
         debug(`createUserToken (${user})`);
+        if (!isValidUsername(user)) {
+            throw new CouchError('only a user can create a token', 'unauthorized');
+        }
         await this.open();
         return token.createUserToken(this._db, user, rights);
     },

@@ -52,14 +52,19 @@ describe('token methods', function () {
 
     it('token should give read access to non public data', async () => {
         const token = await couch.createUserToken('b@b.com');
-        await couch.getEntryById('A', 'a@a.com').should.be.rejected('document not found');
+        await couch.getEntryById('A', 'a@a.com').should.be.rejectedWith('document not found');
         const entry = await couch.getEntry('A', 'a@a.com', {token});
         entry.should.be.an.Object();
     });
 
     it('token should give only the right for which it was created', async () => {
         const token = await couch.createUserToken('b@b.com', 'delete');
-        await couch.getEntryById('A', 'a@a.com', {token}).should.be.rejected('document not found');
+        await couch.getEntryById('A', 'a@a.com', {token}).should.be.rejectedWith('document not found');
         await couch.deleteEntry('A', 'a@a.com', {token});
+    });
+
+    it('anonymous user should not be able to create a token', async () => {
+        await couch.createEntryToken('anonymous', 'A').should.be.rejectedWith('only a user can create a token');
+        await couch.createUserToken('anonymous').should.be.rejectedWith('only a user can create a token');
     });
 });
