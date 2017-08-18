@@ -122,7 +122,7 @@ const methods = {
         let owners = await nanoPromise.queryView(this._db, 'ownersByModificationDate', {
             reduce: false,
             include_docs: false,
-            startKey: from
+            startkey: from
         });
 
         if (token && token.$kind === 'user' && validateMethods.areRightsInToken(rights, token)) {
