@@ -76,6 +76,13 @@ views.ownersById = {
     }
 };
 
+views.ownersByModificationDate = {
+    map: function (doc) {
+        if (doc.$type !== 'entry') return;
+        emit(doc.$modificationDate, doc.$owners);
+    }
+};
+
 views.entryByOwnerAndId = {
     map: function (doc) {
         if (doc.$type !== 'entry') return;
