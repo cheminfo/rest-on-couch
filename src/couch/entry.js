@@ -115,6 +115,7 @@ const methods = {
         if (options.includeDocs === false || options.includeDocs === 'false') {
             includeDocs = false;
         }
+        const includeDate = options.includeDate;
 
         await this.open();
 
@@ -150,6 +151,11 @@ const methods = {
         if (includeDocs) {
             // Get each document from CouchDB
             return Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
+        } else if (includeDate) {
+            return allowedDocs.map(doc => ({
+                id: doc.id,
+                date: doc.key
+            }));
         } else {
             return allowedDocs.map(doc => doc.id);
         }
