@@ -131,7 +131,7 @@ const methods = {
 
         let allowedDocs;
         if (typeof owner === 'string') {
-            owners = owners.filter((res) => res.value === owner);
+            owners = owners.filter((res) => res.value[0] === owner);
             if (owner === user) {
                 allowedDocs = owners;
             }
