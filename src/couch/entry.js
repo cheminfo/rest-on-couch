@@ -24,7 +24,7 @@ const methods = {
         }
 
         debug.trace('check rights');
-        if (await validateMethods.validateTokenOrRights(this, uuid, doc.$owners, rights, user, options.token)) {
+        if (await validateMethods.validateTokenOrRights(this, uuid, doc.$owners, rights, user, options.token, 'entry')) {
             debug.trace(`user ${user} has access`);
             if (!options) {
                 return doc;

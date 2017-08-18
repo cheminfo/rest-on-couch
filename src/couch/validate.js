@@ -78,6 +78,19 @@ async function validateRights(ctx, ownerArrays, user, rights, type = 'entry') {
 async function validateTokenOrRights(ctx, uuid, owners, rights, user, token, type = 'entry') {
     rights = ensureStringArray(rights);
 
+    if (token && token.$kind === 'user') {
+        const tokenRights = new Set(token.rights);
+        if (rights.length !== tokenRights.size) {
+            return false;
+        }
+        for (const right of rights) {
+            if (!tokenRights.has(right)) {
+                return false;
+            }
+        }
+        user = token.$owner;
+    }
+
     if (token && token.$kind === type && token.uuid === uuid) {
         for (var i = 0; i < rights.length; i++) {
             if (token.rights.includes(rights[i])) {

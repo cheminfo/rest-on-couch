@@ -31,6 +31,7 @@
 | DELETE | `/db/:dbname/entry/:uuid/_owner/:owner` | Remove an owner | |
 | GET | `/db/:dbname/entry/:uuid/:attachment+` | Get an attachment | |
 | PUT | `/db/:dbname/entry/:uuid/:attachment+` | Save an attachment | |
+| DELETE | `/db/:dbname/entry/:uuid/:attachment+` | Delete an attachment | |
 
 ### User
 
@@ -65,6 +66,7 @@
 | Method | Route | Action | Description |
 | ------ | ----- | ------ | ----------- |
 | POST | `/db/:dbname/entry/:uuid/_token` | Create a readonly token for this entry | User must have write rights on the entry |
+| POST | `/db/:dbname/user/_me/token` | Create a readonly token for the user | This token gives readonly right to all entries that the user has access to |
 | GET | `/db/:dbname/token` | Get all tokens for current user | |
 | GET | `/db/:dbname/token/:tokenid` | Get information about a token | |
 | DELETE | `/db/:dbname/token/:tokenid` | Delete a token | |

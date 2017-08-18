@@ -1,10 +1,10 @@
 'use strict';
 
-module.exports = function ensureStringArray(value) {
+module.exports = function ensureStringArray(value, name = 'value') {
     if (typeof value === 'string') {
         return [value];
     } else if (Array.isArray(value)) {
         return value;
     }
-    throw new Error('value must be a string or array');
+    throw new Error(`${name} must be a string or array`);
 };

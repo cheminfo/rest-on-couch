@@ -13,6 +13,12 @@ const methods = {
         return token.createEntryToken(this._db, user, uuid, 'read');
     },
 
+    async createUserToken(user, rights = ['read']) {
+        debug(`createUserToken (${user})`);
+        await this.open();
+        return token.createUserToken(this._db, user, rights);
+    },
+
     async deleteToken(user, tokenId) {
         debug(`deleteToken (${user}, ${tokenId})`);
         await this.open();
