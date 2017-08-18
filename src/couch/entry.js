@@ -6,6 +6,7 @@ const nanoPromise = require('../util/nanoPromise');
 const validateMethods = require('./validate');
 const nanoMethods = require('./nano');
 const util = require('./util');
+const ensureStringArray = require('../util/ensureStringArray');
 const kEntryUnicity = require('../constants').kEntryUnicity;
 
 const methods = {
@@ -101,12 +102,15 @@ const methods = {
         };
     },
 
-    async getEntriesByUserAndRights(user, rights, options = {}) {
+    async getEntriesByUserAndRights(user, rights = ['read'], options = {}) {
         debug(`getEntriesByUserAndRights (${user}, ${rights})`);
+        rights = ensureStringArray(rights, 'rights');
+
         const limit = options.limit;
         const skip = options.skip;
         const from = +options.from || 0;
         const owner = options.owner;
+        const token = options.token;
         let includeDocs = true;
         if (options.includeDocs === false || options.includeDocs === 'false') {
             includeDocs = false;
@@ -120,6 +124,10 @@ const methods = {
             include_docs: false,
             startKey: from
         });
+
+        if (token && token.$kind === 'user' && validateMethods.areRightsInToken(rights, token)) {
+            user = token.$owner;
+        }
 
         let allowedDocs;
         if (typeof owner === 'string') {

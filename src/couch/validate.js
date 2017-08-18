@@ -79,14 +79,8 @@ async function validateTokenOrRights(ctx, uuid, owners, rights, user, token, typ
     rights = ensureStringArray(rights);
 
     if (token && token.$kind === 'user') {
-        const tokenRights = new Set(token.rights);
-        if (rights.length !== tokenRights.size) {
+        if (!areRightsInToken(rights, token)) {
             return false;
-        }
-        for (const right of rights) {
-            if (!tokenRights.has(right)) {
-                return false;
-            }
         }
         user = token.$owner;
     }
@@ -100,6 +94,19 @@ async function validateTokenOrRights(ctx, uuid, owners, rights, user, token, typ
     }
     const ok = await validateRights(ctx, owners, user, rights, type);
     return ok[0];
+}
+
+function areRightsInToken(rights, token) {
+    const tokenRights = new Set(token.rights);
+    if (rights.length !== tokenRights.size) {
+        return false;
+    }
+    for (const right of rights) {
+        if (!tokenRights.has(right)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 function isOwner(owners, user) {
@@ -171,6 +178,7 @@ async function getDefaultGroups(db, user, listOnly) {
 module.exports = {
     validateRights,
     validateTokenOrRights,
+    areRightsInToken,
     isOwner,
     checkGlobalRight,
     checkRightAnyGroup,
