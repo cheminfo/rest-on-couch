@@ -137,10 +137,13 @@ module.exports = function (newDoc, oldDoc, userCtx) {
         if (oldDoc) {
             throw ({forbidden: 'Tokens are immutable'});
         }
-        if (newDoc.$kind !== 'entry') {
+        if (newDoc.$kind !== 'entry' && newDoc.$kind !== 'user') {
             throw ({forbidden: 'Only entry tokens are supported'});
         }
-        if (!newDoc.$id || !newDoc.$owner || !newDoc.uuid || (typeof newDoc.$creationDate !== 'number') || !Array.isArray(newDoc.rights)) {
+        if (!newDoc.$id || !newDoc.$owner || (typeof newDoc.$creationDate !== 'number') || !Array.isArray(newDoc.rights)) {
+            throw ({forbidden: 'token is missing fields'});
+        }
+        if (newDoc.$kind === 'entry' && !newDoc.uuid) {
             throw ({forbidden: 'token is missing fields'});
         }
     }

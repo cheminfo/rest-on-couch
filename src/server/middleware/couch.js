@@ -296,6 +296,12 @@ exports.createEntryToken = composeWithError(async (ctx) => {
     ctx.body = token;
 });
 
+exports.createUserToken = composeWithError(async (ctx) => {
+    const token = await ctx.state.couch.createUserToken(ctx.state.userEmail);
+    ctx.status = 201;
+    ctx.body = token;
+});
+
 exports.getTokens = composeWithError(async (ctx) => {
     ctx.body = await ctx.state.couch.getTokens(ctx.state.userEmail);
 });

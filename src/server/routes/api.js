@@ -92,6 +92,7 @@ router.delete('/:dbname/rights/defaultGroups/:user/:group', couch.removeGlobalDe
 
 // Tokens
 router.post('/:dbname/entry/:uuid/_token', couch.createEntryToken);
+router.post('/:dbname/user/_me/token', couch.createUserToken);
 router.get('/:dbname/token', couch.getTokens);
 router.get('/:dbname/token/:tokenid', couch.getTokenById);
 router.delete('/:dbname/token/:tokenid', couch.deleteTokenById);

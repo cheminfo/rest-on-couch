@@ -5,13 +5,10 @@ const getRandomToken = () => randomatic('Aa0', 32);
 
 const CouchError = require('./CouchError');
 const nanoPromise = require('./nanoPromise');
+const ensureStringArray = require('./ensureStringArray');
 
 exports.createEntryToken = async function createEntryToken(db, user, uuid, rights) {
-    if (typeof rights === 'string') {
-        rights = [rights];
-    } else if (!Array.isArray(rights)) {
-        throw new CouchError('rights must be an array');
-    }
+    rights = ensureStringArray(rights, 'rights');
     const token = {
         $type: 'token',
         $kind: 'entry',
@@ -19,6 +16,20 @@ exports.createEntryToken = async function createEntryToken(db, user, uuid, right
         $owner: user,
         $creationDate: Date.now(),
         uuid,
+        rights
+    };
+    await nanoPromise.insertDocument(db, token);
+    return token;
+};
+
+exports.createUserToken = async function createUserToken(db, user, rights) {
+    rights = ensureStringArray(rights, 'rights');
+    const token = {
+        $type: 'token',
+        $kind: 'user',
+        $id: getRandomToken(),
+        $owner: user,
+        $creationDate: Date.now(),
         rights
     };
     await nanoPromise.insertDocument(db, token);
