@@ -105,25 +105,46 @@ const methods = {
         debug(`getEntriesByUserAndRights (${user}, ${rights})`);
         const limit = options.limit;
         const skip = options.skip;
+        const from = +options.from || 0;
+        const owner = options.owner;
+        let includeDocs = true;
+        if (options.includeDocs === false || options.includeDocs === 'false') {
+            includeDocs = false;
+        }
 
         await this.open();
 
         // First we get a list of owners for each document
-        const owners = await nanoPromise.queryView(this._db, 'ownersById', {
+        let owners = await nanoPromise.queryView(this._db, 'ownersByModificationDate', {
             reduce: false,
-            include_docs: false
+            include_docs: false,
+            startKey: from
         });
 
-        // Check rights for current user and keep only documents with granted access
-        const hasRights = await validateMethods.validateRights(this, owners.map(r => r.value), user, rights || 'read');
-        let allowedDocs = owners.filter((r, idx) => hasRights[idx]);
+        let allowedDocs;
+        if (typeof owner === 'string') {
+            owners = owners.filter((res) => res.value === owner);
+            if (owner === user) {
+                allowedDocs = owners;
+            }
+        }
+
+        if (allowedDocs === undefined) {
+            // Check rights for current user and keep only documents with granted access
+            const hasRights = await validateMethods.validateRights(this, owners.map(r => r.value), user, rights || 'read');
+            allowedDocs = owners.filter((r, idx) => hasRights[idx]);
+        }
 
         // Apply pagination options
         if (skip) allowedDocs = allowedDocs.slice(skip);
         if (limit) allowedDocs = allowedDocs.slice(0, limit);
 
-        // Get each document from CouchDB
-        return Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
+        if (includeDocs) {
+            // Get each document from CouchDB
+            return Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
+        } else {
+            return allowedDocs.map(doc => doc.id);
+        }
     },
 
     async _doUpdateOnEntry(uuid, user, update, updateBody) {
