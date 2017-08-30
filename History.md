@@ -1,3 +1,23 @@
+<a name="5.2.0"></a>
+# [5.2.0](https://github.com/cheminfo/rest-on-couch/compare/v5.1.1...v5.2.0) (2017-08-30)
+
+
+### Bug Fixes
+
+* **client:** update group membership component each time it is loaded ([a89b849](https://github.com/cheminfo/rest-on-couch/commit/a89b849))
+* **import:** 2 bug fixes in new import ([097c0ac](https://github.com/cheminfo/rest-on-couch/commit/097c0ac)), closes [#76](https://github.com/cheminfo/rest-on-couch/issues/76)
+* compare first owner ([a9f6d30](https://github.com/cheminfo/rest-on-couch/commit/a9f6d30))
+* do not allow anonymous users to create tokens ([beb5994](https://github.com/cheminfo/rest-on-couch/commit/beb5994))
+* use lowercase startkey ([7e728d8](https://github.com/cheminfo/rest-on-couch/commit/7e728d8))
+
+
+### Features
+
+* add from, owner and includeDocs options to getEntriesByUserAndRights ([59658be](https://github.com/cheminfo/rest-on-couch/commit/59658be))
+* add support for user tokens ([#78](https://github.com/cheminfo/rest-on-couch/issues/78)) ([8a04be0](https://github.com/cheminfo/rest-on-couch/commit/8a04be0))
+
+
+
 <a name="5.1.1"></a>
 ## [5.1.1](https://github.com/cheminfo/rest-on-couch/compare/v5.1.0...v5.1.1) (2017-07-28)
 
