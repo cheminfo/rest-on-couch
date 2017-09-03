@@ -46,7 +46,10 @@ class Couch {
             database,
             username: config.username,
             password: config.password,
-            autoCreate: config.autoCreateDatabase
+            autoCreate: config.autoCreateDatabase,
+            ldapGroupsRenewal: config.ldapGroupsRenewal,
+            ldapBindDN: config.ldapBindDN,
+            ldapBindPassword: config.ldapBindPassword
         };
 
         this._logLevel = log.getLevel(config.logLevel);

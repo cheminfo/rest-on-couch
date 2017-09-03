@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const LDAP = require('../util/LDAP');
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:group');
@@ -10,6 +11,7 @@ const constants = require('../constants');
 const nanoMethods = require('./nano');
 const util = require('./util');
 const validate = require('./validate');
+const ensureStringArray = require('../util/ensureStringArray');
 
 const methods = {
     async editDefaultGroup(group, type, action) {
@@ -156,9 +158,80 @@ const methods = {
         const group = await this.getDocByRights(uuid, user, 'write', 'group');
         _.pullAll(group.rights, rights);
         return nanoMethods.save(this._db, group, user);
+    },
+
+    async syncLDAPGroups(groups) {
+        debug(`sync LDAP groups in database ${this._db.config.db}`);
+        await this.open();
+        // Find all the ldap groups
+        if (!groups) {
+            debug.trace('sync all ldap groups');
+            groups = await nanoPromise.queryView(this._db, 'documentByType', {key: 'group', include_docs: true});
+            groups = groups.map(group => group.doc);
+        } else {
+            debug.trace(`sync LDAP group with uuid(s) ${groups}`);
+            groups = ensureStringArray(groups, 'groups');
+            for (let i = 0; groups.length; i++) {
+                groups[i] = await nanoPromise.getDocument(this._db, groups[i]);
+                if (groups[i].$type !== 'group') {
+                    throw new CouchError('not a group', 'bad argument');
+                }
+            }
+        }
+
+        groups = groups.filter(group => group.ldapSearchBase);
+
+        const client = new LDAP({
+            url: 'ldap://localhost'
+        });
+
+        try {
+            if (this._couchOptions.ldapBindDN && this._couchOptions.ldapBindPassword) {
+                debug.trace('ldap bind');
+                await client.bind(this._couchOptions.ldapBindDN, this._couchOptions.ldapBindPassword);
+            }
+
+            for (let i = 0; i < groups.length; i++) {
+                const group = groups[i];
+                const entries = await client.search(groups[i].ldapSearchBase, {
+                    filter: groups[i].ldapSearchFilter
+                });
+                const emails = [];
+                entries.forEach(entry => {
+                    entry.attributes.forEach(attr => {
+                        if (attr.type === 'mail') {
+                            attr._vals.forEach(mail => {
+                                emails.push(mail.toString('utf-8'));
+                            });
+                        }
+                    });
+                });
+
+                if (!arraysAreEqual(emails, group.users)) {
+                    group.users = emails;
+                    await nanoMethods.save(this._db, group, 'ldap');
+                }
+            }
+            client.destroy();
+        } catch (e) {
+            debug('Error while syncing ldap', e);
+            client.destroy();
+        }
     }
 };
+
+function arraysAreEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    arr1 = arr1.slice().sort();
+    arr2 = arr2.slice().sort();
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
+}
+
 
 module.exports = {
     methods
 };
+

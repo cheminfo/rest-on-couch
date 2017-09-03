@@ -5,6 +5,7 @@ module.exports = {
     url: 'http://localhost:5984',
     logLevel: 'FATAL',
     authRenewal: 570,
+    ldapGroupsRenewal: 300,
     autoCreateDatabase: false,
     administrators: [],
     superAdministrators: [],

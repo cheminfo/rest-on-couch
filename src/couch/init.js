@@ -63,8 +63,19 @@ const methods = {
             checkRightsDoc(this._db, this._rights),
             checkDefaultGroupsDoc(this._db)
         ]);
+
+        startLDAPSync(this);
     }
 };
+
+async function startLDAPSync(db) {
+    try {
+        await db.syncLDAPGroups();
+    } catch (e) {
+        debug('LDAP sync failed initialization', e);
+    }
+    setInterval(() => db.syncLDAPGroups(), 1000 * db._couchOptions.ldapGroupsRenewal);
+}
 
 async function checkSecurity(db, admin) {
     debug.trace('check security');
