@@ -8,10 +8,10 @@ const debug = Debug('couch:debug');
 const trace = Debug('couch:trace');
 
 module.exports = function (prefix) {
-    const func = message => debug(`(${prefix}) ${message}`);
-    func.error = message => error(`(${prefix}) ${message}`);
-    func.warn = message => warn(`(${prefix}) ${message}`);
+    const func = (...args) => debug(`(${prefix}) ${args.join('\n')}`);
+    func.error = (...args) => error(`(${prefix}) ${args.join('\n')}`);
+    func.warn = (...args) => warn(`(${prefix}) ${args.join('\n')}`);
     func.debug = func;
-    func.trace = message => trace(`(${prefix}) ${message}`);
+    func.trace = (...args) => trace(`(${prefix}) ${args.join('\n')}`);
     return func;
 };
