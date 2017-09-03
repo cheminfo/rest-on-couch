@@ -23,6 +23,10 @@ class ChangePassword extends React.Component {
     handleSubmit() {
         if (this.isEmpty()) return;
         this.props.changeCouchDBPassword(this.state.oldPassword, this.state.newPassword);
+        this.setState({
+            oldPassword: '',
+            newPassword: ''
+        });
     }
 
     handleKeyPress(event) {
@@ -42,13 +46,13 @@ class ChangePassword extends React.Component {
                         <div className="col-md-4">
                             <div className="form-group">
                                 <label>Current password</label>
-                                <input name="oldPassword" type="password" className="form-control" value={this.state.username} onChange={this.handleChange} onKeyPress={this.handleKeyPress} />
+                                <input name="oldPassword" type="password" className="form-control" value={this.state.oldPassword} onChange={this.handleChange} onKeyPress={this.handleKeyPress} />
                             </div>
                         </div>
                         <div className="col-md-4">
                             <div className="form-group">
                                 <label>New password</label>
-                                <input name="newPassword" type="password" className="form-control" value={this.state.password} onChange={this.handleChange} onKeyPress={this.handleKeyPress} />
+                                <input name="newPassword" type="password" className="form-control" value={this.state.newPassword} onChange={this.handleChange} onKeyPress={this.handleKeyPress} />
                             </div>
                         </div>
                     </div>
