@@ -30,7 +30,10 @@ const loginReducer = (state = initialState, action) => {
                 success: {changePassword: action.payload.error ? '' : 'Successfully changed password'}
             });
         case `${CREATE_COUCHDB_USER}_FULFILLED`:
-            return Object.assign({}, state, {errors: {createUser: action.payload.error || ''}});
+            return Object.assign({}, state, {
+                errors: {createUser: action.payload.error || ''},
+                success: {createUser: action.payload.error ? '' : 'Successfully created user'}
+            });
         default:
             return state;
     }
