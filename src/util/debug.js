@@ -18,7 +18,7 @@ module.exports = function (prefix) {
 
 function processArgs(args) {
     args.map(arg => {
-        if(arg instanceof Error) {
+        if (arg instanceof Error) {
             return `${arg.message}\n${arg.stack}`;
         }
         return arg;
