@@ -57,6 +57,7 @@ class ChangePassword extends React.Component {
                         </div>
                     </div>
                     {this.props.error ? (<p className="text-danger">{this.props.error}</p>) : ''}
+                    {this.props.success ? (<p className="text-success">{this.props.success}</p>) : ''}
                     <button disabled={this.isEmpty()} type="button" className="btn btn-info btn-fill" onClick={this.handleSubmit}>Change Password</button>
                     <div className="clearfix"></div>
                 </form>
@@ -69,7 +70,8 @@ class ChangePassword extends React.Component {
 function mapStateToProps(state) {
     return {
         username: state.login.username,
-        error: state.login.errors.changePassword
+        error: state.login.errors.changePassword,
+        success: state.login.success.changePassword
     };
 }
 
