@@ -64,7 +64,9 @@ const methods = {
             checkDefaultGroupsDoc(this._db)
         ]);
 
-        startLDAPSync(this);
+        if(this._couchOptions.ldapSync) {
+            startLDAPSync(this);
+        }
     }
 };
 

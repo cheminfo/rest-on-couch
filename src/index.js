@@ -49,7 +49,8 @@ class Couch {
             autoCreate: config.autoCreateDatabase,
             ldapGroupsRenewal: config.ldapGroupsRenewal,
             ldapBindDN: config.ldapBindDN,
-            ldapBindPassword: config.ldapBindPassword
+            ldapBindPassword: config.ldapBindPassword,
+            ldapSync: config.ldapSync
         };
 
         this._logLevel = log.getLevel(config.logLevel);
