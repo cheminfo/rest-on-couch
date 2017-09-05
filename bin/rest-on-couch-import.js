@@ -41,7 +41,7 @@ const sortWalk = program.sort === 'asc' ? 'shift' : 'pop';
 async function doContinuous(waitTime) {
     while (true) {
         await importAll();
-        debug('now waiting');
+        debug(`now waiting ${waitTime / 1000} seconds`);
         await delay(waitTime);
     }
 }
