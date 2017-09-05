@@ -71,7 +71,7 @@ const methods = {
         return nanoPromise.destroyDocument(this._db, doc._id);
     },
 
-    async createGroup(groupName, user, rights) {
+    async createGroup(groupName, user, rights, groupType) {
         debug(`createGroup (${groupName}, ${user})`);
         if (!Array.isArray(rights)) rights = [];
 
@@ -85,6 +85,7 @@ const methods = {
 
         return nanoMethods.saveGroup(this._db, {
             $type: 'group',
+            groupType: groupType || 'default',
             $owners: [user],
             name: groupName,
             users: [],
@@ -157,6 +158,22 @@ const methods = {
         rights = util.ensureRightsArray(rights);
         const group = await this.getDocByRights(uuid, user, 'write', 'group');
         _.pullAll(group.rights, rights);
+        return nanoMethods.save(this._db, group, user);
+    },
+
+    async setLdapGroupProperties(uuid, user, properties={}) {
+        debug(`setLdapGroupProperties (${uuid}, ${user}, ${properties}`);
+        await this.open();
+        const group = await this.getDocByRights(uuid, user, 'write', 'group');
+        if(group.groupType !== 'ldap') {
+            throw new CouchError('Cannot set ldap group properties on non-ldap group', 'bad argument');
+        }
+        if(properties.filter) {
+            group.filter = properties.filter;
+        }
+        if(properties.DN) {
+            group.DN = properties.DN;
+        }
         return nanoMethods.save(this._db, group, user);
     },
 

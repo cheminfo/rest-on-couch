@@ -11,6 +11,7 @@ const parseJson1mb = util.parseBody({jsonLimit: '1mb'});
 const parseJson100mb = util.parseBody({jsonLimit: '100mb'});
 
 const getUuidFromGroupName = util.getUuidFromGroupName;
+const getGroupFromGroupName = util.getGroupFromGroupName;
 
 // Get list of all databases that ROC can handle
 router.get('/_all_dbs', couch.getAllDbs);
@@ -76,6 +77,9 @@ router.delete('/:dbname/group/:name/right/:right', getUuidFromGroupName, couch.r
 router.get('/:dbname/group/:name/_owner', getUuidFromGroupName, couch.getOwners('group'));
 router.put('/:dbname/group/:name/_owner/:owner', getUuidFromGroupName, parseJson1mb, couch.addOwner('group'));
 router.delete('/:dbname/group/:name/_owner/:owner', getUuidFromGroupName, parseJson1mb, couch.removeOwner('group'));
+
+// LDAP groups
+router.put('/:dbname/group/:name/ldap/properties', getUuidFromGroupName, parseJson1mb, couch.setLdapGroupProperties);
 
 // Global rights
 router.get('/:dbname/rights', couch.getGlobalRights);

@@ -199,8 +199,9 @@ exports.getGroup = composeWithError(async (ctx) => {
     ctx.body = await ctx.state.couch.getGroup(ctx.params.name, ctx.state.userEmail);
 });
 
+
 exports.createGroup = composeWithError(async (ctx) => {
-    await ctx.state.couch.createGroup(ctx.params.name, ctx.state.userEmail);
+    await ctx.state.couch.createGroup(ctx.params.name, ctx.state.userEmail, null, ctx.query.type);
     ctx.body = OK;
 });
 
@@ -251,6 +252,10 @@ exports.getRights = composeWithError(async (ctx) => {
 exports.deleteGroup = composeWithError(async (ctx) => {
     await ctx.state.couch.deleteGroup(ctx.params.name, ctx.state.userEmail);
     ctx.body = OK;
+});
+
+exports.setLdapGroupProperties = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.setLdapGroupProperties(ctx.params.uuid, ctx.state.userEmail, ctx.request.body)
 });
 
 exports.getGlobalRights = composeWithError(async (ctx) => {

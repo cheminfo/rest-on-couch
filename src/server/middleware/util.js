@@ -18,3 +18,8 @@ exports.getUuidFromGroupName = async (ctx, next) => {
     ctx.params.uuid = await ctx.state.couch.getDocUuidFromId(ctx.params.name, ctx.state.userEmail, 'group');
     await next();
 };
+
+exports.getGroupFromGroupName = async (ctx, next) => {
+    ctx.params.group = await ctx.state.couch.getGroup(ctx.params.name, ctx.state.userEmail);
+    await next();
+};
