@@ -4,7 +4,7 @@ import GroupDataElement from './GroupDataElement';
 import EnterTextField from './EnterTextField';
 import ResponsiveTable from './ResponsiveTable';
 
-const GroupDataEditor = ({type, data, addValue, removeValue}) => (
+const GroupDataEditor = ({canAdd=true, editable='all', type, data, addValue, removeValue}) => (
     <ResponsiveTable>
         <thead>
             <tr>
@@ -17,15 +17,17 @@ const GroupDataEditor = ({type, data, addValue, removeValue}) => (
                     key={value}
                     value={value}
                     removeValue={removeValue}
-                    editable={(type === 'owners') ? (i !== 0) : true}
+                    editable={isEditable(editable, i)}
                 />
             ))}
-            <tr>
-                <td>
-                    <EnterTextField onSubmit={addValue} />
-                </td>
-                <td />
-            </tr>
+            {canAdd ?
+                (<tr>
+                    <td>
+                        <EnterTextField onSubmit={addValue} />
+                    </td>
+                    <td />
+                </tr>) : null
+            }
         </tbody>
     </ResponsiveTable>
 );
@@ -36,5 +38,18 @@ GroupDataEditor.propTypes = {
     data: PropTypes.array.isRequired,
     type: PropTypes.string.isRequired
 };
+
+function isEditable(type, idx) {
+    switch(type) {
+        case 'all-except-first':
+            return idx !== 0;
+        case 'none':
+            return false;
+        case 'all':
+            return true;
+        default:
+            throw new Error('Invalid prop editable');
+    }
+}
 
 export default GroupDataEditor;

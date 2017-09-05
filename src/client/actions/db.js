@@ -59,8 +59,9 @@ function updateGroup(groupName, type, value, method) {
 }
 
 export const CREATE_GROUP = 'CREATE_GROUP';
-export function createGroup(groupName) {
-    const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
+export function createGroup(groupName, type) {
+    type = type || 'default';
+    const groupUrl = `db/${dbManager.currentDb}/group/${groupName}?type=${type}`;
     return {
         type: CREATE_GROUP,
         payload: apiFetchJSON(groupUrl, {method: 'PUT'})
@@ -77,6 +78,16 @@ export function removeGroup(groupName) {
         meta: groupName,
         payload: apiFetchJSON(groupUrl, {method: 'DELETE'})
     };
+}
+
+export function setLdapGroupProperties(groupName, properties) {
+    const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
+    const setPropUrl = `${groupUrl}/ldap/properties`;
+    return {
+        type: UPDATE_GROUP,
+        meta: groupName,
+        payload: apiFetchJSON(setPropUrl, {method: 'PUT', body: JSON.stringify(properties)}).then(() => apiFetchJSON(groupUrl))
+    }
 }
 
 export function addDefaultGroup(user, group) {

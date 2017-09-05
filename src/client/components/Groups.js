@@ -5,7 +5,8 @@ import {
     addValueToGroup,
     removeValueFromGroup,
     createGroup,
-    removeGroup
+    removeGroup,
+    setLdapGroupProperties
 } from '../actions/db';
 
 import GroupCreator from './GroupCreator';
@@ -19,6 +20,7 @@ const Groups = (props) => {
                 addValueToGroup={props.addValueToGroup}
                 removeValueFromGroup={props.removeValueFromGroup}
                 removeGroup={props.removeGroup}
+                setLdapGroupProperties={props.setLdapGroupProperties}
             />
         </div>
     ));
@@ -45,7 +47,8 @@ export default connect(
     (dispatch) => ({
         addValueToGroup: (group, type, value) => dispatch(addValueToGroup(group, type, value)),
         removeValueFromGroup: (group, type, value) => dispatch(removeValueFromGroup(group, type, value)),
-        createGroup: (group) => dispatch(createGroup(group)),
-        removeGroup: (group) => dispatch(removeGroup(group))
+        createGroup: (group, type) => dispatch(createGroup(group, type)),
+        removeGroup: (group) => dispatch(removeGroup(group)),
+        setLdapGroupProperties: (group, properties) => dispatch(setLdapGroupProperties(group, properties))
     })
 )(Groups);

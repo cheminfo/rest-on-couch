@@ -4,7 +4,7 @@ class EnterTextField extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: ''
+            value: props.value || ''
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -34,8 +34,10 @@ class EnterTextField extends React.Component {
     }
 
     render() {
+        const {label} = this.props;
         return (
             <form>
+                <label>{label}</label>
                 <input
                     type="text"
                     className="form-control"

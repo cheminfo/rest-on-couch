@@ -29,8 +29,11 @@ const App = (props) => (
                                 <div className="collapse navbar-collapse">
                                     <ul className="nav navbar-nav navbar-right">
                                         <li>
-                                            <DatabaseSelector dbName={props.dbName} dbList={props.dbList}
-                                                              onDbSelected={(event) => dbManager.switchDb(event.target.value)} />
+                                            <DatabaseSelector
+                                                dbName={props.dbName}
+                                                dbList={props.dbList}
+                                                onDbSelected={(event) => dbManager.switchDb(event.target.value)}
+                                            />
                                         </li>
                                         <li>
                                             <LoginButton />
@@ -50,7 +53,7 @@ const App = (props) => (
                                         return (
                                             <Allowed
                                                 allowed={props.userRights.includes('createGroup') || props.isGroupOwner}>
-                                                <Groups />;
+                                                <Groups />
                                             </Allowed>
                                         );
                                     }} />
