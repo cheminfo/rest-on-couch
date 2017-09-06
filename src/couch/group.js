@@ -183,7 +183,7 @@ const methods = {
         if (group.groupType !== 'ldap') {
             throw new CouchError('Cannot sync ldap group', 'bad argument');
         }
-        syncOneLdapGroup(this, group);
+        await syncOneLdapGroup(this, group);
     },
 
     async syncLDAPGroups(groups) {
@@ -237,6 +237,8 @@ async function syncOneLdapGroup(ctx, group) {
     } catch (e) {
         debug.error('Error while syncing ldap', e);
         if (client) client.destroy();
+        // Propagate error to client
+        throw e;
     }
 }
 
