@@ -259,7 +259,8 @@ exports.setLdapGroupProperties = composeWithError(async (ctx) => {
 });
 
 exports.syncLdapGroup = composeWithError(async (ctx) => {
-    ctx.body = await ctx.state.couch.syncLdapGroup(ctx.params.uuid, ctx.state.userEmail);
+    await ctx.state.couch.syncLdapGroup(ctx.params.uuid, ctx.state.userEmail);
+    ctx.body = {ok: true};
 });
 
 exports.getGlobalRights = composeWithError(async (ctx) => {
@@ -363,6 +364,7 @@ function onGetError(ctx, e, secure) {
     if (config.debugrest) {
         ctx.body += `\n\n${e}\n${e.stack}`;
     }
+    ctx.body = JSON.stringify({error: ctx.body});
 }
 
 function handleCouchError(ctx, e, secure) {
