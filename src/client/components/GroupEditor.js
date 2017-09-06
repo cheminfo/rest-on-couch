@@ -13,7 +13,7 @@ const GroupEditor = ({group, addValueToGroup, removeValueFromGroup, removeGroup,
                         <i className="fa fa-refresh fa-lg" title="Sync LDAP group now" />
                     </button>
                     <button type="button" className="btn btn-danger btn-simple btn-s pull-right"
-                            onClick={() => removeGroup(group.name)}>
+                        onClick={() => removeGroup(group.name)}>
                         REMOVE
                     </button>
                 </h4>

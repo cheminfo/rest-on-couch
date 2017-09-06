@@ -26,12 +26,12 @@ class EditableTextField extends React.Component {
         this.setState({
             isEdited: false,
             focus: false
-        })
+        });
     }
 
     handleKeyDown(event) {
         // For some reason escape key is not handled by key press
-        if(event.key === 'Escape') {
+        if (event.key === 'Escape') {
             this.cancelEdit();
         }
     }
@@ -64,7 +64,7 @@ class EditableTextField extends React.Component {
     }
 
     componentDidUpdate() {
-        if(this.state.focus) {
+        if (this.state.focus) {
             this.refs.textInput.focus();
             this.refs.textInput.select();
         }
@@ -90,7 +90,7 @@ class EditableTextField extends React.Component {
                         <div>
                             {value ? value : <span style={{color: 'grey', fontStyle: 'italic'}}>(no value)</span>} &nbsp; &nbsp;
                             <a onClick={() => this.makeEditable()} style={{cursor: 'pointer'}} className="">
-                                <i className="fa fa-edit"/>
+                                <i className="fa fa-edit" />
                             </a>
                         </div>
                     )

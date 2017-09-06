@@ -87,7 +87,7 @@ export function setLdapGroupProperties(groupName, properties) {
         type: UPDATE_GROUP,
         meta: groupName,
         payload: apiFetchJSON(setPropUrl, {method: 'PUT', body: JSON.stringify(properties)}).then(() => apiFetchJSON(groupUrl))
-    }
+    };
 }
 
 export function syncLdapGroup(groupName) {
@@ -97,7 +97,7 @@ export function syncLdapGroup(groupName) {
         type: UPDATE_GROUP,
         meta: groupName,
         payload: apiFetchJSON(syncUrl).then(() => apiFetchJSON(groupUrl))
-    }
+    };
 }
 
 export function addDefaultGroup(user, group) {

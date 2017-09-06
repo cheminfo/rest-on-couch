@@ -4,7 +4,7 @@ import GroupDataElement from './GroupDataElement';
 import EnterTextField from './EnterTextField';
 import ResponsiveTable from './ResponsiveTable';
 
-const GroupDataEditor = ({canAdd=true, editable='all', type, data, addValue, removeValue}) => (
+const GroupDataEditor = ({canAdd = true, editable = 'all', type, data, addValue, removeValue}) => (
     <ResponsiveTable>
         <thead>
             <tr>
@@ -40,7 +40,7 @@ GroupDataEditor.propTypes = {
 };
 
 function isEditable(type, idx) {
-    switch(type) {
+    switch (type) {
         case 'all-except-first':
             return idx !== 0;
         case 'none':

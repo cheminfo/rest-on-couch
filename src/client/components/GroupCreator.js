@@ -26,11 +26,13 @@ class GroupCreator extends Component {
                                 });
                             }}
                         />
-                        <br/>
+                        <br />
                         <input
                             type="button"
                             className="btn btn-info btn-fill"
-                            onClick={() => {createGroup(this.state.value)}}
+                            onClick={() => {
+                                createGroup(this.state.value);
+                            }}
                             value="Create normal group"
                         />
                         &nbsp;
@@ -44,7 +46,7 @@ class GroupCreator extends Component {
                     {/*<EnterTextField onSubmit={createGroup} />*/}
                 </div>
             </div>
-        )
+        );
     }
 
 }

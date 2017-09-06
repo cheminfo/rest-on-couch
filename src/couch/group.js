@@ -11,7 +11,6 @@ const constants = require('../constants');
 const nanoMethods = require('./nano');
 const util = require('./util');
 const validate = require('./validate');
-const ensureStringArray = require('../util/ensureStringArray');
 
 const methods = {
     async editDefaultGroup(group, type, action) {
@@ -234,10 +233,10 @@ async function syncOneLdapGroup(group, couchOptions) {
             await nanoMethods.save(this._db, group, 'ldap');
         }
         client.destroy();
-        debug(`ldap sync success`);
+        debug('ldap sync success');
     } catch (e) {
         debug.error('Error while syncing ldap', e);
-        if(client) client.destroy();
+        if (client) client.destroy();
     }
 }
 

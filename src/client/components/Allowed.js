@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function Allowed(props) {
-    if(props.allowed) {
+    if (props.allowed) {
         return (
             <div>
                 {props.children}
@@ -12,6 +12,6 @@ export default function Allowed(props) {
             <div>
                 You are not allowed to access this page
             </div>
-        )
+        );
     }
 }
