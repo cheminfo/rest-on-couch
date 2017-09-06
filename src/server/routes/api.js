@@ -80,6 +80,7 @@ router.delete('/:dbname/group/:name/_owner/:owner', getUuidFromGroupName, parseJ
 
 // LDAP groups
 router.put('/:dbname/group/:name/ldap/properties', getUuidFromGroupName, parseJson1mb, couch.setLdapGroupProperties);
+router.get('/:dbname/group/:name/ldap/sync', getUuidFromGroupName, couch.syncLdapGroup);
 
 // Global rights
 router.get('/:dbname/rights', couch.getGlobalRights);

@@ -50,6 +50,7 @@ class Couch {
             ldapGroupsRenewal: config.ldapGroupsRenewal,
             ldapBindDN: config.ldapBindDN,
             ldapBindPassword: config.ldapBindPassword,
+            ldapUrl: config.ldapUrl,
             ldapSync: config.ldapSync
         };
 

@@ -258,6 +258,10 @@ exports.setLdapGroupProperties = composeWithError(async (ctx) => {
     ctx.body = await ctx.state.couch.setLdapGroupProperties(ctx.params.uuid, ctx.state.userEmail, ctx.request.body)
 });
 
+exports.syncLdapGroup = composeWithError(async (ctx) => {
+    ctx.body = await ctx.state.couch.syncLdapGroup(ctx.params.uuid, ctx.state.userEmail);
+});
+
 exports.getGlobalRights = composeWithError(async (ctx) => {
     ctx.body = await ctx.state.couch.getGlobalRights(ctx.state.userEmail);
 });
