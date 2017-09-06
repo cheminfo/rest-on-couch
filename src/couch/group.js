@@ -183,7 +183,7 @@ const methods = {
         if (group.groupType !== 'ldap') {
             throw new CouchError('Cannot sync ldap group', 'bad argument');
         }
-        syncOneLdapGroup(group, this._couchOptions);
+        syncOneLdapGroup(this, group);
     },
 
     async syncLDAPGroups(groups) {
@@ -196,14 +196,14 @@ const methods = {
 
         groups = groups.filter(group => group.DN);
         for (let i = 0; i < groups.length; i++) {
-            await syncOneLdapGroup(groups[i], this._couchOptions);
+            await syncOneLdapGroup(this, groups[i]);
         }
     }
 };
 
-async function syncOneLdapGroup(group, couchOptions) {
+async function syncOneLdapGroup(ctx, group) {
     debug.trace(`sync ldap group ${group._id}`);
-
+    const couchOptions = ctx._couchOptions;
     try {
         var client = new LDAP({
             url: couchOptions.ldapUrl
@@ -230,7 +230,7 @@ async function syncOneLdapGroup(group, couchOptions) {
         // Check if changed to avoid many revisions
         if (!arraysAreEqual(emails, group.users)) {
             group.users = emails;
-            await nanoMethods.save(this._db, group, 'ldap');
+            await nanoMethods.save(ctx._db, group, 'ldap');
         }
         client.destroy();
         debug('ldap sync success');
