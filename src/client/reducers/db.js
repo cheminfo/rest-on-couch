@@ -58,11 +58,6 @@ const dbReducer = (state = initialState, action) => {
 
 
         }
-        case CLEAR_MESSAGE: {
-            return Object.assign({}, state, {
-                messages: state.messages.delete(state.messages.findIndex(el => el.id === action.payload))
-            });
-        }
         case `${SET_DEFAULT_GROUPS}`: {
             return Object.assign({}, state, {defaultGroups: action.payload});
         }
