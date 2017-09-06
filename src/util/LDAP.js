@@ -1,6 +1,7 @@
 'use strict';
 
 const ldapjs = require('ldapjs');
+const debug = require('./debug')('ldap:client');
 
 class LDAP {
     constructor(options) {
@@ -19,13 +20,17 @@ class LDAP {
         });
     }
 
-    search(base, options) {
+    search(base, options = {}) {
         const baseOptions = {
-            scope: 'sub'
+            scope: 'sub',
+            filter: 'objectclass=*'
         };
+        options = Object.assign(baseOptions, options);
+        debug(`ldap search: ${base}, ${JSON.stringify(options)}`);
+
         const entries = [];
         return new Promise((resolve, reject) => {
-            this.client.search(base, Object.assign(baseOptions, options), function (err, res) {
+            this.client.search(base, options, function (err, res) {
                 if (err) {
                     reject(err);
                     return;

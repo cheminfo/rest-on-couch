@@ -196,7 +196,7 @@ const methods = {
 
         groups = groups.filter(group => group.DN);
         for (let i = 0; i < groups.length; i++) {
-            await syncOneLdapGroup(groups[i], this._couchOptions, {});
+            await syncOneLdapGroup(groups[i], this._couchOptions);
         }
     }
 };

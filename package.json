@@ -18,7 +18,7 @@
     "eslint-fix": "npm run eslint -- --fix",
     "start:dev": "webpack-dev-server --inline --content-base public/ --history-api-fallback",
     "start:prod": "NODE_ENV=production npm run build && node bin/rest-on-couch-server.js",
-    "start:devserver": "nodemon bin/rest-on-couch-server.js --config=conf/devConfig.js",
+    "start:devserver": "REST_ON_COUCH_HOME_DIR=test/homedir nodemon bin/rest-on-couch-server.js --config=conf/devConfig.js",
     "start:pouch": "pouchdb-server --in-memory --config=/tmp/pouchdb-roc-config.json",
     "test": "npm run test-mocha && npm run eslint",
     "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup --reporter dot --recursive",
