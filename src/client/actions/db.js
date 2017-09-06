@@ -90,6 +90,16 @@ export function setLdapGroupProperties(groupName, properties) {
     }
 }
 
+export function syncLdapGroup(groupName) {
+    const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
+    const syncUrl = `${groupUrl}/ldap/sync`;
+    return {
+        type: UPDATE_GROUP,
+        meta: groupName,
+        payload: apiFetchJSON(syncUrl).then(() => apiFetchJSON(groupUrl))
+    }
+}
+
 export function addDefaultGroup(user, group) {
     return editDefaultGroup(user, group, 'add');
 }

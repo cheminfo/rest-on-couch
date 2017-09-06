@@ -3,12 +3,15 @@ import React, {PropTypes} from 'react';
 import GroupDataEditor from './GroupDataEditor';
 import EditableTextField from './EditableTextField';
 
-const GroupEditor = ({group, addValueToGroup, removeValueFromGroup, removeGroup, setLdapGroupProperties}) => {
+const GroupEditor = ({group, addValueToGroup, removeValueFromGroup, removeGroup, setLdapGroupProperties, syncLdapGroup}) => {
     return (
         <div>
             <div className="header">
                 <h4 className="title">
-                    {group.name}
+                    {group.name} &nbsp;
+                    <button type="button" className="btn btn-simple" onClick={() => syncLdapGroup(group.name)}>
+                        <i className="fa fa-refresh fa-lg" title="Sync LDAP group now" />
+                    </button>
                     <button type="button" className="btn btn-danger btn-simple btn-s pull-right"
                             onClick={() => removeGroup(group.name)}>
                         REMOVE
@@ -21,7 +24,7 @@ const GroupEditor = ({group, addValueToGroup, removeValueFromGroup, removeGroup,
                         <EditableTextField
                             label="DN"
                             value={group.DN}
-                            onSubmit={(value) => setLdapGroupProperties(group.name, {DN: value}) }
+                            onSubmit={(value) => setLdapGroupProperties(group.name, {DN: value})}
                         />
                         <EditableTextField
                             label="Filter"
