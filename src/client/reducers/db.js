@@ -34,14 +34,34 @@ const dbReducer = (state = initialState, action) => {
             return Object.assign({}, state, {userGroups: newGroupList});
         }
         case `${UPDATE_GROUP}_FULFILLED`: {
-            const groupName = action.payload.name;
-            const index = state.userGroups.findIndex(group => group.name === groupName);
-            if (index === -1) {
+            const index = state.userGroups.findIndex(group => group.name === action.meta);
+            if(index === -1) {
                 throw new Error('should not happen');
             }
             const newGroupList = state.userGroups.slice();
-            newGroupList[index] = action.payload;
-            return Object.assign({}, state, {userGroups: newGroupList});
+            if(action.payload.error) {
+                newGroupList[index] = Object.assign({}, newGroupList[index], {error: action.payload.error, success: null});
+                return Object.assign({}, state, {
+                    userGroups: newGroupList
+                });
+            } else {
+                if(action.payload.name !== action.meta) {
+                    throw new Error('should not happen')
+                }
+                newGroupList[index] = action.payload;
+                newGroupList[index].success = 'Group sucessfully updated';
+                newGroupList[index].error = null;
+                return Object.assign({}, state, {
+                    userGroups: newGroupList
+                });
+            }
+
+
+        }
+        case CLEAR_MESSAGE: {
+            return Object.assign({}, state, {
+                messages: state.messages.delete(state.messages.findIndex(el => el.id === action.payload))
+            });
         }
         case `${SET_DEFAULT_GROUPS}`: {
             return Object.assign({}, state, {defaultGroups: action.payload});

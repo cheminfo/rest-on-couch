@@ -30,7 +30,6 @@ export const SET_MEMBERSHIPS = 'SET_MEMBERSHIPS';
 export const setMemberships = createAction(SET_MEMBERSHIPS);
 
 export const UPDATE_GROUP = 'UPDATE_GROUP';
-const updateGroupAction = createAction(UPDATE_GROUP);
 
 export function addValueToGroup(groupName, type, value) {
     return updateGroup(groupName, type, value, 'PUT');
@@ -55,7 +54,11 @@ function updateGroup(groupName, type, value, method) {
     } else {
         throw new Error('unreachable');
     }
-    return updateGroupAction(apiFetchJSON(url, {method}).then(() => apiFetchJSON(groupUrl)));
+    return {
+        type: UPDATE_GROUP,
+        meta: groupName,
+        payload: apiFetchJSON(url, {method}).then(() => apiFetchJSON(groupUrl))
+    }
 }
 
 export const CREATE_GROUP = 'CREATE_GROUP';
@@ -91,13 +94,21 @@ export function setLdapGroupProperties(groupName, properties) {
 }
 
 export function syncLdapGroup(groupName) {
-    const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
-    const syncUrl = `${groupUrl}/ldap/sync`;
     return {
         type: UPDATE_GROUP,
         meta: groupName,
-        payload: apiFetchJSON(syncUrl).then(() => apiFetchJSON(groupUrl))
+        payload: doLdapSync(groupName)
     };
+}
+
+async function doLdapSync(groupName) {
+    const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
+    const syncUrl = `${groupUrl}/ldap/sync`;
+    let res = await apiFetchJSON(syncUrl);
+    if(!res.error) {
+        res = await apiFetchJSON(groupUrl);
+    }
+    return res;
 }
 
 export function addDefaultGroup(user, group) {

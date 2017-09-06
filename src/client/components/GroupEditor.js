@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 
 import GroupDataEditor from './GroupDataEditor';
 import EditableTextField from './EditableTextField';
+import Ephemere from './Ephemere';
 
 const GroupEditor = ({group, addValueToGroup, removeValueFromGroup, removeGroup, setLdapGroupProperties, syncLdapGroup}) => {
     return (
@@ -64,6 +65,11 @@ const GroupEditor = ({group, addValueToGroup, removeValueFromGroup, removeGroup,
                             />
                         </div>
                     </div>
+                    <Ephemere>
+                        {group.error ? <div className="alert alert-danger">{group.error}</div> : null }
+                        {group.success ? <div className="alert alert-success">{group.success}</div> : null }
+                    </Ephemere>
+
                 </div>
             </div>
         </div>
