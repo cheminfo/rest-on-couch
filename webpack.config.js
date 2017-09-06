@@ -40,7 +40,7 @@ module.exports = {
     },
 
     plugins: plugins,
-
+    devtool: 'source-map',
     module: {
         rules: [
             {
