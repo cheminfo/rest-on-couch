@@ -46,12 +46,12 @@ export default connect(
         userGroups: state.db.userGroups,
         hasCreateGroupRight: state.db.userRights.includes('createGroup')
     }),
-    (dispatch) => ({
-        addValueToGroup: (group, type, value) => dispatch(addValueToGroup(group, type, value)),
-        removeValueFromGroup: (group, type, value) => dispatch(removeValueFromGroup(group, type, value)),
-        createGroup: (group, type) => dispatch(createGroup(group, type)),
-        removeGroup: (group) => dispatch(removeGroup(group)),
-        setLdapGroupProperties: (group, properties) => dispatch(setLdapGroupProperties(group, properties)),
-        syncLdapGroup: (group) => dispatch(syncLdapGroup(group))
-    })
+    {
+        addValueToGroup,
+        removeValueFromGroup,
+        createGroup,
+        removeGroup,
+        setLdapGroupProperties,
+        syncLdapGroup
+    }
 )(Groups);
