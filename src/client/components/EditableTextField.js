@@ -26,6 +26,16 @@ class EditableTextField extends React.Component {
         })
     }
 
+    handleKeyDown(event) {
+        // For some reason escape key is not handled by key press
+        if(event.key === 'Escape') {
+            this.setState({
+                isEdited: false,
+                editedValue: this.props.value
+            });
+        }
+    }
+
     handleKeyPress(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -55,6 +65,7 @@ class EditableTextField extends React.Component {
                         value={this.state.editedValue}
                         onChange={this.handleChange}
                         onKeyPress={this.handleKeyPress}
+                        onKeyDown={this.handleKeyDown.bind(this)}
                     />
                     : (
                         <div>
