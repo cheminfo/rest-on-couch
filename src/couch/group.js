@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-const LDAP = require('../util/LDAP');
+const ldapSearch = require('../util/LDAP');
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:group');
@@ -204,42 +204,33 @@ const methods = {
 async function syncOneLdapGroup(ctx, group) {
     debug.trace(`sync ldap group ${group._id}`);
     const couchOptions = ctx._couchOptions;
-    try {
-        var client = new LDAP({
-            url: couchOptions.ldapUrl
-        });
-        if (couchOptions.ldapBindDN && couchOptions.ldapBindPassword) {
-            debug.trace('ldap bind');
-            await client.bind(couchOptions.ldapBindDN, couchOptions.ldapBindPassword);
-        }
+    const entries = await ldapSearch({
+        url: couchOptions.ldapUrl,
+        connectionTimeout: 2000,
+        bindDN: couchOptions.ldapBindDN,
+        bindPassword: couchOptions.ldapBindPassword
+    }, {
+        DN: group.DN,
+        filter: group.filter
+    });
 
-        const entries = await client.search(group.DN, {
-            filter: group.filter
+    const emails = [];
+    entries.forEach(entry => {
+        entry.attributes.forEach(attr => {
+            if (attr.type === 'mail') {
+                attr._vals.forEach(mail => {
+                    emails.push(mail.toString('utf-8'));
+                });
+            }
         });
-        const emails = [];
-        entries.forEach(entry => {
-            entry.attributes.forEach(attr => {
-                if (attr.type === 'mail') {
-                    attr._vals.forEach(mail => {
-                        emails.push(mail.toString('utf-8'));
-                    });
-                }
-            });
-        });
+    });
 
-        // Check if changed to avoid many revisions
-        if (!arraysAreEqual(emails, group.users)) {
-            group.users = emails;
-            await nanoMethods.save(ctx._db, group, 'ldap');
-        }
-        client.destroy();
-        debug('ldap sync success');
-    } catch (e) {
-        debug.error('Error while syncing ldap', e);
-        if (client) client.destroy();
-        // Propagate error to client
-        throw e;
+    // Check if changed to avoid many revisions
+    if (!arraysAreEqual(emails, group.users)) {
+        group.users = emails;
+        await nanoMethods.save(ctx._db, group, 'ldap');
     }
+    debug('ldap sync success');
 }
 
 function arraysAreEqual(arr1, arr2) {

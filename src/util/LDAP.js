@@ -3,54 +3,60 @@
 const ldapjs = require('ldapjs');
 const debug = require('./debug')('ldap:client');
 
-class LDAP {
-    constructor(options) {
-        this.client = ldapjs.createClient(options);
-    }
-
-    bind(dn, password) {
-        return new Promise((resolve, reject) => {
-            this.client.bind(dn, password, err => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                resolve();
-            });
+function search(ldapOptions, searchOptions) {
+    return new Promise((resolve, reject) => {
+        // ldap options should include bind options
+        // if client could know when it is ready
+        // promises would be much easier to handle :-(
+        const client = ldapjs.createClient(ldapOptions);
+        client.on('error',  function(e) {
+            reject(e);
         });
-    }
-
-    search(base, options = {}) {
-        const baseOptions = {
-            scope: 'sub',
-            filter: 'objectclass=*'
+        client.__resolve__ = function(value) {
+            client.destroy();
+            resolve(value);
         };
-        options = Object.assign(baseOptions, options);
-        debug(`ldap search: ${base}, ${JSON.stringify(options)}`);
 
-        const entries = [];
-        return new Promise((resolve, reject) => {
-            this.client.search(base, options, function (err, res) {
+        client.__reject__ = function(err) {
+            client.destroy();
+            reject(err);
+        };
+        return bind(client, ldapOptions.bindDN, ldapOptions.bindPassword).then(() => {
+            client.search(searchOptions.base, searchOptions, (err, res) => {
                 if (err) {
-                    reject(err);
+                    client.__reject__(err);
                     return;
                 }
+                const entries = [];
                 res.on('searchEntry', function (entry) {
                     entries.push(entry);
                 });
                 res.on('error', function (err) {
-                    reject(err);
+                    client.__reject__(err);
                 });
                 res.on('end', function () {
-                    resolve(entries);
+                    client.__resolve__(entries);
                 });
             });
-        });
-    }
-
-    destroy() {
-        this.client.destroy();
-    }
+        }).catch(e => {/* Error should be handled by __reject__ */});
+    });
 }
 
-module.exports = LDAP;
+function bind(client, DN, password) {
+    if(!DN || !password) {
+        debug(`ldap search: bypass authentication`);
+        return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+        client.bindDN(DN, password, function(err) {
+            if(err) {
+                client.__reject__(err);
+                reject(err);
+                return;
+            }
+            resolve();
+        });
+    });
+}
+
+module.exports = search;
