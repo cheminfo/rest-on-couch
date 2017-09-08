@@ -206,7 +206,6 @@ async function syncOneLdapGroup(ctx, group) {
     const couchOptions = ctx._couchOptions;
     const entries = await ldapSearch({
         url: couchOptions.ldapUrl,
-        connectionTimeout: 2000,
         bindDN: couchOptions.ldapBindDN,
         bindPassword: couchOptions.ldapBindPassword
     }, {

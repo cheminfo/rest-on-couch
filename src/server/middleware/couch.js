@@ -359,7 +359,7 @@ function onGetError(ctx, e, secure) {
             break;
     }
     if (e.message && e.message !== ctx.body) {
-        ctx.body += `: ${e.message}`;
+        ctx.body += `: ${e}`;
     }
     if (config.debugrest) {
         ctx.body += `\n\n${e}\n${e.stack}`;
