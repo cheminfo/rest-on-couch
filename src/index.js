@@ -51,7 +51,8 @@ class Couch {
             ldapBindDN: config.ldapBindDN,
             ldapBindPassword: config.ldapBindPassword,
             ldapUrl: config.ldapUrl,
-            ldapSync: config.ldapSync
+            ldapSync: config.ldapSync,
+            ldapGetUserEmail: config.ldapGetUserEmail
         };
 
         this._logLevel = log.getLevel(config.logLevel);

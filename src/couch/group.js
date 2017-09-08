@@ -213,15 +213,15 @@ async function syncOneLdapGroup(ctx, group) {
         filter: group.filter
     });
 
-    const emails = [];
+    let emails = [];
     entries.forEach(entry => {
-        entry.attributes.forEach(attr => {
-            if (attr.type === 'mail') {
-                attr._vals.forEach(mail => {
-                    emails.push(mail.toString('utf-8'));
-                });
-            }
-        });
+        let user = entry.object;
+        // Custom email extraction
+        if (user) {
+            emails.push(...util.ensureUsersArray(couchOptions.ldapGetUserEmail(user)));
+        } else {
+            debug.error('ldap entry does not have "object" property');
+        }
     });
 
     // Check if changed to avoid many revisions

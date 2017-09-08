@@ -33,5 +33,8 @@ module.exports = {
     getUserInfo(email) {
         return {email};
     },
+    ldapGetUserEmail(user) {
+        return user.mail;
+    },
     entryUnicity: 'byOwner' // can be byOwner or global
 };
