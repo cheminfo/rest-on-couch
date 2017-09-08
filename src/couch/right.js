@@ -130,7 +130,7 @@ const methods = {
     async getGlobalRights(user) {
         await this.open();
         if (this.isSuperAdmin(user)) {
-            return constants.globalRightTypes.slice();
+            return _.union(constants.globalRightTypes, constants.globalAdminRightTypes);
         } else {
             const globalRightsDoc = await getGlobalRightsDocument(this);
             const globalRightsKeys = Object.keys(globalRightsDoc).filter(key => constants.globalRightTypes.includes(key));

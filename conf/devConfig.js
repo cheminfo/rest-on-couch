@@ -8,7 +8,8 @@ module.exports = {
     },
     username: 'admin',
     password: 'admin',
-    administrators: ['admin@a.com'],
+    // Already administrator from global configuration
+    superAdministrators: ['admin@a.com'],
     autoCreateDatabase: true,
     allowedOrigins: ['http://localhost:8080'],
 };
