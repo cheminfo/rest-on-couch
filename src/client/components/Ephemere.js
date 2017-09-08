@@ -10,10 +10,10 @@ class Ephemere extends Component {
     }
 
     componentWillUpdate() {
-        if(this.refs.ephemere) {
+        if (this.refs.ephemere) {
             this.refs.ephemere.style.display = 'block';
         }
-        if(this.timeout) {
+        if (this.timeout) {
             clearTimeout(this.timeout);
         }
     }
@@ -21,7 +21,7 @@ class Ephemere extends Component {
     componentDidUpdate() {
         this.timeout = setTimeout(() => {
             this.refs.ephemere.style.display = 'none';
-        }, this.props.timeout || 3000)
+        }, this.props.timeout || 3000);
     }
 }
 

@@ -58,7 +58,7 @@ function updateGroup(groupName, type, value, method) {
         type: UPDATE_GROUP,
         meta: groupName,
         payload: apiFetchJSON(url, {method}).then(() => apiFetchJSON(groupUrl))
-    }
+    };
 }
 
 export const CREATE_GROUP = 'CREATE_GROUP';
@@ -105,7 +105,7 @@ async function doLdapSync(groupName) {
     const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
     const syncUrl = `${groupUrl}/ldap/sync`;
     let res = await apiFetchJSON(syncUrl);
-    if(!res.error) {
+    if (!res.error) {
         res = await apiFetchJSON(groupUrl);
     }
     return res;

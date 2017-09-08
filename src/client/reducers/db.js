@@ -35,18 +35,18 @@ const dbReducer = (state = initialState, action) => {
         }
         case `${UPDATE_GROUP}_FULFILLED`: {
             const index = state.userGroups.findIndex(group => group.name === action.meta);
-            if(index === -1) {
+            if (index === -1) {
                 throw new Error('should not happen');
             }
             const newGroupList = state.userGroups.slice();
-            if(action.payload.error) {
+            if (action.payload.error) {
                 newGroupList[index] = Object.assign({}, newGroupList[index], {error: action.payload.error, success: null});
                 return Object.assign({}, state, {
                     userGroups: newGroupList
                 });
             } else {
-                if(action.payload.name !== action.meta) {
-                    throw new Error('should not happen')
+                if (action.payload.name !== action.meta) {
+                    throw new Error('should not happen');
                 }
                 newGroupList[index] = action.payload;
                 newGroupList[index].success = 'Group sucessfully updated';
