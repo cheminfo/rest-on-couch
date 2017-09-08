@@ -1,3 +1,21 @@
+<a name="5.3.1"></a>
+## [5.3.1](https://github.com/cheminfo/rest-on-couch/compare/v5.3.0...v5.3.1) (2017-09-08)
+
+
+### Bug Fixes
+
+* fix ldap sync with binding ([00747c8](https://github.com/cheminfo/rest-on-couch/commit/00747c8))
+* getGlobalRights should include admin rights if user is superAdmin ([519a991](https://github.com/cheminfo/rest-on-couch/commit/519a991))
+* **ui:** global right edition set react key for each global right ([f5617c2](https://github.com/cheminfo/rest-on-couch/commit/f5617c2))
+* **ui:** show refresh button only if ldap group ([662bf7e](https://github.com/cheminfo/rest-on-couch/commit/662bf7e))
+
+
+### Features
+
+* **ui:** better error feedback when updating group fields ([585a39c](https://github.com/cheminfo/rest-on-couch/commit/585a39c))
+
+
+
 <a name="5.3.0"></a>
 # [5.3.0](https://github.com/cheminfo/rest-on-couch/compare/v5.2.0...v5.3.0) (2017-09-08)
 
