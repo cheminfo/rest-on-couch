@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-const ldapSearch = require('../util/LDAP');
+const ldapSearch = require('../util/LDAP').search;
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:group');

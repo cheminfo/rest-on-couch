@@ -78,4 +78,6 @@ function bind(client, DN, password) {
     });
 }
 
-module.exports = search;
+module.exports = {
+    search
+};
