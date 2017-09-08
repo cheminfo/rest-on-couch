@@ -9,7 +9,7 @@ const GlobalRightsEditor = ({globalRights, addRight, removeRight}) => (
             <div className="container-fluid">
                 {globalRightTypes.map((right, idx) => {
                     return (
-                        <div>
+                        <div key={right}>
                             <div className="col-md-6" key={right}>
                                 <GroupDataEditor
                                     type={right}
