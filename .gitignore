@@ -1,3 +1,5 @@
+test/ldap-config
+
 # Logs
 logs
 *.log
