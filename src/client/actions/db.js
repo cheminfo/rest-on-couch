@@ -40,6 +40,14 @@ export function removeValueFromGroup(groupName, type, value) {
 }
 
 function updateGroup(groupName, type, value, method) {
+    return {
+        type: UPDATE_GROUP,
+        meta: groupName,
+        payload: doUpdateGroup(groupName, type, value, method)
+    };
+}
+
+async function doUpdateGroup(groupName, type, value, method) {
     if (method !== 'DELETE' && method !== 'PUT') {
         throw new Error('wrong method');
     }
@@ -54,11 +62,12 @@ function updateGroup(groupName, type, value, method) {
     } else {
         throw new Error('unreachable');
     }
-    return {
-        type: UPDATE_GROUP,
-        meta: groupName,
-        payload: apiFetchJSON(url, {method}).then(() => apiFetchJSON(groupUrl))
-    };
+
+    const res = await apiFetchJSON(url, {method});
+    if(!res.error) {
+        return apiFetchJSON(groupUrl)
+    }
+    return res;
 }
 
 export const CREATE_GROUP = 'CREATE_GROUP';
