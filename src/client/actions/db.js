@@ -64,8 +64,8 @@ async function doUpdateGroup(groupName, type, value, method) {
     }
 
     const res = await apiFetchJSON(url, {method});
-    if(!res.error) {
-        return apiFetchJSON(groupUrl)
+    if (!res.error) {
+        return apiFetchJSON(groupUrl);
     }
     return res;
 }
