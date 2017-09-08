@@ -364,7 +364,7 @@ function onGetError(ctx, e, secure) {
     if (config.debugrest) {
         ctx.body += `\n\n${e}\n${e.stack}`;
     }
-    ctx.body = JSON.stringify({error: ctx.body});
+    ctx.body = {error: ctx.body};
 }
 
 function handleCouchError(ctx, e, secure) {
