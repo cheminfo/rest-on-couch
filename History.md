@@ -1,3 +1,38 @@
+<a name="5.3.0"></a>
+# [5.3.0](https://github.com/cheminfo/rest-on-couch/compare/v5.2.0...v5.3.0) (2017-09-08)
+
+
+* change how errors are returned by rest-api ([b2f9ea8](https://github.com/cheminfo/rest-on-couch/commit/b2f9ea8))
+
+
+### Bug Fixes
+
+* **debug:** fix output when passing Error instance ([86f8d17](https://github.com/cheminfo/rest-on-couch/commit/86f8d17))
+* **test:** adapt test to api now returning json on error ([765fe17](https://github.com/cheminfo/rest-on-couch/commit/765fe17))
+* **ui:** make GroupEditor a pure component ([f63e253](https://github.com/cheminfo/rest-on-couch/commit/f63e253))
+
+
+### Features
+
+* couch api and rest api to sync individual ldap group ([133ab2a](https://github.com/cheminfo/rest-on-couch/commit/133ab2a))
+* EditableText field handle escape key press ([1f39786](https://github.com/cheminfo/rest-on-couch/commit/1f39786))
+* **client:** add ldap group synchro ([6e0494e](https://github.com/cheminfo/rest-on-couch/commit/6e0494e))
+* **client:** EditableTextField auto focus and cancel on blur ([6a61f0d](https://github.com/cheminfo/rest-on-couch/commit/6a61f0d))
+* **client:** group editor success and error alerts ([a3e00b4](https://github.com/cheminfo/rest-on-couch/commit/a3e00b4))
+* **client:** ldap group type ([3d0ae33](https://github.com/cheminfo/rest-on-couch/commit/3d0ae33))
+* **debug:** allow multiple arguments to be passed ([d798ca4](https://github.com/cheminfo/rest-on-couch/commit/d798ca4))
+* **debug:** always print stack trace of an Error ([e671447](https://github.com/cheminfo/rest-on-couch/commit/e671447))
+* **groups:** ldap sync ([ee3cb04](https://github.com/cheminfo/rest-on-couch/commit/ee3cb04))
+* **server:** ldap group type ([c5d5fb7](https://github.com/cheminfo/rest-on-couch/commit/c5d5fb7))
+
+
+### BREAKING CHANGES
+
+* errors are now returned as a json: {"error": "error message"}
+errors were previously returned as text
+
+
+
 <a name="5.2.0"></a>
 # [5.2.0](https://github.com/cheminfo/rest-on-couch/compare/v5.1.1...v5.2.0) (2017-08-30)
 
