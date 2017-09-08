@@ -67,14 +67,21 @@ function bind(client, DN, password) {
         return Promise.resolve();
     }
     return new Promise((resolve, reject) => {
-        client.bindDN(DN, password, function (err) {
-            if (err) {
-                client.__reject__(err);
-                reject(err);
-                return;
-            }
-            resolve();
-        });
+        try {
+            client.bind(DN, password, function (err) {
+
+                if (err) {
+                    client.__reject__(err);
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        } catch (e) {
+            client.__reject__(e);
+            reject(e);
+        }
+
     });
 }
 
