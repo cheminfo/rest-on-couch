@@ -1,6 +1,7 @@
 'use strict';
 
 const data = require('../data/data');
+const noRights = require('../data/noRights');
 
 describe('getGroupsByRight', function () {
     before(data);
@@ -17,5 +18,15 @@ describe('getGroupsByRight', function () {
     it('user without dummy right', function () {
         return global.couch.getGroupsByRight('a@a.com', 'dummy')
             .should.eventually.eql([]);
+    });
+});
+
+describe('getGroupsByRight with default user', function () {
+    before(noRights);
+    it('anonymous has default group', function () {
+        return global.couch.getGroupsByRight('anonymous', 'read')
+            .then(result => {
+                result.sort().should.eql(['defaultAnonymousRead', 'inexistantGroup']);
+            });
     });
 });

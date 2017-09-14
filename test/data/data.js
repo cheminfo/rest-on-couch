@@ -1,7 +1,6 @@
 'use strict';
 
 const Couch = require('../..');
-const nanoPromise = require('../../src/util/nanoPromise');
 const insertDocument = require('./insertDocument');
 const {resetDatabase} = require('./helper');
 
