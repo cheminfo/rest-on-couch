@@ -3,10 +3,8 @@
 const Couch = require('../..');
 const nanoPromise = require('../../src/util/nanoPromise');
 const insertDocument = require('./insertDocument');
+const {resetDatabase} = require('./helper');
 
-function destroy(nano, name) {
-    return nanoPromise.destroyDatabase(nano, name);
-}
 
 function populate(db) {
     const prom = [];
@@ -82,7 +80,7 @@ function populate(db) {
 module.exports = function () {
     global.couch = new Couch({database: 'test'});
     return global.couch.open()
-        .then(() => destroy(global.couch._nano, global.couch._databaseName))
+        .then(() => resetDatabase(global.couch._nano, global.couch._databaseName, global.couch._couchOptions.username))
         .then(() => {
             global.couch = new Couch({
                 database: 'test',

@@ -1,28 +1,9 @@
 'use strict';
 
 const Couch = require('../..');
-const nanoPromise = require('../../src/util/nanoPromise');
 const insertDocument = require('./insertDocument');
+const {resetDatabase} = require('./helper');
 
-function resetDatabase(nano, name, username) {
-    return nanoPromise.destroyDatabase(nano, name)
-        .then(() => nanoPromise.createDatabase(nano, name))
-        .then(() => nanoPromise.request(nano, {
-            method: 'PUT',
-            db: name,
-            doc: '_security',
-            body: {
-                admins: {
-                    names: [username],
-                    roles: []
-                },
-                members: {
-                    names: [username],
-                    roles: []
-                }
-            }
-        }));
-}
 
 function populate(db) {
     const prom = [];
