@@ -21,7 +21,7 @@ describe('getGroupsByRight', function () {
     });
 });
 
-describe('getGroupsByRight with default user', function () {
+describe('getGroupsByRight with default groups', function () {
     before(noRights);
     it('anonymous has default group', function () {
         return global.couch.getGroupsByRight('anonymous', 'read')
