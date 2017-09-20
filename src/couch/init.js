@@ -58,11 +58,20 @@ const methods = {
         // Must be done before the other checks because they can add documents to the db
         await checkSecurity(this._db, this._couchOptions.username);
 
-        await Promise.all([
+        const updateDocs = Promise.all([
             checkDesignDoc(this),
             checkRightsDoc(this._db, this._rights),
             checkDefaultGroupsDoc(this._db)
         ]);
+
+        updateDocs.catch((e) => {
+            if (e.message.includes('Document update conflict')) {
+                // Conflict in case of multiple roc instances checking the design doc at the same time.
+                this._initPromise = null;
+            }
+        });
+
+        await updateDocs;
 
         if (this._couchOptions.ldapSync) {
             startLDAPSync(this);
