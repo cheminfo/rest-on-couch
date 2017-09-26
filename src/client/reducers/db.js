@@ -37,24 +37,21 @@ const dbReducer = (state = initialState, action) => {
             return Object.assign({}, state, {userGroups: newGroupList});
         }
         case `${REMOVE_GROUP}_FULFILLED`: {
+            if (action.payload.error) {
+                return getNewStateOnGroupError(state, action);
+            }
             const newGroupList = state.userGroups.filter(group => group.name !== action.meta);
             return Object.assign({}, state, {userGroups: newGroupList});
         }
         case `${UPDATE_GROUP}_FULFILLED`: {
-            const index = state.userGroups.findIndex(group => group.name === action.meta);
-            if (index === -1) {
-                throw new Error('should not happen');
-            }
-            const newGroupList = state.userGroups.slice();
             if (action.payload.error) {
-                newGroupList[index] = Object.assign({}, newGroupList[index], {error: action.payload.error, success: null});
-                return Object.assign({}, state, {
-                    userGroups: newGroupList
-                });
+                return getNewStateOnGroupError(state, action);
             } else {
                 if (action.payload.name !== action.meta) {
                     throw new Error('should not happen');
                 }
+                const index = getGroupIndex(state.userGroups, action);
+                const newGroupList = state.userGroups.slice();
                 newGroupList[index] = action.payload;
                 newGroupList[index].success = 'Group sucessfully updated';
                 newGroupList[index].error = null;
@@ -78,6 +75,23 @@ const dbReducer = (state = initialState, action) => {
             return state;
     }
 };
+
+function getGroupIndex(userGroups, action) {
+    const index = userGroups.findIndex(group => group.name === action.meta);
+    if (index === -1) {
+        throw new Error('should not happen');
+    }
+    return index;
+}
+
+function getNewStateOnGroupError(state, action) {
+    const index = getGroupIndex(state.userGroups, action);
+    const newGroupList = state.userGroups.slice();
+    newGroupList[index] = Object.assign({}, newGroupList[index], {error: action.payload.error, success: null});
+    return Object.assign({}, state, {
+        userGroups: newGroupList
+    });
+}
 
 export default dbReducer;
 

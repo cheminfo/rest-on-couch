@@ -44,7 +44,7 @@ class GroupCreator extends Component {
                             value="Create LDAP group"
                         />
                     </form>
-                    {error ? <div style={{marginTop: 8}} className="alert alert-danger">{error}</div> : null }
+                    {error ? <div style={{marginTop: 20}} className="alert alert-danger">{error}</div> : null }
                 </div>
             </div>
         );
