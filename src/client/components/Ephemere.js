@@ -9,19 +9,43 @@ class Ephemere extends Component {
         );
     }
 
-    componentWillUpdate() {
-        if (this.refs.ephemere) {
-            this.refs.ephemere.style.display = 'block';
-        }
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-        }
+    componentWillMount() {
+        this.setTimer();
+    }
+
+    componentDidMount() {
+        this.makeVisible();
     }
 
     componentDidUpdate() {
-        this.timeout = setTimeout(() => {
-            this.refs.ephemere.style.display = 'none';
-        }, this.props.timeout || 3000);
+        this.makeVisible();
+    }
+
+    componentWillUpdate() {
+        this.clearTimer();
+        this.setTimer();
+    }
+
+    componentWillUnmount() {
+        this.clearTimer();
+    }
+    makeVisible() {
+        if (this.timeout) {
+            if (this.refs.ephemere) {
+                this.refs.ephemere.style.display = 'block';
+            }
+        }
+    }
+    clearTimer() {
+        clearTimeout(this.timeout);
+        this.timeout = null;
+    }
+    setTimer() {
+        if (!this.timeout) {
+            this.timeout = setTimeout(() => {
+                this.refs.ephemere.style.display = 'none';
+            }, this.props.timeout || 3000);
+        }
     }
 }
 

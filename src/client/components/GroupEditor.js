@@ -67,9 +67,7 @@ class GroupEditor extends PureComponent {
                                 />
                             </div>
                         </div>
-                        <Ephemere>
-                            {group.success ? <div className="alert alert-success">{group.success}</div> : null }
-                        </Ephemere>
+                        {group.success ? <Ephemere><div className="alert alert-success">{group.success}</div></Ephemere> : null }
                         {group.error ? <div className="alert alert-danger">{group.error}</div> : null }
                     </div>
                 </div>
