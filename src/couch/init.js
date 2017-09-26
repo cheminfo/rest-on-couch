@@ -80,12 +80,18 @@ const methods = {
 };
 
 async function startLDAPSync(db) {
+    await tryLDAPSync(db);
+    setInterval(async () => {
+        await tryLDAPSync(db);
+    }, 1000 * db._couchOptions.ldapGroupsRenewal);
+}
+
+async function tryLDAPSync(db) {
     try {
         await db.syncLDAPGroups();
     } catch (e) {
-        debug('LDAP sync failed initialization', e);
+        debug.error('LDAP sync failed initialization', e);
     }
-    setInterval(() => db.syncLDAPGroups(), 1000 * db._couchOptions.ldapGroupsRenewal);
 }
 
 async function checkSecurity(db, admin) {
