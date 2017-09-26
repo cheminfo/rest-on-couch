@@ -76,9 +76,16 @@ export function createGroup(groupName, type) {
     const groupUrl = `db/${dbManager.currentDb}/group/${groupName}?type=${type}`;
     return {
         type: CREATE_GROUP,
-        payload: apiFetchJSON(groupUrl, {method: 'PUT'})
-            .then(() => apiFetchJSON(groupUrl))
+        payload: doCreateGroup(groupUrl)
     };
+}
+
+async function doCreateGroup(groupUrl) {
+    const res = await apiFetchJSON(groupUrl, {method: 'PUT'});
+    if (res.error) {
+        return res;
+    }
+    return apiFetchJSON(groupUrl);
 }
 
 

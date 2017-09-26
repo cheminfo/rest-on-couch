@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
 
 class GroupCreator extends Component {
     constructor(props) {
@@ -9,7 +10,7 @@ class GroupCreator extends Component {
     }
 
     render() {
-        const {createGroup} = this.props;
+        const {createGroup, error} = this.props;
         return (
             <div className="card">
                 <div className="header">
@@ -43,7 +44,7 @@ class GroupCreator extends Component {
                             value="Create LDAP group"
                         />
                     </form>
-                    {/*<EnterTextField onSubmit={createGroup} />*/}
+                    {error ? <div style={{marginTop: 8}} className="alert alert-danger">{error}</div> : null }
                 </div>
             </div>
         );
@@ -55,4 +56,10 @@ GroupCreator.propTypes = {
     createGroup: PropTypes.func.isRequired
 };
 
-export default GroupCreator;
+const mapStateToProps = (state) => {
+    return {
+        error: state.db.errors.createGroup
+    };
+};
+
+export default connect(mapStateToProps)(GroupCreator);

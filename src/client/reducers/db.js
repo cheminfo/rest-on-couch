@@ -13,7 +13,8 @@ import {
 const initialState = {
     dbList: [],
     userRights: [],
-    userGroups: []
+    userGroups: [],
+    errors: {}
 };
 
 const dbReducer = (state = initialState, action) => {
@@ -25,6 +26,12 @@ const dbReducer = (state = initialState, action) => {
         case SET_USER_GROUPS:
             return Object.assign({}, state, {userGroups: action.payload.sort(sortByName)});
         case `${CREATE_GROUP}_FULFILLED`: {
+            if (action.payload.error) {
+                const errors = Object.assign({}, state.errors, {
+                    createGroup: action.payload.error
+                });
+                return Object.assign({}, state, {errors});
+            }
             const newGroupList = state.userGroups.slice();
             newGroupList.unshift(action.payload);
             return Object.assign({}, state, {userGroups: newGroupList});
