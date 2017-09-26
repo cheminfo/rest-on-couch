@@ -44,7 +44,7 @@ exports.init = function (passport, router, config, mainConfig) {
         function (accessToken, refreshToken, profile, done) {
             const email = profile.emails.find(email => email.type === 'account');
             if (!email) {
-                return done(null, false, {message: 'No account email'});
+                return done(null, false, {message: 'No google account email'});
             } else {
                 done(null, {
                     provider: 'google',
