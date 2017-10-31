@@ -31,13 +31,13 @@ router.get('/', (ctx) => {
     ctx.status = 200;
 });
 
-router.post('/upload/:database/:kind/:filename', getHomeDir, async (ctx) => {
-    const dir = path.join(ctx.state.homeDir, ctx.params.database, ctx.params.kind, 'to_process');
-    const tmpDir = path.join(ctx.state.homeDir, ctx.params.database, ctx.params.kind, 'tmp');
+async function writeUpload(ctx, database, kind, filename) {
+    const dir = path.join(ctx.state.homeDir, database, kind, 'to_process');
+    const tmpDir = path.join(ctx.state.homeDir, database, kind, 'tmp');
     await fs.mkdirp(tmpDir);
     const uploadDir = await fs.mkdtemp(path.join(tmpDir, 'roc-upload-'));
-    const uploadPath = path.join(uploadDir, ctx.params.filename);
-    const file = path.join(dir, ctx.params.filename);
+    const uploadPath = path.join(uploadDir, filename);
+    const file = path.join(dir, filename);
     const write = fs.createWriteStream(uploadPath);
     try {
         await new Promise((resolve, reject) => {
@@ -67,6 +67,16 @@ router.post('/upload/:database/:kind/:filename', getHomeDir, async (ctx) => {
         ctx.body = 'error';
         ctx.status = 500;
     }
+}
+
+router.post('/upload/:database/:kind/:filename', getHomeDir, async (ctx) => {
+    const {database, kind, filename} = ctx.params;
+    await writeUpload(ctx, database, kind, filename);
+});
+
+router.post('/upload', getHomeDir, async (ctx) => {
+    const {database, kind, filename} = ctx.query;
+    await writeUpload(ctx, database, kind, filename);
 });
 
 app.on('error', printError);
