@@ -1,3 +1,19 @@
+<a name="5.4.0"></a>
+# [5.4.0](https://github.com/cheminfo/rest-on-couch/compare/v5.3.1...v5.4.0) (2017-10-31)
+
+
+### Bug Fixes
+
+* always log error when automatic LDAP sync fails ([4ada695](https://github.com/cheminfo/rest-on-couch/commit/4ada695))
+* Ephemere component ([45af857](https://github.com/cheminfo/rest-on-couch/commit/45af857))
+
+
+### Features
+
+* **file-drop:** add route for file upload that uses query string parameters ([31bb160](https://github.com/cheminfo/rest-on-couch/commit/31bb160))
+
+
+
 <a name="5.3.1"></a>
 ## [5.3.1](https://github.com/cheminfo/rest-on-couch/compare/v5.3.0...v5.3.1) (2017-09-08)
 
