@@ -113,6 +113,7 @@
     "mocha-better-spec-reporter": "^3.0.2",
     "nodemon": "^1.11.0",
     "pouchdb-server": "^2.3.7",
+    "rimraf": "^2.6.2",
     "should": "^11.1.0",
     "supertest": "^3.0.0",
     "webpack": "^2.2.1",
