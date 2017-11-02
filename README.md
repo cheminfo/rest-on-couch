@@ -4,6 +4,7 @@
   [![build status][travis-image]][travis-url]
   [![David deps][david-image]][david-url]
   [![npm download][download-image]][download-url]
+  [![Known Vulnerabilities][snyk-image][snyk-url]
 
 Interface to CouchDB that allows the control of permissions on the documents.
 
@@ -135,3 +136,5 @@ Do not use this in production!
 [david-url]: https://david-dm.org/cheminfo/rest-on-couch
 [download-image]: https://img.shields.io/npm/dm/rest-on-couch.svg?style=flat-square
 [download-url]: https://www.npmjs.com/package/rest-on-couch
+[snyk-image]: https://snyk.io/test/github/cheminfo/rest-on-couch/badge.svg?style=flat-square
+[snyk-url]: https://snyk.io/test/github/cheminfo/rest-on-couch
