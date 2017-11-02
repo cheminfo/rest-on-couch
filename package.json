@@ -42,7 +42,7 @@
     "chokidar": "^1.4.2",
     "co-sleep": "0.0.1",
     "commander": "^2.9.0",
-    "debug": "^3.0.0",
+    "debug": "^3.1.0",
     "delay": "^2.0.0",
     "escape-string-regexp": "^1.0.4",
     "extend": "^3.0.0",
