@@ -4,7 +4,7 @@
   [![build status][travis-image]][travis-url]
   [![David deps][david-image]][david-url]
   [![npm download][download-image]][download-url]
-  [![Known Vulnerabilities][snyk-image][snyk-url]
+  [![Known Vulnerabilities][snyk-image]][snyk-url]
 
 Interface to CouchDB that allows the control of permissions on the documents.
 
