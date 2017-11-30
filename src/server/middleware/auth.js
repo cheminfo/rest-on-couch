@@ -4,6 +4,8 @@ const passport = require('koa-passport');
 const superagent = require('superagent-promise')(require('superagent'), Promise);
 const request = require('request-promise');
 
+const decorateError = require('./decorateError');
+const respondOk = require('./respondOk');
 const connect = require('../../connect');
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
@@ -21,7 +23,7 @@ passport.deserializeUser(function (obj, done) {
 exports.okOrRedirect = function (ctx) {
     switch (ctx.accepts('json', 'html')) {
         case 'json':
-            ctx.body = {ok: true};
+            respondOk(ctx);
             break;
         default:
             ctx.redirect('/auth/login');
@@ -43,10 +45,7 @@ exports.ensureAdmin = async (ctx, next) => {
     if (exports.isAdmin(ctx)) {
         await next();
     } else {
-        ctx.status = 401;
-        ctx.body = {
-            error: 'You are not an administrator'
-        };
+        decorateError(ctx, 401, 'restricted to administrators');
     }
 };
 
@@ -118,8 +117,7 @@ async function getUserEmailFromToken(ctx) {
 exports.createUser = async ctx => {
     const {email, password} = ctx.request.body;
     if (!isEmail(email)) {
-        ctx.body = {error: 'username must be an email address'};
-        ctx.status = 400;
+        decorateError(ctx, 400, 'username must be an email address');
         return;
     }
 
@@ -133,8 +131,7 @@ exports.createUser = async ctx => {
 
     if (currentUser !== null) {
         debug.debug('Cannot create couchdb user, user already exists');
-        ctx.body = {error: 'user already exists'};
-        ctx.status = 400;
+        decorateError(ctx, 400, 'user already exists');
         return;
     }
 
@@ -146,25 +143,21 @@ exports.createUser = async ctx => {
         roles: []
     });
 
-    ctx.status = 201;
-    ctx.body = {ok: true};
+    respondOk(ctx, 201);
 };
 
 exports.changePassword = async (ctx) => {
     const body = ctx.request.body;
     if (!body.oldPassword || !body.newPassword) {
-        ctx.body = {error: 'oldPassword and newPassword fields must be present'};
-        ctx.status = 400;
+        decorateError(ctx, 400, 'oldPassword and newPassword fields must be present');
         return;
     }
     if (body.oldPassword === body.newPassword) {
-        ctx.body = {error: 'newPassword must be different than oldPassword'};
-        ctx.status = 400;
+        decorateError(ctx, 400, 'newPassword must be different than oldPassword');
         return;
     }
     if (!ctx.isAuthenticated()) {
-        ctx.body = {error: 'user must be authenticated'};
-        ctx.status = 401;
+        decorateError(ctx, 401, 'user must be authenticated');
         return;
     }
 
@@ -180,8 +173,7 @@ exports.changePassword = async (ctx) => {
             });
         } catch (e) {
             if (e.statusCode === 401) {
-                ctx.body = {error: 'wrong old password'};
-                ctx.status = 401;
+                decorateError(ctx, 401, 'wrong old password');
                 return;
             } else {
                 throw e;
@@ -198,10 +190,9 @@ exports.changePassword = async (ctx) => {
 
         currentUser.password = String(body.newPassword);
         await updateCouchdbUser(currentUser);
-        ctx.body = {ok: true};
+        respondOk(ctx);
     } else {
-        ctx.body = {error: `login provider "${provider} does not support password change`};
-        ctx.body = 403;
+        decorateError(ctx, 403, `login provider "${provider} does not support password change`);
     }
 };
 
@@ -213,8 +204,7 @@ async function getCouchdbUser(email) {
 
 function userDatabaseDenied(ctx) {
     debug.error('ROC user does not have access to _users database');
-    ctx.body = {error: 'internal server error'};
-    ctx.status = 500;
+    decorateError(ctx, 500);
 }
 
 async function updateCouchdbUser(user) {
