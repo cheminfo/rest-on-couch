@@ -5,6 +5,8 @@ const compose = require('koa-compose');
 const request = require('request-promise');
 
 const auth = require('./auth');
+const decorateError = require('./decorateError');
+const respondOk = require('./respondOk');
 const config = require('../../config/config').globalConfig;
 const getConfig = require('../../config/config').getConfig;
 const Couch = require('../../index');
@@ -13,17 +15,6 @@ const views = require('../../design/views');
 const CouchError = require('../../util/CouchError');
 
 const couchNeedsParse = ['key', 'startkey', 'endkey'];
-
-const statusMessages = {
-    400: 'bad request',
-    401: 'unauthorized',
-    403: 'forbidden',
-    404: 'not found',
-    409: 'conflict',
-    500: 'internal server error'
-};
-
-const OK = {ok: true};
 
 const invalidDbName = 'invalid database name';
 exports.setupCouch = async (ctx, next) => {
@@ -88,7 +79,7 @@ exports.updateEntry = composeWithError(async (ctx) => {
 
 exports.deleteEntry = composeWithError(async (ctx) => {
     await ctx.state.couch.deleteEntry(ctx.params.uuid, ctx.state.userEmail);
-    ctx.body = OK;
+    respondOk(ctx);
 });
 
 exports.newOrUpdateEntry = composeWithError(async (ctx) => {
@@ -184,14 +175,14 @@ exports.getOwners = function (type) {
 exports.addOwner = function (type) {
     return composeWithError(async (ctx) => {
         await ctx.state.couch.addOwnersToDoc(ctx.params.uuid, ctx.state.userEmail, ctx.params.owner, type);
-        ctx.body = OK;
+        respondOk(ctx);
     });
 };
 
 exports.removeOwner = function (type) {
     return composeWithError(async (ctx) => {
         await ctx.state.couch.removeOwnersFromDoc(ctx.params.uuid, ctx.state.userEmail, ctx.params.owner, type);
-        ctx.body = OK;
+        respondOk(ctx);
     });
 };
 
@@ -202,7 +193,7 @@ exports.getGroup = composeWithError(async (ctx) => {
 
 exports.createGroup = composeWithError(async (ctx) => {
     await ctx.state.couch.createGroup(ctx.params.name, ctx.state.userEmail, null, ctx.query.type);
-    ctx.body = OK;
+    respondOk(ctx);
 });
 
 exports.getGroups = composeWithError(async (ctx) => {
@@ -220,12 +211,12 @@ exports.getUserGroups = composeWithError(async ctx => {
 
 exports.addUserToGroup = composeWithError(async (ctx) => {
     await ctx.state.couch.addUsersToGroup(ctx.params.uuid, ctx.state.userEmail, ctx.params.username);
-    ctx.body = OK;
+    respondOk(ctx);
 });
 
 exports.removeUserFromGroup = composeWithError(async (ctx) => {
     await ctx.state.couch.removeUsersFromGroup(ctx.params.uuid, ctx.state.userEmail, ctx.params.username);
-    ctx.body = OK;
+    respondOk(ctx);
 });
 
 exports.getGroupRights = composeWithError(async (ctx) => {
@@ -235,12 +226,12 @@ exports.getGroupRights = composeWithError(async (ctx) => {
 
 exports.addRightToGroup = composeWithError(async (ctx) => {
     await ctx.state.couch.addRightsToGroup(ctx.params.uuid, ctx.state.userEmail, ctx.params.right);
-    ctx.body = OK;
+    respondOk(ctx);
 });
 
 exports.removeRightFromGroup = composeWithError(async (ctx) => {
     await ctx.state.couch.removeRightsFromGroup(ctx.params.uuid, ctx.state.userEmail, ctx.params.right);
-    ctx.body = OK;
+    respondOk(ctx);
 });
 
 exports.getRights = composeWithError(async (ctx) => {
@@ -251,7 +242,7 @@ exports.getRights = composeWithError(async (ctx) => {
 
 exports.deleteGroup = composeWithError(async (ctx) => {
     await ctx.state.couch.deleteGroup(ctx.params.name, ctx.state.userEmail);
-    ctx.body = OK;
+    respondOk(ctx);
 });
 
 exports.setLdapGroupProperties = composeWithError(async (ctx) => {
@@ -260,7 +251,7 @@ exports.setLdapGroupProperties = composeWithError(async (ctx) => {
 
 exports.syncLdapGroup = composeWithError(async (ctx) => {
     await ctx.state.couch.syncLdapGroup(ctx.params.uuid, ctx.state.userEmail);
-    ctx.body = {ok: true};
+    respondOk(ctx);
 });
 
 exports.getGlobalRights = composeWithError(async (ctx) => {
@@ -322,49 +313,39 @@ exports.getTokenById = composeWithError(async (ctx) => {
 
 exports.deleteTokenById = composeWithError(async (ctx) => {
     await ctx.state.couch.deleteToken(ctx.state.userEmail, ctx.params.tokenid);
-    ctx.body = OK;
+    respondOk(ctx);
 });
 
 function onGetError(ctx, e, secure) {
     switch (e.reason) {
         case 'unauthorized':
             if (!secure) {
-                ctx.status = 401;
-                ctx.body = statusMessages[401];
+                decorateError(ctx, 401, e.message);
                 break;
             }
             // fallthrough
         case 'not found':
-            ctx.status = 404;
-            ctx.body = statusMessages[404];
+            decorateError(ctx, 404, e.message);
             break;
         case 'conflict':
-            ctx.status = 409;
-            ctx.body = statusMessages[409];
+            decorateError(ctx, 409, e.message);
             break;
         case 'invalid':
-            ctx.status = 400;
-            ctx.body = e.message || statusMessages[400];
+            decorateError(ctx, 400, e.message);
             break;
         case 'forbidden':
-            ctx.status = 403;
-            ctx.body = e.message || statusMessages[403];
+            decorateError(ctx, 403, e.message);
             break;
         default:
             if (!handleCouchError(ctx, e, secure)) {
-                ctx.status = 500;
-                ctx.body = statusMessages[500];
+                decorateError(ctx, 500, e.message);
                 debug.error(e + e.stack);
             }
             break;
     }
-    if (e.message && e.message !== ctx.body) {
-        ctx.body += `: ${e}`;
-    }
     if (config.debugrest) {
-        ctx.body += `\n\n${e}\n${e.stack}`;
+        ctx.body.stack = e.stack;
     }
-    ctx.body = {error: ctx.body};
 }
 
 function handleCouchError(ctx, e, secure) {
@@ -381,13 +362,11 @@ function handleCouchError(ctx, e, secure) {
             debug.error(e + e.stack);
         }
 
-        ctx.status = statusCode;
-        ctx.body = statusMessages[statusCode] || `error ${statusCode}`;
+        decorateError(ctx, statusCode, e.message);
         return true;
     }
     return false;
 }
-
 
 function processCouchQuery(ctx) {
     for (let i = 0; i < couchNeedsParse.length; i++) {

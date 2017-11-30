@@ -56,7 +56,7 @@ describe('basic rest-api as anonymous (noRights)', function () {
 
     it('forbidden datbase names', function () {
         return request.get('/db/_a$aa/entry/aaa').expect(403).then((data) => {
-            data.body.should.deepEqual({error: 'invalid database name'});
+            data.body.should.deepEqual({error: 'invalid database name', code: 'forbidden'});
         });
     });
 });
