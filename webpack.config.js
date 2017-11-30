@@ -4,7 +4,7 @@ const path = require('path');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const webpack = require('webpack');
-const BabiliPlugin = require('babili-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const babelConfig = {
     plugins: ['transform-async-to-generator', 'transform-es2015-modules-commonjs'],
@@ -27,7 +27,7 @@ if (isProduction) {
         }
     }]);
     entry.unshift('regenerator-runtime/runtime');
-    plugins.push(new BabiliPlugin())
+    plugins.push(new UglifyJsPlugin())
 }
 
 module.exports = {

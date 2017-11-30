@@ -31,6 +31,6 @@ build/Release
 /test/dummy.js
 /lib/
 /config.json
-/public/bundle.js
+/public/bundle.js*
 /.eslintcache
 log.txt
