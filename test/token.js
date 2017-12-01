@@ -67,4 +67,9 @@ describe('token methods', function () {
         await couch.createEntryToken('anonymous', 'A').should.be.rejectedWith('only a user can create a token');
         await couch.createUserToken('anonymous').should.be.rejectedWith('only a user can create a token');
     });
+
+    it('token should not accept invalid right', async () => {
+        await couch.createUserToken('a@a.com', 'test1').should.be.rejectedWith('invalid right: test1');
+        await couch.createUserToken('a@a.com', ['read', 'test2']).should.be.rejectedWith('invalid right: test2');
+    });
 });

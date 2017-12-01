@@ -3,7 +3,7 @@
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:token');
 const token = require('../util/token');
-const {isValidUsername} = require('./util');
+const {isValidUsername, ensureRightsArray} = require('./util');
 
 const methods = {
     async createEntryToken(user, uuid) {
@@ -22,6 +22,7 @@ const methods = {
         if (!isValidUsername(user)) {
             throw new CouchError('only a user can create a token', 'unauthorized');
         }
+        ensureRightsArray(rights);
         await this.open();
         return token.createUserToken(this._db, user, rights);
     },
