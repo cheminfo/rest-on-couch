@@ -2,6 +2,7 @@
 
 // super administrators have all these rights
 const globalRightTypes = [
+    'delete',
     'read',
     'write',
     'create',
