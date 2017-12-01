@@ -87,20 +87,21 @@ async function validateTokenOrRights(ctx, uuid, owners, rights, user, token, typ
 
     if (token && token.$kind === type && token.uuid === uuid) {
         for (var i = 0; i < rights.length; i++) {
-            if (token.rights.includes(rights[i])) {
-                return true;
+            if (!token.rights.includes(rights[i])) {
+                return false;
             }
         }
+        return true;
     }
     const ok = await validateRights(ctx, owners, user, rights, type);
     return ok[0];
 }
 
 function areRightsInToken(rights, token) {
-    const tokenRights = new Set(token.rights);
-    if (rights.length !== tokenRights.size) {
+    if (rights.length > token.rights.length) {
         return false;
     }
+    const tokenRights = new Set(token.rights);
     for (const right of rights) {
         if (!tokenRights.has(right)) {
             return false;
