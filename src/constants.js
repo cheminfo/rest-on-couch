@@ -40,5 +40,7 @@ module.exports = {
     kEntryUnicity: Symbol('entryUnicity'),
     IMPORT_UPDATE_FULL,
     IMPORT_UPDATE_WITHOUT_ATTACHMENT,
-    IMPORT_UPDATE_$CONTENT_ONLY
+    IMPORT_UPDATE_$CONTENT_ONLY,
+
+    MAX_COUCHDB_REQUESTS: 500
 };

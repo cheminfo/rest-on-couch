@@ -7,7 +7,8 @@ const validateMethods = require('./validate');
 const nanoMethods = require('./nano');
 const util = require('./util');
 const ensureStringArray = require('../util/ensureStringArray');
-const kEntryUnicity = require('../constants').kEntryUnicity;
+const {kEntryUnicity, MAX_COUCHDB_REQUESTS} = require('../constants');
+const _ = require('lodash');
 
 const methods = {
     async getEntryWithRights(uuid, user, rights, options = {}) {
@@ -150,7 +151,16 @@ const methods = {
 
         if (includeDocs) {
             // Get each document from CouchDB
-            return Promise.all(allowedDocs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
+            // We chunk in order not to overload couchDB by sending too many requests at once
+            const chunkedDocs = _.chunk(allowedDocs, MAX_COUCHDB_REQUESTS);
+            const allDocs = [];
+            for (let docs of chunkedDocs) {
+                const docList = await Promise.all(docs.map(doc => nanoPromise.getDocument(this._db, doc.id)));
+                for (let doc of docList) {
+                    allDocs.push(doc);
+                }
+            }
+            return allDocs;
         } else if (includeDate) {
             return allowedDocs.map(doc => ({
                 id: doc.id,
