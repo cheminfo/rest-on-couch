@@ -3,5 +3,5 @@
 const filters = module.exports;
 
 filters.logs = function (doc) {
-    return doc.$type === 'log';
+  return doc.$type === 'log';
 };

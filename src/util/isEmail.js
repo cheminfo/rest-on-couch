@@ -4,5 +4,5 @@
 const isEmail = /^.+@.+$/;
 
 module.exports = function (str) {
-    return isEmail.test(str);
+  return isEmail.test(str);
 };

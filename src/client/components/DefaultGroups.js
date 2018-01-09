@@ -1,26 +1,31 @@
-import React, {Component} from 'react';
+import React from 'react';
 
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import DefaultGroupsEditor from './DefaultGroupsEditor';
 
-import {addDefaultGroup, removeDefaultGroup} from '../actions/db';
+import { addDefaultGroup, removeDefaultGroup } from '../actions/db';
 
-class DefaultGroups extends Component {
-    render() {
-        if (!this.props.defaultGroups) return null;
-        return (
-            <div>
-                <h3>Default groups</h3>
-                <DefaultGroupsEditor defaultGroups={this.props.defaultGroups} addGroup={this.props.addDefaultGroup} removeGroup={this.props.removeDefaultGroup} />
-            </div>
-        );
-    }
+function DefaultGroups(props) {
+  if (!props.defaultGroups) return null;
+  return (
+    <div>
+      <h3>Default groups</h3>
+      <DefaultGroupsEditor
+        defaultGroups={props.defaultGroups}
+        addGroup={props.addDefaultGroup}
+        removeGroup={props.removeDefaultGroup}
+      />
+    </div>
+  );
 }
 
-const mapStateToProps = state => {
-    return {
-        defaultGroups: state.db.defaultGroups
-    };
+const mapStateToProps = (state) => {
+  return {
+    defaultGroups: state.db.defaultGroups
+  };
 };
 
-export default connect(mapStateToProps, {addDefaultGroup, removeDefaultGroup})(DefaultGroups);
+export default connect(mapStateToProps, {
+  addDefaultGroup,
+  removeDefaultGroup
+})(DefaultGroups);

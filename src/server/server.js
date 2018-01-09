@@ -23,8 +23,8 @@ const app = new Koa();
 let _started;
 
 app.use(async function (ctx, next) {
-    debug.trace(`Method: ${ctx.method}; Path: ${ctx.path}`);
-    await next();
+  debug.trace(`Method: ${ctx.method}; Path: ${ctx.path}`);
+  await next();
 });
 
 app.use(compress());
@@ -37,93 +37,103 @@ app.proxy = config.proxy;
 let proxyPrefix = config.proxyPrefix;
 debug(`proxy prefix: ${proxyPrefix}`);
 if (proxyPrefix !== '') {
-    const _redirect = app.context.redirect;
-    app.context.redirect = function (url, alt) {
-        if (typeof url === 'string' && url.startsWith('/')) {
-            url = proxyPrefix + url;
-        }
-        return _redirect.call(this, url, alt);
-    };
+  const _redirect = app.context.redirect;
+  app.context.redirect = function (url, alt) {
+    if (typeof url === 'string' && url.startsWith('/')) {
+      url = proxyPrefix + url;
+    }
+    return _redirect.call(this, url, alt);
+  };
 }
 
 nunjucks(app, {
-    root: path.join(__dirname, '../../views'),
-    ext: 'html'
+  root: path.join(__dirname, '../../views'),
+  ext: 'html'
 });
 
 app.use(koaStatic(path.resolve(__dirname, '../../public')));
 
 const bundlePath = path.join(__dirname, '../../public/bundle.js');
 if (fs.existsSync(bundlePath)) {
-// always render index.html unless it's an API route
-    let indexHtml = fs.readFileSync(path.join(__dirname, '../../public/index.html'), 'utf8');
-    indexHtml = indexHtml.replace(/assets\//g, `${proxyPrefix}/assets/`);
-    const bundleJs = fs.readFileSync(bundlePath, 'utf8');
-    app.use(async (ctx, next) => {
-        if (ctx.path.startsWith('/db') || ctx.path.startsWith('/auth')) {
-            await next();
-        } else if (ctx.path.endsWith('/bundle.js')) {
-            ctx.body = bundleJs;
-        } else {
-            ctx.body = indexHtml;
-        }
-    });
+  // always render index.html unless it's an API route
+  let indexHtml = fs.readFileSync(
+    path.join(__dirname, '../../public/index.html'),
+    'utf8'
+  );
+  indexHtml = indexHtml.replace(/assets\//g, `${proxyPrefix}/assets/`);
+  const bundleJs = fs.readFileSync(bundlePath, 'utf8');
+  app.use(async (ctx, next) => {
+    if (ctx.path.startsWith('/db') || ctx.path.startsWith('/auth')) {
+      await next();
+    } else if (ctx.path.endsWith('/bundle.js')) {
+      ctx.body = bundleJs;
+    } else {
+      ctx.body = indexHtml;
+    }
+  });
 }
 
 const allowedOrigins = config.allowedOrigins;
 debug(`allowed cors origins: ${allowedOrigins}`);
-app.use(cors({
-    origin: ctx => {
-        const origin = ctx.get('Origin');
-        for (var i = 0; i < allowedOrigins.length; i++) {
-            if (allowedOrigins[i] === origin) {
-                return origin;
-            }
+app.use(
+  cors({
+    origin: (ctx) => {
+      const origin = ctx.get('Origin');
+      for (var i = 0; i < allowedOrigins.length; i++) {
+        if (allowedOrigins[i] === origin) {
+          return origin;
         }
-        return '*';
+      }
+      return '*';
     },
     credentials: true
-}));
+  })
+);
 
 app.keys = config.keys;
-app.use(session({
-    key: config.sessionKey,
-    maxAge: config.sessionMaxAge,
-    path: config.sessionPath,
-    domain: config.sessionDomain,
-    secure: config.sessionSecure,
-    httpOnly: true,
-    signed: true
-}, app));
+app.use(
+  session(
+    {
+      key: config.sessionKey,
+      maxAge: config.sessionMaxAge,
+      path: config.sessionPath,
+      domain: config.sessionDomain,
+      secure: config.sessionSecure,
+      httpOnly: true,
+      signed: true
+    },
+    app
+  )
+);
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(async (ctx, next) => {
-    await next();
-    // Force a session change to renew the cookie
-    ctx.session.time = Date.now();
+  await next();
+  // Force a session change to renew the cookie
+  ctx.session.time = Date.now();
 });
 
 app.use(async (ctx, next) => {
-    ctx.state.pathPrefix = proxyPrefix;
-    ctx.state.urlPrefix = ctx.origin + proxyPrefix;
-    await next();
+  ctx.state.pathPrefix = proxyPrefix;
+  ctx.state.urlPrefix = ctx.origin + proxyPrefix;
+  await next();
 });
 
 app.on('error', printError);
 
 //Unhandled errors
 if (config.debugrest) {
-    // In debug mode, show unhandled errors to the user
-    app.use(async (ctx, next) => {
-        try {
-            await next();
-        } catch (err) {
-            ctx.status = err.status || 500;
-            ctx.body = `${err.message}\n${err.stack}`;
-            printError(err);
-        }
-    });
+  // In debug mode, show unhandled errors to the user
+  app.use(async (ctx, next) => {
+    try {
+      await next();
+    } catch (err) {
+      ctx.status = err.status || 500;
+      ctx.body = `${err.message}\n${err.stack}`;
+      printError(err);
+    }
+  });
 }
 
 // Authentication
@@ -132,18 +142,18 @@ app.use(auth.routes());
 app.use(api.routes());
 
 module.exports.start = function () {
-    if (_started) return _started;
-    _started = new Promise(function (resolve) {
-        http.createServer(app.callback()).listen(config.port, function () {
-            debug.warn(`running on localhost: ${config.port}`);
-            resolve(app);
-        });
+  if (_started) return _started;
+  _started = new Promise(function (resolve) {
+    http.createServer(app.callback()).listen(config.port, function () {
+      debug.warn(`running on localhost: ${config.port}`);
+      resolve(app);
     });
-    return _started;
+  });
+  return _started;
 };
 
 module.exports.app = app;
 
 function printError(err) {
-    debug.error(`unexpected error: ${err.stack || err}`);
+  debug.error(`unexpected error: ${err.stack || err}`);
 }

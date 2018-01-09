@@ -78,3 +78,4 @@ Strategy.prototype.authenticate = function(req) {
 
 module.exports = Strategy;
 */
+

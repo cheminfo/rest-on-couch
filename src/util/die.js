@@ -5,8 +5,8 @@
  * @param {string} message
  */
 module.exports = function (message) {
-    if (message) {
-        process.stderr.write(`rest-on-couch: ${message}\n`);
-    }
-    process.exit(1);
+  if (message) {
+    process.stderr.write(`rest-on-couch: ${message}\n`);
+  }
+  process.exit(1);
 };

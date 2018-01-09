@@ -4,81 +4,86 @@ const fold = require('fold-to-ascii').fold;
 const constants = require('../constants');
 
 module.exports = async function saveResult(importBase, result) {
-    const couch = importBase.couch;
-    if (result.isSkipped) return;
+  const couch = importBase.couch;
+  if (result.isSkipped) return;
 
-    // Create the new document if it does not exist
-    let document = await couch.createEntry(result.id, result.owner, {
-        kind: result.kind,
-        owners: result.groups
-    });
+  // Create the new document if it does not exist
+  let document = await couch.createEntry(result.id, result.owner, {
+    kind: result.kind,
+    owners: result.groups
+  });
 
-    // In case the document already existed, we need update the  list of owners
-    if (result.groups.length) {
-        document = await couch.addOwnersToDoc(document.id, result.owner, result.groups, 'entry');
-    }
+  // In case the document already existed, we need update the  list of owners
+  if (result.groups.length) {
+    document = await couch.addOwnersToDoc(
+      document.id,
+      result.owner,
+      result.groups,
+      'entry'
+    );
+  }
 
+  switch (result.getUpdateType()) {
+    case constants.IMPORT_UPDATE_FULL:
+      await couch.addFileToJpath(
+        result.id,
+        result.owner,
+        result.jpath,
+        result.metadata,
+        {
+          field: result.field,
+          name: `${result.jpath.join('/')}/${fold(importBase.filename, '_')}`,
+          data: await importBase.getContents('base64'),
+          reference: result.reference,
+          content_type: result.content_type
+        },
+        result.content
+      );
+      break;
+    case constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT:
+      await couch.addFileToJpath(
+        result.id,
+        result.owner,
+        result.jpath,
+        result.metadata,
+        {
+          reference: result.reference
+        },
+        result.content,
+        true
+      );
+      break;
+    case constants.IMPORT_UPDATE_$CONTENT_ONLY:
+      await couch.insertEntry(
+        {
+          $id: result.id,
+          $kind: result.kind,
+          $content: result.content,
+          _id: document.id,
+          _rev: document.rev
+        },
+        result.owner
+      );
+      break;
+    default:
+      throw new Error('Unreachable');
+  }
 
-    switch (result.getUpdateType()) {
-        case constants.IMPORT_UPDATE_FULL:
-            await couch.addFileToJpath(
-                result.id,
-                result.owner,
-                result.jpath,
-                result.metadata,
-                {
-                    field: result.field,
-                    name: `${result.jpath.join('/')}/${fold(importBase.filename, '_')}`,
-                    data: await importBase.getContents('base64'),
-                    reference: result.reference,
-                    content_type: result.content_type
-                },
-                result.content
-            );
-            break;
-        case constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT:
-            await couch.addFileToJpath(
-                result.id,
-                result.owner,
-                result.jpath,
-                result.metadata,
-                {
-                    reference: result.reference
-                },
-                result.content,
-                true
-            );
-            break;
-        case constants.IMPORT_UPDATE_$CONTENT_ONLY:
-            await couch.insertEntry({
-                $id: result.id,
-                $kind: result.kind,
-                $content: result.content,
-                _id: document.id,
-                _rev: document.rev
-            }, result.owner);
-            break;
-        default:
-            throw new Error('Unreachable');
-    }
-
-    // Upload additional attachments with metadata
-    for (const attachment of result.attachments) {
-        await couch.addFileToJpath(
-            result.id,
-            result.owner,
-            attachment.jpath,
-            attachment.metadata,
-            {
-                field: attachment.field,
-                reference: attachment.reference,
-                name: `${attachment.jpath.join('/')}/${fold(attachment.filename, '_')}`,
-                data: attachment.contents,
-                content_type: attachment.content_type
-            }
-        );
-    }
-
-
+  // Upload additional attachments with metadata
+  for (const attachment of result.attachments) {
+    // eslint-disable-next-line no-await-in-loop
+    await couch.addFileToJpath(
+      result.id,
+      result.owner,
+      attachment.jpath,
+      attachment.metadata,
+      {
+        field: attachment.field,
+        reference: attachment.reference,
+        name: `${attachment.jpath.join('/')}/${fold(attachment.filename, '_')}`,
+        data: attachment.contents,
+        content_type: attachment.content_type
+      }
+    );
+  }
 };
-

@@ -47,48 +47,61 @@ const GitHubStrategy = require('passport-github').Strategy;
 const request = require('request-promise');
 
 exports.init = function (passport, router, config) {
-    passport.use(
-        new GitHubStrategy({
-            clientID: config.clientID,
-            clientSecret: config.clientSecret,
-            callbackURL: config.publicAddress + config.callbackURL
-        },
-        function (accessToken, refreshToken, profile, done) {
-            // Get the user's email
-            (async function () {
-                const answer = await request({
-                    url: `https://api.github.com/user/emails?access_token=${accessToken}`,
-                    headers: {
-                        'User-Agent': 'request'
-                    }
-                });
-                const email = answer.filter(function (val) {
-                    return val.primary === true;
-                });
-                if (email.length === 0 && answer[0] && answer[0].email) profile.email = answer[0].email;
-                if (email[0]) profile.email = email[0].email;
-                done(null, {
-                    provider: 'github',
-                    email: profile.email
-                });
-            })();
-
-        })
-    );
-
-    router.get(config.loginURL, async (ctx, next) => {
-        ctx.session.redirect = `${config.successRedirect}?${ctx.request.querystring}`;
-        await next();
-    }, passport.authenticate('github', {scope: ['user:email']}));
-
-    router.get(config.callbackURL,
-        passport.authenticate('github', {failureRedirect: config.failureRedirect}),
-        async (ctx) => {
-            // Successful authentication, redirect home.
-            if (ctx.session.redirect) {
-                ctx.response.redirect(ctx.session.redirect);
-            } else {
-                ctx.response.redirect(config.successRedirect);
+  passport.use(
+    new GitHubStrategy(
+      {
+        clientID: config.clientID,
+        clientSecret: config.clientSecret,
+        callbackURL: config.publicAddress + config.callbackURL
+      },
+      function (accessToken, refreshToken, profile, done) {
+        // Get the user's email
+        (async function () {
+          const answer = await request({
+            url: `https://api.github.com/user/emails?access_token=${accessToken}`,
+            headers: {
+              'User-Agent': 'request'
             }
-        });
+          });
+          const email = answer.filter(function (val) {
+            return val.primary === true;
+          });
+          if (email.length === 0 && answer[0] && answer[0].email) {
+            profile.email = answer[0].email;
+          }
+          if (email[0]) profile.email = email[0].email;
+          done(null, {
+            provider: 'github',
+            email: profile.email
+          });
+        })();
+      }
+    )
+  );
+
+  router.get(
+    config.loginURL,
+    async (ctx, next) => {
+      ctx.session.redirect = `${config.successRedirect}?${
+        ctx.request.querystring
+      }`;
+      await next();
+    },
+    passport.authenticate('github', { scope: ['user:email'] })
+  );
+
+  router.get(
+    config.callbackURL,
+    passport.authenticate('github', {
+      failureRedirect: config.failureRedirect
+    }),
+    (ctx) => {
+      // Successful authentication, redirect home.
+      if (ctx.session.redirect) {
+        ctx.response.redirect(ctx.session.redirect);
+      } else {
+        ctx.response.redirect(config.successRedirect);
+      }
+    }
+  );
 };

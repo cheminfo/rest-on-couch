@@ -7,61 +7,66 @@ const entryUnicity = require('./data/entryUnicity');
 const constants = require('../src/constants');
 
 process.on('unhandledRejection', function (err) {
-    throw err;
+  throw err;
 });
 
 describe('basic initialization tests', function () {
-    let couch;
-    beforeEach(function () {
-        couch = Couch.get('test2');
-    });
-    it('should init', function () {
-        return couch.open();
-    });
+  let couch;
+  beforeEach(function () {
+    couch = Couch.get('test2');
+  });
+  it('should init', function () {
+    return couch.open();
+  });
 
-    it('should throw if no database given', function () {
-        return Promise.resolve().then(() => {
-            new Couch();
-        }).should.be.rejectedWith('database option is mandatory');
-    });
+  it('should throw if no database given', function () {
+    return Promise.resolve()
+      .then(() => {
+        new Couch(); // eslint-disable-line no-new
+      })
+      .should.be.rejectedWith('database option is mandatory');
+  });
 
-    it('should throw on invalid db name', function () {
-        (function () {
-            new Couch({database: '_test'});
-        }).should.throw(/invalid database name/);
+  it('should throw on invalid db name', function () {
+    (function () {
+      new Couch({ database: '_test' }); // eslint-disable-line no-new
+    }.should.throw(/invalid database name/));
 
-        (function () {
-            Couch.get(1);
-        }).should.throw(/database name must be a string/);
-    });
+    (function () {
+      Couch.get(1);
+    }.should.throw(/database name must be a string/));
+  });
 });
 
 describe('basic initialization with custom design docs', function () {
-    beforeEach(entryUnicity);
+  beforeEach(entryUnicity);
 
-    it('should load the design doc files at initialization', function () {
-        const app = nanoPromise.getDocument(couch._db, `_design/${constants.DESIGN_DOC_NAME}`)
-            .then(app => {
-                assert.notEqual(app, null);
-                assert.ok(app.filters.abc);
-            });
-        const customApp = nanoPromise.getDocument(couch._db, `_design/${constants.CUSTOM_DESIGN_DOC_NAME}`)
-            .then(app => {
-                assert.notEqual(app, null);
-                assert.ok(app.views.test);
-            });
-        const custom = nanoPromise.getDocument(couch._db, '_design/custom')
-            .then(custom => {
-                assert.notEqual(custom, null);
-                assert.ok(custom.views.testCustom);
-            });
+  it('should load the design doc files at initialization', function () {
+    const app = nanoPromise
+      .getDocument(couch._db, `_design/${constants.DESIGN_DOC_NAME}`)
+      .then((app) => {
+        assert.notEqual(app, null);
+        assert.ok(app.filters.abc);
+      });
+    const customApp = nanoPromise
+      .getDocument(couch._db, `_design/${constants.CUSTOM_DESIGN_DOC_NAME}`)
+      .then((app) => {
+        assert.notEqual(app, null);
+        assert.ok(app.views.test);
+      });
+    const custom = nanoPromise
+      .getDocument(couch._db, '_design/custom')
+      .then((custom) => {
+        assert.notEqual(custom, null);
+        assert.ok(custom.views.testCustom);
+      });
 
-        return Promise.all([app, customApp, custom]);
+    return Promise.all([app, customApp, custom]);
+  });
+
+  it('should query a custom design document', function () {
+    return couch.queryEntriesByUser('a@a.com', 'testCustom').then((data) => {
+      data.should.have.length(0);
     });
-
-    it('should query a custom design document', function () {
-        return couch.queryEntriesByUser('a@a.com', 'testCustom').then(data => {
-            data.should.have.length(0);
-        });
-    });
+  });
 });
