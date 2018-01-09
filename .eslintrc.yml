@@ -1,6 +1,4 @@
 extends: cheminfo
-parserOptions:
-  ecmaVersion: '2017'
 rules:
-  camelcase: ['error', {properties: never}]
-  require-yield: 'off'
+  camelcase: [error, {properties: never}]
+  indent: [error, 2, {SwitchCase: 1}]

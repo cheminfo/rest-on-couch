@@ -9,9 +9,9 @@ const server = require('../src/server/server');
 require('../src/util/load')();
 
 program
-    .option('-c --config <path>', 'Path to custom config file')
-    .parse(process.argv);
+  .option('-c --config <path>', 'Path to custom config file')
+  .parse(process.argv);
 
 server.start().then(() => {
-    debug('server started successfully');
+  debug('server started successfully');
 });

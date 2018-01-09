@@ -33,34 +33,46 @@
 const FacebookStrategy = require('passport-facebook');
 
 exports.init = function (passport, router, config) {
-    passport.use(
-        new FacebookStrategy({
-            clientID: config.appId,
-            clientSecret: config.appSecret,
-            callbackURL: config.publicAddress + config.callbackURL,
-            enableProof: false
-        },
-        function (accessToken, refreshToken, profile, done) {
-            done(null, {
-                provider: 'facebook',
-                email: profile._json.email
-            });
-        })
-    );
-
-    router.get(config.loginURL, async (ctx, next) => {
-        ctx.session.redirect = `${config.successRedirect}?${ctx.request.querystring}`;
-        await next();
-    }, passport.authenticate('facebook', {scope: ['email']}));
-
-    router.get(config.callbackURL,
-        passport.authenticate('facebook', {failureRedirect: config.failureRedirect}),
-        async (ctx) => {
-            // Successful authentication, redirect home.
-            if (ctx.session.redirect) {
-                ctx.response.redirect(ctx.session.redirect);
-            } else {
-                ctx.response.redirect(config.successRedirect);
-            }
+  passport.use(
+    new FacebookStrategy(
+      {
+        clientID: config.appId,
+        clientSecret: config.appSecret,
+        callbackURL: config.publicAddress + config.callbackURL,
+        enableProof: false
+      },
+      function (accessToken, refreshToken, profile, done) {
+        done(null, {
+          provider: 'facebook',
+          email: profile._json.email
         });
+      }
+    )
+  );
+
+  router.get(
+    config.loginURL,
+    async (ctx, next) => {
+      ctx.session.redirect = `${config.successRedirect}?${
+        ctx.request.querystring
+      }`;
+      await next();
+    },
+    passport.authenticate('facebook', { scope: ['email'] })
+  );
+
+  router.get(
+    config.callbackURL,
+    passport.authenticate('facebook', {
+      failureRedirect: config.failureRedirect
+    }),
+    (ctx) => {
+      // Successful authentication, redirect home.
+      if (ctx.session.redirect) {
+        ctx.response.redirect(ctx.session.redirect);
+      } else {
+        ctx.response.redirect(config.successRedirect);
+      }
+    }
+  );
 };

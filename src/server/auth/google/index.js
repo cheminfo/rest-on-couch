@@ -33,39 +33,47 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 exports.init = function (passport, router, config, mainConfig) {
-    // todo we should be able to put a relative callbackURL (add proxy: true) but there is a bug in passport-oauth2
-    // with the generation of redirect_url. see https://github.com/jaredhanson/passport-oauth2/blob/master/lib/strategy.js#L136
-    passport.use(
-        new GoogleStrategy({
-            clientID: config.clientID,
-            clientSecret: config.clientSecret,
-            callbackURL: `${mainConfig.publicAddress}/auth/login/google/callback`
-        },
-        function (accessToken, refreshToken, profile, done) {
-            const email = profile.emails.find(email => email.type === 'account');
-            if (!email) {
-                return done(null, false, {message: 'No account email'});
-            } else {
-                done(null, {
-                    provider: 'google',
-                    email: email.value
-                });
-                return true;
-            }
-        })
-    );
+  // todo we should be able to put a relative callbackURL (add proxy: true) but there is a bug in passport-oauth2
+  // with the generation of redirect_url. see https://github.com/jaredhanson/passport-oauth2/blob/master/lib/strategy.js#L136
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: config.clientID,
+        clientSecret: config.clientSecret,
+        callbackURL: `${mainConfig.publicAddress}/auth/login/google/callback`
+      },
+      function (accessToken, refreshToken, profile, done) {
+        const email = profile.emails.find((email) => email.type === 'account');
+        if (!email) {
+          return done(null, false, { message: 'No account email' });
+        } else {
+          done(null, {
+            provider: 'google',
+            email: email.value
+          });
+          return true;
+        }
+      }
+    )
+  );
 
-    router.get('/login/google/popup', (ctx) => {
-        ctx.session.popup = true;
-        ctx.redirect('/auth/login/google');
-    });
+  router.get('/login/google/popup', (ctx) => {
+    ctx.session.popup = true;
+    ctx.redirect('/auth/login/google');
+  });
 
-    router.get('/login/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/userinfo.email']}));
+  router.get(
+    '/login/google',
+    passport.authenticate('google', {
+      scope: ['https://www.googleapis.com/auth/userinfo.email']
+    })
+  );
 
-    router.get('/login/google/callback',
-        passport.authenticate('google', {
-            successRedirect: '/auth/login',
-            failureRedirect: '/auth/login'
-        })
-    );
+  router.get(
+    '/login/google/callback',
+    passport.authenticate('google', {
+      successRedirect: '/auth/login',
+      failureRedirect: '/auth/login'
+    })
+  );
 };
