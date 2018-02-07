@@ -62,8 +62,9 @@ const methods = {
 
   async deleteEntry(uuid, user) {
     debug(`deleteEntry (${uuid}, ${user})`);
-    await this.getEntryWithRights(uuid, user, 'delete');
-    return nanoPromise.destroyDocument(this._db, uuid);
+    const entry = await this.getEntryWithRights(uuid, user, 'delete');
+    entry._deleted = true;
+    return nanoMethods.saveEntry(this._db, entry, user);
   },
 
   // Create entry if does not exist
