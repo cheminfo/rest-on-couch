@@ -1,7 +1,7 @@
 'use strict';
 // provided by passport-google-oauth20
 
-//{
+// {
 //    "user": {
 //        "provider": "google",
 //            "id": "100982963740157602406",
@@ -27,8 +27,8 @@
 //        "picture": "https://lh3.googleusercontent.com/-IvcZEni7cxM/AAAAAAAAAAI/AAAAAAAACso/4Zy9vw_ucks/photo.jpg",
 //        "gender": "male"
 //    }
-//}
-//}
+// }
+// }
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 

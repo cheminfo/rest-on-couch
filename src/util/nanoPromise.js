@@ -2,6 +2,7 @@
 
 const constants = require('../constants');
 const debug = require('./debug')('nano');
+
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 const getConfig = require('../config/config').getConfig;
 

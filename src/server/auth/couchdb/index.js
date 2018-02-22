@@ -41,11 +41,11 @@ exports.init = function (passport, router) {
               email: res.name,
               provider: 'local'
             });
-          } catch (e) {
-            if (!e || !e.body) return done(null, false, 'unknown error');
+          } catch (err) {
+            if (!err || !err.body) return done(null, false, 'unknown error');
 
             try {
-              let res = JSON.parse(e.body);
+              let res = JSON.parse(err.body);
               return done(null, false, res.reason);
             } catch (e) {
               return done(null, false, 'unknown error');

@@ -21,7 +21,7 @@ describe('ImportContext', function () {
 
     (await ctx.getContents('utf-8')).should.equal(fileContents);
     (await ctx.getContents()).should.deepEqual(
-      new Buffer(fileContents, 'utf-8')
+      Buffer.from(fileContents, 'utf-8')
     );
   });
 });

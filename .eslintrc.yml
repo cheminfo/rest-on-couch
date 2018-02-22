@@ -1,4 +1,4 @@
 extends: cheminfo
 rules:
   camelcase: [error, {properties: never}]
-  indent: [error, 2, {SwitchCase: 1}]
+  callback-return: off

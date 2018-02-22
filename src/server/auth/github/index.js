@@ -1,6 +1,6 @@
 'use strict';
 // Github profile info
-//{
+// {
 //    provider: 'github',
 //        id: 4118690,
 //    displayName: 'Daniel Kostro',
@@ -41,7 +41,7 @@
 //        created_at: '2013-04-10T19:09:53Z',
 //        updated_at: '2015-03-03T15:53:48Z'
 //    }
-//}
+// }
 
 const GitHubStrategy = require('passport-github').Strategy;
 const request = require('request-promise');

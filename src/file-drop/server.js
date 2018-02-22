@@ -3,6 +3,7 @@
 'use strict';
 
 const Koa = require('koa');
+
 const app = new Koa();
 const http = require('http');
 const path = require('path');
@@ -83,7 +84,7 @@ router.post('/upload', getHomeDir, async (ctx) => {
 
 app.on('error', printError);
 
-//Unhandled errors
+// Unhandled errors
 if (config.debugrest) {
   // In debug mode, show unhandled errors to the user
   app.use(function*(next) {

@@ -3,6 +3,7 @@
 const imp = require('../../src/import/import');
 const path = require('path');
 const testUtils = require('../utils/utils');
+
 const databaseName = 'test-new-import';
 
 var importCouch;

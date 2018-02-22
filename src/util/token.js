@@ -1,6 +1,7 @@
 'use strict';
 
 const randomatic = require('randomatic');
+
 const getRandomToken = () => randomatic('Aa0', 32);
 
 const CouchError = require('./CouchError');

@@ -47,7 +47,7 @@ function getValidResult(importType) {
       result.addAttachment({
         jpath: ['jpath'],
         content_type: 'text/plain',
-        contents: new Buffer('the contents', 'utf-8'),
+        contents: Buffer.from('the contents', 'utf-8'),
         filename: 'filename.txt',
         field: 'field',
         reference: 'ref'

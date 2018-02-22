@@ -122,7 +122,7 @@ app.use(async (ctx, next) => {
 
 app.on('error', printError);
 
-//Unhandled errors
+// Unhandled errors
 if (config.debugrest) {
   // In debug mode, show unhandled errors to the user
   app.use(async (ctx, next) => {

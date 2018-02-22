@@ -20,7 +20,7 @@ describe('entries with attachments', function () {
   it('should return attachment data', function () {
     return couch
       .getAttachmentByName('entryWithAttachment', 'test.txt', 'b@b.com')
-      .should.be.fulfilledWith(new Buffer('THIS IS A TEST'));
+      .should.be.fulfilledWith(Buffer.from('THIS IS A TEST'));
   });
 
   it('should delete an attachment from a document given by its uuid', function () {

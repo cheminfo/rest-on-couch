@@ -4,6 +4,7 @@ const request = require('../setup').getFileDropAgent();
 const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
+
 const homedir = path.join(__dirname, '../homedir');
 
 describe('drop file server', function () {
@@ -11,7 +12,7 @@ describe('drop file server', function () {
     rimraf.sync(path.join(homedir, 'test/kind1'));
   });
   it('api endpoint using query strings', function () {
-    const buffer = new Buffer('test with query strings');
+    const buffer = Buffer.from('test with query strings');
     return request
       .post('/upload?kind=kind1&database=test&filename=test 123')
       .send(buffer)
@@ -26,7 +27,7 @@ describe('drop file server', function () {
   });
 
   it('api endpoint using path paramaters', function () {
-    const buffer = new Buffer('test with params');
+    const buffer = Buffer.from('test with params');
     return request
       .post('/upload/test/kind1/test123')
       .send(buffer)
@@ -41,7 +42,7 @@ describe('drop file server', function () {
   });
 
   it('sending a file twice should rename it with an incremental part', function () {
-    const buffer = new Buffer('test conflict');
+    const buffer = Buffer.from('test conflict');
     return request
       .post('/upload?kind=kind1&database=test&filename=testConflict.txt')
       .send(buffer)
