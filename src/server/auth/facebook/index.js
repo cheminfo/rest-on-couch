@@ -1,6 +1,6 @@
 'use strict';
 // Facebook profile example
-//{
+// {
 //    id: '739343132829716',
 //        username: undefined,
 //    displayName: 'Daniel Kostro',
@@ -29,7 +29,7 @@
 //        updated_time: '2014-03-16T09:40:42+0000',
 //        verified: true
 //    }
-//}
+// }
 const FacebookStrategy = require('passport-facebook');
 
 exports.init = function (passport, router, config) {

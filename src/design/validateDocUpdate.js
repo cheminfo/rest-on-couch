@@ -91,7 +91,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
       throw { forbidden: 'Missing last modification username' };
     }
     // TODO: validate owner
-    //validateUser(newDoc.$lastModification);
+    // validateUser(newDoc.$lastModification);
   }
 
   if (!newDoc.$type || validTypes.indexOf(newDoc.$type) === -1) {
