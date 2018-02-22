@@ -282,11 +282,7 @@ exports.createGroup = composeWithError(async (ctx) => {
 });
 
 exports.getGroups = composeWithError(async (ctx) => {
-  ctx.body = await ctx.state.couch.getDocsAsOwner(
-    ctx.state.userEmail,
-    'group',
-    { onlyDoc: true }
-  );
+  ctx.body = await ctx.state.couch.getGroups(ctx.state.userEmail);
 });
 
 exports.getGroupUsers = composeWithError(async (ctx) => {

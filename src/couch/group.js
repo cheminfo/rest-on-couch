@@ -137,6 +137,27 @@ const methods = {
   },
 
   /**
+   * Returns the list of groups that the user is allowed to read
+   * @param {string} user
+   * @return {Array}
+   */
+  async getGroups(user) {
+    debug.trace(`getGroups (${user})`);
+    await this.open();
+    const ok = await validate.checkGlobalRight(this, user, 'readGroup');
+    if (ok) {
+      return nanoPromise.queryView(
+        this._db,
+        'documentByType',
+        { key: 'group', include_docs: true },
+        { onlyDoc: true }
+      );
+    } else {
+      return this.getDocsAsOwner(user, 'group', { onlyDoc: true });
+    }
+  },
+
+  /**
    * Returns a list of groups that grant a given right to the user
    * @param {string} user
    * @param {string} right
