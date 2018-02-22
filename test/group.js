@@ -73,13 +73,24 @@ describe('group methods', function () {
       });
   });
 
-  it('getGroups should return users groups', function () {
-    return couch
-      .getDocsAsOwner('a@a.com', 'group', { onlyDoc: true })
-      .then(function (docs) {
-        docs.should.have.lengthOf(2);
-        docs[0].users[0].should.equal('a@a.com');
-      });
+  it('getGroups should return users groups when owner without global readGroup right', function () {
+    return couch.getGroups('a@a.com').then(function (docs) {
+      docs.should.have.lengthOf(2);
+      docs[0].users[0].should.equal('a@a.com');
+    });
+  });
+
+  it('getGroups should return groups when owner not owner but has global readGroup right', function () {
+    return couch.getGroups('b@b.com').then(function (docs) {
+      docs.should.have.lengthOf(2);
+      docs[0].users[0].should.equal('a@a.com');
+    });
+  });
+
+  it('getGroups should not return groups when not owner and without the global readGroup right', function () {
+    return couch.getGroups('c@c.com').then(function (docs) {
+      docs.should.have.lengthOf(0);
+    });
   });
 });
 

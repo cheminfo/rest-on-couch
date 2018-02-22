@@ -108,7 +108,8 @@ module.exports = function () {
           read: ['anonymous'],
           createGroup: ['anonymous'],
           create: ['anonymous'],
-          addAttachment: ['anonymous']
+          addAttachment: ['anonymous'],
+          readGroup: ['b@b.com']
         }
       });
       return global.couch.open();
