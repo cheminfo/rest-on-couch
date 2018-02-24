@@ -80,6 +80,12 @@ router.post(
 router.get('/:dbname/groups', couch.getGroups);
 router.get('/:dbname/group/:name', couch.getGroup);
 router.put('/:dbname/group/:name', couch.createGroup);
+router.put(
+  '/:dbname/group/:name/properties',
+  getUuidFromGroupName,
+  parseJson1mb,
+  couch.setGroupProperties
+);
 router.delete('/:dbname/group/:name', couch.deleteGroup);
 
 // Group users management

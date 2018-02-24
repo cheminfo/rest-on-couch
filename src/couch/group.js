@@ -215,6 +215,16 @@ const methods = {
     return nanoMethods.save(this._db, group, user);
   },
 
+  async setGroupProperties(uuid, user, properties = {}) {
+    debug(`setGroupProperties (${uuid}, ${user}, ${properties})`);
+    await this.open();
+    const group = await this.getDocByRights(uuid, user, 'write', 'group');
+    if (properties.description) {
+      group.description = properties.description;
+    }
+    return nanoMethods.save(this._db, group, user);
+  },
+
   async setLdapGroupProperties(uuid, user, properties = {}) {
     debug(`setLdapGroupProperties (${uuid}, ${user}, ${properties}`);
     await this.open();
