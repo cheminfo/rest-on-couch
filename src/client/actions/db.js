@@ -98,17 +98,31 @@ export function removeGroup(groupName) {
   };
 }
 
+export function setGroupProperties(groupName, properties) {
+  const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
+  const setPropUrl = `${groupUrl}/properties`;
+  return {
+    type: UPDATE_GROUP,
+    meta: groupName,
+    payload: doUpdateGroupProperties(groupUrl, setPropUrl, properties)
+  };
+}
+
 export function setLdapGroupProperties(groupName, properties) {
   const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
   const setPropUrl = `${groupUrl}/ldap/properties`;
   return {
     type: UPDATE_GROUP,
     meta: groupName,
-    payload: apiFetchJSON(setPropUrl, {
-      method: 'PUT',
-      body: JSON.stringify(properties)
-    }).then(() => apiFetchJSON(groupUrl))
+    payload: doUpdateGroupProperties(groupUrl, setPropUrl, properties)
   };
+}
+
+function doUpdateGroupProperties(groupUrl, setPropUrl, properties) {
+  return apiFetchJSON(setPropUrl, {
+    method: 'PUT',
+    body: JSON.stringify(properties)
+  }).then(() => apiFetchJSON(groupUrl));
 }
 
 export function syncLdapGroup(groupName) {

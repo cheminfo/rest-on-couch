@@ -361,6 +361,14 @@ exports.deleteGroup = composeWithError(async (ctx) => {
   respondOk(ctx);
 });
 
+exports.setGroupProperties = composeWithError(async (ctx) => {
+  ctx.body = await ctx.state.couch.setGroupProperties(
+    ctx.params.uuid,
+    ctx.state.userEmail,
+    ctx.request.body
+  );
+});
+
 exports.setLdapGroupProperties = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.setLdapGroupProperties(
     ctx.params.uuid,

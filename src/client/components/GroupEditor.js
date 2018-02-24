@@ -11,6 +11,7 @@ class GroupEditor extends PureComponent {
       addValueToGroup,
       removeValueFromGroup,
       removeGroup,
+      setGroupProperties,
       setLdapGroupProperties,
       syncLdapGroup
     } = this.props;
@@ -41,6 +42,15 @@ class GroupEditor extends PureComponent {
           </h4>
         </div>
         <div className="content">
+          <EditableTextField
+            label="Description"
+            value={group.description}
+            onSubmit={(value) =>
+              setGroupProperties(group.name, {
+                description: value
+              })
+            }
+          />
           {group.groupType === 'ldap' ? (
             <div>
               <EditableTextField

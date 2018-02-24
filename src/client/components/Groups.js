@@ -6,6 +6,7 @@ import {
   removeValueFromGroup,
   createGroup,
   removeGroup,
+  setGroupProperties,
   setLdapGroupProperties,
   syncLdapGroup
 } from '../actions/db';
@@ -21,6 +22,7 @@ const Groups = (props) => {
         addValueToGroup={props.addValueToGroup}
         removeValueFromGroup={props.removeValueFromGroup}
         removeGroup={props.removeGroup}
+        setGroupProperties={props.setGroupProperties}
         setLdapGroupProperties={props.setLdapGroupProperties}
         syncLdapGroup={props.syncLdapGroup}
       />
@@ -53,6 +55,7 @@ export default connect(
     removeValueFromGroup,
     createGroup,
     removeGroup,
+    setGroupProperties,
     setLdapGroupProperties,
     syncLdapGroup
   }
