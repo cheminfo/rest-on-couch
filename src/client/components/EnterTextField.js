@@ -20,6 +20,9 @@ class EnterTextField extends React.Component {
   handleSubmit() {
     if (this.isEmpty()) return;
     this.props.onSubmit(this.state.value);
+    this.setState({
+      value: ''
+    });
   }
 
   handleKeyPress(event) {
