@@ -90,29 +90,24 @@ function populate(db) {
   return Promise.all(prom);
 }
 
-module.exports = function () {
+module.exports = async function () {
   global.couch = new Couch({ database: 'test' });
-  return global.couch
-    .open()
-    .then(() =>
-      resetDatabase(
-        global.couch._nano,
-        global.couch._databaseName,
-        global.couch._couchOptions.username
-      )
-    )
-    .then(() => {
-      global.couch = new Couch({
-        database: 'test',
-        rights: {
-          read: ['anonymous'],
-          createGroup: ['anonymous'],
-          create: ['anonymous'],
-          addAttachment: ['anonymous'],
-          readGroup: ['b@b.com']
-        }
-      });
-      return global.couch.open();
-    })
-    .then(() => populate(global.couch._db));
+  await global.couch.open();
+  await resetDatabase(
+    global.couch._nano,
+    global.couch._databaseName,
+    global.couch._couchOptions.username
+  );
+  global.couch = new Couch({
+    database: 'test',
+    rights: {
+      read: ['anonymous'],
+      createGroup: ['anonymous'],
+      create: ['anonymous'],
+      addAttachment: ['anonymous'],
+      readGroup: ['b@b.com']
+    }
+  });
+  await global.couch.open();
+  await populate(global.couch._db);
 };

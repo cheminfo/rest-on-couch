@@ -23,7 +23,7 @@
     "start:pouch": "pouchdb-server --in-memory --config=/tmp/pouchdb-roc-config.json",
     "test": "npm run test-mocha && npm run eslint",
     "test-cov": "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup --reporter dot --recursive --exit",
-    "test-mocha": "mocha --timeout 5000 --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive --exit"
+    "test-mocha": "mocha --timeout 10000 --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive --exit"
   },
   "repository": {
     "type": "git",
