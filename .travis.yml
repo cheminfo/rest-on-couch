@@ -9,6 +9,6 @@ sudo: false
 services:
   - couchdb
 env:
-  - DEBUG=couch:* REST_ON_COUCH_USERNAME=admin REST_ON_COUCH_PASSWORD=admin
+  - REST_ON_COUCH_USERNAME=admin REST_ON_COUCH_PASSWORD=admin
 before_script:
   - sh setupDatabase.sh
