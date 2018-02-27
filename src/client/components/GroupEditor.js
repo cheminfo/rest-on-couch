@@ -92,7 +92,7 @@ class GroupEditor extends PureComponent {
               <div className="col-md-4">
                 <GroupDataEditor
                   type="users"
-                  editable="none"
+                  editable={group.groupType === 'ldap' ? 'none' : 'all'}
                   canAdd={group.groupType !== 'ldap'}
                   data={group.users}
                   addValue={(value) =>
