@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { API_ROOT } from '../api';
 import { checkLogin } from '../actions/login';
+import { dbManager } from '../store';
 
 const LoginGoogle = ({ doGoogleLogin }) => (
   <a href="#" onClick={doGoogleLogin}>
@@ -31,6 +32,7 @@ export default connect(null, (dispatch) => ({
     function checkWindowStatus() {
       if (win.closed) {
         checkLogin(dispatch, 'google');
+        dbManager.syncDb();
       } else {
         setTimeout(checkWindowStatus, 250);
       }
