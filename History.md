@@ -1,3 +1,19 @@
+<a name="5.5.0"></a>
+# [5.5.0](https://github.com/cheminfo/rest-on-couch/compare/v5.4.0...v5.5.0) (2018-03-02)
+
+
+### Bug Fixes
+
+* users could not be removed in a normal group ([ae1be3e](https://github.com/cheminfo/rest-on-couch/commit/ae1be3e))
+
+
+### Features
+
+* **api:** allow to specify rights for user token ([#81](https://github.com/cheminfo/rest-on-couch/issues/81)) ([2383c09](https://github.com/cheminfo/rest-on-couch/commit/2383c09))
+* replace hard delete by soft delete ([1033951](https://github.com/cheminfo/rest-on-couch/commit/1033951))
+
+
+
 <a name="5.4.0"></a>
 # [5.4.0](https://github.com/cheminfo/rest-on-couch/compare/v5.3.1...v5.4.0) (2017-10-31)
 
