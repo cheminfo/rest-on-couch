@@ -2,15 +2,15 @@
 
 const entryUnicity = require('./data/entryUnicity');
 
-describe('global entry unicity', function () {
+describe('global entry unicity', () => {
   beforeEach(entryUnicity);
-  it('createEntry should fail', function () {
+  test('createEntry should fail', () => {
     return couch
       .createEntry('A', 'a@a.com', { throwIfExists: true })
       .should.be.rejectedWith(/entry already exists/);
   });
 
-  it('insertEntry should fail', function () {
+  test('insertEntry should fail', () => {
     return couch
       .insertEntry({ $id: 'A', $content: {} }, 'a@a.com')
       .should.be.rejectedWith(/entry already exists/);

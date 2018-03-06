@@ -5,30 +5,30 @@ const noRights = require('../data/noRights');
 const data = require('../data/data');
 const authenticateAs = require('./authenticate');
 
-describe('basic rest-api as anonymous (noRights)', function () {
-  before(noRights);
+describe('basic rest-api as anonymous (noRights)', () => {
+  beforeAll(noRights);
 
-  it('get an entry', function () {
+  test('get an entry', () => {
     return request.get('/db/test/entry/A').expect(401);
   });
 
-  it('get an entry with token', function () {
+  test('get an entry with token', () => {
     return request.get('/db/test/entry/A?token=mytoken').expect(200);
   });
 
-  it('get an entry with token (wrong uuid)', function () {
+  test('get an entry with token (wrong uuid)', () => {
     return request.get('/db/test/entry/B?token=mytoken').expect(401);
   });
 
-  it('get an entry with token (inexisting token)', function () {
+  test('get an entry with token (inexisting token)', () => {
     return request.get('/db/test/entry/B?token=notexist').expect(401);
   });
 
-  it('not allowed to create a token', function () {
+  test('not allowed to create a token', () => {
     return request.post('/db/test/entry/A/_token').expect(401);
   });
 
-  it('get all entries', function () {
+  test('get all entries', () => {
     return request
       .get('/db/test/entry/_all')
       .expect(200)
@@ -38,15 +38,15 @@ describe('basic rest-api as anonymous (noRights)', function () {
       });
   });
 
-  it('get unknown group', function () {
+  test('get unknown group', () => {
     return request.get('/db/test/group/doesnotexist').expect(404);
   });
 
-  it('get group without permission', function () {
+  test('get group without permission', () => {
     return request.get('/db/test/group/groupA').expect(401);
   });
 
-  it('_all_dbs', function () {
+  test('_all_dbs', () => {
     return request
       .get('/db/_all_dbs')
       .expect(200)
@@ -55,7 +55,7 @@ describe('basic rest-api as anonymous (noRights)', function () {
       });
   });
 
-  it('forbidden datbase names', function () {
+  test('forbidden datbase names', () => {
     return request
       .get('/db/_a$aa/entry/aaa')
       .expect(403)
@@ -68,12 +68,12 @@ describe('basic rest-api as anonymous (noRights)', function () {
   });
 });
 
-describe('rest-api as b@b.com (noRights)', function () {
-  before(() => {
+describe('rest-api as b@b.com (noRights)', () => {
+  beforeAll(() => {
     return noRights().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 
-  it('query view with owner, wrong key', function () {
+  test('query view with owner, wrong key', () => {
     return request
       .get('/db/test/_query/entryIdByRight?key=xxx')
       .expect(200)
@@ -82,7 +82,7 @@ describe('rest-api as b@b.com (noRights)', function () {
       });
   });
 
-  it('query view with owner', function () {
+  test('query view with owner', () => {
     return request
       .get(
         `/db/test/_query/entryIdByRight?key=${encodeURIComponent(
@@ -95,33 +95,36 @@ describe('rest-api as b@b.com (noRights)', function () {
       });
   });
 
-  it('get an entry authenticated', function () {
+  test('get an entry authenticated', () => {
     return request.get('/db/test/entry/B').expect(200);
   });
 
-  it('get an entry authenticated but asAnonymous', function () {
+  test('get an entry authenticated but asAnonymous', () => {
     return request.get('/db/test/entry/B?asAnonymous=true').expect(401);
   });
 
-  it('check if user has read access to a resource', function () {
+  test('check if user has read access to a resource', () => {
     return request
       .get('/db/test/entry/B/_rights/read')
       .expect(200)
       .then((data) => data.body.should.equal(true));
   });
 
-  it('check if user has write access to a resource (as anonymous)', function () {
-    return request
-      .get('/db/test/entry/B/_rights/read?asAnonymous=1')
-      .expect(200)
-      .then((data) => data.body.should.equal(false));
-  });
+  test(
+    'check if user has write access to a resource (as anonymous)',
+    () => {
+      return request
+        .get('/db/test/entry/B/_rights/read?asAnonymous=1')
+        .expect(200)
+        .then((data) => data.body.should.equal(false));
+    }
+  );
 });
 
-describe('rest-api as anonymous (data)', function () {
-  before(data);
+describe('rest-api as anonymous (data)', () => {
+  beforeAll(data);
 
-  it('save an attachment', function () {
+  test('save an attachment', () => {
     return request
       .put('/db/test/entry/B/myattachment.txt')
       .set('Content-Type', 'text/plain')
@@ -138,7 +141,7 @@ describe('rest-api as anonymous (data)', function () {
       });
   });
 
-  it('deletes an attachment', function () {
+  test('deletes an attachment', () => {
     return request
       .delete('/db/test/entry/B/myattachment.txt')
       .send()
@@ -149,18 +152,18 @@ describe('rest-api as anonymous (data)', function () {
   });
 });
 
-describe('basic rest-api as b@b.com', function () {
-  before(() => {
+describe('basic rest-api as b@b.com', () => {
+  beforeAll(() => {
     return data().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 
-  it('get an entry', function () {
+  test('get an entry', () => {
     return couch.getEntryById('A', 'b@b.com').then((entry) => {
       return request.get(`/db/test/entry/${entry._id}`).expect(200);
     });
   });
 
-  it('get all entries', function () {
+  test('get all entries', () => {
     return request
       .get('/db/test/entry/_all')
       .expect(200)
@@ -170,7 +173,7 @@ describe('basic rest-api as b@b.com', function () {
       });
   });
 
-  it('query view', function () {
+  test('query view', () => {
     return request
       .get('/db/test/_view/entryById?key=%22A%22')
       .expect(200)
@@ -180,7 +183,7 @@ describe('basic rest-api as b@b.com', function () {
       });
   });
 
-  it('query view with reduce', function () {
+  test('query view with reduce', () => {
     return request
       .get('/db/test/_view/entryById?reduce=true')
       .expect(200)
@@ -190,7 +193,7 @@ describe('basic rest-api as b@b.com', function () {
       });
   });
 
-  it('create new document', function () {
+  test('create new document', () => {
     return request
       .post('/db/test/entry')
       .send({ $id: 'new', $content: {} })
@@ -201,7 +204,7 @@ describe('basic rest-api as b@b.com', function () {
       });
   });
 
-  it('non-existent document cannot be updated', function () {
+  test('non-existent document cannot be updated', () => {
     // document with uuid A does not exist
     return request
       .put('/db/test/entry/NOTEXIST')
@@ -209,7 +212,7 @@ describe('basic rest-api as b@b.com', function () {
       .expect(404);
   });
 
-  it('existent document cannot be update if no write access', function () {
+  test('existent document cannot be update if no write access', () => {
     // Update document for which user has no access
     return request
       .put('/db/test/entry/B')
@@ -217,14 +220,17 @@ describe('basic rest-api as b@b.com', function () {
       .expect(401);
   });
 
-  it('update existing document with no _rev return 409 (conflict)', function () {
-    return request
-      .put('/db/test/entry/C')
-      .send({ $id: 'C', $content: {} })
-      .expect(409);
-  });
+  test(
+    'update existing document with no _rev return 409 (conflict)',
+    () => {
+      return request
+        .put('/db/test/entry/C')
+        .send({ $id: 'C', $content: {} })
+        .expect(409);
+    }
+  );
 
-  it('update document', function () {
+  test('update document', () => {
     return couch.getEntryById('C', 'b@b.com').then((entry) => {
       return request
         .put('/db/test/entry/C')
@@ -237,11 +243,11 @@ describe('basic rest-api as b@b.com', function () {
     });
   });
 
-  it('create token', function () {
+  test('create token', () => {
     return request.post('/db/test/entry/C/_token').expect(201);
   });
 
-  it('delete document', function () {
+  test('delete document', () => {
     return request
       .del('/db/test/entry/C')
       .expect(200)
@@ -250,17 +256,17 @@ describe('basic rest-api as b@b.com', function () {
       });
   });
 
-  it('get group without permission', function () {
+  test('get group without permission', () => {
     return request.get('/db/test/group/groupA').expect(401);
   });
 });
 
-describe('basic rest-api as a@a.com', function () {
-  before(() => {
+describe('basic rest-api as a@a.com', () => {
+  beforeAll(() => {
     return data().then(() => authenticateAs(request, 'a@a.com', '123'));
   });
 
-  it('get group with permission', function () {
+  test('get group with permission', () => {
     return request
       .get('/db/test/group/groupA')
       .expect(200)
@@ -269,7 +275,7 @@ describe('basic rest-api as a@a.com', function () {
       });
   });
 
-  it('get list of groups', function () {
+  test('get list of groups', () => {
     return request
       .get('/db/test/groups')
       .expect(200)

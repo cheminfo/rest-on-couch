@@ -5,8 +5,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const Couch = require('../..');
 
-describe('ImportContext', function () {
-  it('should instanciate a new import context', async function () {
+describe('ImportContext', () => {
+  test('should instanciate a new import context', async () => {
     const file = path.join(
       __dirname,
       '../homedir/test-new-import/simple/to_process/test.txt'

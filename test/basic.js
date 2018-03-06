@@ -10,16 +10,16 @@ process.on('unhandledRejection', function (err) {
   throw err;
 });
 
-describe('basic initialization tests', function () {
+describe('basic initialization tests', () => {
   let couch;
-  beforeEach(function () {
+  beforeEach(() => {
     couch = Couch.get('test2');
   });
-  it('should init', function () {
+  test('should init', () => {
     return couch.open();
   });
 
-  it('should throw if no database given', function () {
+  test('should throw if no database given', () => {
     return Promise.resolve()
       .then(() => {
         new Couch(); // eslint-disable-line no-new
@@ -27,7 +27,7 @@ describe('basic initialization tests', function () {
       .should.be.rejectedWith('database option is mandatory');
   });
 
-  it('should throw on invalid db name', function () {
+  test('should throw on invalid db name', () => {
     (function () {
       new Couch({ database: '_test' }); // eslint-disable-line no-new
     }.should.throw(/invalid database name/));
@@ -38,10 +38,10 @@ describe('basic initialization tests', function () {
   });
 });
 
-describe('basic initialization with custom design docs', function () {
+describe('basic initialization with custom design docs', () => {
   beforeEach(entryUnicity);
 
-  it('should load the design doc files at initialization', function () {
+  test('should load the design doc files at initialization', () => {
     const app = nanoPromise
       .getDocument(couch._db, `_design/${constants.DESIGN_DOC_NAME}`)
       .then((app) => {
@@ -64,7 +64,7 @@ describe('basic initialization with custom design docs', function () {
     return Promise.all([app, customApp, custom]);
   });
 
-  it('should query a custom design document', function () {
+  test('should query a custom design document', () => {
     return couch.queryEntriesByUser('a@a.com', 'testCustom').then((data) => {
       data.should.have.length(0);
     });

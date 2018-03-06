@@ -3,33 +3,33 @@
 const data = require('./data/data');
 const noRights = require('./data/noRights');
 
-describe('group methods', function () {
+describe('group methods', () => {
   beforeEach(data);
-  it('anyone should be able to create a group', function () {
+  test('anyone should be able to create a group', () => {
     return couch.createGroup('groupX', 'a@a.com').should.be.fulfilled();
   });
 
-  it('cannot create if the group exists', function () {
+  test('cannot create if the group exists', () => {
     return couch
       .createGroup('groupA', 'a@a.com')
       .should.be.rejectedWith(/already exists/);
   });
 
-  it('cannot delete group if user is not the owner of the group', function () {
+  test('cannot delete group if user is not the owner of the group', () => {
     return couch.deleteGroup('groupA', 'b@b.com').should.be.rejected();
   });
 
-  it('should delete a group', function () {
+  test('should delete a group', () => {
     return couch.deleteGroup('groupA', 'a@a.com').should.be.fulfilled();
   });
 
-  it('should throw if deleting non-existant group', function () {
+  test('should throw if deleting non-existant group', () => {
     return couch
       .deleteGroup('inexistant', 'a@a.com')
       .should.be.rejectedWith(/group does not exist/);
   });
 
-  it('should add one user to group', function () {
+  test('should add one user to group', () => {
     return couch
       .addUsersToGroup('groupA', 'a@a.com', 'test123@example.com')
       .then(function () {
@@ -41,7 +41,7 @@ describe('group methods', function () {
       });
   });
 
-  it('should add several users to group', function () {
+  test('should add several users to group', () => {
     return couch
       .addUsersToGroup('groupA', 'a@a.com', [
         'test123@example.com',
@@ -58,7 +58,7 @@ describe('group methods', function () {
       });
   });
 
-  it('should remove users from group', function () {
+  test('should remove users from group', () => {
     return couch
       .addUsersToGroup('groupA', 'a@a.com', ['test123@example.com'])
       .then(function () {
@@ -73,31 +73,40 @@ describe('group methods', function () {
       });
   });
 
-  it('getGroups should return users groups when owner without global readGroup right', function () {
-    return couch.getGroups('a@a.com').then(function (docs) {
-      docs.should.have.lengthOf(2);
-      docs[0].users[0].should.equal('a@a.com');
-    });
-  });
+  test(
+    'getGroups should return users groups when owner without global readGroup right',
+    () => {
+      return couch.getGroups('a@a.com').then(function (docs) {
+        docs.should.have.lengthOf(2);
+        docs[0].users[0].should.equal('a@a.com');
+      });
+    }
+  );
 
-  it('getGroups should return groups when owner not owner but has global readGroup right', function () {
-    return couch.getGroups('b@b.com').then(function (docs) {
-      docs.should.have.lengthOf(2);
-      docs[0].users[0].should.equal('a@a.com');
-    });
-  });
+  test(
+    'getGroups should return groups when owner not owner but has global readGroup right',
+    () => {
+      return couch.getGroups('b@b.com').then(function (docs) {
+        docs.should.have.lengthOf(2);
+        docs[0].users[0].should.equal('a@a.com');
+      });
+    }
+  );
 
-  it('getGroups should not return groups when not owner and without the global readGroup right', function () {
-    return couch.getGroups('c@c.com').then(function (docs) {
-      docs.should.have.lengthOf(0);
-    });
-  });
+  test(
+    'getGroups should not return groups when not owner and without the global readGroup right',
+    () => {
+      return couch.getGroups('c@c.com').then(function (docs) {
+        docs.should.have.lengthOf(0);
+      });
+    }
+  );
 });
 
-describe('group methods (no default rights)', function () {
+describe('group methods (no default rights)', () => {
   beforeEach(noRights);
 
-  it('anyone cannot create group', function () {
+  test('anyone cannot create group', () => {
     return couch
       .createGroup('groupX', 'a@a.com')
       .should.be.rejectedWith(/does not have createGroup right/);

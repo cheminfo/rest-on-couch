@@ -2,10 +2,10 @@
 
 const data = require('./data/noRights');
 
-describe('token methods', function () {
+describe('token methods', () => {
   beforeEach(data);
 
-  it('user should be able to create and get tokens', async () => {
+  test('user should be able to create and get tokens', async () => {
     const tokens = await Promise.all([
       couch.createEntryToken('b@b.com', 'A'),
       couch.createEntryToken('b@b.com', 'B')
@@ -26,7 +26,7 @@ describe('token methods', function () {
     allTokens.length.should.equal(2);
   });
 
-  it('user should be able to create and destroy tokens', async () => {
+  test('user should be able to create and destroy tokens', async () => {
     const token = await couch.createEntryToken('b@b.com', 'A');
     const gotToken = await couch.getToken(token.$id);
     gotToken.$id.should.equal(token.$id);
@@ -34,11 +34,11 @@ describe('token methods', function () {
     return couch.getToken(token.$id).should.be.rejected();
   });
 
-  it('user should not be able to create a token without write right', () => {
+  test('user should not be able to create a token without write right', () => {
     return couch.createEntryToken('b@b.com', 'C').should.be.rejected();
   });
 
-  it('user should be able to create a user token', async () => {
+  test('user should be able to create a user token', async () => {
     const token = await couch.createUserToken('b@b.com');
     token.$id.should.be.a.String();
     token.$creationDate.should.be.a.Number();
@@ -52,7 +52,7 @@ describe('token methods', function () {
     });
   });
 
-  it('token should give read access to non public data', async () => {
+  test('token should give read access to non public data', async () => {
     const token = await couch.createUserToken('b@b.com');
     await couch
       .getEntryById('A', 'a@a.com')
@@ -61,7 +61,7 @@ describe('token methods', function () {
     entry.should.be.an.Object();
   });
 
-  it('token should give only the right for which it was created', async () => {
+  test('token should give only the right for which it was created', async () => {
     const token = await couch.createUserToken('b@b.com', 'delete');
     await couch
       .getEntryById('A', 'a@a.com', { token })
@@ -69,7 +69,7 @@ describe('token methods', function () {
     await couch.deleteEntry('A', 'a@a.com', { token });
   });
 
-  it('anonymous user should not be able to create a token', async () => {
+  test('anonymous user should not be able to create a token', async () => {
     await couch
       .createEntryToken('anonymous', 'A')
       .should.be.rejectedWith('only a user can create a token');
@@ -78,7 +78,7 @@ describe('token methods', function () {
       .should.be.rejectedWith('only a user can create a token');
   });
 
-  it('token should not accept invalid right', async () => {
+  test('token should not accept invalid right', async () => {
     await couch
       .createUserToken('a@a.com', 'test1')
       .should.be.rejectedWith('invalid right: test1');

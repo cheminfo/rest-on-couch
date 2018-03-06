@@ -61,15 +61,15 @@ function getValidResult(importType) {
   return result;
 }
 
-describe('ImportResult', function () {
-  it('valid import results', function () {
+describe('ImportResult', () => {
+  test('valid import results', () => {
     // Valid results shouldn't throw
     getValidResult(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT).check();
     getValidResult(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT).check();
     getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY).check();
   });
 
-  it('valid update type', function () {
+  test('valid update type', () => {
     // Check type of update
     getValidResult(constants.IMPORT_UPDATE_FULL)
       .getUpdateType()
@@ -82,7 +82,7 @@ describe('ImportResult', function () {
       .should.equal(constants.IMPORT_UPDATE_$CONTENT_ONLY);
   });
 
-  it('throws when fields are missing - full upload', function () {
+  test('throws when fields are missing - full upload', () => {
     // Mandotory fields
     checkWithoutPropShouldThrow(
       'id',
@@ -167,7 +167,7 @@ describe('ImportResult', function () {
     // Import without attachment
   });
 
-  it('throws when fields are missing - without attachment', function () {
+  test('throws when fields are missing - without attachment', () => {
     checkWithoutPropShouldThrow(
       'id',
       'id should be defined',
@@ -190,7 +190,7 @@ describe('ImportResult', function () {
     );
   });
 
-  it('throws when fields aer missing - content only', function () {
+  test('throws when fields aer missing - content only', () => {
     checkWithoutPropShouldThrow(
       'id',
       'id should be defined',
@@ -213,7 +213,7 @@ describe('ImportResult', function () {
     );
   });
 
-  it('Cannot skip metadata without skipping attachment', function () {
+  test('Cannot skip metadata without skipping attachment', () => {
     const result = new ImportResult();
     result.skipMetadata();
     (function () {
