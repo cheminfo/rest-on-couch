@@ -4,21 +4,21 @@ const data = require('../data/data');
 const authenticateAs = require('./authenticate');
 const request = require('../setup').getAgent();
 
-describe('User REST-api (data, anonymous)', function () {
-  before(data);
-  it('Should return 404 if anonymous', function () {
+describe('User REST-api (data, anonymous)', () => {
+  beforeAll(data);
+  test('Should return 404 if anonymous', () => {
     request.get('/db/test/user/_me').expect(404);
   });
 
   // TODO: save user as anonymous. What status code?
 });
 
-describe('User REST-api (data, a@a.com', function () {
-  before(() => {
+describe('User REST-api (data, a@a.com', () => {
+  beforeAll(() => {
     return data().then(() => authenticateAs(request, 'a@a.com', '123'));
   });
 
-  it('Should get user details', function () {
+  test('Should get user details', () => {
     return request
       .get('/db/test/user/_me')
       .expect(200)
@@ -28,7 +28,7 @@ describe('User REST-api (data, a@a.com', function () {
       });
   });
 
-  it('Should save user details', function () {
+  test('Should save user details', () => {
     return request
       .post('/db/test/user/_me')
       .send({ val: 'x' })

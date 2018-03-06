@@ -2,36 +2,39 @@
 
 const data = require('../data/noRights');
 
-describe('entry reads, database with default groups', function () {
-  before(data);
+describe('entry reads, database with default groups', () => {
+  beforeAll(data);
 
-  it('should grant read access to owner', function () {
+  test('should grant read access to owner', () => {
     return couch
       .getEntry('entryWithDefaultAnonymousRead', 'x@x.com')
       .should.eventually.be.an.Object();
   });
 
-  it('should grant read access to anonymous user', function () {
+  test('should grant read access to anonymous user', () => {
     return couch
       .getEntry('entryWithDefaultAnonymousRead', 'anonymous')
       .should.eventually.be.an.Object();
   });
 
-  it('should grant read access to logged in user', function () {
+  test('should grant read access to logged in user', () => {
     return couch
       .getEntry('entryWithDefaultAnyuserRead', 'a@a.com')
       .should.eventually.be.an.Object();
   });
 
-  it('should not grant read access to anonymous user', function () {
+  test('should not grant read access to anonymous user', () => {
     return couch
       .getEntry('entryWithDefaultAnyuserRead', 'anonymous')
       .should.be.rejectedWith(/no access/);
   });
 
-  it('should grant read access to anonymous user (multiple groups)', function () {
-    return couch
-      .getEntry('entryWithDefaultMultiRead', 'anonymous')
-      .should.eventually.be.an.Object();
-  });
+  test(
+    'should grant read access to anonymous user (multiple groups)',
+    () => {
+      return couch
+        .getEntry('entryWithDefaultMultiRead', 'anonymous')
+        .should.eventually.be.an.Object();
+    }
+  );
 });

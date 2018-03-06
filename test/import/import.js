@@ -15,11 +15,11 @@ const textFile = path.resolve(
 );
 // const jsonFile = path.resolve(__dirname, '../homedir/test-new-import/simple/to_process/test.json');
 
-describe('import', function () {
-  before(async function () {
+describe('import', () => {
+  beforeAll(async function () {
     importCouch = await testUtils.resetDatabase(databaseName);
   });
-  it('full import', function () {
+  test('full import', () => {
     return imp.import(databaseName, 'simple', textFile).then(() => {
       return importCouch.getEntryById('test.txt', 'a@a.com').then((data) => {
         data.should.be.an.Object();
@@ -67,7 +67,7 @@ describe('import', function () {
     });
   });
 
-  it('All attachments and metadata are separate', function () {
+  test('All attachments and metadata are separate', () => {
     return imp.import(databaseName, 'separate', textFile).then(() => {
       return importCouch.getEntryById('separate', 'a@a.com').then((data) => {
         data.should.be.an.Object();

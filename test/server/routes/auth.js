@@ -2,9 +2,9 @@
 
 const request = require('../../setup').getAgent();
 
-describe('server/routes/auth', function () {
-  describe('session', function () {
-    it('should return anonymous for unauthenticated users', function () {
+describe('server/routes/auth', () => {
+  describe('session', () => {
+    test('should return anonymous for unauthenticated users', () => {
       return request
         .get('/auth/session')
         .expect(200)

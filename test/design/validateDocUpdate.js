@@ -7,15 +7,15 @@ global.isArray = function (obj) {
   return Array.isArray(obj);
 };
 
-describe('validate_doc_update', function () {
-  describe('general', function () {
-    it('$type', function () {
+describe('validate_doc_update', () => {
+  describe('general', () => {
+    test('$type', () => {
       assert({ $type: 'abc' }, null, 'Invalid type: abc');
       assert({ $type: 'entry' }, { $type: 'group' }, /Cannot change the type/);
     });
   });
-  describe('$type: entry', function () {
-    it('id', function () {
+  describe('$type: entry', () => {
+    test('id', () => {
       assert(
         addOwners(addDate({ $type: 'entry', $id: 'abc' })),
         addOwners(addDate({ $type: 'entry', $id: 'xyz' })),
@@ -39,7 +39,7 @@ describe('validate_doc_update', function () {
         'Cannot change the ID'
       );
     });
-    it('date', function () {
+    test('date', () => {
       assert(
         addOwners({ $type: 'entry', $id: 'abc' }),
         null,
@@ -74,7 +74,7 @@ describe('validate_doc_update', function () {
         /cannot change to the past/
       );
     });
-    it('owners', function () {
+    test('owners', () => {
       assert(addDate(addTypeID({ $owners: [] })), null, /must be an email/);
       assert(
         addDate(addTypeID({ $owners: ['abc'] })),
@@ -83,14 +83,14 @@ describe('validate_doc_update', function () {
       );
       assert(addDate(addTypeID({})), null, /Missing owners/);
     });
-    it('group', function () {
+    test('group', () => {
       assert(
         addDate(addOwners(addGroup({ name: 'a@a.com', users: [] }))),
         null,
         /Names can only contain alphanumerical characters and _-\./
       );
     });
-    it('kind', function () {
+    test('kind', () => {
       assert(
         addOwners(addDate({ $type: 'entry', $id: 'abc' })),
         addOwners(addDate({ $type: 'entry', $id: 'abc', $kind: 'xy' })),

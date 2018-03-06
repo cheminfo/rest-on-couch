@@ -17,9 +17,9 @@ const jsonFile = path.resolve(
   '../../homedir/test-import/json/to_process/test.json'
 );
 
-describe('legacy import', function () {
-  before(initCouch);
-  it('parse', function () {
+describe('legacy import', () => {
+  beforeAll(initCouch);
+  test('parse', () => {
     return imp.import('test-import', 'parse', textFile).then(() => {
       return importCouch
         .getEntryById('parse', 'test-import@test.com')
@@ -37,7 +37,7 @@ describe('legacy import', function () {
     });
   });
 
-  it('ignore import', function () {
+  test('ignore import', () => {
     return imp.import('test-import', 'ignore', textFile).then(() => {
       return importCouch
         .getEntryById('ignored', 'test-import@test.com')
@@ -45,7 +45,7 @@ describe('legacy import', function () {
     });
   });
 
-  it('import json file', function () {
+  test('import json file', () => {
     return imp.import('test-import', 'json', jsonFile).then(() => {
       return importCouch
         .getEntryById('json', 'test-import@test.com')

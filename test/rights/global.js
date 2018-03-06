@@ -2,50 +2,53 @@
 const anyuserData = require('../data/anyuser');
 const noRights = require('../data/noRights');
 
-describe('Access based on global rights', function () {
-  before(anyuserData);
+describe('Access based on global rights', () => {
+  beforeAll(anyuserData);
 
-  it('Should grant read access to any logged user', function () {
+  test('Should grant read access to any logged user', () => {
     return couch.getEntry('A', 'a@a.com').then((doc) => {
       doc.should.be.an.instanceOf(Object);
     });
   });
 
-  it('Should not grant read access to anonymous', function () {
+  test('Should not grant read access to anonymous', () => {
     return couch.getEntry('A', 'anonymous').should.be.rejectedWith(/no access/);
   });
 });
 
-describe('Edit global rights', function () {
-  before(noRights);
+describe('Edit global rights', () => {
+  beforeAll(noRights);
 
-  it('Should refuse non-admins', function () {
+  test('Should refuse non-admins', () => {
     return couch
       .addGlobalRight('a@a.com', 'read', 'a@a.com')
       .should.be.rejectedWith(/administrators/);
   });
 
-  it('Should only accept valid types', function () {
+  test('Should only accept valid types', () => {
     return couch
       .addGlobalRight('admin@a.com', 'invalid', 'a@a.com')
       .should.be.rejectedWith(/Invalid global right type/);
   });
 
-  it('Should not grant read before editing global right', function () {
+  test('Should not grant read before editing global right', () => {
     return couch.getEntry('B', 'a@a.com').should.be.rejectedWith(/no access/);
   });
 
-  it('Should add global read right and grant access', function () {
+  test('Should add global read right and grant access', () => {
     return couch
       .addGlobalRight('admin@a.com', 'read', 'a@a.com')
       .then(() => couch.getEntry('B', 'a@a.com'))
       .should.eventually.be.an.instanceOf(Object);
   });
 
-  it('Should remove global read right and not grant access anymore', function () {
-    return couch
-      .removeGlobalRight('admin@a.com', 'read', 'a@a.com')
-      .then(() => couch.getEntry('B', 'a@a.com'))
-      .should.be.rejectedWith(/no access/);
-  });
+  test(
+    'Should remove global read right and not grant access anymore',
+    () => {
+      return couch
+        .removeGlobalRight('admin@a.com', 'read', 'a@a.com')
+        .then(() => couch.getEntry('B', 'a@a.com'))
+        .should.be.rejectedWith(/no access/);
+    }
+  );
 });

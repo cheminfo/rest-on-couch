@@ -4,12 +4,12 @@ const request = require('../setup').getAgent();
 const data = require('../data/data');
 const authenticateAs = require('./authenticate');
 
-describe('rest api - manage owners', function () {
+describe('rest api - manage owners', () => {
   const id = 'A';
-  before(function () {
+  beforeAll(function () {
     return data().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
-  it('get owners', function () {
+  test('get owners', () => {
     return request
       .get(`/db/test/entry/${id}/_owner`)
       .expect(200)
@@ -18,7 +18,7 @@ describe('rest api - manage owners', function () {
         result.body[0].should.equal('b@b.com');
       });
   });
-  it('add owner', function () {
+  test('add owner', () => {
     return request
       .put(`/db/test/entry/${id}/_owner/test`)
       .expect(200)
@@ -27,7 +27,7 @@ describe('rest api - manage owners', function () {
         entry.$owners.should.containEql('test');
       });
   });
-  it('remove owner', function () {
+  test('remove owner', () => {
     return couch
       .addOwnersToDoc(id, 'b@b.com', 'testRemove', 'entry')
       .then(() => {

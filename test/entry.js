@@ -3,55 +3,55 @@
 const data = require('./data/data');
 const constants = require('./data/constants');
 
-describe('entry reads', function () {
-  before(data);
-  it('should grant read access to read-group member', function () {
+describe('entry reads', () => {
+  beforeAll(data);
+  test('should grant read access to read-group member', () => {
     return couch.getEntry('A', 'a@a.com').then((doc) => {
       doc.should.be.an.instanceOf(Object);
     });
   });
 
-  it('should grant read access to owner', function () {
+  test('should grant read access to owner', () => {
     return couch.getEntry('A', 'b@b.com').then((doc) => {
       doc.should.be.an.instanceOf(Object);
     });
   });
 
-  it('getEntryById should work for owner', function () {
+  test('getEntryById should work for owner', () => {
     return couch.getEntry('A', 'b@b.com').then((doc) => {
       doc.should.be.an.instanceOf(Object);
     });
   });
 
-  it('should grant read access to entry with anonymous read', function () {
+  test('should grant read access to entry with anonymous read', () => {
     return couch.getEntry('anonymousEntry', 'anonymous').then((doc) => {
       doc.should.be.an.instanceOf(Object);
     });
   });
 
-  it('should get entry by uuid', function () {
+  test('should get entry by uuid', () => {
     return couch.getEntry('A', 'b@b.com').then((doc) => {
       doc.should.be.an.instanceOf(Object);
     });
   });
 
-  it('should not find document', function () {
+  test('should not find document', () => {
     return couch
       .getEntry('inexistant', 'b@b.com')
       .should.be.rejectedWith(/not found/);
   });
 
-  it('should get all readable entries for a user', function () {
+  test('should get all readable entries for a user', () => {
     return couch.getEntriesByUserAndRights('b@b.com', 'read').then((entries) => {
       entries.should.have.length(5);
     });
   });
 });
 
-describe('entry creation and editions', function () {
+describe('entry creation and editions', () => {
   beforeEach(data);
 
-  it('create a new entry', function () {
+  test('create a new entry', () => {
     return couch.createEntry('myid', 'a@a.com', {}).then((entryInfo) => {
       entryInfo.should.have.property('id');
       entryInfo.should.have.property('rev');
@@ -61,7 +61,7 @@ describe('entry creation and editions', function () {
     });
   });
 
-  it('create two entries with same id but different users', function () {
+  test('create two entries with same id but different users', () => {
     return couch.createEntry('myid', 'a@a.com').then((entryInfo) => {
       return couch.createEntry('myid', 'b@b.com').then((entryInfo2) => {
         entryInfo.id.should.not.equal(entryInfo2.id);
@@ -69,7 +69,7 @@ describe('entry creation and editions', function () {
     });
   });
 
-  it('create an entry for which the owner and id already exists', function () {
+  test('create an entry for which the owner and id already exists', () => {
     return couch.createEntry('myid', 'a@a.com').then((entryInfo) => {
       return couch.createEntry('myid', 'a@a.com').then((entryInfo2) => {
         entryInfo.id.should.equal(entryInfo2.id);
@@ -77,13 +77,13 @@ describe('entry creation and editions', function () {
     });
   });
 
-  it('anonymous cannot insert a new entry', function () {
+  test('anonymous cannot insert a new entry', () => {
     return couch
       .insertEntry(constants.newEntry, 'anonymous')
       .should.be.rejectedWith(/must be an email/);
   });
 
-  it('entry should have content', function () {
+  test('entry should have content', () => {
     return couch
       .insertEntry(
         {
@@ -94,7 +94,7 @@ describe('entry creation and editions', function () {
       .should.be.rejectedWith(/has no content/);
   });
 
-  it('update entry should reject if entry does not exist', function () {
+  test('update entry should reject if entry does not exist', () => {
     return couch
       .insertEntry(
         {
@@ -107,7 +107,7 @@ describe('entry creation and editions', function () {
       .should.be.rejectedWith(/does not exist/);
   });
 
-  it('update entry without _id should reject', function () {
+  test('update entry without _id should reject', () => {
     return couch
       .insertEntry(
         {
@@ -119,7 +119,7 @@ describe('entry creation and editions', function () {
       .should.be.rejectedWith(/should have an _id/);
   });
 
-  it('create new entry that has an _id is not possible', function () {
+  test('create new entry that has an _id is not possible', () => {
     return couch
       .insertEntry(
         {
@@ -132,18 +132,21 @@ describe('entry creation and editions', function () {
       .should.be.rejectedWith(/should not have _id/);
   });
 
-  it('anybody not anonymous can insert a new entry (without _id)', function () {
-    return couch.insertEntry(constants.newEntry, 'z@z.com').then((res) => {
-      res.action.should.equal('created');
-      res.info.id.should.be.an.instanceOf(String);
-      res.info.rev.should.be.an.instanceOf(String);
-      return couch
-        .getEntryById(constants.newEntry.$id, 'z@z.com')
-        .should.be.fulfilled();
-    });
-  });
+  test(
+    'anybody not anonymous can insert a new entry (without _id)',
+    () => {
+      return couch.insertEntry(constants.newEntry, 'z@z.com').then((res) => {
+        res.action.should.equal('created');
+        res.info.id.should.be.an.instanceOf(String);
+        res.info.rev.should.be.an.instanceOf(String);
+        return couch
+          .getEntryById(constants.newEntry.$id, 'z@z.com')
+          .should.be.fulfilled();
+      });
+    }
+  );
 
-  it('anybody not anonymous can insert a new entry (with _id)', function () {
+  test('anybody not anonymous can insert a new entry (with _id)', () => {
     return couch.insertEntry(constants.newEntryWithId, 'z@z.com').then(() => {
       return couch
         .getEntryById('D', 'z@z.com')
@@ -151,7 +154,7 @@ describe('entry creation and editions', function () {
     });
   });
 
-  it('insert new entry with groups', function () {
+  test('insert new entry with groups', () => {
     return couch
       .insertEntry(constants.newEntry, 'z@z.com', {
         groups: ['groupX', 'groupY']
@@ -162,7 +165,7 @@ describe('entry creation and editions', function () {
       });
   });
 
-  it('should throw a conflict error', function () {
+  test('should throw a conflict error', () => {
     return couch.getEntryById('A', 'b@b.com').then((doc) => {
       return couch.insertEntry(doc, 'b@b.com').then(() => {
         return couch
@@ -172,7 +175,7 @@ describe('entry creation and editions', function () {
     });
   });
 
-  it('should modify an entry', function () {
+  test('should modify an entry', () => {
     return couch.getEntry('A', 'a@a.com').then((doc) => {
       doc.$content.abc = 'abc';
       return couch.insertEntry(doc, 'a@a.com').then(() => {
@@ -183,13 +186,13 @@ describe('entry creation and editions', function () {
     });
   });
 
-  it('should delete an entry by uuid', function () {
+  test('should delete an entry by uuid', () => {
     return couch.deleteEntry('A', 'a@a.com').then(() => {
       return couch.getEntry('A', 'a@a.com').should.be.rejectedWith(/not found/);
     });
   });
 
-  it('should add group to entry', function () {
+  test('should add group to entry', () => {
     return couch
       .addOwnersToDoc('A', 'b@b.com', 'groupD', 'entry')
       .then(() => couch.getEntry('A', 'b@b.com'))
@@ -198,7 +201,7 @@ describe('entry creation and editions', function () {
       });
   });
 
-  it('Add existing group to entry', function () {
+  test('Add existing group to entry', () => {
     return couch
       .addOwnersToDoc('A', 'b@b.com', 'groupD', 'entry')
       .then(() => couch.addOwnersToDoc('A', 'b@b.com', 'groupD', 'entry'))
@@ -212,7 +215,7 @@ describe('entry creation and editions', function () {
       });
   });
 
-  it('Add existing group to entry (2)', function () {
+  test('Add existing group to entry (2)', () => {
     return couch
       .addOwnersToDoc('A', 'b@b.com', 'anonymousRead', 'entry')
       .then(() =>
@@ -228,13 +231,13 @@ describe('entry creation and editions', function () {
       });
   });
 
-  it('should fail to add group to entry', function () {
+  test('should fail to add group to entry', () => {
     return couch
       .addOwnersToDoc('A', 'a@a.com', 'groupC', 'entry')
       .should.be.rejectedWith(/user has no access/);
   });
 
-  it('should remove group from entry', function () {
+  test('should remove group from entry', () => {
     return couch
       .removeOwnersFromDoc('A', 'b@b.com', 'groupB', 'entry')
       .then(() => couch.getEntry('A', 'b@b.com'))
@@ -243,51 +246,51 @@ describe('entry creation and editions', function () {
       });
   });
 
-  it('should fail to remove group from entry', function () {
+  test('should fail to remove group from entry', () => {
     return couch
       .removeOwnersFromDoc('A', 'a@a.com', 'groupB', 'entry')
       .should.be.rejectedWith(/user has no access/);
   });
 
-  it('should fail to remove primary owner', function () {
+  test('should fail to remove primary owner', () => {
     return couch
       .removeOwnersFromDoc('A', 'b@b.com', 'b@b.com', 'entry')
       .should.be.rejectedWith(/cannot remove primary owner/);
   });
 });
 
-describe('entry rights', function () {
-  before(data);
-  it('should check if user a@a.com has read access to entry', () =>
+describe('entry rights', () => {
+  beforeAll(data);
+  test('should check if user a@a.com has read access to entry', () =>
     couch
       .hasRightForEntry('A', 'a@a.com', 'read')
       .should.eventually.be.equal(true));
-  it('should check if user a@a.com has write access to entry', () =>
+  test('should check if user a@a.com has write access to entry', () =>
     couch
       .hasRightForEntry('A', 'a@a.com', 'write')
       .should.eventually.be.equal(true));
-  it('should check if user a@a.com has delete access to entry', () =>
+  test('should check if user a@a.com has delete access to entry', () =>
     couch
       .hasRightForEntry('A', 'a@a.com', 'delete')
       .should.eventually.be.equal(true));
-  it('should reject when entry does not exist', () =>
+  test('should reject when entry does not exist', () =>
     couch
       .hasRightForEntry('does_not_exist', 'a@a.com', 'read')
       .should.be.rejectedWith(/not found/));
   // Global rights grant read and addAttachment rights
-  it('should check if user b@b.com has read access to entry', () =>
+  test('should check if user b@b.com has read access to entry', () =>
     couch
       .hasRightForEntry('B', 'b@b.com', 'read')
       .should.eventually.be.equal(true));
-  it('should check if user b@b.com has addAttachment access to entry', () =>
+  test('should check if user b@b.com has addAttachment access to entry', () =>
     couch
       .hasRightForEntry('B', 'b@b.com', 'addAttachment')
       .should.eventually.be.equal(true));
-  it('should check if user b@b.com has write access to entry', () =>
+  test('should check if user b@b.com has write access to entry', () =>
     couch
       .hasRightForEntry('B', 'b@b.com', 'write')
       .should.eventually.be.equal(false));
-  it('should check if user b@b.com has delete access to entry', () =>
+  test('should check if user b@b.com has delete access to entry', () =>
     couch
       .hasRightForEntry('B', 'b@b.com', 'delete')
       .should.eventually.be.equal(false));
