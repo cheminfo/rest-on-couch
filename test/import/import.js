@@ -22,36 +22,30 @@ describe('import', () => {
   test('full import', () => {
     return imp.import(databaseName, 'simple', textFile).then(() => {
       return importCouch.getEntryById('test.txt', 'a@a.com').then((data) => {
-        data.should.be.an.Object();
-        data.$content.should.be.an.Object();
-
+        expect(data).toBeDefined();
+        expect(data.$content).toBeDefined();
         // Check that new content has been merged
-        data.$content.sideEffect.should.equal(true);
+        expect(data.$content.sideEffect).toBe(true);
 
         // Check that the correct owners have been added
-        data.$owners.should.deepEqual([
-          'a@a.com',
-          'group1',
-          'group2',
-          'group3'
-        ]);
+        expect(data.$owners).toEqual(['a@a.com', 'group1', 'group2', 'group3']);
 
         // Main metadata
         let metadata = data.$content.jpath.in.document[0];
-        metadata.should.be.an.Object();
+        expect(metadata).toBeDefined();
         // metadata has been added
-        metadata.hasMetadata.should.equal(true);
+        expect(metadata.hasMetadata).toBe(true);
         // a reference to the attachment has been added
-        metadata.field.filename.should.equal('jpath/in/document/test.txt');
+        expect(metadata.field.filename).toBe('jpath/in/document/test.txt');
         // Reference has been added
-        metadata.reference.should.equal('test.txt');
+        expect(metadata.reference).toBe('test.txt');
 
         // Additional metadata
         metadata = data.$content.other.jpath[0];
-        metadata.should.be.an.Object();
-        metadata.hasMetadata.should.equal(true);
-        metadata.reference.should.equal('testRef');
-        metadata.testField.filename.should.equal(
+        expect(metadata).toBeDefined();
+        expect(metadata.hasMetadata).toBe(true);
+        expect(metadata.reference).toBe('testRef');
+        expect(metadata.testField.filename).toBe(
           'other/jpath/testFilename.txt'
         );
 
@@ -59,10 +53,10 @@ describe('import', () => {
         const mainAttachment = data._attachments['jpath/in/document/test.txt'];
         const secondaryAttachment =
           data._attachments['other/jpath/testFilename.txt'];
-        mainAttachment.should.be.an.Object();
-        secondaryAttachment.should.be.an.Object();
-        mainAttachment.content_type.should.equal('plain/text');
-        secondaryAttachment.content_type.should.equal('plain/text');
+        expect(mainAttachment).toBeDefined();
+        expect(secondaryAttachment).toBeDefined();
+        expect(mainAttachment.content_type).toBe('plain/text');
+        expect(secondaryAttachment.content_type).toBe('plain/text');
       });
     });
   });
@@ -70,31 +64,26 @@ describe('import', () => {
   test('All attachments and metadata are separate', () => {
     return imp.import(databaseName, 'separate', textFile).then(() => {
       return importCouch.getEntryById('separate', 'a@a.com').then((data) => {
-        data.should.be.an.Object();
-        data.$content.should.be.an.Object();
+        expect(data).toBeDefined();
+        expect(data.$content).toBeDefined();
 
         // Check that new content has been merged
-        data.$content.sideEffect.should.equal(true);
+        expect(data.$content.sideEffect).toBe(true);
 
         // Check that the correct owners have been added
-        data.$owners.should.deepEqual([
-          'a@a.com',
-          'group1',
-          'group2',
-          'group3'
-        ]);
+        expect(data.$owners).toEqual(['a@a.com', 'group1', 'group2', 'group3']);
 
         // Additional metadata
         var metadata = data.$content.other.jpath[0];
-        metadata.should.be.an.Object();
-        metadata.hasMetadata.should.equal(true);
-        metadata.reference.should.equal('testRef');
-        metadata.testField.filename.should.equal('other/jpath/test.txt');
+        expect(metadata).toBeDefined();
+        expect(metadata.hasMetadata).toBe(true);
+        expect(metadata.reference).toBe('testRef');
+        expect(metadata.testField.filename).toBe('other/jpath/test.txt');
 
         // check attachmentss
         const secondaryAttachment = data._attachments['other/jpath/test.txt'];
-        secondaryAttachment.should.be.an.Object();
-        secondaryAttachment.content_type.should.equal('plain/text');
+        expect(secondaryAttachment).toBeDefined();
+        expect(secondaryAttachment.content_type).toBe('plain/text');
       });
     });
   });

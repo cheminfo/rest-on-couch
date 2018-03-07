@@ -71,15 +71,15 @@ describe('ImportResult', () => {
 
   test('valid update type', () => {
     // Check type of update
-    getValidResult(constants.IMPORT_UPDATE_FULL)
-      .getUpdateType()
-      .should.equal(constants.IMPORT_UPDATE_FULL);
-    getValidResult(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT)
-      .getUpdateType()
-      .should.equal(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT);
-    getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY)
-      .getUpdateType()
-      .should.equal(constants.IMPORT_UPDATE_$CONTENT_ONLY);
+    expect(getValidResult(constants.IMPORT_UPDATE_FULL).getUpdateType()).toBe(
+      constants.IMPORT_UPDATE_FULL
+    );
+    expect(
+      getValidResult(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT).getUpdateType()
+    ).toBe(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT);
+    expect(
+      getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY).getUpdateType()
+    ).toBe(constants.IMPORT_UPDATE_$CONTENT_ONLY);
   });
 
   test('throws when fields are missing - full upload', () => {
@@ -216,9 +216,9 @@ describe('ImportResult', () => {
   test('Cannot skip metadata without skipping attachment', () => {
     const result = new ImportResult();
     result.skipMetadata();
-    (function () {
+    expect(function () {
       result.getUpdateType();
-    }.should.throw('Cannot skip metadata without skipping attachment'));
+    }).toThrowError('Cannot skip metadata without skipping attachment');
   });
 });
 
@@ -226,15 +226,15 @@ function checkWithoutPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
 
   delete importResult[prop];
-  (function () {
+  expect(function () {
     importResult.check();
-  }.should.throw(message));
+  }).toThrowError(message);
 }
 
 function checkWithoutAttachmentPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
   delete importResult.attachments[0][prop];
-  (function () {
+  expect(function () {
     importResult.check();
-  }.should.throw(message));
+  }).toThrowError(message);
 }

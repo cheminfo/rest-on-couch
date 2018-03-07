@@ -1,8 +1,8 @@
 'use strict';
 
 const data = require('../data/data');
-const authenticateAs = require('./authenticate');
-const request = require('../setup').getAgent();
+const authenticateAs = require('../utils/authenticate');
+const request = require('../setup/setup').getAgent();
 
 describe('User REST-api (data, anonymous)', () => {
   beforeAll(data);
@@ -23,8 +23,8 @@ describe('User REST-api (data, a@a.com', () => {
       .get('/db/test/user/_me')
       .expect(200)
       .then((res) => {
-        res.body.user.should.equal('a@a.com');
-        res.body.val.should.equal('a');
+        expect(res.body.user).toBe('a@a.com');
+        expect(res.body.val).toBe('a');
       });
   });
 
@@ -34,9 +34,9 @@ describe('User REST-api (data, a@a.com', () => {
       .send({ val: 'x' })
       .expect(200)
       .then((res) => {
-        res.body.rev.should.startWith('2');
+        expect(res.body.rev).to.startWith('2');
         return couch.getUser('a@a.com').then((user) => {
-          user.val.should.equal('x');
+          expect(user.val).toBe('x');
         });
       });
   });

@@ -20,21 +20,21 @@ describe('basic initialization tests', () => {
   });
 
   test('should throw if no database given', () => {
-    return Promise.resolve()
-      .then(() => {
+    return expect(
+      Promise.resolve().then(() => {
         new Couch(); // eslint-disable-line no-new
       })
-      .should.be.rejectedWith('database option is mandatory');
+    ).rejects.toThrow('database option is mandatory');
   });
 
   test('should throw on invalid db name', () => {
-    (function () {
+    expect(function () {
       new Couch({ database: '_test' }); // eslint-disable-line no-new
-    }.should.throw(/invalid database name/));
+    }).toThrowError(/invalid database name/);
 
-    (function () {
+    expect(function () {
       Couch.get(1);
-    }.should.throw(/database name must be a string/));
+    }).toThrowError(/database name must be a string/);
   });
 });
 
@@ -66,7 +66,7 @@ describe('basic initialization with custom design docs', () => {
 
   test('should query a custom design document', () => {
     return couch.queryEntriesByUser('a@a.com', 'testCustom').then((data) => {
-      data.should.have.length(0);
+      expect(data).toHaveLength(0);
     });
   });
 });

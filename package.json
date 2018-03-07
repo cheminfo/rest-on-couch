@@ -9,7 +9,17 @@
     "rest-on-couch-import": "./bin/rest-on-couch-import.js"
   },
   "jest": {
-    "testMatch": ["test/**/*.js"]
+    "testMatch": ["**/test/**/*.js"],
+    "testEnvironment": "node",
+    "setupFiles": ["./test/setup/setup.js"],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/test/data/",
+      "/test/homedir/",
+      "/test/utils/",
+      "/test/setup/",
+      "/test/rest-api/"
+    ]
   },
   "scripts": {
     "build": "webpack",
@@ -24,11 +34,10 @@
       "REST_ON_COUCH_HOME_DIR=test/homedir nodemon bin/rest-on-couch-server.js --config=conf/devConfig.js",
     "start:pouch":
       "pouchdb-server --in-memory --config=/tmp/pouchdb-roc-config.json",
-    "test": "npm run test-mocha && npm run eslint",
+    "test": "npm run test-jest && npm run eslint",
     "test-cov":
       "istanbul cover -x '**/design/**' _mocha -- --require should --require ./test/setup --reporter dot --recursive --exit",
-    "test-mocha":
-      "mocha --timeout 10000 --require should --require ./test/setup --reporter mocha-better-spec-reporter --recursive --exit"
+    "test-jest": "jest --runInBand"
   },
   "repository": {
     "type": "git",
@@ -92,7 +101,6 @@
     "redux-promise-middleware": "^4.4.2",
     "redux-thunk": "^2.1.0",
     "request": "^2.83.0",
-    "request-promise": "^4.2.2",
     "style-loader": "^0.20.2",
     "superagent": "^3.8.1",
     "superagent-promise": "^1.1.0",
@@ -114,6 +122,7 @@
     "eslint-plugin-jest": "^21.12.2",
     "eslint-plugin-react": "^7.7.0",
     "istanbul": "^0.4.3",
+    "jest": "^22.4.2",
     "mocha": "^5.0.1",
     "mocha-better-spec-reporter": "^3.0.2",
     "nodemon": "^1.12.1",

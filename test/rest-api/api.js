@@ -1,9 +1,9 @@
 'use strict';
 
-const request = require('../setup').getAgent();
+const request = require('../setup/setup').getAgent();
 const noRights = require('../data/noRights');
 const data = require('../data/data');
-const authenticateAs = require('./authenticate');
+const authenticateAs = require('../utils/authenticate');
 
 describe('basic rest-api as anonymous (noRights)', () => {
   beforeAll(noRights);
@@ -34,7 +34,7 @@ describe('basic rest-api as anonymous (noRights)', () => {
       .expect(200)
       .then((entries) => {
         entries = JSON.parse(entries.text);
-        entries.should.have.length(2);
+        expect(entries).toHaveLength(2);
       });
   });
 
@@ -51,7 +51,7 @@ describe('basic rest-api as anonymous (noRights)', () => {
       .get('/db/_all_dbs')
       .expect(200)
       .then((data) => {
-        data.body.should.be.an.Array();
+        expect(data.body).to.be.an.Array();
       });
   });
 
@@ -60,7 +60,7 @@ describe('basic rest-api as anonymous (noRights)', () => {
       .get('/db/_a$aa/entry/aaa')
       .expect(403)
       .then((data) => {
-        data.body.should.deepEqual({
+        expect(data.body).to.deepEqual({
           error: 'invalid database name',
           code: 'forbidden'
         });
@@ -73,12 +73,12 @@ describe('rest-api as b@b.com (noRights)', () => {
     return noRights().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 
-  test('query view with owner, wrong key', () => {
+  test.only('query view with owner, wrong key', () => {
     return request
       .get('/db/test/_query/entryIdByRight?key=xxx')
       .expect(200)
       .then((rows) => {
-        rows.text.should.equal('[]');
+        expect(rows.text).toBe('[]');
       });
   });
 
@@ -91,7 +91,7 @@ describe('rest-api as b@b.com (noRights)', () => {
       )
       .expect(200)
       .then((rows) => {
-        rows.text.should.not.equal('[]');
+        expect(rows.text).not.toBe('[]');
       });
   });
 
@@ -107,18 +107,15 @@ describe('rest-api as b@b.com (noRights)', () => {
     return request
       .get('/db/test/entry/B/_rights/read')
       .expect(200)
-      .then((data) => data.body.should.equal(true));
+      .then((data) => expect(data.body).toBe(true));
   });
 
-  test(
-    'check if user has write access to a resource (as anonymous)',
-    () => {
-      return request
-        .get('/db/test/entry/B/_rights/read?asAnonymous=1')
-        .expect(200)
-        .then((data) => data.body.should.equal(false));
-    }
-  );
+  test('check if user has write access to a resource (as anonymous)', () => {
+    return request
+      .get('/db/test/entry/B/_rights/read?asAnonymous=1')
+      .expect(200)
+      .then((data) => expect(data.body).toBe(false));
+  });
 });
 
 describe('rest-api as anonymous (data)', () => {
@@ -132,11 +129,11 @@ describe('rest-api as anonymous (data)', () => {
       .send('rest-on-couch!!')
       .expect(200)
       .then((res) => {
-        res.body.id.should.equal('B');
-        res.body.rev.should.startWith('2');
+        expect(res.body.id).toBe('B');
+        expect(res.body.rev).to.startWith('2');
         return request.get('/db/test/entry/B/myattachment.txt').then((res) => {
-          res.text.should.equal('rest-on-couch!!');
-          res.headers['content-type'].should.equal('text/plain');
+          expect(res.text).toBe('rest-on-couch!!');
+          expect(res.headers['content-type']).toBe('text/plain');
         });
       });
   });
@@ -169,7 +166,7 @@ describe('basic rest-api as b@b.com', () => {
       .expect(200)
       .then((entries) => {
         entries = JSON.parse(entries.text);
-        entries.should.have.length(5);
+        expect(entries).toHaveLength(5);
       });
   });
 
@@ -179,7 +176,7 @@ describe('basic rest-api as b@b.com', () => {
       .expect(200)
       .then((rows) => {
         rows = JSON.parse(rows.text);
-        rows.should.have.length(1);
+        expect(rows).toHaveLength(1);
       });
   });
 
@@ -189,7 +186,7 @@ describe('basic rest-api as b@b.com', () => {
       .expect(200)
       .then((rows) => {
         rows = JSON.parse(rows.text);
-        rows[0].value.should.equal(5);
+        expect(rows[0].value).toBe(5);
       });
   });
 
@@ -199,8 +196,8 @@ describe('basic rest-api as b@b.com', () => {
       .send({ $id: 'new', $content: {} })
       .expect(201)
       .then((result) => {
-        result.body.should.be.instanceOf(Object);
-        result.body.should.have.property('rev');
+        expect(result.body).toBeInstanceOf(Object);
+        expect(result.body).toHaveProperty('rev');
       });
   });
 
@@ -220,15 +217,12 @@ describe('basic rest-api as b@b.com', () => {
       .expect(401);
   });
 
-  test(
-    'update existing document with no _rev return 409 (conflict)',
-    () => {
-      return request
-        .put('/db/test/entry/C')
-        .send({ $id: 'C', $content: {} })
-        .expect(409);
-    }
-  );
+  test('update existing document with no _rev return 409 (conflict)', () => {
+    return request
+      .put('/db/test/entry/C')
+      .send({ $id: 'C', $content: {} })
+      .expect(409);
+  });
 
   test('update document', () => {
     return couch.getEntryById('C', 'b@b.com').then((entry) => {
@@ -237,8 +231,8 @@ describe('basic rest-api as b@b.com', () => {
         .send({ $id: 'C', $content: {}, _rev: entry._rev })
         .expect(200)
         .then((res) => {
-          res.body.should.have.property('rev');
-          res.body.rev.should.startWith('2');
+          expect(res.body).toHaveProperty('rev');
+          expect(res.body.rev).to.startWith('2');
         });
     });
   });
@@ -252,7 +246,7 @@ describe('basic rest-api as b@b.com', () => {
       .del('/db/test/entry/C')
       .expect(200)
       .then((res) => {
-        res.body.should.eql({ ok: true });
+        expect(res.body).toEqual({ ok: true });
       });
   });
 
@@ -271,7 +265,7 @@ describe('basic rest-api as a@a.com', () => {
       .get('/db/test/group/groupA')
       .expect(200)
       .then(function (response) {
-        response.body.should.have.properties(['name', 'users', 'rights']);
+        expect(response.body).to.have.properties(['name', 'users', 'rights']);
       });
   });
 
@@ -280,8 +274,8 @@ describe('basic rest-api as a@a.com', () => {
       .get('/db/test/groups')
       .expect(200)
       .then(function (response) {
-        response.body.should.have.lengthOf(2);
-        response.body[0].should.be.an.Object();
+        expect(response.body).toHaveLength(2);
+        expect(response.body[0]).to.be.an.Object();
       });
   });
 });

@@ -7,18 +7,18 @@ describe('getGroupsByRight', () => {
   beforeAll(data);
   test('user with create right', () => {
     return global.couch.getGroupsByRight('a@a.com', 'create').then((result) => {
-      result.sort().should.eql(['groupA', 'groupB']);
+      expect(result.sort()).toEqual(['groupA', 'groupB']);
     });
   });
   test('user without write right', () => {
-    return global.couch
-      .getGroupsByRight('a@a.com', 'write')
-      .should.eventually.eql(['groupA']);
+    return expect(
+      global.couch.getGroupsByRight('a@a.com', 'write')
+    ).resolves.toEqual(['groupA']);
   });
   test('user without dummy right', () => {
-    return global.couch
-      .getGroupsByRight('a@a.com', 'dummy')
-      .should.eventually.eql([]);
+    return expect(
+      global.couch.getGroupsByRight('a@a.com', 'dummy')
+    ).resolves.toEqual([]);
   });
 });
 
@@ -26,7 +26,10 @@ describe('getGroupsByRight with default groups', () => {
   beforeAll(noRights);
   test('anonymous has default group', () => {
     return global.couch.getGroupsByRight('anonymous', 'read').then((result) => {
-      result.sort().should.eql(['defaultAnonymousRead', 'inexistantGroup']);
+      expect(result.sort()).toEqual([
+        'defaultAnonymousRead',
+        'inexistantGroup'
+      ]);
     });
   });
 });

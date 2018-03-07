@@ -5,7 +5,9 @@ module.exports = function (agent, username, password) {
     .post('/auth/login/couchdb')
     .type('form')
     .send({ username, password })
-    .then(() => agent.get('/auth/session'))
+    .then(() => {
+      return agent.get('/auth/session');
+    })
     .then((res) => {
       if (!res.body.authenticated) {
         throw new Error(

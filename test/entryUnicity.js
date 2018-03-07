@@ -5,14 +5,12 @@ const entryUnicity = require('./data/entryUnicity');
 describe('global entry unicity', () => {
   beforeEach(entryUnicity);
   test('createEntry should fail', () => {
-    return couch
-      .createEntry('A', 'a@a.com', { throwIfExists: true })
-      .should.be.rejectedWith(/entry already exists/);
+    return expect(couch
+      .createEntry('A', 'a@a.com', { throwIfExists: true })).rejects.toThrow(/entry already exists/);
   });
 
   test('insertEntry should fail', () => {
-    return couch
-      .insertEntry({ $id: 'A', $content: {} }, 'a@a.com')
-      .should.be.rejectedWith(/entry already exists/);
+    return expect(couch
+      .insertEntry({ $id: 'A', $content: {} }, 'a@a.com')).rejects.toThrow(/entry already exists/);
   });
 });
