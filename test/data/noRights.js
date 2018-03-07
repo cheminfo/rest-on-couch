@@ -121,23 +121,20 @@ function populate(db) {
   return Promise.all(prom);
 }
 
-module.exports = function () {
+module.exports = createDatabase;
+
+async function createDatabase() {
   global.couch = new Couch({ database: 'test' });
-  return global.couch
-    .open()
-    .then(() =>
-      resetDatabase(
-        global.couch._nano,
-        global.couch._databaseName,
-        global.couch._couchOptions.username
-      )
-    )
-    .then(() => populate(global.couch._db))
-    .then(() => {
-      global.couch = new Couch({
-        database: 'test',
-        rights: {}
-      });
-      return global.couch.open();
-    });
-};
+  await global.couch.open();
+  await resetDatabase(
+    global.couch._nano,
+    global.couch._databaseName,
+    global.couch._couchOptions.username
+  );
+  await populate(global.couch._db);
+  global.couch = new Couch({
+    database: 'test',
+    rights: {}
+  });
+  await global.couch.open();
+}
