@@ -2,7 +2,8 @@
 
 const assert = require('assert');
 const compose = require('koa-compose');
-const request = require('request-promise');
+
+const request = require('../../util/requestPromise');
 
 const auth = require('./auth');
 const decorateError = require('./decorateError');

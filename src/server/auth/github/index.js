@@ -44,7 +44,8 @@
 // }
 
 const GitHubStrategy = require('passport-github').Strategy;
-const request = require('request-promise');
+
+const request = require('../../../util/requestPromise');
 
 exports.init = function (passport, router, config) {
   passport.use(
@@ -82,9 +83,7 @@ exports.init = function (passport, router, config) {
   router.get(
     config.loginURL,
     async (ctx, next) => {
-      ctx.session.redirect = `${config.successRedirect}?${
-        ctx.request.querystring
-      }`;
+      ctx.session.redirect = `${config.successRedirect}?${ctx.querystring}`;
       await next();
     },
     passport.authenticate('github', { scope: ['user:email'] })

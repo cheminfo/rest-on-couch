@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('../setup').getFileDropAgent();
+const request = require('../setup/setup').getFileDropAgent();
 const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
@@ -22,7 +22,7 @@ describe('drop file server', () => {
           path.join(homedir, 'test/kind1/to_process/test 123'),
           'utf-8'
         );
-        content.should.equal('test with query strings');
+        expect(content).toBe('test with query strings');
       });
   });
 
@@ -37,36 +37,33 @@ describe('drop file server', () => {
           path.join(homedir, 'test/kind1/to_process/test123'),
           'utf-8'
         );
-        content.should.equal('test with params');
+        expect(content).toBe('test with params');
       });
   });
 
-  test(
-    'sending a file twice should rename it with an incremental part',
-    () => {
-      const buffer = Buffer.from('test conflict');
-      return request
-        .post('/upload?kind=kind1&database=test&filename=testConflict.txt')
-        .send(buffer)
-        .expect(200)
-        .then(() => {
-          return request
-            .post('/upload?kind=kind1&database=test&filename=testConflict.txt')
-            .send(buffer)
-            .expect(200);
-        })
-        .then(() => {
-          const content1 = fs.readFileSync(
-            path.join(homedir, 'test/kind1/to_process/testConflict.txt'),
-            'utf-8'
-          );
-          const content2 = fs.readFileSync(
-            path.join(homedir, 'test/kind1/to_process/testConflict.txt.1'),
-            'utf-8'
-          );
-          content1.should.equal('test conflict');
-          content2.should.equal('test conflict');
-        });
-    }
-  );
+  test('sending a file twice should rename it with an incremental part', () => {
+    const buffer = Buffer.from('test conflict');
+    return request
+      .post('/upload?kind=kind1&database=test&filename=testConflict.txt')
+      .send(buffer)
+      .expect(200)
+      .then(() => {
+        return request
+          .post('/upload?kind=kind1&database=test&filename=testConflict.txt')
+          .send(buffer)
+          .expect(200);
+      })
+      .then(() => {
+        const content1 = fs.readFileSync(
+          path.join(homedir, 'test/kind1/to_process/testConflict.txt'),
+          'utf-8'
+        );
+        const content2 = fs.readFileSync(
+          path.join(homedir, 'test/kind1/to_process/testConflict.txt.1'),
+          'utf-8'
+        );
+        expect(content1).toBe('test conflict');
+        expect(content2).toBe('test conflict');
+      });
+  });
 });

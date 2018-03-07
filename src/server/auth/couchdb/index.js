@@ -1,8 +1,8 @@
 'use strict';
 
 const LocalStrategy = require('passport-local').Strategy;
-const request = require('request-promise');
 
+const request = require('../../../util/requestPromise');
 const couchUrl = require('../../../config/config').globalConfig.url;
 const isEmail = require('../../../util/isEmail');
 const util = require('../../middleware/util');

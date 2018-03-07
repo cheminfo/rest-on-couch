@@ -105,16 +105,18 @@ describe('validate_doc_update', () => {
   });
 });
 
-function assert(newDoc, oldDoc, reg) {
-  (function () {
+function assert(newDoc, oldDoc, message) {
+  try {
     validateDocUpdate(newDoc, oldDoc, { name: 'admin' });
-  }.should.throw({ forbidden: reg }));
+  } catch (e) {
+    expect(e).toMatchObject({ forbidden: message });
+  }
 }
 
 function assertNot(newDoc, oldDoc) {
-  (function () {
+  expect(function () {
     validateDocUpdate(newDoc, oldDoc, { name: 'admin' });
-  }.should.not.throw());
+  }).not.toThrow();
 }
 
 function addDate(doc) {

@@ -7,12 +7,12 @@ describe('Access based on global rights', () => {
 
   test('Should grant read access to any logged user', () => {
     return couch.getEntry('A', 'a@a.com').then((doc) => {
-      doc.should.be.an.instanceOf(Object);
+      expect(doc).toBeInstanceOf(Object);
     });
   });
 
   test('Should not grant read access to anonymous', () => {
-    return couch.getEntry('A', 'anonymous').should.be.rejectedWith(/no access/);
+    return expect(couch.getEntry('A', 'anonymous')).rejects.toThrow(/no access/);
   });
 });
 
@@ -20,35 +20,31 @@ describe('Edit global rights', () => {
   beforeAll(noRights);
 
   test('Should refuse non-admins', () => {
-    return couch
-      .addGlobalRight('a@a.com', 'read', 'a@a.com')
-      .should.be.rejectedWith(/administrators/);
+    return expect(couch
+      .addGlobalRight('a@a.com', 'read', 'a@a.com')).rejects.toThrow(/administrators/);
   });
 
   test('Should only accept valid types', () => {
-    return couch
-      .addGlobalRight('admin@a.com', 'invalid', 'a@a.com')
-      .should.be.rejectedWith(/Invalid global right type/);
+    return expect(couch
+      .addGlobalRight('admin@a.com', 'invalid', 'a@a.com')).rejects.toThrow(/Invalid global right type/);
   });
 
   test('Should not grant read before editing global right', () => {
-    return couch.getEntry('B', 'a@a.com').should.be.rejectedWith(/no access/);
+    return expect(couch.getEntry('B', 'a@a.com')).rejects.toThrow(/no access/);
   });
 
   test('Should add global read right and grant access', () => {
-    return couch
+    return expect(couch
       .addGlobalRight('admin@a.com', 'read', 'a@a.com')
-      .then(() => couch.getEntry('B', 'a@a.com'))
-      .should.eventually.be.an.instanceOf(Object);
+      .then(() => couch.getEntry('B', 'a@a.com'))).toBeInstanceOf(Object);
   });
 
   test(
     'Should remove global read right and not grant access anymore',
     () => {
-      return couch
+      return expect(couch
         .removeGlobalRight('admin@a.com', 'read', 'a@a.com')
-        .then(() => couch.getEntry('B', 'a@a.com'))
-        .should.be.rejectedWith(/no access/);
+        .then(() => couch.getEntry('B', 'a@a.com'))).rejects.toThrow(/no access/);
     }
   );
 });

@@ -1,8 +1,8 @@
 'use strict';
 
-const request = require('../setup').getAgent();
+const request = require('../setup/setup').getAgent();
 const data = require('../data/data');
-const authenticateAs = require('./authenticate');
+const authenticateAs = require('../utils/authenticate');
 
 describe('rest api - manage owners', () => {
   const id = 'A';
@@ -14,8 +14,10 @@ describe('rest api - manage owners', () => {
       .get(`/db/test/entry/${id}/_owner`)
       .expect(200)
       .then((result) => {
-        result.body.should.be.an.Array().with.lengthOf(3);
-        result.body[0].should.equal('b@b.com');
+        expect(result.body)
+          .to.be.an.Array()
+          .toHaveLength(3);
+        expect(result.body[0]).toBe('b@b.com');
       });
   });
   test('add owner', () => {
@@ -24,7 +26,7 @@ describe('rest api - manage owners', () => {
       .expect(200)
       .then(() => couch.getEntry(id, 'b@b.com'))
       .then((entry) => {
-        entry.$owners.should.containEql('test');
+        expect(entry.$owners).to.containEql('test');
       });
   });
   test('remove owner', () => {
@@ -36,7 +38,7 @@ describe('rest api - manage owners', () => {
           .expect(200)
           .then(() => couch.getEntry(id, 'b@b.com'))
           .then((entry) => {
-            entry.$owners.should.not.containEql('testRemove');
+            expect(entry.$owners).to.not.containEql('testRemove');
           });
       });
   });

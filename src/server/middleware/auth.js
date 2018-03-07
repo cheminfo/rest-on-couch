@@ -5,7 +5,7 @@ const superagent = require('superagent-promise')(
   require('superagent'),
   Promise
 );
-const request = require('request-promise');
+const request = require('../../util/requestPromise');
 
 const decorateError = require('./decorateError');
 const respondOk = require('./respondOk');

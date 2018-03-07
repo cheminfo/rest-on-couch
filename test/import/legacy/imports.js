@@ -24,32 +24,32 @@ describe('legacy import', () => {
       return importCouch
         .getEntryById('parse', 'test-import@test.com')
         .then((data) => {
-          data.should.be.an.Object();
-          data.$content.should.be.an.Object();
-          data.$content.txt.should.be.an.Array();
+          expect(data).toBeDefined();
+          expect(data.$content).toBeDefined();
+          expect(data.$content.txt).toHaveProperty('length');
           const txt = data.$content.txt[0];
-          txt.should.be.an.Object();
-          txt.abc.should.be.equal('test');
-          txt.filename.should.equal('test.txt');
-          txt.txt.should.be.an.Object();
-          txt.contents.should.be.equal('Content of test file');
+          expect(txt).toBeDefined();
+          expect(txt.abc).toBe('test');
+          expect(txt.filename).toBe('test.txt');
+          expect(txt.txt).toBeDefined();
+          expect(txt.contents).toBe('Content of test file');
         });
     });
   });
 
   test('ignore import', () => {
     return imp.import('test-import', 'ignore', textFile).then(() => {
-      return importCouch
-        .getEntryById('ignored', 'test-import@test.com')
-        .should.be.rejectedWith(/not found/);
+      return expect(
+        importCouch.getEntryById('ignored', 'test-import@test.com')
+      ).rejects.toThrow(/not found/);
     });
   });
 
   test('import json file', () => {
     return imp.import('test-import', 'json', jsonFile).then(() => {
-      return importCouch
-        .getEntryById('json', 'test-import@test.com')
-        .should.eventually.be.an.Object();
+      return expect(
+        importCouch.getEntryById('json', 'test-import@test.com')
+      ).resolves.toBeDefined();
     });
   });
 });

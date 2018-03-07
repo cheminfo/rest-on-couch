@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('../../setup').getAgent();
+const request = require('../../setup/setup').getAgent();
 
 describe('server/routes/auth', () => {
   describe('session', () => {
@@ -9,7 +9,7 @@ describe('server/routes/auth', () => {
         .get('/auth/session')
         .expect(200)
         .then((res) => {
-          res.body.should.eql({
+          expect(res.body).toEqual({
             ok: true,
             authenticated: false,
             username: 'anonymous',
