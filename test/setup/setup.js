@@ -1,9 +1,6 @@
 'use strict';
 
-process.on('unhandledRejection', function (reason) {
-  throw reason;
-});
-
+require('make-promises-safe');
 const path = require('path');
 
 process.env.REST_ON_COUCH_HOME_DIR = path.join(__dirname, '../homedir');

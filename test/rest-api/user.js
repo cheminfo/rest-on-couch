@@ -7,7 +7,7 @@ const request = require('../setup/setup').getAgent();
 describe('User REST-api (data, anonymous)', () => {
   beforeAll(data);
   test('Should return 404 if anonymous', () => {
-    request.get('/db/test/user/_me').expect(404);
+    return request.get('/db/test/user/_me').expect(404);
   });
 
   // TODO: save user as anonymous. What status code?
