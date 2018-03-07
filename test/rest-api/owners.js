@@ -14,9 +14,7 @@ describe('rest api - manage owners', () => {
       .get(`/db/test/entry/${id}/_owner`)
       .expect(200)
       .then((result) => {
-        expect(result.body)
-          .to.be.an.Array()
-          .toHaveLength(3);
+        expect(result.body).toHaveLength(3);
         expect(result.body[0]).toBe('b@b.com');
       });
   });
@@ -26,7 +24,7 @@ describe('rest api - manage owners', () => {
       .expect(200)
       .then(() => couch.getEntry(id, 'b@b.com'))
       .then((entry) => {
-        expect(entry.$owners).to.containEql('test');
+        expect(entry.$owners.includes('test')).toBe(true);
       });
   });
   test('remove owner', () => {
@@ -38,7 +36,7 @@ describe('rest api - manage owners', () => {
           .expect(200)
           .then(() => couch.getEntry(id, 'b@b.com'))
           .then((entry) => {
-            expect(entry.$owners).to.not.containEql('testRemove');
+            expect(entry.$owners.includes('testRemove')).toBe(false);
           });
       });
   });
