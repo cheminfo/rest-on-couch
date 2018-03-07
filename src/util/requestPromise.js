@@ -4,7 +4,7 @@ const request = require('request');
 
 module.exports = function (options) {
   return new Promise((resolve, reject) => {
-    request.apply(null, options, (err, response, body) => {
+    request(options, (err, response, body) => {
       if (err) {
         return reject(err);
       }
@@ -29,6 +29,9 @@ module.exports.post = function (url, options) {
     request.post(url, options, (err, response, body) => {
       if (err) {
         return reject(err);
+      }
+      if (options.resolveWithFullResponse) {
+        return resolve(response);
       }
       return resolve(body);
     });

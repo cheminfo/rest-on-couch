@@ -34,7 +34,7 @@ describe('User REST-api (data, a@a.com', () => {
       .send({ val: 'x' })
       .expect(200)
       .then((res) => {
-        expect(res.body.rev).to.startWith('2');
+        expect(res.body.rev).toMatch(/^2/);
         return couch.getUser('a@a.com').then((user) => {
           expect(user.val).toBe('x');
         });

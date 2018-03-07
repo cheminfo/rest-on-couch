@@ -100,7 +100,7 @@ app.use(
       domain: config.sessionDomain,
       secure: config.sessionSecure,
       httpOnly: true,
-      signed: true
+      signed: config.sessionSigned
     },
     app
   )

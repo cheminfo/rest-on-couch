@@ -51,7 +51,7 @@ describe('basic rest-api as anonymous (noRights)', () => {
       .get('/db/_all_dbs')
       .expect(200)
       .then((data) => {
-        expect(data.body).to.be.an.Array();
+        expect(data.body).toHaveProperty('length');
       });
   });
 
@@ -60,7 +60,7 @@ describe('basic rest-api as anonymous (noRights)', () => {
       .get('/db/_a$aa/entry/aaa')
       .expect(403)
       .then((data) => {
-        expect(data.body).to.deepEqual({
+        expect(data.body).toMatchObject({
           error: 'invalid database name',
           code: 'forbidden'
         });
@@ -73,7 +73,7 @@ describe('rest-api as b@b.com (noRights)', () => {
     return noRights().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 
-  test.only('query view with owner, wrong key', () => {
+  test('query view with owner, wrong key', () => {
     return request
       .get('/db/test/_query/entryIdByRight?key=xxx')
       .expect(200)
@@ -130,7 +130,7 @@ describe('rest-api as anonymous (data)', () => {
       .expect(200)
       .then((res) => {
         expect(res.body.id).toBe('B');
-        expect(res.body.rev).to.startWith('2');
+        expect(res.body.rev).toMatch(/^2/);
         return request.get('/db/test/entry/B/myattachment.txt').then((res) => {
           expect(res.text).toBe('rest-on-couch!!');
           expect(res.headers['content-type']).toBe('text/plain');
@@ -232,7 +232,7 @@ describe('basic rest-api as b@b.com', () => {
         .expect(200)
         .then((res) => {
           expect(res.body).toHaveProperty('rev');
-          expect(res.body.rev).to.startWith('2');
+          expect(res.body.rev).toMatch(/^2/);
         });
     });
   });
@@ -265,7 +265,9 @@ describe('basic rest-api as a@a.com', () => {
       .get('/db/test/group/groupA')
       .expect(200)
       .then(function (response) {
-        expect(response.body).to.have.properties(['name', 'users', 'rights']);
+        expect(response.body).toHaveProperty('name');
+        expect(response.body).toHaveProperty('users');
+        expect(response.body).toHaveProperty('rights');
       });
   });
 
@@ -275,7 +277,7 @@ describe('basic rest-api as a@a.com', () => {
       .expect(200)
       .then(function (response) {
         expect(response.body).toHaveLength(2);
-        expect(response.body[0]).to.be.an.Object();
+        expect(response.body[0]).toBeDefined();
       });
   });
 });
