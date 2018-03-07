@@ -3,7 +3,7 @@
 const data = require('../data/noRights');
 
 describe('entry reads, database with default groups', () => {
-  beforeAll(data);
+  beforeEach(data);
 
   test('should grant read access to owner', () => {
     return expect(

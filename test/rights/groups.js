@@ -4,7 +4,7 @@ const data = require('../data/data');
 const noRights = require('../data/noRights');
 
 describe('getGroupsByRight', () => {
-  beforeAll(data);
+  beforeEach(data);
   test('user with create right', () => {
     return global.couch.getGroupsByRight('a@a.com', 'create').then((result) => {
       expect(result.sort()).toEqual(['groupA', 'groupB']);
@@ -23,7 +23,7 @@ describe('getGroupsByRight', () => {
 });
 
 describe('getGroupsByRight with default groups', () => {
-  beforeAll(noRights);
+  beforeEach(noRights);
   test('anonymous has default group', () => {
     return global.couch.getGroupsByRight('anonymous', 'read').then((result) => {
       expect(result.sort()).toEqual([

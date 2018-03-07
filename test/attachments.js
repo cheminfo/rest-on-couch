@@ -3,7 +3,7 @@
 const data = require('./data/data');
 
 describe('entries with attachments', () => {
-  beforeAll(data);
+  beforeEach(data);
 
   test('should error if entry has no attachment', () => {
     return expect(

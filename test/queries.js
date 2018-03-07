@@ -4,7 +4,7 @@ const data = require('./data/data');
 const noRights = require('./data/noRights');
 
 describe('Query default data', () => {
-  beforeAll(data);
+  beforeEach(data);
   test('Should query by user id', () => {
     return couch.queryViewByUser('a@a.com', 'entryById').then((rows) => {
       expect(rows.length).toBe(5);
@@ -29,7 +29,7 @@ describe('Query default data', () => {
 });
 
 describe('Query no rights data', () => {
-  beforeAll(noRights);
+  beforeEach(noRights);
   test('Should not grant access to all entries', () => {
     return couch.queryViewByUser('a@a.com', 'entryById').then((rows) => {
       expect(rows.length).toBe(5);
@@ -38,7 +38,7 @@ describe('Query no rights data', () => {
 });
 
 describe('Query view with owner (global right)', () => {
-  beforeAll(data);
+  beforeEach(data);
   test('should return all docs with global right', () => {
     return couch.queryEntriesByRight('a@a.com', 'entryIdByRight').then((res) => {
       res = res.map((x) => x.value);
@@ -54,7 +54,7 @@ describe('Query view with owner (global right)', () => {
 });
 
 describe('Query view with owner (group right)', () => {
-  beforeAll(noRights);
+  beforeEach(noRights);
   test('should return authorized docs for user', () => {
     return couch.queryEntriesByRight('a@a.com', 'entryIdByRight').then((res) => {
       res = res.map((x) => x.value);
@@ -81,7 +81,7 @@ describe('Query view with owner (group right)', () => {
 });
 
 describe('Query entries filter groups', () => {
-  beforeAll(noRights);
+  beforeEach(noRights);
   test('should only return entries owned by the user', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
@@ -152,7 +152,7 @@ describe('Query entries filter groups', () => {
 });
 
 describe('Query view with reduce', () => {
-  beforeAll(data);
+  beforeEach(data);
   test('Should query by user id', () => {
     return couch
       .queryViewByUser('a@a.com', 'testReduce', { reduce: true })

@@ -16,7 +16,7 @@ const textFile = path.resolve(
 // const jsonFile = path.resolve(__dirname, '../homedir/test-new-import/simple/to_process/test.json');
 
 describe('import', () => {
-  beforeAll(async function () {
+  beforeEach(async function () {
     importCouch = await testUtils.resetDatabase(databaseName);
   });
   test('full import', () => {
