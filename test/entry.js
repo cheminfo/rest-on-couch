@@ -5,7 +5,7 @@ const constants = require('./data/constants');
 const testUtils = require('./utils/testUtils');
 
 describe('entry reads', () => {
-  beforeAll(data);
+  beforeEach(data);
   test('should grant read access to read-group member', () => {
     return couch.getEntry('A', 'a@a.com').then((doc) => {
       expect(doc).toBeInstanceOf(Object);
@@ -258,7 +258,7 @@ describe('entry creation and editions', () => {
 });
 
 describe('entry rights', () => {
-  beforeAll(data);
+  beforeEach(data);
   test('should check if user a@a.com has read access to entry', () =>
     expect(couch.hasRightForEntry('A', 'a@a.com', 'read')).resolves.toBe(true));
   test('should check if user a@a.com has write access to entry', () =>

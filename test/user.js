@@ -3,7 +3,7 @@
 const data = require('./data/data');
 
 describe('Couch user API', () => {
-  beforeAll(data);
+  beforeEach(data);
   test('Should get a user', () => {
     return couch.getUser('a@a.com').then((doc) => {
       expect(doc.user).toBe('a@a.com');
@@ -20,7 +20,7 @@ describe('Couch user API', () => {
     );
   });
 
-  test('Should save new  user', () => {
+  test('Should edit user', () => {
     return couch
       .editUser('b@b.com', { val: 'b', v: 'b' })
       .then((res) => {
@@ -31,21 +31,20 @@ describe('Couch user API', () => {
           expect(doc.user).toBe('b@b.com');
           expect(doc.val).toBe('b');
         });
-      });
-  });
-
-  test('Should edit existing user', () => {
-    return couch
-      .editUser('b@b.com', { val: 'x' })
-      .then((res) => {
-        expect(res.rev).toMatch(/^2/);
       })
       .then(() => {
-        return couch.getUser('b@b.com').then((doc) => {
-          expect(doc.user).toBe('b@b.com');
-          expect(doc.val).toBe('x');
-          expect(doc.v).toBe('b');
-        });
+        return couch
+          .editUser('b@b.com', { val: 'x' })
+          .then((res) => {
+            expect(res.rev).toMatch(/^2/);
+          })
+          .then(() => {
+            return couch.getUser('b@b.com').then((doc) => {
+              expect(doc.user).toBe('b@b.com');
+              expect(doc.val).toBe('x');
+              expect(doc.v).toBe('b');
+            });
+          });
       });
   });
 

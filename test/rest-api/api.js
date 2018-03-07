@@ -6,7 +6,7 @@ const data = require('../data/data');
 const authenticateAs = require('../utils/authenticate');
 
 describe('basic rest-api as anonymous (noRights)', () => {
-  beforeAll(noRights);
+  beforeEach(noRights);
 
   test('get an entry', () => {
     return request.get('/db/test/entry/A').expect(401);
@@ -69,7 +69,7 @@ describe('basic rest-api as anonymous (noRights)', () => {
 });
 
 describe('rest-api as b@b.com (noRights)', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     return noRights().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 
@@ -119,38 +119,34 @@ describe('rest-api as b@b.com (noRights)', () => {
 });
 
 describe('rest-api as anonymous (data)', () => {
-  beforeAll(data);
+  beforeEach(data);
 
-  test('save an attachment', () => {
-    return request
+  test('save and delete an attachment', async () => {
+    let res = await request
       .put('/db/test/entry/B/myattachment.txt')
       .set('Content-Type', 'text/plain')
       .set('Accept', 'application/json')
       .send('rest-on-couch!!')
-      .expect(200)
-      .then((res) => {
-        expect(res.body.id).toBe('B');
-        expect(res.body.rev).toMatch(/^2/);
-        return request.get('/db/test/entry/B/myattachment.txt').then((res) => {
-          expect(res.text).toBe('rest-on-couch!!');
-          expect(res.headers['content-type']).toBe('text/plain');
-        });
-      });
-  });
+      .expect(200);
 
-  test('deletes an attachment', () => {
-    return request
+    expect(res.body.id).toBe('B');
+    expect(res.body.rev).toMatch(/^2/);
+
+    res = await request.get('/db/test/entry/B/myattachment.txt');
+    expect(res.text).toBe('rest-on-couch!!');
+    expect(res.headers['content-type']).toBe('text/plain');
+
+    await request
       .delete('/db/test/entry/B/myattachment.txt')
       .send()
-      .expect(200)
-      .then(() => {
-        return request.get('/db/test/entry/B/myattachment.txt').expect(404);
-      });
+      .expect(200);
+
+    await request.get('/db/test/entry/B/myattachment.txt').expect(404);
   });
 });
 
 describe('basic rest-api as b@b.com', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     return data().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 
@@ -256,7 +252,7 @@ describe('basic rest-api as b@b.com', () => {
 });
 
 describe('basic rest-api as a@a.com', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     return data().then(() => authenticateAs(request, 'a@a.com', '123'));
   });
 

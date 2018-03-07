@@ -5,7 +5,7 @@ const authenticateAs = require('../utils/authenticate');
 const request = require('../setup/setup').getAgent();
 
 describe('User REST-api (data, anonymous)', () => {
-  beforeAll(data);
+  beforeEach(data);
   test('Should return 404 if anonymous', () => {
     return request.get('/db/test/user/_me').expect(404);
   });
@@ -14,7 +14,7 @@ describe('User REST-api (data, anonymous)', () => {
 });
 
 describe('User REST-api (data, a@a.com', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     return data().then(() => authenticateAs(request, 'a@a.com', '123'));
   });
 

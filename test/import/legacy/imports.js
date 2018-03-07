@@ -18,7 +18,7 @@ const jsonFile = path.resolve(
 );
 
 describe('legacy import', () => {
-  beforeAll(initCouch);
+  beforeEach(initCouch);
   test('parse', () => {
     return imp.import('test-import', 'parse', textFile).then(() => {
       return importCouch
