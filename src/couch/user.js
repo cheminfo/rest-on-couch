@@ -5,6 +5,8 @@ const debug = require('../util/debug')('main:user');
 const nanoPromise = require('../util/nanoPromise');
 const simpleMerge = require('../util/simpleMerge');
 
+const validate = require('./validate');
+
 const methods = {
   async editUser(user, data) {
     debug(`editUser (${user})`);
@@ -39,10 +41,13 @@ const methods = {
 
   async getUserGroups(user) {
     await this.open();
-    const groups = await nanoPromise.queryView(this._db, 'groupByUser', {
+    let groups = await nanoPromise.queryView(this._db, 'groupByUser', {
       key: user
     });
-    return groups.map((doc) => doc.value);
+    groups = groups.map((doc) => doc.value);
+    // Add default groups
+    const defaultGroups = await validate.getDefaultGroups(this._db, user, true);
+    return groups.concat(defaultGroups);
   }
 };
 
