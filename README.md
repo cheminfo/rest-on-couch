@@ -1,25 +1,26 @@
 # rest-on-couch
 
-  [![NPM version][npm-image]][npm-url]
-  [![build status][travis-image]][travis-url]
-  [![David deps][david-image]][david-url]
-  [![npm download][download-image]][download-url]
-  [![Known Vulnerabilities][snyk-image]][snyk-url]
+[![NPM version][npm-image]][npm-url]
+[![build status][travis-image]][travis-url]
+[![David deps][david-image]][david-url]
+[![npm download][download-image]][download-url]
+[![Known Vulnerabilities][snyk-image]][snyk-url]
 
 Interface to CouchDB that allows the control of permissions on the documents.
 
 ### REST API
+
 [API documentation](API.md)
 
 ### Configuration
 
 The configuration is being read on load from many sources, in the following order (ascending priority):
 
-1. Default configuration. Some configuration elements have default values. They are defined in the [source code](./src/config/default.js)
-2. Main configuration file (`config.js` or `config.json` in ROC's home directory)
-3. Database configuration file (`config.js` in database's subdirectory)
-4. Environment variable (uppercase snake-case with `REST_ON_COUCH_` prefix)
-5. Custom config file passed with `--config` in the CLI
+1.  Default configuration. Some configuration elements have default values. They are defined in the [source code](./src/config/default.js)
+2.  Main configuration file (`config.js` or `config.json` in ROC's home directory)
+3.  Database configuration file (`config.js` in database's subdirectory)
+4.  Environment variable (uppercase snake-case with `REST_ON_COUCH_` prefix)
+5.  Custom config file passed with `--config` in the CLI
 
 #### Main options
 
@@ -124,9 +125,26 @@ Default: `false`
 If set to `true`, a stack trace will be print to the body of the response when an error occurs.  
 Do not use this in production!
 
+## Setup environment with Docker (for runnings tests)
+
+```bash
+docker pull couchdb
+docker create -p 5984:5984 --name couchdb -v /your/local/path/of/choice:/opt/couchdb/data couchdb
+docker start couchdb
+docker ps # check that the container is running
+```
+
+Go to http://localhost:127.0.0.1/_utils/#setup
+
+* Single node
+* username: admin, password: admin
+* bind address: 0.0.0.0
+* Execute the bash script `/setupDatabase.sh`
+* Execute the tests: `npm t`
+
 ## License
 
-  [MIT](./LICENSE)
+[MIT](./LICENSE)
 
 [npm-image]: https://img.shields.io/npm/v/rest-on-couch.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/rest-on-couch
