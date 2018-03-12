@@ -28,7 +28,10 @@ exports.getDatabase = function (nano, database) {
     debug.trace(`getDatabase ${database}`);
     nano.db.get(database, (err) => {
       if (err) {
-        if (err.reason === 'no_db_file') {
+        if (
+          err.reason === 'no_db_file' /* couchdb 1.6 */ ||
+          err.reason === 'Database does not exist.' /* couchdb 2.x.x */
+        ) {
           debug.trace('database not found');
           return resolve(false);
         }
