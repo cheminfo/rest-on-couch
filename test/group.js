@@ -96,6 +96,11 @@ describe('group methods', () => {
       expect(docs).toHaveLength(0);
     });
   });
+
+  test('should get list of groups user is member of', async function () {
+    const users = await couch.getUserGroups('a@a.com');
+    expect(users.map((g) => g.name).sort()).toEqual(['groupA', 'groupB']);
+  });
 });
 
 describe('group methods (no default rights)', () => {
@@ -105,5 +110,16 @@ describe('group methods (no default rights)', () => {
     return expect(couch.createGroup('groupX', 'a@a.com')).rejects.toThrow(
       /does not have createGroup right/
     );
+  });
+
+  test('should get list of groups user is member of, including default groups', async function () {
+    let groups = await couch.getUserGroups('a@a.com');
+    groups.sort((a, b) => b.name < a.name);
+    expect(groups).toEqual([
+      { name: 'defaultAnonymousRead', rights: ['read'] },
+      { name: 'defaultAnyuserRead', rights: ['read'] },
+      { name: 'groupA', rights: ['create', 'write', 'delete', 'read'] },
+      { name: 'inexistantGroup', rights: [] }
+    ]);
   });
 });

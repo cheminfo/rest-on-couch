@@ -5,6 +5,7 @@ const debug = require('../util/debug')('main:user');
 const nanoPromise = require('../util/nanoPromise');
 const simpleMerge = require('../util/simpleMerge');
 
+const nanoMethods = require('./nano');
 const validate = require('./validate');
 
 const methods = {
@@ -45,8 +46,23 @@ const methods = {
       key: user
     });
     groups = groups.map((doc) => doc.value);
+    const groupNameSet = new Set(groups.map((g) => g.name));
     // Add default groups
-    const defaultGroups = await validate.getDefaultGroups(this._db, user, true);
+    let defaultGroupNames = await validate.getDefaultGroups(
+      this._db,
+      user,
+      true
+    );
+    const defaultGroups = [];
+    for (let groupName of defaultGroupNames) {
+      if (!groupNameSet.has(groupName)) {
+        let group = await nanoMethods.getGroup(this._db, groupName);
+        defaultGroups.push({
+          name: groupName,
+          rights: group ? group.rights : []
+        });
+      }
+    }
     return groups.concat(defaultGroups);
   }
 };
