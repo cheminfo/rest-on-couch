@@ -1,12 +1,9 @@
 'use strict';
 
 const Couch = require('../..');
-const nanoPromise = require('../../src/util/nanoPromise');
-const insertDocument = require('./insertDocument');
 
-function destroy(nano, name) {
-  return nanoPromise.destroyDatabase(nano, name);
-}
+const { resetDatabase } = require('./helper');
+const insertDocument = require('./insertDocument');
 
 function populate(db) {
   const prom = [];
@@ -23,19 +20,20 @@ function populate(db) {
   return Promise.all(prom);
 }
 
-module.exports = function () {
+module.exports = async function () {
   global.couch = new Couch({ database: 'test' });
-  return global.couch
-    .open()
-    .then(() => destroy(global.couch._nano, global.couch._databaseName))
-    .then(() => {
-      global.couch = new Couch({
-        database: 'test',
-        rights: {
-          read: ['anyuser']
-        }
-      });
-      return global.couch.open();
-    })
-    .then(() => populate(global.couch._db));
+  await global.couch.open();
+  await resetDatabase(
+    global.couch._nano,
+    global.couch._databaseName,
+    global.couch._couchOptions.username
+  );
+  global.couch = new Couch({
+    database: 'test',
+    rights: {
+      read: ['anyuser']
+    }
+  });
+  await global.couch.open();
+  await populate(global.couch._db);
 };
