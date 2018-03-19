@@ -1,3 +1,13 @@
+<a name="5.5.1"></a>
+## [5.5.1](https://github.com/cheminfo/rest-on-couch/compare/v5.5.0...v5.5.1) (2018-03-19)
+
+
+### Bug Fixes
+
+* get default groups in getUserGroups ([917e98b](https://github.com/cheminfo/rest-on-couch/commit/917e98b))
+* nanoPromise getDatabase with couchdb 2 when database does not exist ([dbe674b](https://github.com/cheminfo/rest-on-couch/commit/dbe674b))
+
+
 <a name="5.5.0"></a>
 # [5.5.0](https://github.com/cheminfo/rest-on-couch/compare/v5.4.0...v5.5.0) (2018-03-02)
 
