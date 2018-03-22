@@ -1,6 +1,6 @@
 'use strict';
 
-const RocZenodo = require('roc-zenodo');
+const { RocZenodo } = require('roc-zenodo');
 
 const config = require('../../config/config').globalConfig;
 
