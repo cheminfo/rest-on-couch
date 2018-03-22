@@ -129,7 +129,7 @@ Do not use this in production!
 
 ```bash
 docker pull couchdb
-docker create -p 5984:5984 --name couchdb -v /your/local/path/of/choice:/opt/couchdb/data couchdb
+docker create -p 5984:5984 --name couchdb couchdb
 docker start couchdb
 docker ps # check that the container is running
 ```
