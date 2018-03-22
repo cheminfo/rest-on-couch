@@ -15,5 +15,5 @@ let rocZenodo = new RocZenodo({
 exports.createEntry = composeWithError(async (ctx) => {
   console.log(ctx.query);
   console.log(ctx.body);
-  return { todo: 'yep' };
+  ctx.body = { todo: 'yep' };
 });
