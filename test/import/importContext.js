@@ -17,7 +17,9 @@ describe('ImportContext', () => {
     const ctx = new ImportContext(file, databaseName);
     expect(ctx.filename).toBe('test.txt');
     expect(ctx.fileExt).toBe('.txt');
-    expect(ctx.fileDir).toMatch('homedir/test-new-import/simple/to_process');
+    expect(ctx.fileDir).toMatch(
+      path.normalize('homedir/test-new-import/simple/to_process')
+    );
     expect(ctx.couch).toBeDefined();
 
     expect(await ctx.getContents('utf-8')).toBe(fileContents);
