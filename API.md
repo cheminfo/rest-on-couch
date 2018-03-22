@@ -70,3 +70,9 @@
 |  GET   | `/db/:dbname/token`              |    Get all tokens for current user     |                                                                            |
 |  GET   | `/db/:dbname/token/:tokenid`     |     Get information about a token      |                                                                            |
 | DELETE | `/db/:dbname/token/:tokenid`     |             Delete a token             |                                                                            |
+
+### Zenodo
+
+| Method | Route                       |          Action           |             Description             |
+| :----: | :-------------------------- | :-----------------------: | :---------------------------------: |
+|  POST  | `/db/:dbname/zenodo/create` | Create an entry on zenodo | UUID of the local entry in the body |
