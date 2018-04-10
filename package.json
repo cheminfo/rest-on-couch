@@ -104,7 +104,7 @@
     "redux-promise-middleware": "^4.4.2",
     "redux-thunk": "^2.1.0",
     "request": "^2.83.0",
-    "roc-zenodo": "0.0.1",
+    "roc-zenodo": "0.0.2",
     "style-loader": "^0.20.2",
     "superagent": "^3.8.1",
     "superagent-promise": "^1.1.0",
