@@ -13,7 +13,11 @@ let rocZenodo = new RocZenodo({
 });
 
 exports.createEntry = composeWithError(async (ctx) => {
-  console.log(ctx.query);
-  console.log(ctx.body);
-  ctx.body = { todo: 'yep' };
+  const zenodoEntry = await ctx.state.couch.getDocByRights(
+    ctx.params.entryId,
+    ctx.state.userEmail,
+    'write',
+    'entry'
+  );
+  ctx.body = zenodoEntry;
 });
