@@ -16,7 +16,7 @@ let rocZenodo = new RocZenodo({
 exports.createEntry = composeWithError(async (ctx) => {
   const { entryId } = ctx.query;
   if (!entryId) {
-    decorateError(ctx, 400, 'missing entryId query parameter')
+    decorateError(ctx, 400, 'missing entryId query parameter');
     return;
   }
   const zenodoEntry = await ctx.state.couch.getDocByRights(
@@ -25,5 +25,7 @@ exports.createEntry = composeWithError(async (ctx) => {
     'write',
     'entry'
   );
+  const { $content: { meta, samples } } = zenodoEntry;
+  const deposition = await rocZenodo.createEntry(meta);
   ctx.body = zenodoEntry;
 });
