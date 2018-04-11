@@ -108,7 +108,7 @@
     "superagent": "^3.8.1",
     "superagent-promise": "^1.1.0",
     "whatwg-fetch": "^2.0.0",
-    "zenodo": "^0.2.0"
+    "zenodo": "^0.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.7.5",

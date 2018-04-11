@@ -56,23 +56,28 @@ exports.createEntry = composeWithError(async (ctx) => {
 
   const deposition = await rocZenodo.createEntry(depositionMeta);
 
+  const files = [];
   const toc = [];
 
   try {
     /* eslint-disable no-await-in-loop */
     for (const entry of entries) {
       const { _id: id, $content: content } = entry;
-      await rocZenodo.uploadFile(deposition, {
-        filename: `${id}/index.json`,
-        contentType: 'application/octet-stream',
-        data: JSON.stringify(content, null, 2)
-      });
-      if (content.general.molfile) {
+      files.push(
         await rocZenodo.uploadFile(deposition, {
-          filename: `${id}/molfile.mol`,
-          contentType: 'chemical/x-mdl-molfile',
-          data: content.general.molfile
-        });
+          filename: `${id}/index.json`,
+          contentType: 'application/octet-stream',
+          data: JSON.stringify(content, null, 2)
+        })
+      );
+      if (content.general.molfile) {
+        files.push(
+          await rocZenodo.uploadFile(deposition, {
+            filename: `${id}/molfile.mol`,
+            contentType: 'chemical/x-mdl-molfile',
+            data: content.general.molfile
+          })
+        );
       }
       for (const attachmentPath in entry._attachments) {
         const contentType = entry._attachments[attachmentPath].content_type;
@@ -82,28 +87,36 @@ exports.createEntry = composeWithError(async (ctx) => {
           userEmail,
           true
         );
-        await rocZenodo.uploadFile(deposition, {
-          filename: `${id}/${attachmentPath}`,
-          contentType,
-          data: attachmentStream
-        });
+        files.push(
+          await rocZenodo.uploadFile(deposition, {
+            filename: `${id}/${attachmentPath}`,
+            contentType,
+            data: attachmentStream
+          })
+        );
 
         toc.push({ kind: entry.$kind, id });
       }
+      break;
     }
     /* eslint-enable */
 
-    await rocZenodo.uploadFile(deposition, {
-      filename: 'toc.json',
-      contentType: 'application/octet-stream',
-      data: JSON.stringify(toc, null, 2)
-    });
-    await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition));
+    files.unshift(
+      await rocZenodo.uploadFile(deposition, {
+        filename: 'toc.json',
+        contentType: 'application/octet-stream',
+        data: JSON.stringify(toc, null, 2)
+      })
+    );
+    await files.unshift(
+      rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition))
+    );
   } catch (e) {
     await rocZenodo.deleteEntry(deposition);
     throw e;
   }
 
+  console.log(files);
   // todo enable publish after testing
   // await rocZenodo.publish(deposition);
 
