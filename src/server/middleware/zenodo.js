@@ -54,6 +54,8 @@ exports.createEntry = composeWithError(async (ctx) => {
     })
   );
 
+  // TODO do this asynchronously relative to the request
+
   const deposition = await rocZenodo.createEntry(depositionMeta);
 
   const files = [];
@@ -94,10 +96,8 @@ exports.createEntry = composeWithError(async (ctx) => {
             data: attachmentStream
           })
         );
-
-        toc.push({ kind: entry.$kind, id });
       }
-      break;
+      toc.push({ kind: entry.$kind, id });
     }
     /* eslint-enable */
 
