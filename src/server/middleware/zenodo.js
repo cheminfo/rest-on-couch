@@ -1,6 +1,7 @@
 'use strict';
 
 const config = require('../../config/config').globalConfig;
+const debug = require('../../util/debug')('zenodo');
 const { RocZenodo } = require('../../roc-zenodo');
 
 const decorateError = require('./decorateError');
@@ -21,6 +22,7 @@ exports.createEntry = composeWithError(async (ctx) => {
     return;
   }
   const { couch, userEmail } = ctx.state;
+  debug('create Zenodo entry: %s (%s)', entryId, userEmail);
   const zenodoEntry = await couch.getEntryWithRights(
     entryId,
     userEmail,
@@ -29,9 +31,11 @@ exports.createEntry = composeWithError(async (ctx) => {
   const { $content: { meta, samples, doi } } = zenodoEntry;
   if (!samples || samples.length === 0) {
     decorateError(ctx, 400, 'cannot publish on Zenodo without samples');
+    return;
   }
   if (typeof doi === 'string' && doi.length > 1) {
     decorateError(ctx, 403, 'this entry has already been published');
+    return;
   }
   let depositionMeta;
   try {
@@ -54,7 +58,26 @@ exports.createEntry = composeWithError(async (ctx) => {
     })
   );
 
-  // TODO do this asynchronously relative to the request
+  createZenodoEntry(
+    depositionMeta,
+    zenodoEntry,
+    entries,
+    couch,
+    userEmail
+  ).catch((e) => {
+    debug.error('failed to create Zenodo entry', e.message);
+  });
+
+  respondOk(ctx, 202);
+});
+
+async function createZenodoEntry(
+  depositionMeta,
+  zenodoEntry,
+  entries,
+  couch,
+  userEmail
+) {
   const deposition = await rocZenodo.createEntry(depositionMeta);
 
   const toc = [];
@@ -120,6 +143,4 @@ exports.createEntry = composeWithError(async (ctx) => {
   });
 
   await couch.insertEntry(zenodoEntry, userEmail);
-
-  respondOk(ctx, 201);
-});
+}
