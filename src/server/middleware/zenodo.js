@@ -55,33 +55,28 @@ exports.createEntry = composeWithError(async (ctx) => {
   );
 
   // TODO do this asynchronously relative to the request
-  console.log('create deposition');
   const deposition = await rocZenodo.createEntry(depositionMeta);
 
-  const files = [];
   const toc = [];
+
+  let entryCount = 0;
 
   try {
     /* eslint-disable no-await-in-loop */
     for (const entry of entries) {
       const { _id: id, $content: content } = entry;
-      console.log('upload index');
-      files.push(
-        await rocZenodo.uploadFile(deposition, {
-          filename: `${id}/index.json`,
-          contentType: 'application/octet-stream',
-          data: JSON.stringify(content, null, 2)
-        })
-      );
+      const entryZenodoId = String(entryCount).padStart(3, '0');
+      await rocZenodo.uploadFile(deposition, {
+        filename: `01_entry/${entryZenodoId}/index.json`,
+        contentType: 'application/octet-stream',
+        data: JSON.stringify(content, null, 2)
+      });
       if (content.general.molfile) {
-        console.log('upload molfile');
-        files.push(
-          await rocZenodo.uploadFile(deposition, {
-            filename: `${id}/molfile.mol`,
-            contentType: 'chemical/x-mdl-molfile',
-            data: content.general.molfile
-          })
-        );
+        await rocZenodo.uploadFile(deposition, {
+          filename: `01_entry/${entryZenodoId}/molfile.mol`,
+          contentType: 'chemical/x-mdl-molfile',
+          data: content.general.molfile
+        });
       }
       for (const attachmentPath in entry._attachments) {
         const contentType = entry._attachments[attachmentPath].content_type;
@@ -91,40 +86,25 @@ exports.createEntry = composeWithError(async (ctx) => {
           userEmail,
           true
         );
-        console.log('upload attachment');
-        files.push(
-          await rocZenodo.uploadFile(deposition, {
-            filename: `${id}/${attachmentPath}`,
-            contentType,
-            data: attachmentStream
-          })
-        );
+        await rocZenodo.uploadFile(deposition, {
+          filename: `01_entry/${entryZenodoId}/${attachmentPath}`,
+          contentType,
+          data: attachmentStream
+        });
         break;
       }
-      toc.push({ kind: entry.$kind, id });
+      toc.push({ kind: entry.$kind, id: entryCount });
+      entryCount++;
       break;
     }
     /* eslint-enable */
 
-    console.log('upload toc');
-    files.unshift(
-      await rocZenodo.uploadFile(deposition, {
-        filename: 'toc.json',
-        contentType: 'application/octet-stream',
-        data: JSON.stringify(toc, null, 2)
-      })
-    );
-    console.log('upload index.md');
-    files.unshift(
-      await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition))
-    );
-
-    const zenodoFiles = await rocZenodo.getFileList(deposition);
-    const sortedFiles = files.map((file) => {
-      const zenodoFile = zenodoFiles.find((f) => f.filename === file.key);
-      return zenodoFile.id;
+    await rocZenodo.uploadFile(deposition, {
+      filename: '00_index/toc.json',
+      contentType: 'application/octet-stream',
+      data: JSON.stringify(toc, null, 2)
     });
-    await rocZenodo.sortFiles(deposition, sortedFiles);
+    await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition));
   } catch (e) {
     await rocZenodo.deleteEntry(deposition);
     throw e;

@@ -6,7 +6,7 @@ function getIndexMd(deposition, self) {
     url += '?sandbox=1';
   }
   const indexPage = {
-    filename: 'index.md',
+    filename: '00_index/README.md',
     contentType: 'text/markdown',
     data: `Visualize the data for this publication: [open entry](${url})`
   };
