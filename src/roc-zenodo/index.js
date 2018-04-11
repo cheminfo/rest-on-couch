@@ -65,6 +65,10 @@ class RocZenodo {
     return deposition.data;
   }
 
+  updateEntry(deposition) {
+    return this.zenodo.depositions.update(deposition);
+  }
+
   deleteEntry(deposition) {
     return this.zenodo.depositions.delete(deposition);
   }
