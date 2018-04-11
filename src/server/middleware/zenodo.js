@@ -56,6 +56,8 @@ exports.createEntry = composeWithError(async (ctx) => {
 
   const deposition = await rocZenodo.createEntry(depositionMeta);
 
+  const toc = [];
+
   /* eslint-disable no-await-in-loop */
   for (const entry of entries) {
     const { _id: id, $content: content } = entry;
@@ -84,11 +86,20 @@ exports.createEntry = composeWithError(async (ctx) => {
         contentType,
         data: attachmentStream
       });
+
+      toc.push({ kind: entry.$kind, id });
     }
   }
   /* eslint-enable */
 
+  await rocZenodo.uploadFile(deposition, {
+    filename: 'toc.json',
+    data: JSON.stringify(toc, null, 2)
+  });
   await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition));
+
+  // todo enable publish after testing
+  // await rocZenodo.publish(deposition);
 
   zenodoEntry.$content.doi = deposition.metadata.prereserve_doi.doi;
   zenodoEntry.$content.status.push({

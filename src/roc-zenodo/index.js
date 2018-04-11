@@ -51,8 +51,8 @@ class RocZenodo {
     return uploadFile(deposition, options, this);
   }
 
-  publishEntry(entryId) {
-    return publishEntry(entryId, this.zenodo);
+  publishEntry(deposition) {
+    return publishEntry(deposition, this.zenodo);
   }
 }
 

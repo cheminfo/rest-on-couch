@@ -1,8 +1,9 @@
 'use strict';
 
-// eslint-disable-next-line
-async function publishEntry(entryId, zenodo) {
-  // todo implement
+function publishEntry(deposition, zenodo) {
+  return zenodo.depositions.publish({
+    id: deposition.id
+  });
 }
 
 module.exports = publishEntry;
