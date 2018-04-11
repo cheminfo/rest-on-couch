@@ -170,7 +170,8 @@ This option is mandatory if `zenodo` is `true`.
 
 Type: function  
 Function that is called with each ROC entry's contents and must return a list of
-attachments to add to the Zenodo entry.
+attachments to add to the Zenodo entry. It can also return an object if a single
+attachment is to be added
 
 ```js
 function zenodoAttachments(content) {
