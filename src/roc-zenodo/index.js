@@ -48,7 +48,7 @@ class RocZenodo {
     return {
       filename: '00_index/README.md',
       contentType: 'text/markdown',
-      data: 'TODO README'
+      data: ''
     };
   }
 
