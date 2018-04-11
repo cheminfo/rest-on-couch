@@ -6,7 +6,6 @@ const getIndexMd = require('./getIndexMd');
 const getZenodoDeposition = require('./getZenodoDeposition');
 const createEntry = require('./createEntry');
 const uploadFile = require('./uploadFile');
-const publishEntry = require('./publishEntry');
 
 class RocZenodo {
   constructor(options = {}) {
