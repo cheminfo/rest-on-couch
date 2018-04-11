@@ -108,15 +108,21 @@ exports.createEntry = composeWithError(async (ctx) => {
         data: JSON.stringify(toc, null, 2)
       })
     );
-    await files.unshift(
-      rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition))
+    files.unshift(
+      await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition))
     );
+
+    const zenodoFiles = await rocZenodo.getFileList(deposition);
+    const sortedFiles = files.map((file) => {
+      const zenodoFile = zenodoFiles.find((f) => f.filename === file.key);
+      return zenodoFile.id;
+    });
+    await rocZenodo.sortFiles(deposition, sortedFiles);
   } catch (e) {
     await rocZenodo.deleteEntry(deposition);
     throw e;
   }
 
-  console.log(files);
   // todo enable publish after testing
   // await rocZenodo.publish(deposition);
 

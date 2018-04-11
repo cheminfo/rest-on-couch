@@ -57,6 +57,15 @@ class RocZenodo {
   publishEntry(deposition) {
     return this.zenodo.depositions.publish(deposition);
   }
+
+  async getFileList(deposition) {
+    const result = await this.zenodo.depositions.files(deposition);
+    return result.data;
+  }
+
+  sortFiles(deposition, files) {
+    return this.zenodo.depositions.sort({ id: deposition.id, data: files });
+  }
 }
 
 module.exports = { RocZenodo };
