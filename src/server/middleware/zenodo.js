@@ -55,7 +55,7 @@ exports.createEntry = composeWithError(async (ctx) => {
   );
 
   // TODO do this asynchronously relative to the request
-
+  console.log('create deposition');
   const deposition = await rocZenodo.createEntry(depositionMeta);
 
   const files = [];
@@ -65,6 +65,7 @@ exports.createEntry = composeWithError(async (ctx) => {
     /* eslint-disable no-await-in-loop */
     for (const entry of entries) {
       const { _id: id, $content: content } = entry;
+      console.log('upload index');
       files.push(
         await rocZenodo.uploadFile(deposition, {
           filename: `${id}/index.json`,
@@ -73,6 +74,7 @@ exports.createEntry = composeWithError(async (ctx) => {
         })
       );
       if (content.general.molfile) {
+        console.log('upload molfile');
         files.push(
           await rocZenodo.uploadFile(deposition, {
             filename: `${id}/molfile.mol`,
@@ -89,6 +91,7 @@ exports.createEntry = composeWithError(async (ctx) => {
           userEmail,
           true
         );
+        console.log('upload attachment');
         files.push(
           await rocZenodo.uploadFile(deposition, {
             filename: `${id}/${attachmentPath}`,
@@ -96,11 +99,14 @@ exports.createEntry = composeWithError(async (ctx) => {
             data: attachmentStream
           })
         );
+        break;
       }
       toc.push({ kind: entry.$kind, id });
+      break;
     }
     /* eslint-enable */
 
+    console.log('upload toc');
     files.unshift(
       await rocZenodo.uploadFile(deposition, {
         filename: 'toc.json',
@@ -108,6 +114,7 @@ exports.createEntry = composeWithError(async (ctx) => {
         data: JSON.stringify(toc, null, 2)
       })
     );
+    console.log('upload index.md');
     files.unshift(
       await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition))
     );
