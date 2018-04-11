@@ -64,7 +64,7 @@ exports.createEntry = composeWithError(async (ctx) => {
       const { _id: id, $content: content } = entry;
       await rocZenodo.uploadFile(deposition, {
         filename: `${id}/index.json`,
-        contentType: 'application/json',
+        contentType: 'application/octet-stream',
         data: JSON.stringify(content, null, 2)
       });
       if (content.general.molfile) {
@@ -95,6 +95,7 @@ exports.createEntry = composeWithError(async (ctx) => {
 
     await rocZenodo.uploadFile(deposition, {
       filename: 'toc.json',
+      contentType: 'application/octet-stream',
       data: JSON.stringify(toc, null, 2)
     });
     await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition));
