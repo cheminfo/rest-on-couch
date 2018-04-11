@@ -100,16 +100,17 @@ async function uploadAttachments(
   try {
     /* eslint-disable no-await-in-loop */
     for (const entry of entries) {
-      const { _id: id, $content: content } = entry;
+      const { _id: id, $content: content, $kind: kind } = entry;
       const entryZenodoId = String(entryCount).padStart(3, '0');
+      const filenamePrefix = `${kind}_${entryZenodoId}`;
       await rocZenodo.uploadFile(deposition, {
-        filename: `01_entry/${entryZenodoId}/index.json`,
+        filename: `${filenamePrefix}/index.json`,
         contentType: 'application/octet-stream',
         data: JSON.stringify(content, null, 2)
       });
       if (content.general.molfile) {
         await rocZenodo.uploadFile(deposition, {
-          filename: `01_entry/${entryZenodoId}/molfile.mol`,
+          filename: `${filenamePrefix}/molfile.mol`,
           contentType: 'chemical/x-mdl-molfile',
           data: content.general.molfile
         });
@@ -123,7 +124,7 @@ async function uploadAttachments(
           true
         );
         await rocZenodo.uploadFile(deposition, {
-          filename: `01_entry/${entryZenodoId}/${attachmentPath}`,
+          filename: `${filenamePrefix}/${attachmentPath}`,
           contentType,
           data: attachmentStream
         });
@@ -134,7 +135,7 @@ async function uploadAttachments(
     /* eslint-enable */
 
     await rocZenodo.uploadFile(deposition, {
-      filename: '00_index/toc.json',
+      filename: '_toc.json',
       contentType: 'application/octet-stream',
       data: JSON.stringify(toc, null, 2)
     });

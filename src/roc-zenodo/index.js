@@ -46,7 +46,7 @@ class RocZenodo {
 
   getIndexMd() {
     return {
-      filename: '00_index/README.md',
+      filename: '_README.md',
       contentType: 'text/markdown',
       data: ''
     };
