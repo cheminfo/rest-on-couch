@@ -72,6 +72,7 @@ function onGetError(ctx, e, secure) {
     ctx.body.stack = e.stack;
   }
 }
+exports.onGetError = onGetError;
 
 async function errorMiddleware(ctx, next) {
   try {
