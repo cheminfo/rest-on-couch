@@ -35,7 +35,7 @@
     "prettier": "prettier-eslint bin/*.js src/**/*.js test/**/*.js --write",
     "start:dev": "webpack-dev-server --inline --content-base public/ --history-api-fallback",
     "start:prod": "NODE_ENV=production npm run build && node bin/rest-on-couch-server.js",
-    "start:devserver": "REST_ON_COUCH_HOME_DIR=test/homedir nodemon bin/rest-on-couch-server.js --config=conf/devConfig.js",
+    "start:devserver": "REST_ON_COUCH_HOME_DIR=test/homedir node bin/rest-on-couch-server.js --config=conf/devConfig.js",
     "test": "npm run test-jest && npm run eslint",
     "test-jest": "jest --runInBand"
   },
@@ -128,7 +128,6 @@
     "istanbul": "^0.4.3",
     "jest": "^22.4.2",
     "make-promises-safe": "^1.1.0",
-    "nodemon": "^1.12.1",
     "prettier-eslint-cli": "^4.7.0",
     "rimraf": "^2.6.2",
     "should": "^13.1.3",
