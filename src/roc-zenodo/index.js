@@ -47,12 +47,16 @@ class RocZenodo {
     return createEntry(entry, this);
   }
 
+  deleteEntry(deposition) {
+    return this.zenodo.depositions.delete(deposition);
+  }
+
   uploadFile(deposition, options) {
     return uploadFile(deposition, options, this);
   }
 
   publishEntry(deposition) {
-    return publishEntry(deposition, this.zenodo);
+    return this.zenodo.depositions.publish(deposition);
   }
 }
 
