@@ -42,14 +42,29 @@ function validateCreators(creators) {
   }
   const toReturn = [];
   for (const creator of creators) {
-    if (typeof creator.name !== 'string' || !creator.name.includes(',')) {
-      throw new TypeError('creator must have a name, comma-separated');
+    let creatorName;
+    if (typeof creator.name === 'string') {
+      if (!creator.name.includes(', ')) {
+        throw new TypeError(
+          'creator must have a lastname and firstname, comma-separated'
+        );
+      }
+      creatorName = creator.name;
+    } else if (
+      typeof creator.firstname === 'string' &&
+      typeof creator.lastname === 'string'
+    ) {
+      creatorName = `${creator.lastname}, ${creator.firstname}`;
+    } else {
+      throw new TypeError(
+        'creator must have a lastname and firstname, comma-separated'
+      );
     }
     if (typeof creator.affiliation !== 'string') {
       throw new TypeError('creator must have an affiliation');
     }
     toReturn.push({
-      name: creator.name,
+      name: creatorName,
       affiliation: creator.affiliation
     });
   }
