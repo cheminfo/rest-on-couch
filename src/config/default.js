@@ -43,5 +43,6 @@ module.exports = {
   zenodo: false,
   zenodoSandbox: false,
   zenodoToken: null,
-  zenodoName: null
+  zenodoName: null,
+  zenodoVisualizationUrl: null
 };
