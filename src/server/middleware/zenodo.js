@@ -66,7 +66,8 @@ exports.createEntry = composeWithError(async (ctx) => {
     value: 'Publishing'
   });
 
-  await couch.insertEntry(zenodoEntry, userEmail);
+  const result = await couch.insertEntry(zenodoEntry, userEmail);
+  zenodoEntry._rev = result.info.rev;
 
   createZenodoEntry(deposition, zenodoEntry, entries, couch, userEmail).catch(
     (e) => {
@@ -123,7 +124,7 @@ async function createZenodoEntry(
           data: attachmentStream
         });
       }
-      toc.push({ kind: entry.$kind, id: entryCount });
+      toc.push({ kind: entry.$kind, id: entryZenodoId });
       entryCount++;
     }
     /* eslint-enable */
@@ -136,6 +137,12 @@ async function createZenodoEntry(
     await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition));
   } catch (e) {
     await rocZenodo.deleteEntry(deposition);
+    zenodoEntry.$content.doi = '';
+    zenodoEntry.$content.status.unshift({
+      epoch: Date.now(),
+      value: 'Error'
+    });
+    await couch.insertEntry(zenodoEntry, userEmail);
     throw e;
   }
 
