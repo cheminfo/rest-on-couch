@@ -26,6 +26,13 @@ exports.createEntry = composeWithError(async (ctx) => {
     'entry'
   );
   const { $content: { meta, samples } } = zenodoEntry;
-  const deposition = await rocZenodo.createEntry(meta);
+  let depositionMeta;
+  try {
+    depositionMeta = await rocZenodo.getZenodoDeposition(meta);
+  } catch (e) {
+    decorateError(ctx, 400, e.message);
+    return;
+  }
+  const deposition = await rocZenodo.createEntry(depositionMeta);
   ctx.body = zenodoEntry;
 });
