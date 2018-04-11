@@ -37,19 +37,15 @@ exports.init = function (passport, router) {
             });
 
             res = JSON.parse(res.body);
+            if (res.error) {
+              return done(null, false, res.reason);
+            }
             return done(null, {
               email: res.name,
               provider: 'local'
             });
           } catch (err) {
-            if (!err || !err.body) return done(null, false, 'unknown error');
-
-            try {
-              let res = JSON.parse(err.body);
-              return done(null, false, res.reason);
-            } catch (e) {
-              return done(null, false, 'unknown error');
-            }
+            return done(err);
           }
         })();
       }
