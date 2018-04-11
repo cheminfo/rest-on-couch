@@ -5,7 +5,6 @@ const debug = require('../../util/debug')('zenodo');
 const { RocZenodo } = require('../../roc-zenodo');
 
 const decorateError = require('./decorateError');
-const respondOk = require('./respondOk');
 const { composeWithError } = require('./util');
 
 let rocZenodo = new RocZenodo({

@@ -4,8 +4,6 @@ const Zenodo = require('zenodo');
 
 const getIndexMd = require('./getIndexMd');
 const getZenodoDeposition = require('./getZenodoDeposition');
-const createEntry = require('./createEntry');
-const uploadFile = require('./uploadFile');
 
 class RocZenodo {
   constructor(options = {}) {
@@ -42,16 +40,24 @@ class RocZenodo {
     return getZenodoDeposition(entry, this);
   }
 
-  createEntry(entry) {
-    return createEntry(entry, this);
+  // entry is the $content.meta of the ROC entry
+  async createEntry(entry) {
+    if (!entry.metadata) {
+      entry = this.getZenodoDeposition(entry);
+    }
+    const deposition = await this.zenodo.depositions.create(entry);
+    return deposition.data;
   }
 
   deleteEntry(deposition) {
     return this.zenodo.depositions.delete(deposition);
   }
 
-  uploadFile(deposition, options) {
-    return uploadFile(deposition, options, this);
+  async uploadFile(deposition, options) {
+    // deposition is the object returned by createEntry
+    const zFiles = this.zenodo.files;
+    const result = await zFiles.upload(Object.assign({ deposition }, options));
+    return result.data;
   }
 
   publishEntry(deposition) {

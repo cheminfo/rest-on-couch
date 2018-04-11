@@ -153,6 +153,13 @@ entry that is created. For example, if `zenodoName` is `'db123'`, entries will
 contain the keyword `'from:db123'`.  
 This option is mandatory if `zenodo` is `true`.
 
+##### zenodoVisualizationUrl
+
+Type: string  
+URL prefix for entry visualization. The Zenodo entry ID will be appended to this,
+optionally with a `?sandbox=1` query string.  
+This option is mandatory if `zenodo` is `true`.
+
 ## Setup environment with Docker (for runnings tests)
 
 ```bash
