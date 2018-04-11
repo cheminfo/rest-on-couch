@@ -9,29 +9,44 @@ class RocZenodo {
     const {
       name,
       visualizationUrl,
-      zenodoHost = 'sandbox.zenodo.org',
-      zenodoToken
+      readme,
+      attachments,
+      sandbox = true,
+      token
     } = options;
-    if (typeof zenodoHost !== 'string') {
-      throw new TypeError('zenodoHost must be a string');
+    if (typeof sandbox !== 'boolean') {
+      throw new TypeError('sandbox must be a boolean');
     }
-    if (typeof zenodoToken !== 'string') {
-      throw new TypeError('zenodoToken must be a string');
+    const host = sandbox ? 'sandbox.zenodo.org' : 'www.zenodo.org';
+    if (typeof token !== 'string') {
+      throw new TypeError('token must be a string');
     }
     if (typeof name !== 'string' || name === '') {
       throw new TypeError('name must be a string');
     }
-    if (typeof visualizationUrl !== 'string') {
+    if (
+      visualizationUrl !== undefined &&
+      typeof visualizationUrl !== 'string'
+    ) {
       throw new TypeError('visualizationUrl must be a string');
+    }
+    if (typeof readme !== 'string' || readme === '') {
+      throw new TypeError('readme must be a non-empty string');
+    }
+    if (attachments !== undefined && typeof attachments !== 'function') {
+      throw new TypeError('attachments must be a function');
     }
 
     this.name = name;
     this.visualizationUrl = visualizationUrl;
-    this.isSandbox = zenodoHost.includes('sandbox');
-    this.zenodo = new Zenodo({ host: zenodoHost, token: zenodoToken });
+    this.readme = readme;
+    this.attachments = attachments;
+    this.isSandbox = sandbox;
+    this.zenodo = new Zenodo({ host, token });
   }
 
   getDescriptionSuffix(deposition) {
+    if (!this.visualizationUrl) return '';
     let url = `${this.visualizationUrl}/${deposition.id}`;
     if (this.isSandbox) {
       url += '?sandbox=1';
@@ -48,7 +63,7 @@ class RocZenodo {
     return {
       filename: '_README.md',
       contentType: 'text/markdown',
-      data: 'TODO README'
+      data: this.readme
     };
   }
 

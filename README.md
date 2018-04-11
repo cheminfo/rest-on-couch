@@ -156,9 +156,33 @@ This option is mandatory if `zenodo` is `true`.
 ##### zenodoVisualizationUrl
 
 Type: string  
-URL prefix for entry visualization. The Zenodo entry ID will be appended to this,
-optionally with a `?sandbox=1` query string.  
+URL prefix for entry visualization. If set, the Zenodo entry ID will be appended
+to this, optionally with a `?sandbox=1` query string. A link will be added at the
+end of the entry's description.
+
+##### zenodoReadme
+
+Type: string  
+Contents of the `_README.md` that is published in the Zenodo entry.  
 This option is mandatory if `zenodo` is `true`.
+
+##### zenodoAttachments
+
+Type: function  
+Function that is called with each ROC entry's contents and must return a list of
+attachments to add to the Zenodo entry.
+
+```js
+function zenodoAttachments(content) {
+  if (content.general && content.general.molfile) {
+    return {
+      filename: 'molfile.mol',
+      contentType: 'chemical/x-mdl-molfile',
+      data: content.general.molfile
+    };
+  }
+}
+```
 
 ## Setup environment with Docker (for runnings tests)
 
