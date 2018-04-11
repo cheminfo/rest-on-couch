@@ -127,7 +127,7 @@ exports.createEntry = composeWithError(async (ctx) => {
   // await rocZenodo.publish(deposition);
 
   zenodoEntry.$content.doi = deposition.metadata.prereserve_doi.doi;
-  zenodoEntry.$content.status.push({
+  zenodoEntry.$content.status.unshift({
     epoch: Date.now(),
     value: 'Published'
   });
