@@ -58,28 +58,36 @@ exports.createEntry = composeWithError(async (ctx) => {
     })
   );
 
-  createZenodoEntry(
-    depositionMeta,
-    zenodoEntry,
-    entries,
-    couch,
-    userEmail
-  ).catch((e) => {
-    debug.error('failed to create Zenodo entry', e.message);
+  const deposition = await rocZenodo.createEntry(depositionMeta);
+  const newDoi = deposition.metadata.prereserve_doi.doi;
+  zenodoEntry.$content.doi = newDoi;
+  zenodoEntry.$content.status.unshift({
+    epoch: Date.now(),
+    value: 'Publishing'
   });
 
-  respondOk(ctx, 202);
+  await couch.insertEntry(zenodoEntry, userEmail);
+
+  createZenodoEntry(deposition, zenodoEntry, entries, couch, userEmail).catch(
+    (e) => {
+      debug.error('failed to create Zenodo entry', e.message);
+    }
+  );
+
+  ctx.status = 202;
+  ctx.body = {
+    ok: true,
+    doi: newDoi
+  };
 });
 
 async function createZenodoEntry(
-  depositionMeta,
+  deposition,
   zenodoEntry,
   entries,
   couch,
   userEmail
 ) {
-  const deposition = await rocZenodo.createEntry(depositionMeta);
-
   const toc = [];
 
   let entryCount = 0;
@@ -114,11 +122,9 @@ async function createZenodoEntry(
           contentType,
           data: attachmentStream
         });
-        break;
       }
       toc.push({ kind: entry.$kind, id: entryCount });
       entryCount++;
-      break;
     }
     /* eslint-enable */
 
@@ -136,7 +142,6 @@ async function createZenodoEntry(
   // todo enable publish after testing
   // await rocZenodo.publish(deposition);
 
-  zenodoEntry.$content.doi = deposition.metadata.prereserve_doi.doi;
   zenodoEntry.$content.status.unshift({
     epoch: Date.now(),
     value: 'Published'
