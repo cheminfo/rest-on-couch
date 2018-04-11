@@ -2,7 +2,6 @@
 
 const Zenodo = require('zenodo');
 
-const getIndexMd = require('./getIndexMd');
 const getZenodoDeposition = require('./getZenodoDeposition');
 
 class RocZenodo {
@@ -32,8 +31,25 @@ class RocZenodo {
     this.zenodo = new Zenodo({ host: zenodoHost, token: zenodoToken });
   }
 
-  getIndexMd(deposition) {
-    return getIndexMd(deposition, this);
+  getDescriptionSuffix(deposition) {
+    let url = `${this.visualizationUrl}/${deposition.id}`;
+    if (this.isSandbox) {
+      url += '?sandbox=1';
+    }
+    return `
+      <br />
+      <br />
+      <p>
+        Visualize the data for this publication: <a href="${url}" target="_blank">open entry</a>
+      </p>`;
+  }
+
+  getIndexMd() {
+    return {
+      filename: '00_index/README.md',
+      contentType: 'text/markdown',
+      data: 'TODO README'
+    };
   }
 
   getZenodoDeposition(entry) {

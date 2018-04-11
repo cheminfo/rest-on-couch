@@ -65,12 +65,17 @@ exports.createEntry = composeWithError(async (ctx) => {
     value: 'Publishing'
   });
 
+  deposition.metadata.description =
+    deposition.metadata.description +
+    rocZenodo.getDescriptionSuffix(deposition);
+  await rocZenodo.updateEntry(deposition);
+
   const result = await couch.insertEntry(zenodoEntry, userEmail);
   zenodoEntry._rev = result.info.rev;
 
-  createZenodoEntry(deposition, zenodoEntry, entries, couch, userEmail).catch(
+  uploadAttachments(deposition, zenodoEntry, entries, couch, userEmail).catch(
     (e) => {
-      debug.error('failed to create Zenodo entry', e.message);
+      debug.error('failed to upload attachments to Zenodo', e.message);
     }
   );
 
@@ -81,7 +86,7 @@ exports.createEntry = composeWithError(async (ctx) => {
   };
 });
 
-async function createZenodoEntry(
+async function uploadAttachments(
   deposition,
   zenodoEntry,
   entries,
