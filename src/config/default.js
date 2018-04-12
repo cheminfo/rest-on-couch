@@ -37,5 +37,14 @@ module.exports = {
   ldapGetUserEmail(user) {
     return user.mail;
   },
-  entryUnicity: 'byOwner' // can be byOwner or global
+  entryUnicity: 'byOwner', // can be byOwner or global
+
+  // Options for Zenodo publication
+  zenodo: false,
+  zenodoSandbox: false,
+  zenodoToken: null,
+  zenodoName: null,
+  zenodoVisualizationUrl: null,
+  zenodoReadme: null,
+  zenodoAttachments: null
 };

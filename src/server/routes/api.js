@@ -4,6 +4,7 @@ const router = require('koa-router')({
   prefix: '/db'
 });
 
+const config = require('../../config/config').globalConfig;
 const couch = require('../middleware/couch');
 const util = require('../middleware/util');
 
@@ -186,5 +187,11 @@ router.post('/:dbname/user/_me/token', couch.createUserToken);
 router.get('/:dbname/token', couch.getTokens);
 router.get('/:dbname/token/:tokenid', couch.getTokenById);
 router.delete('/:dbname/token/:tokenid', couch.deleteTokenById);
+
+// Zenodo
+if (config.zenodo === true) {
+  const zenodo = require('../middleware/zenodo');
+  router.post('/:dbname/zenodo/create', zenodo.createEntry);
+}
 
 module.exports = router;
