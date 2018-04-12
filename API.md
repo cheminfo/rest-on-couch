@@ -73,6 +73,6 @@
 
 ### Zenodo
 
-| Method | Route                       |          Action           |             Description             |
-| :----: | :-------------------------- | :-----------------------: | :---------------------------------: |
-|  POST  | `/db/:dbname/zenodo/create` | Create an entry on zenodo | UUID of the local entry in the body |
+| Method | Route                       |          Action           |                       Description                       |
+| :----: | :-------------------------- | :-----------------------: | :-----------------------------------------------------: |
+|  POST  | `/db/:dbname/zenodo/create` | Create an entry on zenodo | UUID of the local entry in an "entryId" query parameter |
