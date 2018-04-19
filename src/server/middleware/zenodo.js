@@ -12,7 +12,6 @@ let rocZenodo = new RocZenodo({
   token: config.zenodoToken,
   name: config.zenodoName,
   visualizationUrl: config.zenodoVisualizationUrl,
-  readme: config.zenodoReadme,
   attachments: config.zenodoAttachments
 });
 
@@ -29,7 +28,7 @@ exports.createEntry = composeWithError(async (ctx) => {
     userEmail,
     'write'
   );
-  const { $content: { meta, entries, doi } } = zenodoEntry;
+  const { $content: { meta, entries, doi, readme: entryReadme } } = zenodoEntry;
   if (!entries || entries.length === 0) {
     decorateError(ctx, 400, 'cannot publish on Zenodo without entries');
     return;
@@ -38,6 +37,12 @@ exports.createEntry = composeWithError(async (ctx) => {
     decorateError(ctx, 403, 'this entry has already been published');
     return;
   }
+  const readme = config.zenodoReadme || entryReadme;
+  if (!readme) {
+    decorateError(ctx, 400, 'readme is mandatory');
+    return;
+  }
+
   let depositionMeta;
   try {
     depositionMeta = await rocZenodo.getZenodoDeposition(meta);
@@ -82,6 +87,7 @@ exports.createEntry = composeWithError(async (ctx) => {
     deposition,
     zenodoEntry,
     entryValues,
+    readme,
     couch,
     userEmail
   ).catch((e) => {
@@ -99,6 +105,7 @@ async function uploadAttachments(
   deposition,
   zenodoEntry,
   entries,
+  readme,
   couch,
   userEmail
 ) {
@@ -169,7 +176,7 @@ async function uploadAttachments(
       contentType: 'application/octet-stream',
       data: JSON.stringify(toc, null, 2)
     });
-    await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(deposition));
+    await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(readme));
   } catch (e) {
     await rocZenodo.deleteEntry(deposition);
     zenodoEntry.$content.doi = '';
@@ -181,8 +188,7 @@ async function uploadAttachments(
     throw e;
   }
 
-  // todo enable publish after testing
-  // await rocZenodo.publish(deposition);
+  await rocZenodo.publish(deposition);
 
   zenodoEntry.$content.status.unshift({
     epoch: Date.now(),
