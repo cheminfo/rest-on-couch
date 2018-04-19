@@ -177,6 +177,7 @@ async function uploadAttachments(
       data: JSON.stringify(toc, null, 2)
     });
     await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(readme));
+    await rocZenodo.publishEntry(deposition);
   } catch (e) {
     await rocZenodo.deleteEntry(deposition);
     zenodoEntry.$content.doi = '';
@@ -187,8 +188,6 @@ async function uploadAttachments(
     await couch.insertEntry(zenodoEntry, userEmail);
     throw e;
   }
-
-  await rocZenodo.publish(deposition);
 
   zenodoEntry.$content.status.unshift({
     epoch: Date.now(),
