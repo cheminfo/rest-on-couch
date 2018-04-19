@@ -163,8 +163,7 @@ end of the entry's description.
 ##### zenodoReadme
 
 Type: string  
-Contents of the `_README.md` that is published in the Zenodo entry.  
-This option is mandatory if `zenodo` is `true`.
+Default contents of the `_README.md` that is published in the Zenodo entry.
 
 ##### zenodoAttachments
 

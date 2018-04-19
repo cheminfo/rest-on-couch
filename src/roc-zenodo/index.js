@@ -9,7 +9,6 @@ class RocZenodo {
     const {
       name,
       visualizationUrl,
-      readme,
       attachments,
       sandbox = true,
       token
@@ -30,16 +29,12 @@ class RocZenodo {
     ) {
       throw new TypeError('visualizationUrl must be a string');
     }
-    if (typeof readme !== 'string' || readme === '') {
-      throw new TypeError('readme must be a non-empty string');
-    }
     if (attachments !== undefined && typeof attachments !== 'function') {
       throw new TypeError('attachments must be a function');
     }
 
     this.name = name;
     this.visualizationUrl = visualizationUrl;
-    this.readme = readme;
     this.attachments = attachments;
     this.isSandbox = sandbox;
     this.zenodo = new Zenodo({ host, token });
@@ -59,11 +54,11 @@ class RocZenodo {
       </p>`;
   }
 
-  getIndexMd() {
+  getIndexMd(readme) {
     return {
       filename: '_README.md',
       contentType: 'text/markdown',
-      data: this.readme
+      data: readme
     };
   }
 
