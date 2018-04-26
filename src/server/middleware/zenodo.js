@@ -122,7 +122,7 @@ exports.createEntry = composeWithError(async (ctx) => {
   const result = await couch.insertEntry(zenodoEntry, userEmail);
   zenodoEntry._rev = result.info.rev;
 
-  uploadAttachments(
+  publish(
     deposition,
     zenodoEntry,
     entryValues,
@@ -131,7 +131,7 @@ exports.createEntry = composeWithError(async (ctx) => {
     userEmail,
     rocZenodo
   ).catch((e) => {
-    debug.error('failed to upload attachments to Zenodo', e.message);
+    debug.error('failed to publish entry to Zenodo', e.message);
   });
 
   ctx.status = 202;
@@ -142,7 +142,7 @@ exports.createEntry = composeWithError(async (ctx) => {
   };
 });
 
-async function uploadAttachments(
+async function publish(
   deposition,
   zenodoEntry,
   entries,
@@ -230,10 +230,14 @@ async function uploadAttachments(
     await rocZenodo.deleteEntry(deposition);
     zenodoEntry.$content.doi = '';
     zenodoEntry.$content.recid = null;
-    zenodoEntry.$content.status.unshift({
+    const status = {
       epoch: Date.now(),
       value: 'Error'
-    });
+    };
+    if (e.response && e.response.data) {
+      status.error = e.response.data;
+    }
+    zenodoEntry.$content.status.unshift(status);
     await couch.insertEntry(zenodoEntry, userEmail);
     throw e;
   }
