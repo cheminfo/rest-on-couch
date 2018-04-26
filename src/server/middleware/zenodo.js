@@ -7,13 +7,23 @@ const { RocZenodo } = require('../../roc-zenodo');
 const decorateError = require('./decorateError');
 const { composeWithError } = require('./util');
 
-let rocZenodo = new RocZenodo({
-  sandbox: config.zenodoSandbox,
+let rocZenodoProd = new RocZenodo({
+  sandbox: false,
   token: config.zenodoToken,
   name: config.zenodoName,
   visualizationUrl: config.zenodoVisualizationUrl,
   attachments: config.zenodoAttachments
 });
+
+let rocZenodoSandbox = config.zenodoSandboxToken
+  ? new RocZenodo({
+    sandbox: true,
+    token: config.zenodoSandboxToken,
+    name: config.zenodoName,
+    visualizationUrl: config.zenodoVisualizationUrl,
+    attachments: config.zenodoAttachments
+  })
+  : null;
 
 exports.createEntry = composeWithError(async (ctx) => {
   const { entryId } = ctx.query;
@@ -28,18 +38,28 @@ exports.createEntry = composeWithError(async (ctx) => {
     userEmail,
     'write'
   );
-  const { $content: { meta, entries, doi, readme: entryReadme } } = zenodoEntry;
+  const {
+    $content: { meta, entries, doi, parent, readme: entryReadme, sandbox }
+  } = zenodoEntry;
   if (!entries || entries.length === 0) {
+    debug('no entries in Zenodo entry');
     decorateError(ctx, 400, 'cannot publish on Zenodo without entries');
     return;
   }
   if (typeof doi === 'string' && doi.length > 1) {
+    debug('Zenodo entry already has a doi');
     decorateError(ctx, 403, 'this entry has already been published');
     return;
   }
   const readme = config.zenodoReadme || entryReadme;
   if (!readme) {
+    debug('missing readme in Zenodo entry');
     decorateError(ctx, 400, 'readme is mandatory');
+    return;
+  }
+  let rocZenodo = sandbox ? rocZenodoSandbox : rocZenodoProd;
+  if (rocZenodo === null) {
+    decorateError(ctx, 500, 'sandbox is not setup on this server');
     return;
   }
 
@@ -47,6 +67,7 @@ exports.createEntry = composeWithError(async (ctx) => {
   try {
     depositionMeta = await rocZenodo.getZenodoDeposition(meta);
   } catch (e) {
+    debug('metadata is invalid');
     decorateError(ctx, 400, e.message);
     return;
   }
@@ -63,10 +84,28 @@ exports.createEntry = composeWithError(async (ctx) => {
       }
     })
   );
+  entryValues.forEach((entryValue, i) => {
+    entryValue.entry = entries[i];
+  });
 
-  const deposition = await rocZenodo.createEntry(depositionMeta);
+  let deposition;
+  if (parent) {
+    debug('create new version from parent');
+    if (!parent.recid) {
+      debug('parent is missing recid');
+      decorateError(ctx, 400, 'parent must have a recid');
+      return;
+    }
+    deposition = await rocZenodo.createNewVersion(parent.recid, depositionMeta);
+  } else {
+    debug('create Zenodo entry');
+    deposition = await rocZenodo.createEntry(depositionMeta);
+  }
+
   const newDoi = deposition.metadata.prereserve_doi.doi;
+  const newRecid = deposition.metadata.prereserve_doi.recid;
   zenodoEntry.$content.doi = newDoi;
+  zenodoEntry.$content.recid = newRecid;
   zenodoEntry.$content.status.unshift({
     epoch: Date.now(),
     value: 'Publishing'
@@ -83,31 +122,39 @@ exports.createEntry = composeWithError(async (ctx) => {
   const result = await couch.insertEntry(zenodoEntry, userEmail);
   zenodoEntry._rev = result.info.rev;
 
-  uploadAttachments(
+  publish(
     deposition,
     zenodoEntry,
     entryValues,
     readme,
     couch,
-    userEmail
-  ).catch((e) => {
-    debug.error('failed to upload attachments to Zenodo', e.message);
-  });
+    userEmail,
+    rocZenodo
+  ).then(
+    () => {
+      debug('publication successful');
+    },
+    (e) => {
+      debug.error('failed to publish entry to Zenodo', e.message);
+    }
+  );
 
   ctx.status = 202;
   ctx.body = {
     ok: true,
-    doi: newDoi
+    doi: newDoi,
+    recid: newRecid
   };
 });
 
-async function uploadAttachments(
+async function publish(
   deposition,
   zenodoEntry,
   entries,
   readme,
   couch,
-  userEmail
+  userEmail,
+  rocZenodo
 ) {
   const toc = [];
 
@@ -116,9 +163,16 @@ async function uploadAttachments(
   try {
     /* eslint-disable no-await-in-loop */
     for (const entry of entries) {
-      const { _id: id, $content: content, $kind: kind } = entry;
+      const { _id: id, $content: content, $kind: kind, meta } = entry;
+
       const entryZenodoId = String(entryCount).padStart(3, '0');
       const filenamePrefix = `${kind}_${entryZenodoId}`;
+      const tocEntry = { kind: entry.$kind, id: entryZenodoId };
+      if (meta) {
+        tocEntry.meta = meta;
+      }
+      toc.push(tocEntry);
+
       await rocZenodo.uploadFile(deposition, {
         filename: `${filenamePrefix}/index.json`,
         contentType: 'application/octet-stream',
@@ -166,7 +220,6 @@ async function uploadAttachments(
           data: attachmentStream
         });
       }
-      toc.push({ kind: entry.$kind, id: entryZenodoId });
       entryCount++;
     }
     /* eslint-enable */
@@ -179,12 +232,21 @@ async function uploadAttachments(
     await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(readme));
     await rocZenodo.publishEntry(deposition);
   } catch (e) {
-    await rocZenodo.deleteEntry(deposition);
+    try {
+      await rocZenodo.deleteEntry(deposition);
+    } catch (_) {
+      // ignore
+    }
     zenodoEntry.$content.doi = '';
-    zenodoEntry.$content.status.unshift({
+    zenodoEntry.$content.recid = null;
+    const status = {
       epoch: Date.now(),
       value: 'Error'
-    });
+    };
+    if (e && e.response && e.response.data) {
+      status.error = e.response.data;
+    }
+    zenodoEntry.$content.status.unshift(status);
     await couch.insertEntry(zenodoEntry, userEmail);
     throw e;
   }

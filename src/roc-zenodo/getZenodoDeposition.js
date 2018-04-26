@@ -1,7 +1,7 @@
 'use strict';
 
 function getZenodoDeposition(entry, self) {
-  return {
+  const result = {
     metadata: {
       // eslint-disable-next-line camelcase
       upload_type: 'dataset',
@@ -17,6 +17,10 @@ function getZenodoDeposition(entry, self) {
       notes: entry.notes || ''
     }
   };
+  if (entry.version) {
+    result.version = entry.version;
+  }
+  return result;
 }
 
 function validateString(name, value) {
