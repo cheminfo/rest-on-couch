@@ -115,7 +115,7 @@ class RocZenodo {
     const newVersionMeta = newVersion.data.metadata;
     await this.zenodo.depositions.update({
       id: newVersionRecid,
-      metadata: Object.assign(newVersionMeta, meta)
+      metadata: Object.assign(newVersionMeta, meta.metadata)
     });
     for (const file of newVersion.data.files) {
       // eslint-disable-next-line no-await-in-loop
