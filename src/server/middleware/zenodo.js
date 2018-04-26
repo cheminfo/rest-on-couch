@@ -71,7 +71,9 @@ exports.createEntry = composeWithError(async (ctx) => {
 
   const deposition = await rocZenodo.createEntry(depositionMeta);
   const newDoi = deposition.metadata.prereserve_doi.doi;
+  const newRecid = deposition.metadata.prereserve_doi.recid;
   zenodoEntry.$content.doi = newDoi;
+  zenodoEntry.$content.recid = newRecid;
   zenodoEntry.$content.status.unshift({
     epoch: Date.now(),
     value: 'Publishing'
@@ -102,7 +104,8 @@ exports.createEntry = composeWithError(async (ctx) => {
   ctx.status = 202;
   ctx.body = {
     ok: true,
-    doi: newDoi
+    doi: newDoi,
+    recid: newRecid
   };
 });
 
@@ -192,6 +195,7 @@ async function uploadAttachments(
   } catch (e) {
     await rocZenodo.deleteEntry(deposition);
     zenodoEntry.$content.doi = '';
+    zenodoEntry.$content.recid = null;
     zenodoEntry.$content.status.unshift({
       epoch: Date.now(),
       value: 'Error'
