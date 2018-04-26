@@ -29,7 +29,7 @@ exports.createEntry = composeWithError(async (ctx) => {
     'write'
   );
   const {
-    $content: { meta, entries, doi, readme: entryReadme }
+    $content: { meta, entries, doi, parent, readme: entryReadme }
   } = zenodoEntry;
   if (!entries || entries.length === 0) {
     decorateError(ctx, 400, 'cannot publish on Zenodo without entries');
@@ -69,7 +69,13 @@ exports.createEntry = composeWithError(async (ctx) => {
     entryValue.entry = entries[i];
   });
 
-  const deposition = await rocZenodo.createEntry(depositionMeta);
+  let deposition;
+  if (parent) {
+    deposition = await rocZenodo.createNewVersion(parent.recid, depositionMeta);
+  } else {
+    deposition = await rocZenodo.createEntry(depositionMeta);
+  }
+
   const newDoi = deposition.metadata.prereserve_doi.doi;
   const newRecid = deposition.metadata.prereserve_doi.recid;
   zenodoEntry.$content.doi = newDoi;
