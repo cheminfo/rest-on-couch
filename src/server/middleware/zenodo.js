@@ -42,15 +42,18 @@ exports.createEntry = composeWithError(async (ctx) => {
     $content: { meta, entries, doi, parent, readme: entryReadme, sandbox }
   } = zenodoEntry;
   if (!entries || entries.length === 0) {
+    debug('no entries in Zenodo entry');
     decorateError(ctx, 400, 'cannot publish on Zenodo without entries');
     return;
   }
   if (typeof doi === 'string' && doi.length > 1) {
+    debug('Zenodo entry already has a doi');
     decorateError(ctx, 403, 'this entry has already been published');
     return;
   }
   const readme = config.zenodoReadme || entryReadme;
   if (!readme) {
+    debug('missing readme in Zenodo entry');
     decorateError(ctx, 400, 'readme is mandatory');
     return;
   }
@@ -64,6 +67,7 @@ exports.createEntry = composeWithError(async (ctx) => {
   try {
     depositionMeta = await rocZenodo.getZenodoDeposition(meta);
   } catch (e) {
+    debug('metadata is invalid');
     decorateError(ctx, 400, e.message);
     return;
   }
@@ -86,8 +90,10 @@ exports.createEntry = composeWithError(async (ctx) => {
 
   let deposition;
   if (parent) {
+    debug('create new version from parent');
     deposition = await rocZenodo.createNewVersion(parent.recid, depositionMeta);
   } else {
+    debug('create Zenodo entry');
     deposition = await rocZenodo.createEntry(depositionMeta);
   }
 
