@@ -91,6 +91,11 @@ exports.createEntry = composeWithError(async (ctx) => {
   let deposition;
   if (parent) {
     debug('create new version from parent');
+    if (!parent.recid) {
+      debug('parent is missing recid');
+      decorateError(ctx, 400, 'parent must have a recid');
+      return;
+    }
     deposition = await rocZenodo.createNewVersion(parent.recid, depositionMeta);
   } else {
     debug('create Zenodo entry');
