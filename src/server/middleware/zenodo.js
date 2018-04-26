@@ -227,14 +227,18 @@ async function publish(
     await rocZenodo.uploadFile(deposition, rocZenodo.getIndexMd(readme));
     await rocZenodo.publishEntry(deposition);
   } catch (e) {
-    await rocZenodo.deleteEntry(deposition);
+    try {
+      await rocZenodo.deleteEntry(deposition);
+    } catch (_) {
+      // ignore
+    }
     zenodoEntry.$content.doi = '';
     zenodoEntry.$content.recid = null;
     const status = {
       epoch: Date.now(),
       value: 'Error'
     };
-    if (e.response && e.response.data) {
+    if (e && e.response && e.response.data) {
       status.error = e.response.data;
     }
     zenodoEntry.$content.status.unshift(status);
