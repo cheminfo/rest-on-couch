@@ -28,7 +28,9 @@ exports.createEntry = composeWithError(async (ctx) => {
     userEmail,
     'write'
   );
-  const { $content: { meta, entries, doi, readme: entryReadme } } = zenodoEntry;
+  const {
+    $content: { meta, entries, doi, readme: entryReadme }
+  } = zenodoEntry;
   if (!entries || entries.length === 0) {
     decorateError(ctx, 400, 'cannot publish on Zenodo without entries');
     return;
@@ -63,6 +65,9 @@ exports.createEntry = composeWithError(async (ctx) => {
       }
     })
   );
+  entryValues.forEach((entryValue, i) => {
+    entryValue.entry = entries[i];
+  });
 
   const deposition = await rocZenodo.createEntry(depositionMeta);
   const newDoi = deposition.metadata.prereserve_doi.doi;
@@ -116,9 +121,16 @@ async function uploadAttachments(
   try {
     /* eslint-disable no-await-in-loop */
     for (const entry of entries) {
-      const { _id: id, $content: content, $kind: kind } = entry;
+      const { _id: id, $content: content, $kind: kind, meta } = entry;
+
       const entryZenodoId = String(entryCount).padStart(3, '0');
       const filenamePrefix = `${kind}_${entryZenodoId}`;
+      const tocEntry = { kind: entry.$kind, id: entryZenodoId };
+      if (meta) {
+        tocEntry.meta = meta;
+      }
+      toc.push(tocEntry);
+
       await rocZenodo.uploadFile(deposition, {
         filename: `${filenamePrefix}/index.json`,
         contentType: 'application/octet-stream',
@@ -166,7 +178,6 @@ async function uploadAttachments(
           data: attachmentStream
         });
       }
-      toc.push({ kind: entry.$kind, id: entryZenodoId });
       entryCount++;
     }
     /* eslint-enable */
