@@ -130,9 +130,14 @@ exports.createEntry = composeWithError(async (ctx) => {
     couch,
     userEmail,
     rocZenodo
-  ).catch((e) => {
-    debug.error('failed to publish entry to Zenodo', e.message);
-  });
+  ).then(
+    () => {
+      debug('publication successful');
+    },
+    (e) => {
+      debug.error('failed to publish entry to Zenodo', e.message);
+    }
+  );
 
   ctx.status = 202;
   ctx.body = {
