@@ -7,13 +7,23 @@ const { RocZenodo } = require('../../roc-zenodo');
 const decorateError = require('./decorateError');
 const { composeWithError } = require('./util');
 
-let rocZenodo = new RocZenodo({
-  sandbox: config.zenodoSandbox,
+let rocZenodoProd = new RocZenodo({
+  sandbox: false,
   token: config.zenodoToken,
   name: config.zenodoName,
   visualizationUrl: config.zenodoVisualizationUrl,
   attachments: config.zenodoAttachments
 });
+
+let rocZenodoSandbox = config.zenodoSandboxToken
+  ? new RocZenodo({
+    sandbox: true,
+    token: config.zenodoSandboxToken,
+    name: config.zenodoName,
+    visualizationUrl: config.zenodoVisualizationUrl,
+    attachments: config.zenodoAttachments
+  })
+  : null;
 
 exports.createEntry = composeWithError(async (ctx) => {
   const { entryId } = ctx.query;
@@ -29,7 +39,7 @@ exports.createEntry = composeWithError(async (ctx) => {
     'write'
   );
   const {
-    $content: { meta, entries, doi, parent, readme: entryReadme }
+    $content: { meta, entries, doi, parent, readme: entryReadme, sandbox }
   } = zenodoEntry;
   if (!entries || entries.length === 0) {
     decorateError(ctx, 400, 'cannot publish on Zenodo without entries');
@@ -42,6 +52,11 @@ exports.createEntry = composeWithError(async (ctx) => {
   const readme = config.zenodoReadme || entryReadme;
   if (!readme) {
     decorateError(ctx, 400, 'readme is mandatory');
+    return;
+  }
+  let rocZenodo = sandbox ? rocZenodoSandbox : rocZenodoProd;
+  if (rocZenodo === null) {
+    decorateError(ctx, 500, 'sandbox is not setup on this server');
     return;
   }
 
@@ -102,7 +117,8 @@ exports.createEntry = composeWithError(async (ctx) => {
     entryValues,
     readme,
     couch,
-    userEmail
+    userEmail,
+    rocZenodo
   ).catch((e) => {
     debug.error('failed to upload attachments to Zenodo', e.message);
   });
@@ -121,7 +137,8 @@ async function uploadAttachments(
   entries,
   readme,
   couch,
-  userEmail
+  userEmail,
+  rocZenodo
 ) {
   const toc = [];
 
