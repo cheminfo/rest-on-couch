@@ -72,7 +72,7 @@
     "koa": "^2.4.1",
     "koa-body": "^2.5.0",
     "koa-compose": "^4.0.0",
-    "koa-compress": "^2.0.0",
+    "koa-compress": "^3.0.0",
     "koa-passport": "^4.0.1",
     "koa-response-time": "^2.0.0",
     "koa-router": "^7.3.0",
