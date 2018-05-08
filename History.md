@@ -1,3 +1,20 @@
+<a name="5.6.0"></a>
+# [5.6.0](https://github.com/cheminfo/rest-on-couch/compare/v5.5.1...v5.6.0) (2018-05-08)
+
+
+### Bug Fixes
+
+* allow Zenodo readme to be set from the Zenodo entry ([#109](https://github.com/cheminfo/rest-on-couch/issues/109)) ([a428ba9](https://github.com/cheminfo/rest-on-couch/commit/a428ba9))
+* publish entry it try block ([#110](https://github.com/cheminfo/rest-on-couch/issues/110)) ([6b018f0](https://github.com/cheminfo/rest-on-couch/commit/6b018f0))
+
+
+### Features
+
+* finish zenodo implementation ([#114](https://github.com/cheminfo/rest-on-couch/issues/114)) ([011fb32](https://github.com/cheminfo/rest-on-couch/commit/011fb32))
+* implement API route to publish data to Zenodo ([#107](https://github.com/cheminfo/rest-on-couch/issues/107)) ([19fc2f6](https://github.com/cheminfo/rest-on-couch/commit/19fc2f6))
+
+
+
 <a name="5.5.1"></a>
 ## [5.5.1](https://github.com/cheminfo/rest-on-couch/compare/v5.5.0...v5.5.1) (2018-03-19)
 
