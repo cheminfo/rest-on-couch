@@ -14,7 +14,7 @@ module.exports = async function tryMove(from, to, suffix = 0) {
     await fs.move(from, newTo);
   } catch (e) {
     if (e.code !== 'EEXIST' && e.message !== 'dest already exists.') {
-      throw new Error(`Could could rename ${from} to ${newTo}: ${e}`);
+      throw new Error(`Could not rename ${from} to ${newTo}: ${e}`);
     }
     await tryMove(from, to, ++suffix);
   }
