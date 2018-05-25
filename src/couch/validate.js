@@ -3,8 +3,9 @@
 const constants = require('../constants');
 const debug = require('../util/debug')('main:validate');
 const nanoPromise = require('../util/nanoPromise');
-const getGroup = require('./nano').getGroup;
 const ensureStringArray = require('../util/ensureStringArray');
+
+const getGroup = require('./nano').getGroup;
 
 async function validateRights(ctx, ownerArrays, user, rights, type = 'entry') {
   debug.trace('validateRights');

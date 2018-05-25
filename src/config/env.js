@@ -1,3 +1,4 @@
+/* eslint-disable no-process-env */
 'use strict';
 
 const prefix = 'REST_ON_COUCH_';

@@ -2,11 +2,10 @@
 
 'use strict';
 
-const Koa = require('koa');
-
-const app = new Koa();
 const http = require('http');
 const path = require('path');
+
+const Koa = require('koa');
 const fs = require('fs-extra');
 const router = require('koa-router')();
 
@@ -16,6 +15,7 @@ const tryMove = require('../util/tryMove');
 
 let _started = false;
 
+const app = new Koa();
 app.proxy = config.fileDropProxy;
 
 async function getHomeDir(ctx, next) {

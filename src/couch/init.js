@@ -3,7 +3,6 @@
 const objHash = require('object-hash');
 
 const getDesignDoc = require('../design/app');
-
 const connect = require('../connect');
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');

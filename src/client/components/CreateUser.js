@@ -1,6 +1,7 @@
 import React from 'react';
-import { createCouchDBUser } from '../actions/login';
 import { connect } from 'react-redux';
+
+import { createCouchDBUser } from '../actions/login';
 
 class CreateUser extends React.Component {
   constructor(props) {

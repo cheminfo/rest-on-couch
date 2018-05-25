@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default (props) => {
+export default function Home(props) {
   if (!props.user) {
     return (
       <div>
@@ -22,4 +22,4 @@ export default (props) => {
       </div>
     );
   }
-};
+}

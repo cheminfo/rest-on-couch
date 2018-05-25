@@ -5,6 +5,7 @@ const extend = require('extend');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:attachment');
 const nanoPromise = require('../util/nanoPromise');
+
 const nanoMethods = require('./nano');
 
 const methods = {

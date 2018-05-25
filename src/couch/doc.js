@@ -5,6 +5,7 @@ const _ = require('lodash');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:doc');
 const nanoPromise = require('../util/nanoPromise');
+
 const util = require('./util');
 const validate = require('./validate');
 const nanoMethods = require('./nano');

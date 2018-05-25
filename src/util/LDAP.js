@@ -1,6 +1,7 @@
 'use strict';
 
 const ldapjs = require('ldapjs');
+
 const debug = require('./debug')('ldap:client');
 
 const defaultSearchOptions = {

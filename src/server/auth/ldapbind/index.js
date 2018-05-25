@@ -1,8 +1,8 @@
 'use strict';
 
-const LdapBindStrategy = require('./strategy');
-
 const util = require('../../middleware/util');
+
+const LdapBindStrategy = require('./strategy');
 
 exports.init = function (passport, router, config) {
   passport.use(

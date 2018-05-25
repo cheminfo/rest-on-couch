@@ -45,6 +45,7 @@ if (config.auth) {
     );
     try {
       debug(`loading auth plugin: ${authPlugin}`);
+      // eslint-disable-next-line import/no-dynamic-require
       require(`../auth/${authPlugin}/index.js`).init(
         passport,
         router,

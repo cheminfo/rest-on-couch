@@ -3,11 +3,12 @@
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:entry');
 const nanoPromise = require('../util/nanoPromise');
+const ensureStringArray = require('../util/ensureStringArray');
+const kEntryUnicity = require('../constants').kEntryUnicity;
+
 const validateMethods = require('./validate');
 const nanoMethods = require('./nano');
 const util = require('./util');
-const ensureStringArray = require('../util/ensureStringArray');
-const kEntryUnicity = require('../constants').kEntryUnicity;
 
 const methods = {
   async getEntryWithRights(uuid, user, rights, options = {}) {

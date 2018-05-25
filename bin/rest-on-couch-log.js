@@ -38,7 +38,7 @@ if (program.insert) {
   );
 } else {
   couch
-    .getLogs(parseInt(program.epoch))
+    .getLogs(parseInt(program.epoch, 10))
     .then(function (logs) {
       for (var i = 0; i < logs.length; i++) {
         write(logs[i]);

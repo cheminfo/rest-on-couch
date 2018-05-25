@@ -2,11 +2,13 @@
 
 const fs = require('fs');
 const path = require('path');
+
 const fold = require('fold-to-ascii').fold;
 
 const Couch = require('../index');
 const debug = require('../util/debug')('import');
 const getConfig = require('../config/config').getConfig;
+
 const BaseImport = require('./ImportContext');
 const ImportResult = require('./ImportResult');
 const saveResult = require('./saveResult');

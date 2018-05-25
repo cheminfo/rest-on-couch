@@ -1,8 +1,9 @@
 'use strict';
 
-const imp = require('../../../src/import/import');
 const path = require('path');
+
 const Couch = require('../../..');
+const imp = require('../../../src/import/import');
 const nanoPromise = require('../../../src/util/nanoPromise');
 
 var importCouch;

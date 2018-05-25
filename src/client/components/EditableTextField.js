@@ -11,6 +11,9 @@ class EditableTextField extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.cancelEdit = this.cancelEdit.bind(this);
+    this.makeEditable = this.makeEditable.bind(this);
   }
 
   componentDidUpdate() {
@@ -83,8 +86,8 @@ class EditableTextField extends React.Component {
             value={this.state.editedValue}
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
-            onKeyDown={this.handleKeyDown.bind(this)}
-            onBlur={this.cancelEdit.bind(this)}
+            onKeyDown={this.handleKeyDown}
+            onBlur={this.cancelEdit}
           />
         ) : (
           <div>
@@ -97,7 +100,7 @@ class EditableTextField extends React.Component {
             )}{' '}
             &nbsp; &nbsp;
             <a
-              onClick={() => this.makeEditable()}
+              onClick={this.makeEditable}
               style={{ cursor: 'pointer' }}
               className=""
             >

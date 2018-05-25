@@ -1,8 +1,9 @@
 'use strict';
 
 const fs = require('fs');
-const hasOwn = require('has-own');
 const path = require('path');
+
+const hasOwn = require('has-own');
 
 const die = require('../util/die');
 const constants = require('../constants');
@@ -20,6 +21,7 @@ if (homeDir) {
       if (fs.statSync(databasePath).isDirectory()) {
         let databaseConfig = {};
         if (fs.existsSync(databaseConfigPath)) {
+          // eslint-disable-next-line import/no-dynamic-require
           databaseConfig = require(databaseConfigPath);
           const designDocNames = {};
           databaseConfig.designDocNames = [];
@@ -64,6 +66,7 @@ function readImportConfig(databasePath, databaseConfig) {
     if (fs.statSync(importPath).isDirectory()) {
       let importConfig = {};
       if (fs.existsSync(importConfigPath)) {
+        // eslint-disable-next-line import/no-dynamic-require
         importConfig = require(importConfigPath);
       }
       if (typeof importConfig === 'function') {

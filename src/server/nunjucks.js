@@ -1,7 +1,8 @@
 'use strict';
 
-const debug = require('../util/debug')('nunjucks');
 const nunjucks = require('nunjucks');
+
+const debug = require('../util/debug')('nunjucks');
 
 module.exports = function (app, opts) {
   debug(`initialize with root ${opts.root} and ext ${opts.ext}`);

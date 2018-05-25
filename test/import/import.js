@@ -1,7 +1,8 @@
 'use strict';
 
-const imp = require('../../src/import/import');
 const path = require('path');
+
+const imp = require('../../src/import/import');
 const testUtils = require('../utils/utils');
 
 const databaseName = 'test-new-import';

@@ -1,10 +1,11 @@
 'use strict';
 
 const constants = require('../constants');
+const getConfig = require('../config/config').getConfig;
+
 const debug = require('./debug')('nano');
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
-const getConfig = require('../config/config').getConfig;
 
 exports.authenticate = function (nano, user, password) {
   return new Promise((resolve, reject) => {

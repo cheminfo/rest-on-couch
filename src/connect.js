@@ -1,13 +1,12 @@
 'use strict';
 
 const nano = require('nano');
+const agentkeepalive = require('agentkeepalive');
 
 const config = require('./config/config').globalConfig;
 const CouchError = require('./util/CouchError');
 const debug = require('./util/debug')('main:connect');
 const nanoPromise = require('./util/nanoPromise');
-
-const agentkeepalive = require('agentkeepalive');
 
 const nanoAgent = new agentkeepalive({
   maxSockets: 50,

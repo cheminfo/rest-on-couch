@@ -1,9 +1,12 @@
 'use strict';
 
+const path = require('path');
+
+const fs = require('fs-extra');
+
 const config = require('../config/config');
 const Couch = require('../index');
-const fs = require('fs-extra');
-const path = require('path');
+
 const debug = require('./debug')('util:load');
 
 var loaded = false;

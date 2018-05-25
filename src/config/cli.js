@@ -2,11 +2,10 @@
 
 const path = require('path');
 
+const cliArguments = require('minimist')(process.argv.slice(2));
+
 const debug = require('../util/debug')('config:cli');
 const die = require('../util/die');
-
-// Get optional --config (or -c) CLI option
-const cliArguments = require('minimist')(process.argv.slice(2));
 
 module.exports = loadCliConfig(cliArguments.c || cliArguments.config);
 
@@ -17,6 +16,7 @@ function loadCliConfig(source) {
   }
   source = path.resolve(source);
   try {
+    // eslint-disable-next-line import/no-dynamic-require
     return require(source);
   } catch (e) {
     return die(`could not load custom config from ${source}`);

@@ -1,10 +1,12 @@
 'use strict';
 
 const _ = require('lodash');
+
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:right');
 const nanoPromise = require('../util/nanoPromise');
+
 const util = require('./util');
 const nano = require('./nano');
 

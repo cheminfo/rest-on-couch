@@ -1,13 +1,13 @@
 'use strict';
 
 const _ = require('lodash');
-const ldapSearch = require('../util/LDAP').search;
 
+const ldapSearch = require('../util/LDAP').search;
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:group');
 const nanoPromise = require('../util/nanoPromise');
-
 const constants = require('../constants');
+
 const nanoMethods = require('./nano');
 const util = require('./util');
 const validate = require('./validate');

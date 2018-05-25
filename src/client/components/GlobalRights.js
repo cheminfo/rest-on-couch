@@ -1,9 +1,9 @@
 import React from 'react';
-
 import { connect } from 'react-redux';
-import GlobalRightsEditor from './GlobalRightsEditor';
 
 import { addGlobalRight, removeGlobalRight } from '../actions/db';
+
+import GlobalRightsEditor from './GlobalRightsEditor';
 
 function GlobalRights(props) {
   if (!props.globalRights) return null;
