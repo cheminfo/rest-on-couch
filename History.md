@@ -1,3 +1,13 @@
+<a name="5.6.1"></a>
+## [5.6.1](https://github.com/cheminfo/rest-on-couch/compare/v5.6.0...v5.6.1) (2018-05-25)
+
+
+### Bug Fixes
+
+* **auth:** do not set status to 200 after authentication error ([#119](https://github.com/cheminfo/rest-on-couch/issues/119)) ([ac3e3a5](https://github.com/cheminfo/rest-on-couch/commit/ac3e3a5))
+
+
+
 <a name="5.6.0"></a>
 # [5.6.0](https://github.com/cheminfo/rest-on-couch/compare/v5.5.1...v5.6.0) (2018-05-08)
 
