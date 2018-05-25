@@ -5,15 +5,16 @@ const superagent = require('superagent-promise')(
   require('superagent'),
   Promise
 );
-const request = require('../../util/requestPromise');
 
-const decorateError = require('./decorateError');
-const respondOk = require('./respondOk');
+const request = require('../../util/requestPromise');
 const connect = require('../../connect');
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
 const nanoPromise = require('../../util/nanoPromise');
 const isEmail = require('../../util/isEmail');
+
+const respondOk = require('./respondOk');
+const decorateError = require('./decorateError');
 
 passport.serializeUser(function (user, done) {
   done(null, user);

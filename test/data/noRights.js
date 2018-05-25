@@ -1,6 +1,7 @@
 'use strict';
 
 const Couch = require('../..');
+
 const insertDocument = require('./insertDocument');
 const { resetDatabase } = require('./helper');
 

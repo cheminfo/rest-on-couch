@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
-import GroupDataEditor from './GroupDataEditor';
 
 import { globalRightTypes } from '../../constants';
+
+import GroupDataEditor from './GroupDataEditor';
 
 const GlobalRightsEditor = ({ globalRights, addRight, removeRight }) => (
   <div>

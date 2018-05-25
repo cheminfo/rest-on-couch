@@ -4,11 +4,12 @@ const fs = require('fs');
 const path = require('path');
 
 const constants = require('../constants');
+const getConfig = require('../config/config').getConfig;
+
 const filters = require('./filters');
 const updates = require('./updates');
 const validateDocUpdate = require('./validateDocUpdate');
 const views = require('./views');
-const getConfig = require('../config/config').getConfig;
 
 const mapTpl = function (doc) {
   if (doc.$type !== 'entry') return;

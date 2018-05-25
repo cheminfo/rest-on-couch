@@ -1,6 +1,8 @@
 const location = window.location;
 
+// eslint-disable-next-line import/no-mutable-exports
 let API_ROOT;
+// eslint-disable-next-line no-process-env
 if (process.env.NODE_ENV === 'production') {
   API_ROOT = location.origin + location.pathname;
 } else {

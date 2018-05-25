@@ -3,6 +3,7 @@
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:token');
 const token = require('../util/token');
+
 const { isValidUsername, ensureRightsArray } = require('./util');
 
 const methods = {

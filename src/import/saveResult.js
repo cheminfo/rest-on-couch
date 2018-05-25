@@ -1,6 +1,7 @@
 'use strict';
 
 const fold = require('fold-to-ascii').fold;
+
 const constants = require('../constants');
 
 module.exports = async function saveResult(importBase, result) {

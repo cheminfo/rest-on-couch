@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import DisplayGroupList from './DisplayGroupList';
 import { dbManager } from '../store';
+
+import DisplayGroupList from './DisplayGroupList';
 
 class GroupMemberships extends Component {
   componentWillMount() {

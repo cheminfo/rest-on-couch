@@ -5,6 +5,7 @@ const _ = require('lodash');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:query');
 const nanoPromise = require('../util/nanoPromise');
+
 const validateMethods = require('./validate');
 
 const methods = {
@@ -56,11 +57,15 @@ const methods = {
     const userStartKey =
       options.key !== undefined
         ? options.key
-        : options.startkey !== undefined ? options.startkey : [];
+        : options.startkey !== undefined
+          ? options.startkey
+          : [];
     const userEndKey =
       options.key !== undefined
         ? options.key
-        : options.endkey !== undefined ? options.endkey : [];
+        : options.endkey !== undefined
+          ? options.endkey
+          : [];
 
     for (const group of userGroups) {
       const startkey = [group].concat(userStartKey);

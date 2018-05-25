@@ -3,7 +3,7 @@ import React from 'react';
 import DefaultGroups from './DefaultGroups';
 import GlobalRights from './GlobalRights';
 
-export default function () {
+export default function DatabaseAdministration() {
   return (
     <div>
       <DefaultGroups />

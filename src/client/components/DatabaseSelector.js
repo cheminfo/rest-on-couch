@@ -2,7 +2,7 @@ import React from 'react';
 import Select2 from 'react-select2-wrapper';
 import 'react-select2-wrapper/css/select2.css';
 
-export default ({ dbName, dbList, onDbSelected }) => {
+export default function DatabaseSelector({ dbName, dbList, onDbSelected }) {
   return (
     <div
       style={{
@@ -24,4 +24,4 @@ export default ({ dbName, dbList, onDbSelected }) => {
       />
     </div>
   );
-};
+}

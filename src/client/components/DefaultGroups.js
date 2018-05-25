@@ -1,9 +1,9 @@
 import React from 'react';
-
 import { connect } from 'react-redux';
-import DefaultGroupsEditor from './DefaultGroupsEditor';
 
 import { addDefaultGroup, removeDefaultGroup } from '../actions/db';
+
+import DefaultGroupsEditor from './DefaultGroupsEditor';
 
 function DefaultGroups(props) {
   if (!props.defaultGroups) return null;
