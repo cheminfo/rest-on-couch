@@ -3,6 +3,20 @@
 const request = require('../../setup/setup').getAgent();
 
 describe('server/routes/auth', () => {
+  describe('couchdb login', () => {
+    it('should return 401 for wrong login credentials', () => {
+      return request
+        .post('/auth/login/couchdb')
+        .send({
+          username: 'bad',
+          password: 'robot'
+        })
+        .expect(401)
+        .then((res) => {
+          expect(res.body).toEqual({ ok: true });
+        });
+    });
+  });
   describe('session', () => {
     test('should return anonymous for unauthenticated users', () => {
       return request
