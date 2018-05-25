@@ -27,7 +27,8 @@ passport.deserializeUser(function (obj, done) {
 exports.okOrRedirect = function (ctx) {
   switch (ctx.accepts('json', 'html')) {
     case 'json':
-      respondOk(ctx);
+      // We do not use respondOk because status must stay as it was set by passport
+      ctx.body = { ok: true };
       break;
     default:
       ctx.redirect('/auth/login');
