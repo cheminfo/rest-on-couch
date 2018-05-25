@@ -1,6 +1,6 @@
 'use strict';
 
-const bodyParser = require('koa-body');
+const bodyParser = require('koa-bodyparser');
 const rawBody = require('raw-body');
 const compose = require('koa-compose');
 
