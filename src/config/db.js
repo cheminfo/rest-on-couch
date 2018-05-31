@@ -74,7 +74,7 @@ if (homeDir) {
     }
   } catch (e) {
     console.error(e.stack || e); // eslint-disable-line no-console
-    die(`could not read database configurations from ${homeDir}, ${e.message}`);
+    die(`could not read database configurations from ${homeDir}`);
   }
 }
 
