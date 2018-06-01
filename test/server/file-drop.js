@@ -7,7 +7,7 @@ const rimraf = require('rimraf');
 
 const request = require('../setup/setup').getFileDropAgent();
 
-const homedir = path.join(__dirname, '../homedir');
+const homedir = path.join(__dirname, '../homeDirectories/main');
 
 describe('drop file server', () => {
   afterEach(() => {

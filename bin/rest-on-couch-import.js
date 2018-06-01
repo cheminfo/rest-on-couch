@@ -15,7 +15,7 @@ const program = require('commander');
 const connect = require('../src/connect');
 const debug = require('../src/util/debug')('bin:import');
 const die = require('../src/util/die');
-const home = require('../src/config/home');
+const { getHomeDir } = require('../src/config/home');
 const imp = require('../src/import/import');
 const getConfig = require('../src/config/config').getConfig;
 const tryMove = require('../src/util/tryMove');
@@ -62,7 +62,7 @@ async function doContinuous(waitTime) {
 }
 
 async function importAll() {
-  const homeDir = getHomeDir();
+  const homeDir = getHomeDirOrDie();
   const limit = program.limit || 0;
   debug(`limit is ${limit}`);
   const files = await findFiles(homeDir, limit);
@@ -175,8 +175,8 @@ function getFilesToProcess(directory, maxElements) {
   });
 }
 
-function getHomeDir() {
-  let homeDir = home.homeDir;
+function getHomeDirOrDie() {
+  let homeDir = getHomeDir();
   if (!homeDir) {
     die('homeDir must be set to import all');
   }
@@ -356,7 +356,7 @@ function shouldIgnore(name) {
     debug('Imported successfully');
   } else if (program.watch) {
     // watch files to import
-    let homeDir = getHomeDir();
+    let homeDir = getHomeDirOrDie();
     debug(`watch ${homeDir}`);
     chokidar
       .watch(homeDir, {

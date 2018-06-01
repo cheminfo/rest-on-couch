@@ -12,9 +12,8 @@ var importCouch;
 // We just have to pick an existing file
 const textFile = path.resolve(
   __dirname,
-  '../homedir/test-new-import/simple/to_process/test.txt'
+  '../homeDirectories/main/test-new-import/simple/to_process/test.txt'
 );
-// const jsonFile = path.resolve(__dirname, '../homedir/test-new-import/simple/to_process/test.json');
 
 describe('import', () => {
   beforeEach(async function () {
