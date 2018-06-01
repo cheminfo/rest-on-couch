@@ -3,13 +3,12 @@
 const debug = require('../util/debug')('config');
 
 const defaultConfig = require('./default');
-const homeConfig = require('./home').config;
-const dbConfig = require('./db');
+const { getHomeConfig } = require('./home');
+const dbConfig = require('./db')();
 const envConfig = require('./env');
 const cliConfig = require('./cli');
 
 const configStore = {};
-
 // TODO: would be preferable if returned data was immutable to prevent side effects
 exports.getConfig = function (database, customConfig) {
   debug.trace(`getConfig - db:${database}`);
@@ -17,7 +16,7 @@ exports.getConfig = function (database, customConfig) {
     configStore[database] = Object.assign(
       {},
       defaultConfig,
-      homeConfig,
+      getHomeConfig(),
       dbConfig[database],
       envConfig,
       cliConfig

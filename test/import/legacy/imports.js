@@ -11,11 +11,11 @@ var importCouch;
 // We just have to pick an existing file
 const textFile = path.resolve(
   __dirname,
-  '../../homedir/test-import/parse/to_process/test.txt'
+  '../../homeDirectories/main/test-import/parse/to_process/test.txt'
 );
 const jsonFile = path.resolve(
   __dirname,
-  '../../homedir/test-import/json/to_process/test.json'
+  '../../homeDirectories/main/test-import/json/to_process/test.json'
 );
 
 describe('legacy import', () => {
