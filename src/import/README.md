@@ -62,7 +62,7 @@ Result object also has the following functions:
 
 ### Unique filename
 
-How to I create a script that generates unique file names ?
+Script that generates unique filenames forcing all the files to be imported.
 
 ```js
 module.exports = async function import(ctx, result) {
@@ -75,10 +75,35 @@ module.exports = async function import(ctx, result) {
         jpath: ['spectra', 'nmr'],
         metadata: metadata,
         reference: newFilename, // we ensure the unicity of the reference as well
-        contents: Buffer.from(jcamp),
-        field: isFt ? 'jcamp' : 'jcampFID',
+        contents: ctx.getContents(),
+        field: 'jcamp',
         filename: newFilename,
         content_type: 'chemical/x-jcamp-dx'
     });
+}
+```
+
+### Only meta data
+
+Script that allows to import JSON.
+
+```js
+module.exports = async function import(ctx, result) {
+    result.skipAttachment(); // we don't use the default importation procedure
+    result.skipMetaData();
+    result.content = JSON.parse(ctx.getContents());
+}
+```
+
+### Wait that file finished to write
+
+In this script we will check if the end of the file contains a specific String otherwise
+we skip the file for now.
+
+```js
+module.exports = async function import(ctx, result) {
+    var text = ctx.getContents('UTF8');
+    if (text.length>100 && text.substring(text.length-10).indexOf("##END")>0)
+    result.content = JSON.parse(ctx.getContents());
 }
 ```
