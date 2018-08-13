@@ -1,3 +1,13 @@
+<a name="5.7.0"></a>
+# [5.7.0](https://github.com/cheminfo/rest-on-couch/compare/v5.6.1...v5.7.0) (2018-08-13)
+
+
+### Features
+
+* **config:** custom views can be put in a special views folder in multiple files ([3e08f77](https://github.com/cheminfo/rest-on-couch/commit/3e08f77))
+
+
+
 <a name="5.6.1"></a>
 ## [5.6.1](https://github.com/cheminfo/rest-on-couch/compare/v5.6.0...v5.6.1) (2018-05-25)
 
