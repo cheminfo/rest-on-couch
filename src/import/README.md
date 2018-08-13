@@ -103,7 +103,32 @@ we skip the file for now.
 ```js
 module.exports = async function import(ctx, result) {
     var text = ctx.getContents('UTF8');
-    if (text.length>100 && text.substring(text.length-10).indexOf("##END")>0)
-    result.content = JSON.parse(ctx.getContents());
+    if (text.length>100 && text.substring(text.length-10).indexOf("##END")>0) result.skip();
+}
+```
+
+### Importing 2 files in the same record
+
+Some instrument may export 2 files in the same folder. In this case it is better to listen only to
+the one that is written the latest.
+
+In this example the instrument export 2 files:
+
+- test.jdx
+- test.fid (last file written)
+
+```js
+const fs=require('fs');
+module.exports = async function import(ctx, result) {
+    if (ctx.fileExt!=='fid') {
+        result.skip();
+        return;
+    }
+    // we expect that the file with the extension 'jdx' exists
+    let jcamp=fs.readFileSync(ctx.fileDir+ctx.filename.replace(/fid$/,'jdx'),'UTF8');
+    result.reference=ctx.filename;
+    result.field='fid';
+    // how to add a second attachment in this entry ???
+
 }
 ```
