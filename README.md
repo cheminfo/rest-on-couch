@@ -192,13 +192,19 @@ docker start couchdb
 docker ps # check that the container is running
 ```
 
-Go to http://localhost:127.0.0.1/_utils/#setup
+Go to http://localhost:5984/_utils/#setup
 
-* Single node
-* username: admin, password: admin
-* bind address: 0.0.0.0
-* Execute the bash script `/setupDatabase.sh`
-* Execute the tests: `npm t`
+- Single node
+- username: admin, password: admin
+- bind address: 0.0.0.0
+- Execute the bash script `/setupDatabase.sh`
+- Execute the tests: `npm t`
+
+## Automatic importation
+
+`rest-on-couch` is able to watch folders and to automatically import data in the database.
+
+A specific userguide is available [here](docs/import.md).
 
 ## License
 
