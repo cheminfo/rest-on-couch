@@ -17,7 +17,7 @@ const debug = require('../src/util/debug')('bin:import');
 const die = require('../src/util/die');
 const { getHomeDir } = require('../src/config/home');
 const imp = require('../src/import/import');
-const getConfig = require('../src/config/config').getConfig;
+const { getConfig, getImportConfig } = require('../src/config/config');
 const tryMove = require('../src/util/tryMove');
 
 var processChain = Promise.resolve();
@@ -67,13 +67,104 @@ async function importAll() {
   debug(`limit is ${limit}`);
   const files = await findFiles(homeDir, limit);
   debug(`${files.length} files to import`);
-  const dbs = new Set();
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
-    dbs.add(file.database);
-    await processFile2(file.database, file.importName, file.path);
+  const waitingFiles = [];
+  const readyFiles = [];
+  for (const file of files) {
+    const waitTime = getWaitTime(file);
+    if (waitTime > 0) {
+      waitingFiles.push({
+        waitTime,
+        sizeBefore: 0,
+        waiting: false,
+        file
+      });
+    } else {
+      readyFiles.push(file);
+    }
   }
-  return dbs;
+
+  // Start by importing files that don't need to wait
+  for (const readyFile of readyFiles) {
+    await processFile2(readyFile);
+  }
+
+  if (waitingFiles.length === 0) {
+    return;
+  }
+
+  // Get initial size for every waiting file
+  try {
+    const sizes = await Promise.all(
+      waitingFiles.map((waitingFile) => getFileSize(waitingFile))
+    );
+    waitingFiles.forEach((waitingFile, i) => {
+      waitingFile.sizeBefore = sizes[i];
+    });
+  } catch (e) {
+    debug.error('error while getting waiting file size', e);
+    return;
+  }
+
+  // Start waiting for each file
+  for (const waitingFile of waitingFiles) {
+    waitingFile.waiting = wait(waitingFile);
+  }
+
+  let remainingWaitingFiles = waitingFiles.slice();
+  do {
+    await Promise.race(
+      remainingWaitingFiles.map(
+        (remainingWaitingFile) => remainingWaitingFile.waiting
+      )
+    );
+    remainingWaitingFiles = await importNonWaitingFilesOrExtend(
+      remainingWaitingFiles
+    );
+  } while (remainingWaitingFiles.length > 0);
+}
+
+async function importNonWaitingFilesOrExtend(waitingFiles) {
+  const remainingWaitingFiles = [];
+  for (const waitingFile of waitingFiles) {
+    if (!waitingFile.waiting) {
+      let size;
+      try {
+        size = await getFileSize(waitingFile);
+      } catch (e) {
+        debug.error('error while getting waiting file size', e);
+        continue;
+      }
+      if (size !== waitingFile.sizeBefore) {
+        waitingFile.sizeBefore = size;
+        waitingFile.waiting = wait(waitingFile);
+        remainingWaitingFiles.push(waitingFile);
+      } else {
+        await processFile2(waitingFile.file);
+      }
+    } else {
+      remainingWaitingFiles.push(waitingFile);
+    }
+  }
+  return remainingWaitingFiles;
+}
+
+function getWaitTime(file) {
+  const importConfig = getImportConfig(file.database, file.importName);
+  return importConfig.fileSizeChangeDelay || 0;
+}
+
+async function getFileSize(waitingFile) {
+  const stat = await fs.stat(waitingFile.file.path);
+  return stat.size;
+}
+
+function wait(waitingFile) {
+  return new Promise((resolve) =>
+    setTimeout(function waitCallback() {
+      waitingFile.waiting = false;
+      resolve(waitingFile);
+    }, waitingFile.waitTime)
+  );
 }
 
 async function findFiles(homeDir, limit) {
@@ -198,14 +289,14 @@ function checkFile(homeDir, p) {
   return false;
 }
 
-function processFile(database, importName, homeDir, p) {
-  debug.trace(`process file ${p}`);
-  p = path.resolve(homeDir, p);
-  let parsedPath = path.parse(p);
+function processFile(database, importName, homeDir, filePath) {
+  debug.trace(`process file ${filePath}`);
+  filePath = path.resolve(homeDir, filePath);
+  let parsedPath = path.parse(filePath);
 
   processChain = processChain
     .then(() => {
-      return imp.import(database, importName, p);
+      return imp.import(database, importName, filePath);
     })
     .then(() => {
       // mv to processed
@@ -217,7 +308,7 @@ function processFile(database, importName, homeDir, p) {
       return new Promise(function (resolve, reject) {
         let dir = path.join(parsedPath.dir, `../processed/${getDatePath()}`);
         createDir(dir);
-        tryRename(p, path.join(dir, parsedPath.base), resolve, reject);
+        tryRename(filePath, path.join(dir, parsedPath.base), resolve, reject);
       });
     })
     .catch((e) => {
@@ -232,14 +323,15 @@ function processFile(database, importName, homeDir, p) {
         debug.error(`${e}\n${e.stack}`);
         let dir = path.join(parsedPath.dir, `../errored/${getDatePath()}`);
         createDir(dir);
-        tryRename(p, path.join(dir, parsedPath.base), resolve, reject);
+        tryRename(filePath, path.join(dir, parsedPath.base), resolve, reject);
       });
     });
 
   return processChain;
 }
 
-async function processFile2(database, importName, filePath) {
+async function processFile2(file) {
+  const { database, importName, path: filePath } = file;
   debug.trace(`process file ${filePath}`);
   const parsedPath = path.parse(filePath);
   const splitParsedPath = parsedPath.dir.split('/');
@@ -249,15 +341,21 @@ async function processFile2(database, importName, filePath) {
   }
 
   try {
-    await imp.import(database, importName, filePath);
-    // success, move to processed
-    await moveFile(
-      filePath,
-      parsedPath.base,
-      splitParsedPath,
-      toProcess,
-      'processed'
-    );
+    const importResult = await imp.import(database, importName, filePath);
+    if (importResult.ok) {
+      // success, move to processed
+      await moveFile(
+        filePath,
+        parsedPath.base,
+        splitParsedPath,
+        toProcess,
+        'processed'
+      );
+    } else if (importResult.skip) {
+      debug.debug(`skipped import (${importResult.skip})`);
+    } else {
+      debug.error(`unexpected import result: ${JSON.stringify(importResult)}`);
+    }
   } catch (e) {
     if (e.skip) return;
     // error, move to errored
@@ -349,10 +447,12 @@ function shouldIgnore(name) {
       program.help();
     }
     debug(`Import with arguments: ${program.args.join(' ')}`);
-    const file = path.resolve(program.args[0]);
+    const filePath = path.resolve(program.args[0]);
     const database = program.args[1];
-    const kind = program.args[2];
-    await imp.import(database, kind, file, { dryRun: program.dryRun });
+    const importName = program.args[2];
+    await imp.import(database, importName, filePath, {
+      dryRun: program.dryRun
+    });
     debug('Imported successfully');
   } else if (program.watch) {
     // watch files to import

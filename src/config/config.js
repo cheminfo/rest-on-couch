@@ -10,7 +10,7 @@ const cliConfig = require('./cli');
 
 const configStore = {};
 // TODO: would be preferable if returned data was immutable to prevent side effects
-exports.getConfig = function (database, customConfig) {
+function getConfig(database, customConfig) {
   debug.trace(`getConfig - db:${database}`);
   if (!configStore[database]) {
     configStore[database] = Object.assign(
@@ -27,9 +27,17 @@ exports.getConfig = function (database, customConfig) {
   } else {
     return Object.assign({}, configStore[database], customConfig);
   }
-};
+}
 
-const globalConfig = exports.getConfig();
+function getImportConfig(database, importName) {
+  const config = getConfig(database);
+  if (!config.import || !config.import[importName]) {
+    throw new Error(`no import config for ${database}/${importName}`);
+  }
+  return config.import[importName];
+}
+
+const globalConfig = getConfig();
 
 let proxyPrefix = globalConfig.proxyPrefix;
 if (!proxyPrefix.startsWith('/')) {
@@ -43,4 +51,8 @@ globalConfig.proxyPrefix = proxyPrefix;
 globalConfig.publicAddress =
   globalConfig.publicAddress.replace(/\/+$/, '') + proxyPrefix;
 
-exports.globalConfig = globalConfig;
+module.exports = {
+  getConfig,
+  getImportConfig,
+  globalConfig
+};

@@ -7,37 +7,36 @@ const fold = require('fold-to-ascii').fold;
 
 const Couch = require('../index');
 const debug = require('../util/debug')('import');
-const getConfig = require('../config/config').getConfig;
+const { getImportConfig } = require('../config/config');
 
 const BaseImport = require('./ImportContext');
 const ImportResult = require('./ImportResult');
 const saveResult = require('./saveResult');
 
-exports.import = async function (database, importName, file, options) {
-  debug(`import ${file} (${database}, ${importName})`);
+exports.import = async function (database, importName, filePath, options = {}) {
+  debug(`import ${filePath} (${database}, ${importName})`);
 
-  options = options || {};
   const dryRun = !!options.dryRun;
 
-  let config = getConfig(database);
+  const config = getImportConfig(database, importName);
   const couch = Couch.get(database);
 
-  if (!config.import || !config.import[importName]) {
-    throw new Error(`no import config for ${database}/${importName}`);
-  }
-
-  config = config.import[importName];
   if (typeof config === 'function') {
-    const baseImport = new BaseImport(file, database);
+    const baseImport = new BaseImport(filePath, database);
     const result = new ImportResult();
     await config(baseImport, result);
-    if (result.isSkipped) return;
+    if (result.isSkipped) {
+      return { skip: 'skip' };
+    }
     // Check that required properties have been set on the result
     result.check();
-    if (dryRun) return;
+    if (dryRun) {
+      return { skip: 'dryRun' };
+    }
     await saveResult(baseImport, result);
+    return { ok: true };
   } else {
-    const parsedFilename = path.parse(file);
+    const parsedFilename = path.parse(filePath);
     const filedir = parsedFilename.dir;
     const filename = parsedFilename.base;
     try {
@@ -45,8 +44,8 @@ exports.import = async function (database, importName, file, options) {
       const shouldIgnore = verifyConfig(config, 'shouldIgnore', null, true);
       const ignore = await shouldIgnore(filename, couch, filedir);
       if (ignore) {
-        debug.debug(`Ignore file ${file}`);
-        return;
+        debug.debug(`Ignore file ${filePath}`);
+        return { skip: 'skip' };
       }
     } catch (e) {
       // Throw if abnormal error
@@ -56,7 +55,7 @@ exports.import = async function (database, importName, file, options) {
       // Go on normally if this configuration is missing
     }
 
-    let contents = fs.readFileSync(file);
+    let contents = fs.readFileSync(filePath);
 
     const info = {};
 
@@ -104,7 +103,7 @@ exports.import = async function (database, importName, file, options) {
       }
     }
 
-    if (dryRun) return;
+    if (dryRun) return { skip: 'dryRun' };
 
     try {
       const docInfo = await checkDocumentExists(
@@ -122,11 +121,12 @@ exports.import = async function (database, importName, file, options) {
         contents,
         couch
       );
-      debug.trace(`import ${file} success`);
+      debug.trace(`import ${filePath} success`);
     } catch (e) {
-      debug.error(`import ${file} failure: ${e.message}, ${e.stack}`);
+      debug.error(`import ${filePath} failure: ${e.message}, ${e.stack}`);
       throw e;
     }
+    return { ok: true };
   }
 };
 
