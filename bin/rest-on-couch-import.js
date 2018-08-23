@@ -341,15 +341,21 @@ async function processFile2(file) {
   }
 
   try {
-    await imp.import(database, importName, filePath);
-    // success, move to processed
-    await moveFile(
-      filePath,
-      parsedPath.base,
-      splitParsedPath,
-      toProcess,
-      'processed'
-    );
+    const importResult = await imp.import(database, importName, filePath);
+    if (importResult.ok) {
+      // success, move to processed
+      await moveFile(
+        filePath,
+        parsedPath.base,
+        splitParsedPath,
+        toProcess,
+        'processed'
+      );
+    } else if (importResult.skip) {
+      debug.debug(`skipped import (${importResult.skip})`);
+    } else {
+      debug.error(`unexpected import result: ${JSON.stringify(importResult)}`);
+    }
   } catch (e) {
     if (e.skip) return;
     // error, move to errored

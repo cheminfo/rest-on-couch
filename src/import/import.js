@@ -25,11 +25,16 @@ exports.import = async function (database, importName, filePath, options = {}) {
     const baseImport = new BaseImport(filePath, database);
     const result = new ImportResult();
     await config(baseImport, result);
-    if (result.isSkipped) return;
+    if (result.isSkipped) {
+      return { skip: 'skip' };
+    }
     // Check that required properties have been set on the result
     result.check();
-    if (dryRun) return;
+    if (dryRun) {
+      return { skip: 'dryRun' };
+    }
     await saveResult(baseImport, result);
+    return { ok: true };
   } else {
     const parsedFilename = path.parse(filePath);
     const filedir = parsedFilename.dir;
@@ -40,7 +45,7 @@ exports.import = async function (database, importName, filePath, options = {}) {
       const ignore = await shouldIgnore(filename, couch, filedir);
       if (ignore) {
         debug.debug(`Ignore file ${filePath}`);
-        return;
+        return { skip: 'skip' };
       }
     } catch (e) {
       // Throw if abnormal error
@@ -98,7 +103,7 @@ exports.import = async function (database, importName, filePath, options = {}) {
       }
     }
 
-    if (dryRun) return;
+    if (dryRun) return { skip: 'dryRun' };
 
     try {
       const docInfo = await checkDocumentExists(
@@ -121,6 +126,7 @@ exports.import = async function (database, importName, filePath, options = {}) {
       debug.error(`import ${filePath} failure: ${e.message}, ${e.stack}`);
       throw e;
     }
+    return { ok: true };
   }
 };
 
