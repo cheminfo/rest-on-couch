@@ -200,6 +200,11 @@ Go to http://localhost:5984/_utils/#setup
 - Execute the bash script `/setupDatabase.sh`
 - Execute the tests: `npm t`
 
+## Automatic importation
+
+`rest-on-couch` is able to watch folders and to automatically import data in the database.
+A specific userguide is available [here](docs/import.md).
+
 ## License
 
 [MIT](./LICENSE)
