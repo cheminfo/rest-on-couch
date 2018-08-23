@@ -67,13 +67,10 @@ async function importAll() {
   debug(`limit is ${limit}`);
   const files = await findFiles(homeDir, limit);
   debug(`${files.length} files to import`);
-  const dbs = new Set();
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
-    dbs.add(file.database);
     await processFile2(file.database, file.importName, file.path);
   }
-  return dbs;
 }
 
 async function findFiles(homeDir, limit) {
