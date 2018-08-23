@@ -13,10 +13,9 @@ const BaseImport = require('./ImportContext');
 const ImportResult = require('./ImportResult');
 const saveResult = require('./saveResult');
 
-exports.import = async function (database, importName, file, options) {
-  debug(`import ${file} (${database}, ${importName})`);
+exports.import = async function(database, importName, filePath, options = {}) {
+  debug(`import ${filePath} (${database}, ${importName})`);
 
-  options = options || {};
   const dryRun = !!options.dryRun;
 
   let config = getConfig(database);
@@ -28,7 +27,7 @@ exports.import = async function (database, importName, file, options) {
 
   config = config.import[importName];
   if (typeof config === 'function') {
-    const baseImport = new BaseImport(file, database);
+    const baseImport = new BaseImport(filePath, database);
     const result = new ImportResult();
     await config(baseImport, result);
     if (result.isSkipped) return;
@@ -37,7 +36,7 @@ exports.import = async function (database, importName, file, options) {
     if (dryRun) return;
     await saveResult(baseImport, result);
   } else {
-    const parsedFilename = path.parse(file);
+    const parsedFilename = path.parse(filePath);
     const filedir = parsedFilename.dir;
     const filename = parsedFilename.base;
     try {
@@ -45,7 +44,7 @@ exports.import = async function (database, importName, file, options) {
       const shouldIgnore = verifyConfig(config, 'shouldIgnore', null, true);
       const ignore = await shouldIgnore(filename, couch, filedir);
       if (ignore) {
-        debug.debug(`Ignore file ${file}`);
+        debug.debug(`Ignore file ${filePath}`);
         return;
       }
     } catch (e) {
@@ -56,7 +55,7 @@ exports.import = async function (database, importName, file, options) {
       // Go on normally if this configuration is missing
     }
 
-    let contents = fs.readFileSync(file);
+    let contents = fs.readFileSync(filePath);
 
     const info = {};
 
@@ -122,9 +121,9 @@ exports.import = async function (database, importName, file, options) {
         contents,
         couch
       );
-      debug.trace(`import ${file} success`);
+      debug.trace(`import ${filePath} success`);
     } catch (e) {
-      debug.error(`import ${file} failure: ${e.message}, ${e.stack}`);
+      debug.error(`import ${filePath} failure: ${e.message}, ${e.stack}`);
       throw e;
     }
   }

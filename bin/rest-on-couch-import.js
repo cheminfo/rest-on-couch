@@ -158,7 +158,7 @@ function getFilesToProcess(directory, maxElements) {
     const items = [];
     const walkStream = klaw(directory, { queueMethod: sortWalk });
     walkStream
-      .on('data', function (item) {
+      .on('data', function(item) {
         if (item.stats.isFile()) {
           items.push(item.path);
           if (maxElements > 0 && items.length >= maxElements) {
@@ -168,7 +168,7 @@ function getFilesToProcess(directory, maxElements) {
         }
       })
       .on('end', () => resolve(items))
-      .on('error', function (err) {
+      .on('error', function(err) {
         this.close();
         reject(err);
       });
@@ -198,14 +198,14 @@ function checkFile(homeDir, p) {
   return false;
 }
 
-function processFile(database, importName, homeDir, p) {
-  debug.trace(`process file ${p}`);
-  p = path.resolve(homeDir, p);
-  let parsedPath = path.parse(p);
+function processFile(database, importName, homeDir, filePath) {
+  debug.trace(`process file ${filePath}`);
+  filePath = path.resolve(homeDir, filePath);
+  let parsedPath = path.parse(filePath);
 
   processChain = processChain
     .then(() => {
-      return imp.import(database, importName, p);
+      return imp.import(database, importName, filePath);
     })
     .then(() => {
       // mv to processed
@@ -214,16 +214,16 @@ function processFile(database, importName, homeDir, p) {
       if (config.import[importName].noFileMove) {
         return null;
       }
-      return new Promise(function (resolve, reject) {
+      return new Promise(function(resolve, reject) {
         let dir = path.join(parsedPath.dir, `../processed/${getDatePath()}`);
         createDir(dir);
-        tryRename(p, path.join(dir, parsedPath.base), resolve, reject);
+        tryRename(filePath, path.join(dir, parsedPath.base), resolve, reject);
       });
     })
     .catch((e) => {
       if (e.skip) return false;
       // mv to errored
-      return new Promise(function (resolve, reject) {
+      return new Promise(function(resolve, reject) {
         if (e.message.startsWith('no import config')) {
           debug.warn('no import configuration found, skipping this file');
           resolve();
@@ -232,7 +232,7 @@ function processFile(database, importName, homeDir, p) {
         debug.error(`${e}\n${e.stack}`);
         let dir = path.join(parsedPath.dir, `../errored/${getDatePath()}`);
         createDir(dir);
-        tryRename(p, path.join(dir, parsedPath.base), resolve, reject);
+        tryRename(filePath, path.join(dir, parsedPath.base), resolve, reject);
       });
     });
 
@@ -296,13 +296,13 @@ function tryRename(from, to, resolve, reject, suffix) {
   if (suffix > 0) {
     newTo += `.${suffix}`;
   }
-  fs.access(newTo, function (err) {
+  fs.access(newTo, function(err) {
     if (err) {
       if (err.code !== 'ENOENT') {
         debug.error(`Could could rename ${from} to ${newTo}: ${err}`);
         return reject(err);
       } else {
-        return fs.rename(from, newTo, function (err) {
+        return fs.rename(from, newTo, function(err) {
           if (err) reject(err);
           else resolve();
         });
@@ -349,10 +349,12 @@ function shouldIgnore(name) {
       program.help();
     }
     debug(`Import with arguments: ${program.args.join(' ')}`);
-    const file = path.resolve(program.args[0]);
+    const filePath = path.resolve(program.args[0]);
     const database = program.args[1];
-    const kind = program.args[2];
-    await imp.import(database, kind, file, { dryRun: program.dryRun });
+    const importName = program.args[2];
+    await imp.import(database, importName, filePath, {
+      dryRun: program.dryRun
+    });
     debug('Imported successfully');
   } else if (program.watch) {
     // watch files to import
@@ -363,7 +365,7 @@ function shouldIgnore(name) {
         ignored: /[/\\](\.|processed|errored|node_modules)/,
         persistent: true
       })
-      .on('all', function (event, p) {
+      .on('all', function(event, p) {
         debug.trace(`watch event: ${event} - ${p}`);
         let file = checkFile(homeDir, p);
         if ((event !== 'add' && event !== 'change') || !file) {
