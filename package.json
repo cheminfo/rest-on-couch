@@ -1,17 +1,25 @@
 {
   "name": "rest-on-couch",
   "version": "5.7.0",
-  "description":
-    "Interface to CouchDB that allows the control of permissions on the documents",
+  "description": "Interface to CouchDB that allows the control of permissions on the documents",
   "main": "src/index.js",
-  "files": ["bin", "public", "src", "views"],
+  "files": [
+    "bin",
+    "public",
+    "src",
+    "views"
+  ],
   "bin": {
     "rest-on-couch-import": "./bin/rest-on-couch-import.js"
   },
   "jest": {
-    "testMatch": ["**/test/**/*.js"],
+    "testMatch": [
+      "**/test/**/*.js"
+    ],
     "testEnvironment": "node",
-    "setupFiles": ["./test/setup/setup.js"],
+    "setupFiles": [
+      "./test/setup/setup.js"
+    ],
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/test/data/",
@@ -25,12 +33,9 @@
     "eslint": "eslint src bin test --cache",
     "eslint-fix": "npm run eslint -- --fix",
     "prettier": "prettier-eslint bin/*.js src/**/*.js test/**/*.js --write",
-    "start:dev":
-      "webpack-dev-server --inline --content-base public/ --history-api-fallback",
-    "start:prod":
-      "NODE_ENV=production npm run build && node bin/rest-on-couch-server.js",
-    "start:devserver":
-      "REST_ON_COUCH_HOME_DIR=test/homedir node bin/rest-on-couch-server.js --config=conf/devConfig.js",
+    "start:dev": "webpack-dev-server --inline --content-base public/ --history-api-fallback",
+    "start:prod": "NODE_ENV=production npm run build && node bin/rest-on-couch-server.js",
+    "start:devserver": "REST_ON_COUCH_HOME_DIR=test/homedir node bin/rest-on-couch-server.js --config=conf/devConfig.js",
     "test": "npm run test-jest && npm run eslint",
     "test-jest": "jest --runInBand"
   },
@@ -38,7 +43,10 @@
     "type": "git",
     "url": "git+https://github.com/cheminfo/rest-on-couch.git"
   },
-  "keywords": ["couch", "couchdb"],
+  "keywords": [
+    "couch",
+    "couchdb"
+  ],
   "author": "Michaël Zasso",
   "license": "MIT",
   "bugs": {

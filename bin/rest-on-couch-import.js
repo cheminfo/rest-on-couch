@@ -17,7 +17,7 @@ const debug = require('../src/util/debug')('bin:import');
 const die = require('../src/util/die');
 const { getHomeDir } = require('../src/config/home');
 const imp = require('../src/import/import');
-const getConfig = require('../src/config/config').getConfig;
+const { getConfig, getImportConfig } = require('../src/config/config');
 const tryMove = require('../src/util/tryMove');
 
 var processChain = Promise.resolve();
@@ -67,10 +67,104 @@ async function importAll() {
   debug(`limit is ${limit}`);
   const files = await findFiles(homeDir, limit);
   debug(`${files.length} files to import`);
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
-    await processFile2(file.database, file.importName, file.path);
+  const waitingFiles = [];
+  const readyFiles = [];
+  for (const file of files) {
+    const waitTime = getWaitTime(file);
+    if (waitTime > 0) {
+      waitingFiles.push({
+        waitTime,
+        sizeBefore: 0,
+        waiting: false,
+        file
+      });
+    } else {
+      readyFiles.push(file);
+    }
   }
+
+  // Start by importing files that don't need to wait
+  for (const readyFile of readyFiles) {
+    await processFile2(readyFile);
+  }
+
+  if (waitingFiles.length === 0) {
+    return;
+  }
+
+  // Get initial size for every waiting file
+  try {
+    const sizes = await Promise.all(
+      waitingFiles.map((waitingFile) => getFileSize(waitingFile))
+    );
+    waitingFiles.forEach((waitingFile, i) => {
+      waitingFile.sizeBefore = sizes[i];
+    });
+  } catch (e) {
+    debug.error('error while getting waiting file size', e);
+    return;
+  }
+
+  // Start waiting for each file
+  for (const waitingFile of waitingFiles) {
+    waitingFile.waiting = wait(waitingFile);
+  }
+
+  let remainingWaitingFiles = waitingFiles.slice();
+  do {
+    await Promise.race(
+      remainingWaitingFiles.map(
+        (remainingWaitingFile) => remainingWaitingFile.waiting
+      )
+    );
+    remainingWaitingFiles = await importNonWaitingFilesOrExtend(
+      remainingWaitingFiles
+    );
+  } while (remainingWaitingFiles.length > 0);
+}
+
+async function importNonWaitingFilesOrExtend(waitingFiles) {
+  const remainingWaitingFiles = [];
+  for (const waitingFile of waitingFiles) {
+    if (!waitingFile.waiting) {
+      let size;
+      try {
+        size = await getFileSize(waitingFile);
+      } catch (e) {
+        debug.error('error while getting waiting file size', e);
+        continue;
+      }
+      if (size !== waitingFile.sizeBefore) {
+        waitingFile.sizeBefore = size;
+        waitingFile.waiting = wait(waitingFile);
+        remainingWaitingFiles.push(waitingFile);
+      } else {
+        await processFile2(waitingFile.file);
+      }
+    } else {
+      remainingWaitingFiles.push(waitingFile);
+    }
+  }
+  return remainingWaitingFiles;
+}
+
+function getWaitTime(file) {
+  const importConfig = getImportConfig(file.database, file.importName);
+  return importConfig.fileSizeChangeDelay || 0;
+}
+
+async function getFileSize(waitingFile) {
+  const stat = await fs.stat(waitingFile.file.path);
+  return stat.size;
+}
+
+function wait(waitingFile) {
+  return new Promise((resolve) =>
+    setTimeout(function waitCallback() {
+      waitingFile.waiting = false;
+      resolve(waitingFile);
+    }, waitingFile.waitTime)
+  );
 }
 
 async function findFiles(homeDir, limit) {
@@ -155,7 +249,7 @@ function getFilesToProcess(directory, maxElements) {
     const items = [];
     const walkStream = klaw(directory, { queueMethod: sortWalk });
     walkStream
-      .on('data', function(item) {
+      .on('data', function (item) {
         if (item.stats.isFile()) {
           items.push(item.path);
           if (maxElements > 0 && items.length >= maxElements) {
@@ -165,7 +259,7 @@ function getFilesToProcess(directory, maxElements) {
         }
       })
       .on('end', () => resolve(items))
-      .on('error', function(err) {
+      .on('error', function (err) {
         this.close();
         reject(err);
       });
@@ -211,7 +305,7 @@ function processFile(database, importName, homeDir, filePath) {
       if (config.import[importName].noFileMove) {
         return null;
       }
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         let dir = path.join(parsedPath.dir, `../processed/${getDatePath()}`);
         createDir(dir);
         tryRename(filePath, path.join(dir, parsedPath.base), resolve, reject);
@@ -220,7 +314,7 @@ function processFile(database, importName, homeDir, filePath) {
     .catch((e) => {
       if (e.skip) return false;
       // mv to errored
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         if (e.message.startsWith('no import config')) {
           debug.warn('no import configuration found, skipping this file');
           resolve();
@@ -236,7 +330,8 @@ function processFile(database, importName, homeDir, filePath) {
   return processChain;
 }
 
-async function processFile2(database, importName, filePath) {
+async function processFile2(file) {
+  const { database, importName, path: filePath } = file;
   debug.trace(`process file ${filePath}`);
   const parsedPath = path.parse(filePath);
   const splitParsedPath = parsedPath.dir.split('/');
@@ -293,13 +388,13 @@ function tryRename(from, to, resolve, reject, suffix) {
   if (suffix > 0) {
     newTo += `.${suffix}`;
   }
-  fs.access(newTo, function(err) {
+  fs.access(newTo, function (err) {
     if (err) {
       if (err.code !== 'ENOENT') {
         debug.error(`Could could rename ${from} to ${newTo}: ${err}`);
         return reject(err);
       } else {
-        return fs.rename(from, newTo, function(err) {
+        return fs.rename(from, newTo, function (err) {
           if (err) reject(err);
           else resolve();
         });
@@ -362,7 +457,7 @@ function shouldIgnore(name) {
         ignored: /[/\\](\.|processed|errored|node_modules)/,
         persistent: true
       })
-      .on('all', function(event, p) {
+      .on('all', function (event, p) {
         debug.trace(`watch event: ${event} - ${p}`);
         let file = checkFile(homeDir, p);
         if ((event !== 'add' && event !== 'change') || !file) {

@@ -7,25 +7,20 @@ const fold = require('fold-to-ascii').fold;
 
 const Couch = require('../index');
 const debug = require('../util/debug')('import');
-const getConfig = require('../config/config').getConfig;
+const { getImportConfig } = require('../config/config');
 
 const BaseImport = require('./ImportContext');
 const ImportResult = require('./ImportResult');
 const saveResult = require('./saveResult');
 
-exports.import = async function(database, importName, filePath, options = {}) {
+exports.import = async function (database, importName, filePath, options = {}) {
   debug(`import ${filePath} (${database}, ${importName})`);
 
   const dryRun = !!options.dryRun;
 
-  let config = getConfig(database);
+  const config = getImportConfig(database, importName);
   const couch = Couch.get(database);
 
-  if (!config.import || !config.import[importName]) {
-    throw new Error(`no import config for ${database}/${importName}`);
-  }
-
-  config = config.import[importName];
   if (typeof config === 'function') {
     const baseImport = new BaseImport(filePath, database);
     const result = new ImportResult();
