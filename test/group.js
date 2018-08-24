@@ -114,7 +114,7 @@ describe('group methods (no default rights)', () => {
 
   test('should get list of groups user is member of, including default groups', async function () {
     let groups = await couch.getUserGroups('a@a.com');
-    groups.sort((a, b) => b.name < a.name);
+    groups.sort((a, b) => a.name.localeCompare(b.name));
     expect(groups).toEqual([
       { name: 'defaultAnonymousRead', rights: ['read'] },
       { name: 'defaultAnyuserRead', rights: ['read'] },
