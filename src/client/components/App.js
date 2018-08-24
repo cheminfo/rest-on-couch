@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { HashRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -90,7 +91,8 @@ const App = (props) => (
                       <Allowed allowed={props.userRights.includes('admin')}>
                         <DatabaseAdministration
                           isAdmin={props.userRights.includes('admin')}
-                        />;
+                        />
+                        ;
                       </Allowed>
                     );
                   }}

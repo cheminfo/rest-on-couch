@@ -3,25 +3,15 @@
 const path = require('path');
 
 const isProduction = process.env.NODE_ENV === 'production';
-const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const babelConfig = {
-  plugins: [
-    'transform-async-to-generator',
-    'transform-es2015-modules-commonjs'
-  ],
-  presets: ['react']
+  plugins: ['@babel/transform-async-to-generator'],
+  presets: ['@babel/react']
 };
 const entry = ['whatwg-fetch', './src/client/index.js'];
 
-const plugins = [
-  new webpack.DefinePlugin({
-    'process.env': {
-      NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'dev')
-    }
-  })
-];
+const plugins = [];
 
 if (isProduction) {
   babelConfig.presets.push([
