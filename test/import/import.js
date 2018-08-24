@@ -61,30 +61,41 @@ describe('import', () => {
     });
   });
 
-  test('All attachments and metadata are separate', () => {
-    return imp.import(databaseName, 'separate', textFile).then(() => {
-      return importCouch.getEntryById('separate', 'a@a.com').then((data) => {
-        expect(data).toBeDefined();
-        expect(data.$content).toBeDefined();
+  test('All attachments and metadata are separate', async () => {
+    await importCouch.insertEntry(
+      {
+        $kind: 'sample',
+        $id: 'separate',
+        $content: {
+          existingValue: 42
+        }
+      },
+      'a@a.com'
+    );
+    await imp.import(databaseName, 'separate', textFile);
+    const data = await importCouch.getEntryById('separate', 'a@a.com');
+    expect(data).toBeDefined();
+    expect(data.$content).toBeDefined();
 
-        // Check that new content has been merged
-        expect(data.$content.sideEffect).toBe(true);
+    // Check that existing content is still there
+    expect(data.$content.existingValue).toBe(42);
 
-        // Check that the correct owners have been added
-        expect(data.$owners).toEqual(['a@a.com', 'group1', 'group2', 'group3']);
+    // Check that new content has been merged
+    expect(data.$content.sideEffect).toBe(true);
 
-        // Additional metadata
-        var metadata = data.$content.other.jpath[0];
-        expect(metadata).toBeDefined();
-        expect(metadata.hasMetadata).toBe(true);
-        expect(metadata.reference).toBe('testRef');
-        expect(metadata.testField.filename).toBe('other/jpath/test.txt');
+    // Check that the correct owners have been added
+    expect(data.$owners).toEqual(['a@a.com', 'group1', 'group2', 'group3']);
 
-        // check attachmentss
-        const secondaryAttachment = data._attachments['other/jpath/test.txt'];
-        expect(secondaryAttachment).toBeDefined();
-        expect(secondaryAttachment.content_type).toBe('plain/text');
-      });
-    });
+    // Additional metadata
+    var metadata = data.$content.other.jpath[0];
+    expect(metadata).toBeDefined();
+    expect(metadata.hasMetadata).toBe(true);
+    expect(metadata.reference).toBe('testRef');
+    expect(metadata.testField.filename).toBe('other/jpath/test.txt');
+
+    // check attachmentss
+    const secondaryAttachment = data._attachments['other/jpath/test.txt'];
+    expect(secondaryAttachment).toBeDefined();
+    expect(secondaryAttachment.content_type).toBe('plain/text');
   });
 });
