@@ -63,7 +63,8 @@ module.exports = async function saveResult(importBase, result) {
           _id: document.id,
           _rev: document.rev
         },
-        result.owner
+        result.owner,
+        { merge: true }
       );
       break;
     default:
