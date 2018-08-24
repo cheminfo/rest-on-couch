@@ -7,9 +7,9 @@ const debug = require('./debug')('nano');
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
-exports.authenticate = function (nano, user, password) {
+function authenticate(nano, user, password) {
   return new Promise((resolve, reject) => {
-    debug.trace(`auth ${user}`);
+    debug.trace(`authenticate ${user} against CouchDB`);
     nano.auth(user, password, (err, body, headers) => {
       if (err) {
         debug.warn('auth failed');
@@ -22,184 +22,148 @@ exports.authenticate = function (nano, user, password) {
       return reject(new Error('cookie auth not supported'));
     });
   });
-};
+}
 
-exports.getDatabase = function (nano, database) {
-  return new Promise((resolve, reject) => {
-    debug.trace(`getDatabase ${database}`);
-    nano.db.get(database, (err) => {
-      if (err) {
-        if (
-          err.reason === 'no_db_file' /* couchdb 1.6 */ ||
-          err.reason === 'Database does not exist.' /* couchdb 2.x.x */
-        ) {
-          debug.trace('database not found');
-          return resolve(false);
-        }
-        debug.warn('getDatabase failed');
-        return reject(err);
-      }
-      debug.trace('database exists');
-      return resolve(true);
-    });
-  });
-};
+async function getDatabase(nano, database) {
+  debug.trace(`getDatabase ${database}`);
+  try {
+    await nano.db.get(database);
+    debug.trace('database exists');
+    return true;
+  } catch (err) {
+    if (
+      err.reason === 'no_db_file' /* couchdb 1.6 */ ||
+      err.reason === 'Database does not exist.' /* couchdb 2.x.x */
+    ) {
+      debug.trace('database not found');
+      return false;
+    }
+    debug.warn('getDatabase failed');
+    throw err;
+  }
+}
 
-exports.createDatabase = function (nano, database) {
-  return new Promise((resolve, reject) => {
-    debug.trace(`createDatabase ${database}`);
-    nano.db.create(database, (err) => {
-      if (err) {
-        debug.warn('create failed');
-        return reject(err);
-      }
-      debug('database created');
-      return resolve();
-    });
-  });
-};
+async function createDatabase(nano, database) {
+  debug.trace(`createDatabase ${database}`);
+  try {
+    await nano.db.create(database);
+  } catch (err) {
+    debug.warn('create failed');
+    throw err;
+  }
+}
 
-exports.getDocument = function (db, docID, options) {
+async function getDocument(db, docID, options) {
   options = options || {};
-  return new Promise((resolve, reject) => {
-    debug.trace(`getDocument ${docID}`);
-    cleanOptions(options);
-    db.get(docID, options, (err, result) => {
-      if (err) {
-        if (
-          err.statusCode === 404 &&
-          (err.reason === 'missing' || err.reason === 'deleted')
-        ) {
-          debug.trace('document missing');
-          return resolve(null);
-        }
-        debug.warn('getDocument failed');
-        return reject(err);
-      }
-      debug.trace('found document');
-      return resolve(result);
-    });
-  });
-};
+  debug.trace(`getDocument ${docID}`);
+  cleanOptions(options);
+  try {
+    const result = await db.get(docID, options);
+    debug.trace('found document');
+    return result;
+  } catch (err) {
+    if (
+      err.statusCode === 404 &&
+      (err.reason === 'missing' || err.reason === 'deleted')
+    ) {
+      debug.trace('document missing');
+      return null;
+    }
+    debug.warn('getDocument failed');
+    throw err;
+  }
+}
 
-exports.insertDocument = function (db, doc) {
-  return new Promise((resolve, reject) => {
-    debug.trace(`insertDocument with _id ${doc._id}`);
-    db.insert(doc, (err, body) => {
-      if (err) return reject(err);
-      debug.trace(`document inserted (${body.id})`);
-      return resolve(body);
-    });
-  });
-};
+async function insertDocument(db, doc) {
+  debug.trace(`insertDocument with _id ${doc._id}`);
+  const body = await db.insert(doc);
+  debug.trace(`document inserted (${body.id})`);
+  return body;
+}
 
-exports.queryView = function (db, view, params, options) {
+async function queryView(db, view, params, options) {
   options = options || {};
   params = params || {};
   if (!hasOwnProperty.call(params, 'reduce')) {
     params.reduce = false;
   }
-  return new Promise((resolve, reject) => {
-    debug.trace(`queryView ${view}`);
-    cleanOptions(params);
-    var config = getConfig(db.config.db);
-    var designDoc =
-      (config.designDocNames && config.designDocNames[view]) ||
-      constants.DESIGN_DOC_NAME;
-    debug.trace(`designDoc: ${designDoc}`);
-    db.view(designDoc, view, params, (err, body) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      if (options.onlyValue) {
-        resolve(body.rows.map((row) => row.value));
-      } else if (options.onlyDoc) {
-        resolve(body.rows.map((row) => row.doc));
-      } else {
-        resolve(body.rows);
-      }
-    });
-  });
-};
+  debug.trace(`queryView ${view}`);
+  cleanOptions(params);
+  var config = getConfig(db.config.db);
+  var designDoc =
+    (config.designDocNames && config.designDocNames[view]) ||
+    constants.DESIGN_DOC_NAME;
+  debug.trace(`designDoc: ${designDoc}`);
+  const body = await db.view(designDoc, view, params);
+  if (options.onlyValue) {
+    return body.rows.map((row) => row.value);
+  } else if (options.onlyDoc) {
+    return body.rows.map((row) => row.doc);
+  } else {
+    return body.rows;
+  }
+}
 
-exports.destroyDatabase = function (nano, dbName) {
-  return new Promise((resolve, reject) => {
-    debug(`destroy database ${dbName}`);
-    nano.db.destroy(dbName, (err, body) => {
-      if (err) reject(err);
-      else resolve(body);
-    });
-  });
-};
+function destroyDatabase(nano, dbName) {
+  debug(`destroy database ${dbName}`);
+  return nano.db.destroy(dbName);
+}
 
-exports.destroyDocument = function (db, docId, revId) {
+async function destroyDocument(db, docId, revId) {
   debug.trace('destroy document');
   if (!revId) {
-    return exports.getDocument(db, docId).then((doc) => {
-      if (!doc || !doc._rev) return null;
-      return exports.destroyDocument(db, docId, doc._rev);
-    });
+    const doc = await getDocument(db, docId);
+    if (!doc || !doc._rev) return null;
+    return destroyDocument(db, docId, doc._rev);
   }
-  return new Promise(function (resolve, reject) {
-    db.destroy(docId, revId, (err, body) => {
-      if (err) reject(err);
-      else resolve(body);
-    });
-  });
-};
+  return db.destroy(docId, revId);
+}
 
-exports.updateWithHandler = function (db, update, docId, body) {
-  return new Promise((resolve, reject) => {
-    debug.trace(`update with handler ${JSON.stringify(body)}`);
-    db.atomic(constants.DESIGN_DOC_NAME, update, docId, body, (err, body) => {
-      if (err) reject(err);
-      else resolve(body);
-    });
-  });
-};
+function updateWithHandler(db, update, docId, body) {
+  debug.trace(`update with handler ${JSON.stringify(body)}`);
+  return db.atomic(constants.DESIGN_DOC_NAME, update, docId, body);
+}
 
-exports.attachFiles = function (db, doc, files) {
-  return new Promise((resolve, reject) => {
-    debug.trace('attach files');
-    db.multipart.insert(doc, files, doc._id, (err, body) => {
-      if (err) reject(err);
-      else resolve(body);
-    });
-  });
-};
+function attachFiles(db, doc, files) {
+  debug.trace('attach files');
+  return db.multipart.insert(doc, files, doc._id);
+}
 
-exports.getAttachment = function (db, doc, name, asStream, options) {
+function getAttachment(db, doc, name, asStream, options) {
   options = options || {};
-  return new Promise((resolve, reject) => {
-    debug.trace(`get attachment ${doc}/${name}`);
-    cleanOptions(options);
-    if (asStream) {
-      const stream = db.attachment.get(doc, name, options);
-      resolve(stream);
-    } else {
-      db.attachment.get(doc, name, options, (err, body) => {
-        if (err) reject(err);
-        else resolve(body);
-      });
-    }
-  });
-};
+  debug.trace(`get attachment ${doc}/${name}`);
+  cleanOptions(options);
+  if (asStream) {
+    return db.attachment.getAsStream(doc, name, options);
+  } else {
+    return db.attachment.get(doc, name, options);
+  }
+}
 
-exports.request = function (nano, options) {
+function request(nano, options) {
   options = options || {};
-  return new Promise((resolve, reject) => {
-    debug.trace('request');
-    cleanOptions(options);
-    nano.request(options, (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
-    });
-  });
-};
+  debug.trace('request');
+  cleanOptions(options);
+  return nano.request(options);
+}
 
 function cleanOptions(options) {
   if (options.token) {
     delete options.token;
   }
 }
+
+module.exports = {
+  authenticate,
+  getDatabase,
+  createDatabase,
+  getDocument,
+  insertDocument,
+  queryView,
+  destroyDatabase,
+  destroyDocument,
+  updateWithHandler,
+  attachFiles,
+  getAttachment,
+  request
+};
