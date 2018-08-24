@@ -1,7 +1,8 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import promiseMiddleware from 'redux-promise-middleware';
 import thunkMiddleware from 'redux-thunk';
-import { persistStore, autoRehydrate } from 'redux-persist';
+import { persistStore, persistCombineReducers } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
 import DbManager from './dbManager';
 import dbReducer from './reducers/db';
@@ -15,24 +16,26 @@ const composeStoreWithMiddleware = applyMiddleware(
   thunkMiddleware
 )(createStore);
 
-const store = composeStoreWithMiddleware(
-  combineReducers({
+const rootReducer = persistCombineReducers(
+  {
+    key: 'reduxPersist',
+    storage,
+    whitelist: ['dbName'],
+    throttle: 1000
+  },
+  {
     db: dbReducer,
     dbName: dbNameReducer,
     login: loginReducer
-  }),
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-  autoRehydrate()
+  }
 );
 
-persistStore(
-  store,
-  {
-    whitelist: ['dbName'],
-    debounce: 1000
-  },
-  onRehydrated
+const store = composeStoreWithMiddleware(
+  rootReducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
+
+persistStore(store, null, onRehydrated);
 
 checkLogin(store.dispatch);
 getLoginProviders(store.dispatch);
