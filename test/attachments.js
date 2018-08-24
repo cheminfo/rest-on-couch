@@ -20,7 +20,7 @@ describe('entries with attachments', () => {
   test('should return attachment data', () => {
     return expect(
       couch.getAttachmentByName('entryWithAttachment', 'test.txt', 'b@b.com')
-    ).resolves.toEqual(Buffer.from('THIS IS A TEST'));
+    ).resolves.toBe('THIS IS A TEST');
   });
 
   test('should delete an attachment from a document given by its uuid', () => {
