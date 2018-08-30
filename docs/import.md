@@ -76,7 +76,7 @@ The second argument is `importResult` and allows to manipulate the result that w
 - metadata: an object with all the properties containing metadata for this attachment (eg {solvent:'CDCl3', frequency:400})
 - content: corresponds to the full entry. If you put an object in the `content` property it will be merged with the existing
   data
-- filename: override filename. By default the actual name of the file being imported is used when saving the attachment,
+- filename: override filename. By default the actual name of the file being imported is used when saving the attachment, and this property allows to override it.
 
 Result object also has the following functions:
 
