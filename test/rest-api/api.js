@@ -150,6 +150,27 @@ describe('basic rest-api as b@b.com', () => {
     return data().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 
+  test('head existing entry', async () => {
+    const entry = await couch.getEntryById('A', 'b@b.com');
+    return request
+      .head(`/db/test/entry/${entry._id}`)
+      .expect(200)
+      .expect('ETag', `"${entry._rev}"`);
+  });
+
+  test('head non-existing entry', async () => {
+    return request.head('/db/test/entry/bad').expect(404);
+  });
+
+  test('head with if-none-match', async () => {
+    const entry = await couch.getEntryById('A', 'b@b.com');
+    return request
+      .head(`/db/test/entry/${entry._id}`)
+      .set('If-None-Match', `"${entry._rev}"`)
+      .expect(304)
+      .expect('ETag', `"${entry._rev}"`);
+  });
+
   test('get an entry', () => {
     return couch.getEntryById('A', 'b@b.com').then((entry) => {
       return request.get(`/db/test/entry/${entry._id}`).expect(200);

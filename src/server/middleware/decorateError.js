@@ -11,10 +11,18 @@ const statusMessages = {
 
 function decorateError(ctx, status, error = true) {
   ctx.status = status;
-  ctx.body = {
-    error,
-    code: statusMessages[status] || `error ${status}`
-  };
+  if (responseHasBody(ctx)) {
+    ctx.body = {
+      error,
+      code: statusMessages[status] || `error ${status}`
+    };
+  }
 }
 
-module.exports = decorateError;
+function responseHasBody(ctx) {
+  const method = ctx.method;
+  if (method === 'HEAD' || method === 'OPTIONS') return false;
+  return true;
+}
+
+module.exports = { decorateError, responseHasBody };

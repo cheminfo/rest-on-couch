@@ -4,7 +4,7 @@ const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('zenodo');
 const { RocZenodo } = require('../../roc-zenodo');
 
-const decorateError = require('./decorateError');
+const { decorateError } = require('./decorateError');
 const { composeWithError } = require('./util');
 
 let rocZenodoProd = new RocZenodo({
