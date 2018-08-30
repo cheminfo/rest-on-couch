@@ -1,7 +1,7 @@
 # Automatic importation
 
 Automatic importation of files is one of the main feature of rest-on-couch. The idea
-is that by placing text files in specific folder the data can be imported automatically.
+is that by placing text files in specific folder the data will be imported periodically.
 
 As an example we can take a database called `eln`. On the file system we will have this
 kind of hierarchy:
@@ -45,17 +45,12 @@ Additional import options can be set by adding some properties to the import fun
 
 ### Import context
 
-The import function takes two argument. The first is importContext, and allows
-to retrieve all information about the file being currently imported. It has
-the following properties and methods:
+The import function takes two arguments. The first is `importContext`, and allows to retrieve all information about the file being currently imported. It has the following properties and methods:
 
 - `filename`: the name of the file to import
 - `fileDir`: the path to the file to import
 - `fileExt`: the extension of the file
 - `couch`: an instance of Couch. This should only be used in extreme cases where the provided import API is not sufficient.
-
-"Important note": `filename` HAS to be unique for a specific kind of data otherwise an existing file will be replaced!  
-This is true even if the field `reference` is different.
 
 It also has the following methods:
 
@@ -65,8 +60,7 @@ It also has the following methods:
 
 ### Import result
 
-The second argument allows to manipulate the result will be stored in the database.
-It has the following properties and methods: (**bold** are mandatory):
+The second argument is `importResult` and allows to manipulate the result that will be stored in the database. It has the following properties and methods: (**bold** means mandatory):
 
 - **kind**: the kind of entry (eg `'sample'`)
 - **id**: the unique ID of the record in couchDB, the $ID field (eg `['abc','def']`)
@@ -82,8 +76,11 @@ It has the following properties and methods: (**bold** are mandatory):
 - metadata: an object with all the properties containing metadata for this attachment (eg {solvent:'CDCl3', frequency:400})
 - content: corresponds to the full entry. If you put an object in the `content` property it will be merged with the existing
   data
+- filename: override filename. By default the actual name of the file being imported is used when saving the attachment, and this property allows to override it.
 
 Result object also has the following functions:
+
+**Important note**: The filename of the attachment in the couchdb document will be generated from both the jpath and the filename. For example if the jpath is `['path','to','metadata']`, and the filename is `myFile.txt`, the couchdb attachment name will be `path/to/metadata/myFile.txt`. Therefore keep in mind that if you reimport a file, the old attachment might be replaced by the new one.
 
 - addGroup(group): allows to add a group to the entry (eg `result.addGroup('group1')`);
 - addGroups(groups): allows to add many groups at once to the entry (eg `result.addGroups(['group2', 'group3'])`)
@@ -92,7 +89,7 @@ Result object also has the following functions:
 - addAttachment(): add an attachment. This can be called multiple times to add more attachments
 - skip(): skip this importation for now. The file will stay in the `to_process` directory
 
-## FAQ
+## Examples
 
 ### Unique filename
 
