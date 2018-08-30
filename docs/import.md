@@ -1,7 +1,7 @@
 ## Automatic importation
 
 Automatic importation of files is one of the main feature of rest-on-couch. The idea
-is that by placing text files in specific folder the data can be imported automatically.
+is that by placing text files in specific folder the data will be imported periodically.
 
 As an example we can take a database called `eln`. On the file system we will have this
 kind of hierarchy:
@@ -19,47 +19,50 @@ kind of hierarchy:
 
 ## import.js
 
-`import.js` will exports an async function that will be used to process files to import.
+`import.js` should export an async function that will be used to process files to import.
 `module.exports = async function nmrImport(importContext, result) {}`
 
-"Important note": filename HAS to be unique for a specific kind of data otherwise the existing file will be replaced !!
-This is true even if the field `reference` is different.
+The import function takes two arguments. The first is `importContext`, and allows to retrieve all information about the file being currently imported. It has the following properties and methods:
 
-The importation procedure has a special `importContext` in which the following variables are available:
-
-- filename: the name of the file to import
-- fileDir: the path to the file to import
-- fileExt: the extension of the file
+- filename: the name of the file that is being imported
+- fileDir: the path to the file that is being imported
+- fileExt: the extension of the file that is being imported
 - couch: an instance of Couch. This should only be used in extreme cases.
 
-It also has the following functions:
+This is true even if the field `reference` is different.
+
+It also has the following methods:
 
 - getContents(encoding = null, cache = true): allows to retrieve the content of the file. if the encoding is 'utf8' you get back a String that you can directly use, otherwise you get a Buffer.
 
-The result object may have the following properties (**bold** are mandatory):
+The second argument is `importResult` and allows to manipulate the result that will be stored in the database. It has the following properties and methods: (**bold** means mandatory):
 
 - **kind**: the kind of entry (eg 'sample')
-- **id**: the unique ID of the record in couchDB, the $ID field -(eg ['abc','def'])
+- **id**: the personal ID of the record for the owner of the entry, the $ID field -(eg ['abc','def'])
 - **owner**: the owner of the entry if it does not exists, it must be an email (eg 'a@a.com')
 - **reference**: a unique ID for the entry in the specified jpath. If an entry has
   this reference the metadata and attachment will be join with the existing data,
-  otherwise a new entry will be created
-- **field**: name of the field in which the attachment will be saved (eg 'jcamp').
+  otherwise a new element will be created
+- **field**: name of the field in which the reference to the attachment will be saved (eg 'jcamp').
   It will create a property with `{filename: '...'}` as a value. This means one reference
-  can point to several files which path is located in the field property.
-- **jpath**: in which array should the attachment be saved (eg ['spectra', 'nmr'])
+  can point to several files which path is located in different field properties.
+- **jpath**: the path in the document where the attachment be saved (eg ['spectra', 'nmr'])
 - content_type: the mimetype of the attachment (eg 'chemical/x-jcamp-dx');
 - metadata: an object with all the properties containing metadata (eg {solvent:'CDCl3', frequency:400})
 - content: corresponds to the full entry. If you put an object in the `content` property it will be merged with the existing
   data
+- filename: override filename. By default the actual name of the file being imported is used when saving the attachment,
 
 Result object also has the following functions:
 
 - addGroup(group): allows to add a group to the entry (eg 'addGroup(group1)');
-- addGroups(groups): allows to add many groups at once to the entry (eg addGroups(['group2', 'group3']))
+- addGroups(groups): allows to add several groups at once to the entry (eg addGroups(['group2', 'group3']))
 - skipAttachment(): prevent the importation of the attachment
 - skipMetadata(): prevent the importation of the metadata
 - addAttachment(): add an attachment
+- skip(): bypass the current imported file. The file will stay in to_process and an importation will be reattempted later.
+
+**Important note**: The filename of the attachment in the couchdb document will be generated from both the jpath and the filename. For example if the jpath is `['path','to','metadata']`, and the filename is `myFile.txt`, the couchdb attachment name will be `path/to/metadata/myFile.txt`. Therefore keep in mind that if you reimport a file, the old attachment might be replaced by the new one.
 
 ## FAQ
 
