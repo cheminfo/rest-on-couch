@@ -14,7 +14,7 @@ const nanoPromise = require('../../util/nanoPromise');
 const isEmail = require('../../util/isEmail');
 
 const respondOk = require('./respondOk');
-const decorateError = require('./decorateError');
+const { decorateError } = require('./decorateError');
 
 passport.serializeUser(function (user, done) {
   done(null, user);

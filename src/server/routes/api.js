@@ -23,6 +23,7 @@ router.use(couch.tokenLookup);
 // Entries
 router.post('/:dbname/entry', parseJson100mb, couch.newOrUpdateEntry);
 router.get('/:dbname/entry/_all', couch.allEntries);
+router.head('/:dbname/entry/:uuid', couch.headDocument);
 router.get('/:dbname/entry/:uuid', couch.getDocument);
 router.put('/:dbname/entry/:uuid', parseJson100mb, couch.updateEntry);
 router.delete('/:dbname/entry/:uuid', couch.deleteEntry);

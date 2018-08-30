@@ -7,7 +7,7 @@ const compose = require('koa-compose');
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('middleware:util');
 
-const decorateError = require('./decorateError');
+const { decorateError, responseHasBody } = require('./decorateError');
 
 exports.parseBody = function (options) {
   return bodyParser(options);
@@ -68,7 +68,7 @@ function onGetError(ctx, e, secure) {
       }
       break;
   }
-  if (config.debugrest) {
+  if (config.debugrest && responseHasBody(ctx)) {
     ctx.body.stack = e.stack;
   }
 }

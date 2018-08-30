@@ -67,6 +67,22 @@ exports.getAllDbs = async (ctx) => {
   ctx.body = result;
 };
 
+exports.headDocument = composeWithError(async (ctx) => {
+  const result = await ctx.state.couch.getEntry(
+    ctx.params.uuid,
+    ctx.state.userEmail,
+    ctx.query
+  );
+  const ifNoneMatch = ctx.request.get('If-None-Match');
+  const rev = `"${result._rev}"`;
+  ctx.response.set('ETag', rev);
+  if (ifNoneMatch === rev) {
+    ctx.status = 304;
+  } else {
+    ctx.status = 200;
+  }
+});
+
 exports.getDocument = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getEntry(
     ctx.params.uuid,
