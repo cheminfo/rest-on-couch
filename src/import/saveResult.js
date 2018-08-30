@@ -24,6 +24,9 @@ module.exports = async function saveResult(importBase, result) {
     );
   }
 
+  const mainFilename =
+    result.filename === null ? importBase.filename : result.filename;
+
   switch (result.getUpdateType()) {
     case constants.IMPORT_UPDATE_FULL:
       await couch.addFileToJpath(
@@ -33,7 +36,7 @@ module.exports = async function saveResult(importBase, result) {
         result.metadata,
         {
           field: result.field,
-          name: `${result.jpath.join('/')}/${fold(importBase.filename, '_')}`,
+          name: `${result.jpath.join('/')}/${fold(mainFilename, '_')}`,
           data: await importBase.getContents('base64'),
           reference: result.reference,
           content_type: result.content_type

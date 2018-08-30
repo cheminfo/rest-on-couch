@@ -9,6 +9,7 @@ module.exports = class ImportResult {
     this.groups = [];
     this.content = {};
     this.metadata = {};
+    this.filename = null;
   }
 
   skip() {

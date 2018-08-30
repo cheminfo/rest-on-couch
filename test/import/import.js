@@ -10,9 +10,14 @@ const databaseName = 'test-new-import';
 var importCouch;
 // The file in most test cases does not matter
 // We just have to pick an existing file
-const textFile = path.resolve(
+const textFile1 = path.resolve(
   __dirname,
   '../homeDirectories/main/test-new-import/simple/to_process/test.txt'
+);
+
+const textFile2 = path.resolve(
+  __dirname,
+  '../homeDirectories/main/test-new-import/changeFilename/to_process/test.txt'
 );
 
 describe('import', () => {
@@ -20,7 +25,7 @@ describe('import', () => {
     importCouch = await testUtils.resetDatabase(databaseName);
   });
   test('full import', () => {
-    return imp.import(databaseName, 'simple', textFile).then(() => {
+    return imp.import(databaseName, 'simple', textFile1).then(() => {
       return importCouch.getEntryById('test.txt', 'a@a.com').then((data) => {
         expect(data).toBeDefined();
         expect(data.$content).toBeDefined();
@@ -61,6 +66,17 @@ describe('import', () => {
     });
   });
 
+  test('change filename', async () => {
+    await imp.import(databaseName, 'changeFilename', textFile2);
+    const entry = await importCouch.getEntryById('test.txt', 'a@a.com');
+    const attachment = entry._attachments['jpath/in/document/newFilename.txt'];
+    expect(attachment).toBeDefined();
+    let metadata = entry.$content.jpath.in.document[0];
+    expect(metadata).toBeDefined();
+    expect(metadata.hasMetadata).toBe(true);
+    expect(metadata.field.filename).toBe('jpath/in/document/newFilename.txt');
+  });
+
   test('All attachments and metadata are separate', async () => {
     await importCouch.insertEntry(
       {
@@ -72,7 +88,7 @@ describe('import', () => {
       },
       'a@a.com'
     );
-    await imp.import(databaseName, 'separate', textFile);
+    await imp.import(databaseName, 'separate', textFile1);
     const data = await importCouch.getEntryById('separate', 'a@a.com');
     expect(data).toBeDefined();
     expect(data.$content).toBeDefined();
