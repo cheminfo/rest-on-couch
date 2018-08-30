@@ -84,8 +84,6 @@ exports.headDocument = composeWithError(async (ctx) => {
 });
 
 exports.getDocument = composeWithError(async (ctx) => {
-  console.log('GET');
-  console.log(ctx.method);
   ctx.body = await ctx.state.couch.getEntry(
     ctx.params.uuid,
     ctx.state.userEmail,
