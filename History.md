@@ -1,3 +1,21 @@
+<a name="5.8.0"></a>
+# [5.8.0](https://github.com/cheminfo/rest-on-couch/compare/v5.7.0...v5.8.0) (2018-08-30)
+
+
+### Bug Fixes
+
+* **import:** do not move skipped files ([5c1cb4d](https://github.com/cheminfo/rest-on-couch/commit/5c1cb4d))
+* **import:** merge $content when no file is added ([0b40600](https://github.com/cheminfo/rest-on-couch/commit/0b40600))
+
+
+### Features
+
+* **import:** allow to setup fileSizeChangeDelay ([de8e6fa](https://github.com/cheminfo/rest-on-couch/commit/de8e6fa)), closes [#129](https://github.com/cheminfo/rest-on-couch/issues/129)
+* add HEAD for entry to the API ([#150](https://github.com/cheminfo/rest-on-couch/issues/150)) ([a5eadac](https://github.com/cheminfo/rest-on-couch/commit/a5eadac))
+* allow to set filename for main import attachment ([b7dc462](https://github.com/cheminfo/rest-on-couch/commit/b7dc462))
+
+
+
 <a name="5.7.0"></a>
 # [5.7.0](https://github.com/cheminfo/rest-on-couch/compare/v5.6.1...v5.7.0) (2018-08-13)
 
