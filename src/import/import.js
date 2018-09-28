@@ -31,7 +31,7 @@ exports.import = async function (database, importName, filePath, options = {}) {
     // Check that required properties have been set on the result
     result.check();
     if (dryRun) {
-      return { skip: 'dryRun' };
+      return { skip: 'dryRun', result };
     }
     await saveResult(baseImport, result);
     return { ok: true };
