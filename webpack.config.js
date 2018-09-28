@@ -3,7 +3,7 @@
 const path = require('path');
 
 const isProduction = process.env.NODE_ENV === 'production';
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const babelConfig = {
   plugins: ['@babel/transform-async-to-generator'],
@@ -12,6 +12,7 @@ const babelConfig = {
 const entry = ['whatwg-fetch', './src/client/index.js'];
 
 const plugins = [];
+const optimization = {};
 
 if (isProduction) {
   babelConfig.presets.push([
@@ -28,11 +29,16 @@ if (isProduction) {
     }
   ]);
   entry.unshift('regenerator-runtime/runtime');
-  plugins.push(new UglifyJsPlugin());
+  optimization.minimizer = [
+    new TerserPlugin({
+      parallel: true,
+      sourceMap: true
+    })
+  ];
 }
 
 module.exports = {
-  entry: entry,
+  entry,
 
   output: {
     path: path.resolve(__dirname, 'public'),
@@ -40,7 +46,8 @@ module.exports = {
     publicPath: '/'
   },
 
-  plugins: plugins,
+  plugins,
+  optimization,
   devtool: 'source-map',
   module: {
     rules: [
