@@ -2,7 +2,7 @@
 
 const path = require('path');
 
-const imp = require('../../src/import/import');
+const { importData } = require('../../src/index');
 const testUtils = require('../utils/utils');
 
 const databaseName = 'test-new-import';
@@ -25,7 +25,7 @@ describe('import', () => {
     importCouch = await testUtils.resetDatabase(databaseName);
   });
   test('full import', () => {
-    return imp.import(databaseName, 'simple', textFile1).then(() => {
+    return importData(databaseName, 'simple', textFile1).then(() => {
       return importCouch.getEntryById('test.txt', 'a@a.com').then((data) => {
         expect(data).toBeDefined();
         expect(data.$content).toBeDefined();
@@ -67,7 +67,7 @@ describe('import', () => {
   });
 
   test('change filename', async () => {
-    await imp.import(databaseName, 'changeFilename', textFile2);
+    await importData(databaseName, 'changeFilename', textFile2);
     const entry = await importCouch.getEntryById('test.txt', 'a@a.com');
     const attachment = entry._attachments['jpath/in/document/newFilename.txt'];
     expect(attachment).toBeDefined();
@@ -88,7 +88,7 @@ describe('import', () => {
       },
       'a@a.com'
     );
-    await imp.import(databaseName, 'separate', textFile1);
+    await importData(databaseName, 'separate', textFile1);
     const data = await importCouch.getEntryById('separate', 'a@a.com');
     expect(data).toBeDefined();
     expect(data.$content).toBeDefined();

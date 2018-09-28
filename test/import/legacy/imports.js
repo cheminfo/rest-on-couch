@@ -3,7 +3,7 @@
 const path = require('path');
 
 const Couch = require('../../..');
-const imp = require('../../../src/import/import');
+const { importData } = require('../../../src/index');
 const nanoPromise = require('../../../src/util/nanoPromise');
 
 var importCouch;
@@ -21,7 +21,7 @@ const jsonFile = path.resolve(
 describe('legacy import', () => {
   beforeEach(initCouch);
   test('parse', () => {
-    return imp.import('test-import', 'parse', textFile).then(() => {
+    return importData('test-import', 'parse', textFile).then(() => {
       return importCouch
         .getEntryById('parse', 'test-import@test.com')
         .then((data) => {
@@ -39,7 +39,7 @@ describe('legacy import', () => {
   });
 
   test('ignore import', () => {
-    return imp.import('test-import', 'ignore', textFile).then(() => {
+    return importData('test-import', 'ignore', textFile).then(() => {
       return expect(
         importCouch.getEntryById('ignored', 'test-import@test.com')
       ).rejects.toThrow(/not found/);
@@ -47,7 +47,7 @@ describe('legacy import', () => {
   });
 
   test('import json file', () => {
-    return imp.import('test-import', 'json', jsonFile).then(() => {
+    return importData('test-import', 'json', jsonFile).then(() => {
       return expect(
         importCouch.getEntryById('json', 'test-import@test.com')
       ).resolves.toBeDefined();

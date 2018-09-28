@@ -16,7 +16,7 @@ const connect = require('../src/connect');
 const debug = require('../src/util/debug')('bin:import');
 const die = require('../src/util/die');
 const { getHomeDir } = require('../src/config/home');
-const imp = require('../src/import/import');
+const { importData } = require('../src/index');
 const { getConfig, getImportConfig } = require('../src/config/config');
 const tryMove = require('../src/util/tryMove');
 
@@ -296,7 +296,7 @@ function processFile(database, importName, homeDir, filePath) {
 
   processChain = processChain
     .then(() => {
-      return imp.import(database, importName, filePath);
+      return importData(database, importName, filePath);
     })
     .then(() => {
       // mv to processed
@@ -341,7 +341,7 @@ async function processFile2(file) {
   }
 
   try {
-    const importResult = await imp.import(database, importName, filePath);
+    const importResult = await importData(database, importName, filePath);
     if (importResult.ok) {
       // success, move to processed
       await moveFile(
@@ -450,7 +450,7 @@ function shouldIgnore(name) {
     const filePath = path.resolve(program.args[0]);
     const database = program.args[1];
     const importName = program.args[2];
-    await imp.import(database, importName, filePath, {
+    await importData(database, importName, filePath, {
       dryRun: program.dryRun
     });
     debug('Imported successfully');
