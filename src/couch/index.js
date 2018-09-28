@@ -106,7 +106,7 @@ extendCouch('user');
 
 function extendCouch(name) {
   // eslint-disable-next-line import/no-dynamic-require
-  const methods = require(`./couch/${name}`).methods;
+  const methods = require(`./${name}`).methods;
   for (const method in methods) {
     Couch.prototype[method] = methods[method];
   }
