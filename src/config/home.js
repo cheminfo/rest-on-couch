@@ -10,7 +10,7 @@ function getHomeDir() {
     debug('no home dir');
     return null;
   }
-  return homeDir;
+  return path.resolve(homeDir);
 }
 
 function getHomeConfig(homeDir) {
