@@ -63,7 +63,7 @@ module.exports = class ImportResult {
         'String',
         'In attachment: reference'
       );
-      assertDefined(this.attachments[i].contents, 'In attachment: contents');
+      assertTypedArray(this.attachments[i].contents, 'In attachment: contents');
     }
 
     // Required if an there is a jpath
@@ -107,13 +107,19 @@ module.exports = class ImportResult {
 
 function assertType(data, expectedType, errorPrefix) {
   if (getType(data) !== expectedType) {
-    throw new Error(`${errorPrefix || ''} should be ${expectedType}`);
+    throw new Error(`${errorPrefix || ''} must be of type ${expectedType}`);
   }
 }
 
 function assertDefined(data, errorPrefix) {
   if (data === undefined) {
-    throw new Error(`${errorPrefix || ''} should be defined`);
+    throw new Error(`${errorPrefix || ''} must be defined`);
+  }
+}
+
+function assertTypedArray(data, errorPrefix) {
+  if (!ArrayBuffer.isView(data)) {
+    throw new Error(`${errorPrefix || ''} must be a Buffer or TypedArray`);
   }
 }
 
