@@ -11,6 +11,7 @@ const updates = require('./updates');
 const validateDocUpdate = require('./validateDocUpdate');
 const views = require('./views');
 
+/* istanbul ignore next */
 const mapTpl = function (doc) {
   if (doc.$type !== 'entry') return;
   var emitWithOwner = function (key, data) {

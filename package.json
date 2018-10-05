@@ -36,8 +36,10 @@
     "start:dev": "webpack-serve --content public/",
     "start:prod": "NODE_ENV=production npm run build && node bin/rest-on-couch-server.js",
     "start:devserver": "REST_ON_COUCH_HOME_DIR=test/homedir node bin/rest-on-couch-server.js --config=conf/devConfig.js",
-    "test": "npm run test-jest && npm run eslint",
-    "test-jest": "jest --runInBand"
+    "test": "npm run test-only && npm run eslint",
+    "test-coverage": "npm run test-only -- --coverage",
+    "test-only": "jest --runInBand",
+    "test-travis": "npm run test-coverage && npm run eslint"
   },
   "repository": {
     "type": "git",
