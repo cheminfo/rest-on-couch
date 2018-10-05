@@ -138,13 +138,13 @@ describe('ImportResult', () => {
     );
     checkWithoutAttachmentPropShouldThrow(
       'contents',
-      'In attachment: contents must be of type Buffer or TypedArray',
+      'In attachment: contents must be a Buffer or TypedArray',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithWrongTypeAttachmentPropShouldThrow(
       'contents',
       'this is a string',
-      'In attachment: contents must be of type Buffer or TypedArray',
+      'In attachment: contents must be a Buffer or TypedArray',
       constants.IMPORT_UPDATE_FULL
     );
 
