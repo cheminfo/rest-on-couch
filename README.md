@@ -214,7 +214,7 @@ A specific userguide is available [here](docs/import.md).
 [npm-url]: https://www.npmjs.com/package/rest-on-couch
 [travis-image]: https://img.shields.io/travis/cheminfo/rest-on-couch/master.svg?style=flat-square
 [travis-url]: https://travis-ci.org/cheminfo/rest-on-couch
-[codecov-image]: https://img.shields.io/codecov/c/github/cheminfo/rest-on-couch?style=flat-square
+[codecov-image]: https://img.shields.io/codecov/c/github/cheminfo/rest-on-couch.svg?style=flat-square
 [codecov-url]: https://codecov.io/gh/cheminfo/rest-on-couch
 [david-image]: https://img.shields.io/david/cheminfo/rest-on-couch.svg?style=flat-square
 [david-url]: https://david-dm.org/cheminfo/rest-on-couch
