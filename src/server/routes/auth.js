@@ -85,9 +85,14 @@ router.get('/login', async (ctx) => {
     ctx.body = '<script>window.close();</script>';
   } else {
     ctx.session.popup = false;
-    ctx.state.enabledAuthPlugins = showLoginAuthPlugins;
-    ctx.state.pluginConfig = authPluginConfig;
-    await ctx.render('login');
+    const hbsCtx = {
+      pathPrefix: ctx.state.pathPrefix,
+      pluginConfig: authPluginConfig
+    };
+    for (const authPlugin of showLoginAuthPlugins) {
+      hbsCtx[authPlugin] = true;
+    }
+    await ctx.render('login', hbsCtx);
   }
 });
 
