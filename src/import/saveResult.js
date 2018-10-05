@@ -76,6 +76,11 @@ module.exports = async function saveResult(importBase, result) {
 
   // Upload additional attachments with metadata
   for (const attachment of result.attachments) {
+    const contents = Buffer.from(
+      attachment.contents.buffer,
+      attachment.contents.byteOffset,
+      attachment.contents.byteLength
+    );
     // eslint-disable-next-line no-await-in-loop
     await couch.addFileToJpath(
       result.id,
@@ -86,7 +91,7 @@ module.exports = async function saveResult(importBase, result) {
         field: attachment.field,
         reference: attachment.reference,
         name: `${attachment.jpath.join('/')}/${fold(attachment.filename, '_')}`,
-        data: attachment.contents,
+        data: contents,
         content_type: attachment.content_type
       }
     );

@@ -86,81 +86,87 @@ describe('ImportResult', () => {
     // Mandotory fields
     checkWithoutPropShouldThrow(
       'id',
-      'id should be defined',
+      'id must be defined',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutPropShouldThrow(
       'kind',
-      'kind should be String',
+      'kind must be of type String',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutPropShouldThrow(
       'owner',
-      'owner should be String',
+      'owner must be of type String',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutPropShouldThrow(
       'groups',
-      'groups should be Array',
+      'groups must be of type Array',
       constants.IMPORT_UPDATE_FULL
     );
 
     // Additional attachments
     checkWithoutAttachmentPropShouldThrow(
       'filename',
-      'In attachment: filename should be String',
+      'In attachment: filename must be of type String',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutAttachmentPropShouldThrow(
       'jpath',
-      'In attachment: jpath should be Array',
+      'In attachment: jpath must be of type Array',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutAttachmentPropShouldThrow(
       'field',
-      'In attachment: field should be String',
+      'In attachment: field must be of type String',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutAttachmentPropShouldThrow(
       'reference',
-      'In attachment: reference should be String',
-      constants.IMPORT_UPDATE_FULL
-    );
-    checkWithoutAttachmentPropShouldThrow(
-      'contents',
-      'In attachment: contents should be defined',
+      'In attachment: reference must be of type String',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutAttachmentPropShouldThrow(
       'content_type',
-      'In attachment: content_type should be String',
+      'In attachment: content_type must be of type String',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutAttachmentPropShouldThrow(
       'metadata',
-      'In attachment: metadata should be Object',
+      'In attachment: metadata must be of type Object',
+      constants.IMPORT_UPDATE_FULL
+    );
+    checkWithoutAttachmentPropShouldThrow(
+      'contents',
+      'In attachment: contents must be a Buffer or TypedArray',
+      constants.IMPORT_UPDATE_FULL
+    );
+    checkWithWrongTypeAttachmentPropShouldThrow(
+      'contents',
+      'this is a string',
+      'In attachment: contents must be a Buffer or TypedArray',
       constants.IMPORT_UPDATE_FULL
     );
 
     // Full import
     checkWithoutPropShouldThrow(
       'content_type',
-      'content_type should be String',
+      'content_type must be of type String',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutPropShouldThrow(
       'metadata',
-      'metadata should be Object',
+      'metadata must be of type Object',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutPropShouldThrow(
       'field',
-      'field should be String',
+      'field must be of type String',
       constants.IMPORT_UPDATE_FULL
     );
     checkWithoutPropShouldThrow(
       'reference',
-      'reference should be String',
+      'reference must be of type String',
       constants.IMPORT_UPDATE_FULL
     );
 
@@ -170,45 +176,45 @@ describe('ImportResult', () => {
   test('throws when fields are missing - without attachment', () => {
     checkWithoutPropShouldThrow(
       'id',
-      'id should be defined',
+      'id must be defined',
       constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT
     );
     checkWithoutPropShouldThrow(
       'kind',
-      'kind should be String',
+      'kind must be of type String',
       constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT
     );
     checkWithoutPropShouldThrow(
       'owner',
-      'owner should be String',
+      'owner must be of type String',
       constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT
     );
     checkWithoutPropShouldThrow(
       'groups',
-      'groups should be Array',
+      'groups must be of type Array',
       constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT
     );
   });
 
-  test('throws when fields aer missing - content only', () => {
+  test('throws when fields are missing - content only', () => {
     checkWithoutPropShouldThrow(
       'id',
-      'id should be defined',
+      'id must be defined',
       constants.IMPORT_UPDATE_$CONTENT_ONLY
     );
     checkWithoutPropShouldThrow(
       'kind',
-      'kind should be String',
+      'kind must be of type String',
       constants.IMPORT_UPDATE_$CONTENT_ONLY
     );
     checkWithoutPropShouldThrow(
       'owner',
-      'owner should be String',
+      'owner must be of type String',
       constants.IMPORT_UPDATE_$CONTENT_ONLY
     );
     checkWithoutPropShouldThrow(
       'groups',
-      'groups should be Array',
+      'groups must be of type Array',
       constants.IMPORT_UPDATE_$CONTENT_ONLY
     );
   });
@@ -234,6 +240,19 @@ function checkWithoutPropShouldThrow(prop, message, importType) {
 function checkWithoutAttachmentPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
   delete importResult.attachments[0][prop];
+  expect(function () {
+    importResult.check();
+  }).toThrowError(message);
+}
+
+function checkWithWrongTypeAttachmentPropShouldThrow(
+  prop,
+  value,
+  message,
+  importType
+) {
+  const importResult = getValidResult(importType);
+  importResult.attachments[0][prop] = value;
   expect(function () {
     importResult.check();
   }).toThrowError(message);

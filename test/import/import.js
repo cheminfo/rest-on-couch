@@ -109,9 +109,18 @@ describe('import', () => {
     expect(metadata.reference).toBe('testRef');
     expect(metadata.testField.filename).toBe('other/jpath/test.txt');
 
-    // check attachmentss
+    // check attachments
     const secondaryAttachment = data._attachments['other/jpath/test.txt'];
     expect(secondaryAttachment).toBeDefined();
-    expect(secondaryAttachment.content_type).toBe('plain/text');
+    expect(secondaryAttachment.content_type).toBe('text/plain');
+
+    const otherAttachment = data._attachments['other2/jpath/test2.txt'];
+    expect(otherAttachment).toBeDefined();
+    expect(otherAttachment.content_type).toBe('text/plain');
+    const attachmentData = await importCouch.getAttachmentByName(
+      data._id,
+      'other2/jpath/test2.txt'
+    );
+    expect(attachmentData.toString('utf8')).toBe('test2');
   });
 });
