@@ -2,6 +2,7 @@
 
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
+[![Test coverage][codecov-image]][codecov-url]
 [![David deps][david-image]][david-url]
 [![npm download][download-image]][download-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
@@ -213,6 +214,8 @@ A specific userguide is available [here](docs/import.md).
 [npm-url]: https://www.npmjs.com/package/rest-on-couch
 [travis-image]: https://img.shields.io/travis/cheminfo/rest-on-couch/master.svg?style=flat-square
 [travis-url]: https://travis-ci.org/cheminfo/rest-on-couch
+[codecov-image]: https://img.shields.io/codecov/c/github/cheminfo/rest-on-couch?style=flat-square
+[codecov-url]: https://codecov.io/gh/cheminfo/rest-on-couch
 [david-image]: https://img.shields.io/david/cheminfo/rest-on-couch.svg?style=flat-square
 [david-url]: https://david-dm.org/cheminfo/rest-on-couch
 [download-image]: https://img.shields.io/npm/dm/rest-on-couch.svg?style=flat-square
