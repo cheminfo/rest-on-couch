@@ -25,7 +25,7 @@ const mapTpl = function (doc) {
   };
   var customMap = CUSTOM_MAP;
   customMap(doc);
-};
+}.toString();
 
 // Extends design doc with default views
 // Adds the special lib view to the design doc
