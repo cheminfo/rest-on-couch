@@ -34,6 +34,9 @@ function getImportConfig(database, importName) {
   if (!config.import || !config.import[importName]) {
     throw new Error(`no import config for ${database}/${importName}`);
   }
+  if (typeof config.import[importName] !== 'function') {
+    throw new TypeError('import config must be a function');
+  }
   return config.import[importName];
 }
 
