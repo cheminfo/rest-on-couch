@@ -57,7 +57,6 @@
   "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
   "dependencies": {
     "agentkeepalive": "^3.5.1",
-    "chokidar": "^2.0.4",
     "commander": "^2.18.0",
     "debug": "^4.0.1",
     "delay": "^4.0.1",
