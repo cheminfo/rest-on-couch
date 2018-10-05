@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
@@ -16,31 +17,32 @@
         }
     </style>
 </head>
+
 <body>
-    {% if "google" in enabledAuthPlugins %}
-        <h3>Google login</h3>
-        <p>
-            <a id="google-login-link" href="#"><img  src="{{pathPrefix}}/assets/img/logo/google_signin.png" /></a>
-        </p>
-    {% endif %}
+    {{#if google }}
+    <h3>Google login</h3>
+    <p>
+        <a id="google-login-link" href="#"><img src="{{pathPrefix}}/assets/img/logo/google_signin.png" /></a>
+    </p>
+    {{/if }}
 
-    {% if "ldap" in enabledAuthPlugins %}
-        <h3>{{ pluginConfig.ldap.title }}</h3>
-        <div>{{ pluginConfig.ldap.description | safe }}</div>
-        <p>
-            <form method="post" action="login/ldap">
-                <label for="ldap-username">Username</label>
-                <input id="ldap-username" type="text" name="username" /><br>
-                <label for="ldap-password">Password</label>
-                <input id="ldap-password" type="password" name="password" /><br>
-                <input type="submit" value="Connect" />
-            </form>
-        </p>
-    {% endif %}
+    {{#if ldap }}
+    <h3>{{ pluginConfig.ldap.title }}</h3>
+    <div>{{{ pluginConfig.ldap.description }}}</div>
+    <p>
+        <form method="post" action="login/ldap">
+            <label for="ldap-username">Username</label>
+            <input id="ldap-username" type="text" name="username" /><br>
+            <label for="ldap-password">Password</label>
+            <input id="ldap-password" type="password" name="password" /><br>
+            <input type="submit" value="Connect" />
+        </form>
+    </p>
+    {{/if }}
 
-    {% if "couchdb" in enabledAuthPlugins %}
-        <h3>{{ pluginConfig.couchdb.title }}</h3>
-        <p>
+    {{#if couchdb }}
+    <h3>{{ pluginConfig.couchdb.title }}</h3>
+    <p>
         <form method="post" action="login/couchdb">
             <label for="couchdb-username">Username</label>
             <input id="couchdb-username" type="text" name="username" /><br>
@@ -48,27 +50,27 @@
             <input id="couchdb-password" type="password" name="password" /><br>
             <input type="submit" value="Connect" />
         </form>
-        </p>
-    {% endif %}
+    </p>
+    {{/if }}
 </body>
 <script>
-    if(window.name === 'loginPopup' && location.href.match(/auth\/login/i)) {
+    if (window.name === 'loginPopup' && location.href.match(/auth\/login/i)) {
         window.close();
     }
     var google = document.getElementById('google-login-link');
-    if(google) {
-        google.onclick = function() {
+    if (google) {
+        google.onclick = function () {
             var url = 'login/google';
             doLogin(url);
         };
     }
 
     function doLogin(url) {
-        if(window.parent !== window) {
+        if (window.parent !== window) {
             url += '/popup';
             var popup = window.open(url, 'loginPopup');
             var interval = setInterval(function () {
-                if(popup.closed) {
+                if (popup.closed) {
                     clearInterval(interval);
                     window.location.reload();
                 }
@@ -78,4 +80,5 @@
         }
     }
 </script>
+
 </html>

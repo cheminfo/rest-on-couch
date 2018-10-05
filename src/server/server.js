@@ -11,13 +11,13 @@ const koaStatic = require('koa-static');
 const passport = require('koa-passport');
 const responseTime = require('koa-response-time');
 const session = require('koa-session');
+const hbs = require('koa-hbs');
 
 const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
 
 const api = require('./routes/api');
 const auth = require('./routes/auth');
-const nunjucks = require('./nunjucks');
 
 const app = new Koa();
 
@@ -47,10 +47,11 @@ if (proxyPrefix !== '') {
   };
 }
 
-nunjucks(app, {
-  root: path.join(__dirname, '../../views'),
-  ext: 'html'
-});
+app.use(
+  hbs.middleware({
+    viewPath: path.join(__dirname, '../../views')
+  })
+);
 
 app.use(koaStatic(path.resolve(__dirname, '../../public')));
 
