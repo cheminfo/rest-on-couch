@@ -16,12 +16,12 @@ const connect = require('../src/connect');
 const debug = require('../src/util/debug')('bin:import');
 const die = require('../src/util/die');
 const { getHomeDir } = require('../src/config/home');
-const { importData } = require('../src/index');
+const { importFile } = require('../src/index');
 const { getConfig, getImportConfig } = require('../src/config/config');
 const tryMove = require('../src/util/tryMove');
 
 var processChain = Promise.resolve();
-const importFiles = {};
+const importConfigs = {};
 const createdDirs = {};
 
 program
@@ -280,7 +280,7 @@ function checkFile(homeDir, p) {
   const elements = relpath.split('/');
   if (elements.length < 4) return false;
   if (elements[2] !== 'to_process') return false;
-  if (hasImportFile(path.resolve(homeDir, `${elements[0]}/${elements[1]}`))) {
+  if (hasImportConfig(path.resolve(homeDir, `${elements[0]}/${elements[1]}`))) {
     return {
       database: elements[0],
       importName: elements[1]
@@ -296,7 +296,7 @@ function processFile(database, importName, homeDir, filePath) {
 
   processChain = processChain
     .then(() => {
-      return importData(database, importName, filePath);
+      return importFile(database, importName, filePath);
     })
     .then(() => {
       // mv to processed
@@ -341,7 +341,7 @@ async function processFile2(file) {
   }
 
   try {
-    const importResult = await importData(database, importName, filePath);
+    const importResult = await importFile(database, importName, filePath);
     if (importResult.ok) {
       // success, move to processed
       await moveFile(
@@ -411,12 +411,12 @@ function tryRename(from, to, resolve, reject, suffix) {
   });
 }
 
-function hasImportFile(p) {
-  if (importFiles[p]) return true;
-  const importFile = path.join(p, 'import.js');
+function hasImportConfig(p) {
+  if (importConfigs[p]) return true;
+  const importConfig = path.join(p, 'import.js');
   try {
-    fs.accessSync(importFile);
-    importFiles[p] = true;
+    fs.accessSync(importConfig);
+    importConfigs[p] = true;
     return true;
   } catch (e) {
     return false;
@@ -450,7 +450,7 @@ function shouldIgnore(name) {
     const filePath = path.resolve(program.args[0]);
     const database = program.args[1];
     const importName = program.args[2];
-    await importData(database, importName, filePath, {
+    await importFile(database, importName, filePath, {
       dryRun: program.dryRun
     });
     debug('Imported successfully');

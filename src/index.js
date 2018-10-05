@@ -10,4 +10,4 @@ process.on('unhandledRejection', function (err) {
 module.exports = Couch;
 
 // must be after module.exports to avoid circular dependency
-Couch.importData = require('./import/import').import;
+Couch.importFile = require('./import/import').import;
