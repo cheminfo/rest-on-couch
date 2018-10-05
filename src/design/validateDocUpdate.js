@@ -1,5 +1,7 @@
 'use strict';
 
+/* istanbul ignore file  */
+
 /* eslint-disable no-throw-literal */
 /* eslint-disable prefer-template */
 
