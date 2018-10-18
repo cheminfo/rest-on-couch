@@ -1,3 +1,38 @@
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/cheminfo/rest-on-couch/compare/v5.8.0...v6.0.0) (2018-10-18)
+
+
+### Bug Fixes
+
+* **import:** validate that attachment contents is a Buffer ([#159](https://github.com/cheminfo/rest-on-couch/issues/159)) ([f7b2ce2](https://github.com/cheminfo/rest-on-couch/commit/f7b2ce2))
+
+
+### Chores
+
+* remove support for legacy import scripts ([#163](https://github.com/cheminfo/rest-on-couch/issues/163)) ([59daad7](https://github.com/cheminfo/rest-on-couch/commit/59daad7))
+
+
+### Code Refactoring
+
+* **import bin:** remove --watch option ([#164](https://github.com/cheminfo/rest-on-couch/issues/164)) ([45bca64](https://github.com/cheminfo/rest-on-couch/commit/45bca64))
+
+
+### Features
+
+* export import function in public module ([#157](https://github.com/cheminfo/rest-on-couch/issues/157)) ([dff20f8](https://github.com/cheminfo/rest-on-couch/commit/dff20f8))
+* return import result from dry run ([#156](https://github.com/cheminfo/rest-on-couch/issues/156)) ([02b8f18](https://github.com/cheminfo/rest-on-couch/commit/02b8f18))
+
+
+### BREAKING CHANGES
+
+* **import bin:** rest-on-couch-import --watch has been removed.
+Use --continuous instead.
+* Support for legacy import scripts has been removed.
+Please use the documented single-function import.
+* **import:** Import's `addAttachment` must now provide the contents as a Buffer or TypedArray. Previously, base64 strings were accepted, though undocumented.
+
+
+
 <a name="5.8.0"></a>
 # [5.8.0](https://github.com/cheminfo/rest-on-couch/compare/v5.7.0...v5.8.0) (2018-08-30)
 
