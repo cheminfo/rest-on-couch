@@ -11,8 +11,8 @@ const debug = require('./debug')('util:load');
 
 var loaded = false;
 
-module.exports = function () {
-  debug.trace('preload databases that have a confguration file');
+module.exports = function loadCouch() {
+  debug.trace('preload databases that have a configuration file');
   const homeDir = config.globalConfig.homeDir;
   if (!homeDir) return;
   if (loaded) return;

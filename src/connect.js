@@ -1,6 +1,6 @@
 'use strict';
 
-const nano = require('nano');
+const nanoLib = require('nano');
 const agentkeepalive = require('agentkeepalive');
 
 const config = require('./config/config').globalConfig;
@@ -34,7 +34,7 @@ function open() {
 async function getGlobalNano() {
   debug.trace('renew CouchDB cookie');
   if (config.url && config.username && config.password) {
-    let _nano = nano({
+    let _nano = nanoLib({
       url: config.url,
       requestDefaults: {
         agent: nanoAgent
@@ -45,7 +45,7 @@ async function getGlobalNano() {
       config.username,
       config.password
     );
-    return nano({
+    return nanoLib({
       url: config.url,
       cookie,
       requestDefaults: {

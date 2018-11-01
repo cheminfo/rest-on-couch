@@ -2,9 +2,10 @@
 
 const LocalStrategy = require('passport-local').Strategy;
 
-const request = require('../../../util/requestPromise');
+const { auditLogin } = require('../../../audit/actions');
 const couchUrl = require('../../../config/config').globalConfig.url;
 const isEmail = require('../../../util/isEmail');
+const request = require('../../../util/requestPromise');
 const util = require('../../middleware/util');
 const auth = require('../../middleware/auth');
 
@@ -20,9 +21,10 @@ exports.init = function (passport, router) {
     new LocalStrategy(
       {
         usernameField: 'username',
-        passwordField: 'password'
+        passwordField: 'password',
+        passReqToCallback: true
       },
-      function (username, password, done) {
+      function (req, username, password, done) {
         (async function () {
           if (!isEmail(username)) {
             return done(null, false, 'username must be an email');
@@ -38,8 +40,10 @@ exports.init = function (passport, router) {
 
             res = JSON.parse(res.body);
             if (res.error) {
+              auditLogin(username, false, 'couchdb', req.ctx);
               return done(null, false, res.reason);
             }
+            auditLogin(username, true, 'couchdb', req.ctx);
             return done(null, {
               email: res.name,
               provider: 'local'
