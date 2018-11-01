@@ -39,6 +39,10 @@ module.exports = {
   },
   entryUnicity: 'byOwner', // can be byOwner or global
 
+  // Options related to audit logs
+  auditActions: false,
+  auditActionsDb: 'roc-audit-actions',
+
   // Options for Zenodo publication
   zenodo: false,
   zenodoSandbox: false,

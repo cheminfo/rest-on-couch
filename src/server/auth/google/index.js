@@ -32,6 +32,8 @@
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
+const { auditLogin } = require('../../../audit/actions');
+
 exports.init = function (passport, router, config, mainConfig) {
   // todo we should be able to put a relative callbackURL (add proxy: true) but there is a bug in passport-oauth2
   // with the generation of redirect_url. see https://github.com/jaredhanson/passport-oauth2/blob/master/lib/strategy.js#L136
@@ -40,13 +42,15 @@ exports.init = function (passport, router, config, mainConfig) {
       {
         clientID: config.clientID,
         clientSecret: config.clientSecret,
-        callbackURL: `${mainConfig.publicAddress}/auth/login/google/callback`
+        callbackURL: `${mainConfig.publicAddress}/auth/login/google/callback`,
+        passReqToCallback: true
       },
-      function (accessToken, refreshToken, profile, done) {
+      function (req, accessToken, refreshToken, profile, done) {
         const email = profile.emails.find((email) => email.type === 'account');
         if (!email) {
           return done(null, false, { message: 'No account email' });
         } else {
+          auditLogin(email.value, true, 'google', req.ctx);
           done(null, {
             provider: 'google',
             email: email.value

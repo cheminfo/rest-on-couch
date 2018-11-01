@@ -3,12 +3,14 @@
 // Doc: https://github.com/vesse/passport-ldapauth#readme
 const LdapStrategy = require('passport-ldapauth');
 
+const { auditLogin } = require('../../../audit/actions');
 const util = require('../../middleware/util');
 const auth = require('../../middleware/auth');
 
 exports.init = function (passport, router, config) {
+  const strategyConfig = Object.assign({ passReqToCallback: true }, config);
   passport.use(
-    new LdapStrategy(config, function (user, done) {
+    new LdapStrategy(strategyConfig, function (req, user, done) {
       const data = {
         provider: 'ldap',
         email: user.mail,
@@ -26,11 +28,13 @@ exports.init = function (passport, router, config) {
         return Promise.resolve(config.getUserInfo(user)).then(
           (info) => {
             data.info = info;
+            auditLogin(data.email, true, 'ldap', req.ctx);
             done(null, data);
           },
           (err) => done(err)
         );
       } else {
+        auditLogin(data.email, true, 'ldap', req.ctx);
         done(null, data);
         return true;
       }

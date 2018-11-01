@@ -45,6 +45,7 @@
 
 const GitHubStrategy = require('passport-github').Strategy;
 
+const { auditLogin } = require('../../../audit/actions');
 const request = require('../../../util/requestPromise');
 
 exports.init = function (passport, router, config) {
@@ -53,9 +54,10 @@ exports.init = function (passport, router, config) {
       {
         clientID: config.clientID,
         clientSecret: config.clientSecret,
-        callbackURL: config.publicAddress + config.callbackURL
+        callbackURL: config.publicAddress + config.callbackURL,
+        passReqToCallback: true
       },
-      function (accessToken, refreshToken, profile, done) {
+      function (req, accessToken, refreshToken, profile, done) {
         // Get the user's email
         (async function () {
           const answer = await request({
@@ -71,6 +73,7 @@ exports.init = function (passport, router, config) {
             profile.email = answer[0].email;
           }
           if (email[0]) profile.email = email[0].email;
+          auditLogin(profile.email, true, 'github', req.ctx);
           done(null, {
             provider: 'github',
             email: profile.email
