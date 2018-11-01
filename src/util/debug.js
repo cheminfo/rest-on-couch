@@ -8,20 +8,10 @@ const debug = Debug('couch:debug');
 const trace = Debug('couch:trace');
 
 module.exports = function (prefix) {
-  const func = (...args) => debug(`(${prefix}) ${processArgs(args)}`);
-  func.error = (...args) => error(`(${prefix}) ${processArgs(args)}`);
-  func.warn = (...args) => warn(`(${prefix}) ${processArgs(args)}`);
+  const func = (message, ...args) => debug(`(${prefix}) ${message}`, ...args);
+  func.error = (message, ...args) => error(`(${prefix}) ${message}`, ...args);
+  func.warn = (message, ...args) => warn(`(${prefix}) ${message}`, ...args);
   func.debug = func;
-  func.trace = (...args) => trace(`(${prefix}) ${processArgs(args)}`);
+  func.trace = (message, ...args) => trace(`(${prefix}) ${message}`, ...args);
   return func;
 };
-
-function processArgs(args) {
-  args = args.map((arg) => {
-    if (arg instanceof Error) {
-      return `${arg.message}\n${arg.stack}`;
-    }
-    return arg;
-  });
-  return args.join('\n');
-}
