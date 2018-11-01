@@ -11,13 +11,16 @@ export default function Home(props) {
     return (
       <div>
         <p>
-          You are logged in as {props.user} (provided by {props.provider})
+          {`You are logged in as ${props.user} (provided by ${props.provider})`}
         </p>
         <p>
-          Currently selected database is <code>{props.dbName}</code>. You are{props.isAdmin
-            ? ' '
-            : ' not'}{' '}
-          an admin of this database.
+          <span>Currently selected database is </span>
+          <code>{props.dbName}</code>
+          <span>
+            {`. You are ${
+              props.isAdmin ? '' : 'not '
+            } an admin of this database.`}
+          </span>
         </p>
       </div>
     );

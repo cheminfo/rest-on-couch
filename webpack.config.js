@@ -62,5 +62,8 @@ module.exports = {
         test: /\.css$/
       }
     ]
+  },
+  devServer: {
+    open: true
   }
 };

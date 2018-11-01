@@ -9,7 +9,7 @@ const LoginButton = ({ logout, username }) => {
   if (username) {
     return (
       <a href="#" onClick={logout}>
-        {username} - Logout
+        {`${username} - Logout`}
       </a>
     );
   } else {
@@ -23,7 +23,7 @@ LoginButton.propTypes = {
 };
 
 export default connect(
-  (state) => ({ username: state.login.username }), // mapStateToProps
+  (state) => ({ username: state.login.username }),
   {
     logout: logoutAction
   }

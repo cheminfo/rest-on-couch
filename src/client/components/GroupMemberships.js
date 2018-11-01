@@ -6,7 +6,7 @@ import { dbManager } from '../store';
 import DisplayGroupList from './DisplayGroupList';
 
 class GroupMemberships extends Component {
-  componentWillMount() {
+  componentDidMount() {
     // Because if the user changed groups, then memberships need to be updated
     // Easier to do here than each time groups are updated
     dbManager.syncMemberships();

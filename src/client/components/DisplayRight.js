@@ -11,8 +11,7 @@ const DisplayRight = (props) => {
   const labelType = labelTypes[props.right] || 'default';
   return (
     <span style={props.style} className={`label label-${labelType}`}>
-      {' '}
-      {props.right}{' '}
+      {` ${props.right} `}
     </span>
   );
 };
