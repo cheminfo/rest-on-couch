@@ -6,7 +6,10 @@ const isProduction = process.env.NODE_ENV === 'production';
 const TerserPlugin = require('terser-webpack-plugin');
 
 const babelConfig = {
-  plugins: ['@babel/transform-async-to-generator'],
+  plugins: [
+    '@babel/proposal-object-rest-spread',
+    '@babel/transform-async-to-generator'
+  ],
   presets: ['@babel/react']
 };
 const entry = ['whatwg-fetch', './src/client/index.js'];
@@ -29,10 +32,10 @@ if (isProduction) {
   entry.unshift('regenerator-runtime/runtime');
   optimization = {
     minimizer: [
-    new TerserPlugin({
-      parallel: true,
-      sourceMap: true
-    })
+      new TerserPlugin({
+        parallel: true,
+        sourceMap: true
+      })
     ]
   };
 }
