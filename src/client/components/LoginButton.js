@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { logout as logoutAction } from '../actions/login';
 
-const LoginButton = ({ logout, username }) => {
+const LoginButton = ({ message = 'Login', logout, username }) => {
   if (username) {
     return (
       <a href="#" onClick={logout}>
@@ -13,7 +13,7 @@ const LoginButton = ({ logout, username }) => {
       </a>
     );
   } else {
-    return <Link to="/login">Login</Link>;
+    return <Link to="/login">{message}</Link>;
   }
 };
 

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import SidebarLink from './SidebarLink';
 
 export default function Sidebar({
+  hasDb,
   rocOnline,
   loggedIn,
   loginProvider,
@@ -41,11 +42,13 @@ export default function Sidebar({
                 text="DB administration"
               />
             ) : null}
-            <SidebarLink
-              to="/group_memberships"
-              icon="user"
-              text="Group memberships"
-            />
+            {hasDb ? (
+              <SidebarLink
+                to="/group_memberships"
+                icon="user"
+                text="Group memberships"
+              />
+            ) : null}
           </ul>
         )}
       </div>

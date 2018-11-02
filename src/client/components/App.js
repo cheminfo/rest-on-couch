@@ -20,6 +20,7 @@ import Allowed from './Allowed';
 
 const App = (props) => {
   const { rocOnline } = props;
+  const handleDbSelected = (event) => dbManager.switchDb(event.target.value);
   return (
     <HashRouter>
       <div>
@@ -43,9 +44,7 @@ const App = (props) => {
                         <DatabaseSelector
                           dbName={props.dbName}
                           dbList={props.dbList}
-                          onDbSelected={(event) =>
-                            dbManager.switchDb(event.target.value)
-                          }
+                          onDbSelected={handleDbSelected}
                         />
                       </li>
                       <li>
@@ -66,9 +65,11 @@ const App = (props) => {
                       exact
                       render={() => (
                         <Home
+                          dbName={props.dbName}
+                          dbList={props.dbList}
+                          onDbSelected={handleDbSelected}
                           user={props.loggedUser}
                           provider={props.loginProvider}
-                          dbName={props.dbName}
                           isAdmin={props.isAdmin}
                         />
                       )}
@@ -77,6 +78,9 @@ const App = (props) => {
                       path="/groups"
                       exact
                       render={() => {
+                        if (!props.hasDb) {
+                          return <Redirect to="/" />;
+                        }
                         return (
                           <Allowed
                             allowed={
@@ -93,6 +97,9 @@ const App = (props) => {
                     <Route
                       path="/manage_database"
                       render={() => {
+                        if (!props.hasDb) {
+                          return <Redirect to="/" />;
+                        }
                         return (
                           <Allowed allowed={props.userRights.includes('admin')}>
                             <DatabaseAdministration
@@ -116,7 +123,12 @@ const App = (props) => {
                     <Route path="/change_password" component={ChangePassword} />
                     <Route
                       path="/group_memberships"
-                      component={GroupMemberships}
+                      render={() => {
+                        if (!props.hasDb) {
+                          return <Redirect to="/" />;
+                        }
+                        return <GroupMemberships />;
+                      }}
                     />
                     <Route component={NoMatch} />
                   </Switch>
