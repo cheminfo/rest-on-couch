@@ -9,8 +9,8 @@ import mainReducer from './reducers/main';
 import dbReducer from './reducers/db';
 import dbNameReducer from './reducers/dbName';
 import loginReducer from './reducers/login';
-import { getDbList, setDbName } from './actions/db';
-import { checkLogin, getLoginProviders } from './actions/login';
+import { setDbName } from './actions/db';
+import { getRocStatus } from './actions/main';
 
 const composeStoreWithMiddleware = applyMiddleware(
   promiseMiddleware(),
@@ -39,9 +39,7 @@ const store = composeStoreWithMiddleware(
 
 persistStore(store, null, onRehydrated);
 
-checkLogin(store.dispatch);
-getLoginProviders(store.dispatch);
-getDbList(store.dispatch);
+store.dispatch(getRocStatus());
 
 export default store;
 export const dbManager = new DbManager(store);
