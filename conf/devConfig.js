@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  port: 8080,
+  port: 3000,
   auth: {
     couchdb: {
       showLogin: true
