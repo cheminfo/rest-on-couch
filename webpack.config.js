@@ -11,9 +11,7 @@ const babelConfig = {
 };
 const entry = ['whatwg-fetch', './src/client/index.js'];
 
-const plugins = [];
-const optimization = {};
-
+let optimization;
 if (isProduction) {
   babelConfig.presets.push([
     'env',
@@ -29,12 +27,14 @@ if (isProduction) {
     }
   ]);
   entry.unshift('regenerator-runtime/runtime');
-  optimization.minimizer = [
+  optimization = {
+    minimizer: [
     new TerserPlugin({
       parallel: true,
       sourceMap: true
     })
-  ];
+    ]
+  };
 }
 
 module.exports = {
@@ -46,7 +46,6 @@ module.exports = {
     publicPath: '/'
   },
 
-  plugins,
   optimization,
   devtool: 'source-map',
   module: {
