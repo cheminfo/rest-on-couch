@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import SidebarLink from './SidebarLink';
 
 export default function Sidebar({
+  rocOnline,
   loggedIn,
   loginProvider,
   isAdmin,
@@ -18,33 +19,35 @@ export default function Sidebar({
             rest-on-couch
           </Link>
         </div>
-        <ul className="nav">
-          {userRights.includes('createGroup') || isGroupOwner ? (
-            <SidebarLink to="/groups" icon="users" text="Groups" />
-          ) : null}
-          {loggedIn && loginProvider === 'local' ? (
+        {rocOnline && (
+          <ul className="nav">
+            {userRights.includes('createGroup') || isGroupOwner ? (
+              <SidebarLink to="/groups" icon="users" text="Groups" />
+            ) : null}
+            {loggedIn && loginProvider === 'local' ? (
+              <SidebarLink
+                to="/change_password"
+                icon="key"
+                text="Change Password"
+              />
+            ) : null}
+            {isAdmin ? (
+              <SidebarLink to="/create_user" icon="plus" text="New user" />
+            ) : null}
+            {userRights && userRights.includes('admin') ? (
+              <SidebarLink
+                to="/manage_database"
+                icon="database"
+                text="DB administration"
+              />
+            ) : null}
             <SidebarLink
-              to="/change_password"
-              icon="key"
-              text="Change Password"
+              to="/group_memberships"
+              icon="user"
+              text="Group memberships"
             />
-          ) : null}
-          {isAdmin ? (
-            <SidebarLink to="/create_user" icon="plus" text="New user" />
-          ) : null}
-          {userRights && userRights.includes('admin') ? (
-            <SidebarLink
-              to="/manage_database"
-              icon="database"
-              text="DB administration"
-            />
-          ) : null}
-          <SidebarLink
-            to="/group_memberships"
-            icon="user"
-            text="Group memberships"
-          />
-        </ul>
+          </ul>
+        )}
       </div>
     </div>
   );

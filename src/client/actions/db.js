@@ -118,11 +118,12 @@ export function setLdapGroupProperties(groupName, properties) {
   };
 }
 
-function doUpdateGroupProperties(groupUrl, setPropUrl, properties) {
-  return apiFetchJSON(setPropUrl, {
+async function doUpdateGroupProperties(groupUrl, setPropUrl, properties) {
+  await apiFetchJSON(setPropUrl, {
     method: 'PUT',
     body: JSON.stringify(properties)
-  }).then(() => apiFetchJSON(groupUrl));
+  });
+  return apiFetchJSON(groupUrl);
 }
 
 export function syncLdapGroup(groupName) {

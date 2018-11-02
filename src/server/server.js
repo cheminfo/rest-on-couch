@@ -147,18 +147,21 @@ app.use(api.routes());
 module.exports.start = function () {
   if (_started) return _started;
   _started = new Promise(function (resolve, reject) {
-    initCouch().then(() => {
-      http.createServer(app.callback()).listen(config.port, function () {
-        debug.warn(`running on localhost: ${config.port}`);
-        resolve(app);
-      });
-    }, (e) => {
-      reject(e);
-      process.nextTick(() => {
-        debug.error('initialization failed');
-        throw e;
-      });
-    });
+    initCouch().then(
+      () => {
+        http.createServer(app.callback()).listen(config.port, function () {
+          debug.warn(`running on localhost: ${config.port}`);
+          resolve(app);
+        });
+      },
+      (e) => {
+        reject(e);
+        process.nextTick(() => {
+          debug.error('initialization failed');
+          throw e;
+        });
+      }
+    );
   });
   return _started;
 };
