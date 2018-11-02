@@ -1,0 +1,7 @@
+conf
+coverage
+docs
+node_modules
+public/bundle*
+test
+tools
