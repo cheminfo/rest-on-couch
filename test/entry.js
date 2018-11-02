@@ -43,9 +43,11 @@ describe('entry reads', () => {
   });
 
   test('should get all readable entries for a user', () => {
-    return couch.getEntriesByUserAndRights('b@b.com', 'read').then((entries) => {
-      expect(entries).toHaveLength(5);
-    });
+    return couch
+      .getEntriesByUserAndRights('b@b.com', 'read')
+      .then((entries) => {
+        expect(entries).toHaveLength(5);
+      });
   });
 });
 
@@ -81,7 +83,7 @@ describe('entry creation and editions', () => {
   test('anonymous cannot insert a new entry', () => {
     return expect(
       couch.insertEntry(constants.newEntry, 'anonymous')
-    ).rejects.toThrow(/must be an email/);
+    ).rejects.toThrow(/anonymous not allowed to create/);
   });
 
   test('entry should have content', () => {

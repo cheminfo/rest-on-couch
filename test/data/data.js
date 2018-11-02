@@ -103,9 +103,9 @@ module.exports = async function () {
     database: 'test',
     rights: {
       read: ['anonymous'],
-      createGroup: ['anonymous'],
-      create: ['anonymous'],
-      addAttachment: ['anonymous'],
+      createGroup: ['anyuser'],
+      create: ['anyuser'],
+      addAttachment: ['anyuser'],
       readGroup: ['b@b.com']
     }
   });
