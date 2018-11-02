@@ -20,7 +20,7 @@ class GroupEditor extends PureComponent {
       <div>
         <div className="header">
           <h4 className="title">
-            {group.name} &nbsp;
+            {`${group.name} `}
             {group.groupType === 'ldap' ? (
               <button
                 type="button"

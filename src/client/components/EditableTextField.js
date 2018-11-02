@@ -9,6 +9,7 @@ class EditableTextField extends React.Component {
       isEdited: false,
       focus: false
     };
+    this.textInput = React.createRef();
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -19,8 +20,8 @@ class EditableTextField extends React.Component {
 
   componentDidUpdate() {
     if (this.state.focus) {
-      this.refs.textInput.focus();
-      this.refs.textInput.select();
+      this.textInput.current.focus();
+      this.textInput.current.select();
     }
   }
 
@@ -63,7 +64,6 @@ class EditableTextField extends React.Component {
   }
 
   makeEditable() {
-    // this.refs.textInput.focus();
     this.setState({
       isEdited: true,
       focus: true
@@ -81,7 +81,7 @@ class EditableTextField extends React.Component {
         <label>{label}</label>
         {this.state.isEdited ? (
           <input
-            ref="textInput"
+            ref={this.textInput}
             type="text"
             className="form-control"
             value={this.state.editedValue}
@@ -98,7 +98,8 @@ class EditableTextField extends React.Component {
               <span style={{ color: 'grey', fontStyle: 'italic' }}>
                 (no value)
               </span>
-            )}{' '}
+            )}
+            {' '}
             &nbsp; &nbsp;
             <a
               onClick={this.makeEditable}
