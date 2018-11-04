@@ -23,9 +23,10 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/test/data/",
+      "/test/homedir",
       "/test/homeDirectories/",
-      "/test/utils/",
-      "/test/setup/"
+      "/test/setup/",
+      "/test/utils/"
     ]
   },
   "scripts": {
@@ -35,7 +36,7 @@
     "prettier": "prettier-eslint bin/*.js src/**/*.js test/**/*.js --write",
     "start:dev": "webpack-dev-server --mode development --content-base ./public --progress",
     "start:prod": "NODE_ENV=production npm run build && node bin/rest-on-couch-server.js",
-    "start:devserver": "cross-env REST_ON_COUCH_HOME_DIR=test/homedir node bin/rest-on-couch-server.js --config=conf/devConfig.js",
+    "start:devserver": "cross-env REST_ON_COUCH_HOME_DIR=test/homedir DEBUG=couch:* nodemon bin/rest-on-couch-server.js --config=conf/devConfig.js",
     "test": "npm run test-only && npm run eslint",
     "test-coverage": "npm run test-only -- --coverage",
     "test-only": "jest --runInBand",
@@ -113,6 +114,7 @@
     "jest": "^23.6.0",
     "jquery": "^3.3.1",
     "make-promises-safe": "^3.0.0",
+    "nodemon": "^1.18.5",
     "prettier-eslint-cli": "^4.7.1",
     "prop-types": "^15.6.2",
     "react": "^16.6.0",
