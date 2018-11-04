@@ -14,7 +14,7 @@ describe('User REST-api (data, anonymous)', () => {
 });
 
 describe('User REST-api (data, a@a.com', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     return data().then(() => authenticateAs(request, 'a@a.com', '123'));
   });
 

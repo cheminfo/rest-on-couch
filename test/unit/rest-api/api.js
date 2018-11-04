@@ -6,7 +6,7 @@ const data = require('../../data/data');
 const authenticateAs = require('../../utils/authenticate');
 
 describe('basic rest-api as anonymous (noRights)', () => {
-  beforeAll(noRights);
+  beforeEach(noRights);
 
   test('get an entry', () => {
     return request.get('/db/test/entry/A').expect(401);
@@ -69,7 +69,7 @@ describe('basic rest-api as anonymous (noRights)', () => {
 });
 
 describe('rest-api as b@b.com (noRights)', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     return noRights().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 
@@ -146,7 +146,7 @@ describe('rest-api as anonymous (data)', () => {
 });
 
 describe('basic rest-api as b@b.com', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     return data().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 
