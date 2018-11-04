@@ -14,19 +14,14 @@
   },
   "jest": {
     "testMatch": [
-      "**/test/**/*.js"
+      "<rootDir>/test/unit/**/*.js"
     ],
     "testEnvironment": "node",
     "setupFiles": [
       "./test/setup/setup.js"
     ],
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/test/data/",
-      "/test/homedir",
-      "/test/homeDirectories/",
-      "/test/setup/",
-      "/test/utils/"
+      "/node_modules/"
     ]
   },
   "scripts": {

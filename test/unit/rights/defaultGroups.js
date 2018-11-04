@@ -1,9 +1,9 @@
 'use strict';
 
-const data = require('../data/noRights');
+const data = require('../../data/noRights');
 
 describe('entry reads, database with default groups', () => {
-  beforeEach(data);
+  beforeAll(data);
 
   test('should grant read access to owner', () => {
     return expect(

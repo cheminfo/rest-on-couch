@@ -1,8 +1,8 @@
 'use strict';
 
-const data = require('./data/data');
-const constants = require('./data/constants');
-const testUtils = require('./utils/testUtils');
+const data = require('../data/data');
+const constants = require('../data/constants');
+const testUtils = require('../utils/testUtils');
 
 describe('entry reads', () => {
   beforeEach(data);

@@ -1,12 +1,12 @@
 'use strict';
 
-const request = require('../setup/setup').getAgent();
-const data = require('../data/data');
-const authenticateAs = require('../utils/authenticate');
+const request = require('../../setup/setup').getAgent();
+const data = require('../../data/data');
+const authenticateAs = require('../../utils/authenticate');
 
 describe('rest api - manage owners', () => {
   const id = 'A';
-  beforeEach(function () {
+  beforeAll(function () {
     return data().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
   test('get owners', () => {

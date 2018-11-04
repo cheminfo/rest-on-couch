@@ -1,8 +1,8 @@
 'use strict';
 
-const data = require('../data/data');
-const authenticateAs = require('../utils/authenticate');
-const request = require('../setup/setup').getAgent();
+const data = require('../../data/data');
+const authenticateAs = require('../../utils/authenticate');
+const request = require('../../setup/setup').getAgent();
 
 describe('User REST-api (data, anonymous)', () => {
   beforeEach(data);
@@ -14,7 +14,7 @@ describe('User REST-api (data, anonymous)', () => {
 });
 
 describe('User REST-api (data, a@a.com', () => {
-  beforeEach(() => {
+  beforeAll(() => {
     return data().then(() => authenticateAs(request, 'a@a.com', '123'));
   });
 

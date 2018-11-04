@@ -1,13 +1,11 @@
 'use strict';
 const assert = require('assert');
 
-const Couch = require('..');
-
-const nanoPromise = require('../src/util/nanoPromise');
-const constants = require('../src/constants');
-
-const { resetDatabaseWithoutCouch } = require('./utils/utils');
-const entryUnicity = require('./data/entryUnicity');
+const Couch = require('../..');
+const nanoPromise = require('../../src/util/nanoPromise');
+const constants = require('../../src/constants');
+const { resetDatabaseWithoutCouch } = require('../utils/utils');
+const entryUnicity = require('../data/entryUnicity');
 
 process.on('unhandledRejection', function (err) {
   throw err;

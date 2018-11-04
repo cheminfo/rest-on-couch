@@ -2,8 +2,8 @@
 
 const path = require('path');
 
-const { importFile } = require('../../src/index');
-const testUtils = require('../utils/utils');
+const { importFile } = require('../../../src/index');
+const testUtils = require('../../utils/utils');
 
 const databaseName = 'test-new-import';
 
@@ -12,12 +12,12 @@ var importCouch;
 // We just have to pick an existing file
 const textFile1 = path.resolve(
   __dirname,
-  '../homeDirectories/main/test-new-import/simple/to_process/test.txt'
+  '../../homeDirectories/main/test-new-import/simple/to_process/test.txt'
 );
 
 const textFile2 = path.resolve(
   __dirname,
-  '../homeDirectories/main/test-new-import/changeFilename/to_process/test.txt'
+  '../../homeDirectories/main/test-new-import/changeFilename/to_process/test.txt'
 );
 
 describe('import', () => {

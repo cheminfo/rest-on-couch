@@ -1,6 +1,6 @@
 'use strict';
 
-const request = require('../../setup/setup').getAgent();
+const request = require('../../../setup/setup').getAgent();
 
 describe('server/routes/auth', () => {
   describe('couchdb login', () => {

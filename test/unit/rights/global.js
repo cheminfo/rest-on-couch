@@ -1,6 +1,6 @@
 'use strict';
-const anyuserData = require('../data/anyuser');
-const noRights = require('../data/noRights');
+const anyuserData = require('../../data/anyuser');
+const noRights = require('../../data/noRights');
 
 describe('Access based on global rights', () => {
   beforeEach(anyuserData);

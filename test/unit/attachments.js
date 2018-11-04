@@ -1,6 +1,6 @@
 'use strict';
 
-const data = require('./data/data');
+const data = require('../data/data');
 
 describe('entries with attachments', () => {
   beforeEach(data);

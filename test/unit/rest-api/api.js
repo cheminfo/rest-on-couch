@@ -1,12 +1,12 @@
 'use strict';
 
-const request = require('../setup/setup').getAgent();
-const noRights = require('../data/noRights');
-const data = require('../data/data');
-const authenticateAs = require('../utils/authenticate');
+const request = require('../../setup/setup').getAgent();
+const noRights = require('../../data/noRights');
+const data = require('../../data/data');
+const authenticateAs = require('../../utils/authenticate');
 
 describe('basic rest-api as anonymous (noRights)', () => {
-  beforeEach(noRights);
+  beforeAll(noRights);
 
   test('get an entry', () => {
     return request.get('/db/test/entry/A').expect(401);
@@ -69,7 +69,7 @@ describe('basic rest-api as anonymous (noRights)', () => {
 });
 
 describe('rest-api as b@b.com (noRights)', () => {
-  beforeEach(() => {
+  beforeAll(() => {
     return noRights().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 
@@ -146,7 +146,7 @@ describe('rest-api as anonymous (data)', () => {
 });
 
 describe('basic rest-api as b@b.com', () => {
-  beforeEach(() => {
+  beforeAll(() => {
     return data().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
 

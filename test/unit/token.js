@@ -1,7 +1,7 @@
 'use strict';
 
-const data = require('./data/noRights');
-const testUtils = require('./utils/testUtils');
+const data = require('../data/noRights');
+const testUtils = require('../utils/testUtils');
 
 describe('token methods', () => {
   beforeEach(data);

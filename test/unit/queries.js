@@ -1,7 +1,7 @@
 'use strict';
 
-const data = require('./data/data');
-const noRights = require('./data/noRights');
+const data = require('../data/data');
+const noRights = require('../data/noRights');
 
 describe('Query default data', () => {
   beforeEach(data);
@@ -40,32 +40,36 @@ describe('Query no rights data', () => {
 describe('Query view with owner (global right)', () => {
   beforeEach(data);
   test('should return all docs with global right', () => {
-    return couch.queryEntriesByRight('a@a.com', 'entryIdByRight').then((res) => {
-      res = res.map((x) => x.value);
-      expect(res.sort()).toEqual([
-        'A',
-        'B',
-        'C',
-        'anonymousEntry',
-        'entryWithAttachment'
-      ]);
-    });
+    return couch
+      .queryEntriesByRight('a@a.com', 'entryIdByRight')
+      .then((res) => {
+        res = res.map((x) => x.value);
+        expect(res.sort()).toEqual([
+          'A',
+          'B',
+          'C',
+          'anonymousEntry',
+          'entryWithAttachment'
+        ]);
+      });
   });
 });
 
 describe('Query view with owner (group right)', () => {
   beforeEach(noRights);
   test('should return authorized docs for user', () => {
-    return couch.queryEntriesByRight('a@a.com', 'entryIdByRight').then((res) => {
-      res = res.map((x) => x.value);
-      expect(res.sort()).toEqual([
-        'A',
-        'entryWithDefaultAnonymousRead',
-        'entryWithDefaultAnyuserRead',
-        'entryWithDefaultMultiRead',
-        'onlyA'
-      ]);
-    });
+    return couch
+      .queryEntriesByRight('a@a.com', 'entryIdByRight')
+      .then((res) => {
+        res = res.map((x) => x.value);
+        expect(res.sort()).toEqual([
+          'A',
+          'entryWithDefaultAnonymousRead',
+          'entryWithDefaultAnyuserRead',
+          'entryWithDefaultMultiRead',
+          'onlyA'
+        ]);
+      });
   });
   test('should return authorized docs for anonymous', () => {
     return couch
