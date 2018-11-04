@@ -2,13 +2,12 @@
 
 const assert = require('assert');
 
-const request = require('../../util/requestPromise');
-const config = require('../../config/config').globalConfig;
 const getConfig = require('../../config/config').getConfig;
 const Couch = require('../../index');
 const debug = require('../../util/debug')('middleware:couch');
 const views = require('../../design/views');
 const CouchError = require('../../util/CouchError');
+const getConfiguredDbs = require('../../util/getConfiguredDbs');
 
 const auth = require('./auth');
 const respondOk = require('./respondOk');
@@ -52,19 +51,7 @@ exports.tokenLookup = async (ctx, next) => {
 };
 
 exports.getAllDbs = async (ctx) => {
-  let allDbs = await request.get(`${config.url}/_all_dbs`, { json: true });
-  allDbs = allDbs.filter((dbname) => !dbname.startsWith('_'));
-  const result = [];
-  for (const dbname of allDbs) {
-    const db = Couch.get(dbname);
-    try {
-      await db.open(); // eslint-disable-line no-await-in-loop
-      result.push(dbname);
-    } catch (e) {
-      // ignore error (means that database is not handled by ROC)
-    }
-  }
-  ctx.body = result;
+  ctx.body = await getConfiguredDbs();
 };
 
 exports.headDocument = composeWithError(async (ctx) => {
