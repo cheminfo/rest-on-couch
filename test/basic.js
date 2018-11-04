@@ -6,6 +6,7 @@ const Couch = require('..');
 const nanoPromise = require('../src/util/nanoPromise');
 const constants = require('../src/constants');
 
+const { resetDatabaseWithoutCouch } = require('./utils/utils');
 const entryUnicity = require('./data/entryUnicity');
 
 process.on('unhandledRejection', function (err) {
@@ -13,11 +14,9 @@ process.on('unhandledRejection', function (err) {
 });
 
 describe('basic initialization tests', () => {
-  let couch;
-  beforeEach(() => {
-    couch = Couch.get('test2');
-  });
-  test('should init', () => {
+  test('should init', async () => {
+    await resetDatabaseWithoutCouch('test2');
+    const couch = Couch.get('test2');
     return couch.open();
   });
 

@@ -6,7 +6,6 @@ module.exports = {
   logLevel: 'FATAL',
   authRenewal: 570,
   ldapGroupsRenewal: 300,
-  autoCreateDatabase: false,
   administrators: [],
   superAdministrators: [],
 

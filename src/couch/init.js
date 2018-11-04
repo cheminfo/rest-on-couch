@@ -32,31 +32,11 @@ const methods = {
     debug(`initialize db ${this._databaseName}`);
     const db = await nanoPromise.getDatabase(this._nano, this._databaseName);
     if (!db) {
-      if (this._couchOptions.autoCreate) {
-        debug.trace('db not found -> create');
-        await nanoPromise.createDatabase(this._nano, this._databaseName);
-        await nanoPromise.request(this._nano, {
-          method: 'PUT',
-          db: this._databaseName,
-          doc: '_security',
-          body: {
-            admins: {
-              names: [this._couchOptions.username],
-              roles: []
-            },
-            members: {
-              names: [this._couchOptions.username],
-              roles: []
-            }
-          }
-        });
-      } else {
-        debug('db not found - autoCreate is false');
-        throw new CouchError(
-          `database ${this._databaseName} does not exist`,
-          'not found'
-        );
-      }
+      debug('db not found: %s', this._databaseName);
+      throw new CouchError(
+        `database ${this._databaseName} does not exist`,
+        'not found'
+      );
     }
     // Must be done before the other checks because they can add documents to the db
     await checkSecurity(this._db, this._couchOptions.username);

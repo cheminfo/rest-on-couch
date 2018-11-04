@@ -4,7 +4,7 @@ const data = require('../data/noRights');
 const constants = require('../data/constants');
 
 describe('entry reads, database without any default rights', () => {
-  beforeEach(data);
+  beforeAll(data);
 
   test('should grant read access to group member with read access', () => {
     return expect(couch.getEntry('A', 'a@a.com')).resolves.toBeInstanceOf(
@@ -29,10 +29,12 @@ describe('entry reads, database without any default rights', () => {
   });
 
   test('should only get entries for which user has read access', () => {
-    return couch.getEntriesByUserAndRights('a@a.com', 'read').then((entries) => {
-      expect(entries).toHaveLength(5);
-      expect(entries[0].$id).toBe('A');
-    });
+    return couch
+      .getEntriesByUserAndRights('a@a.com', 'read')
+      .then((entries) => {
+        expect(entries).toHaveLength(5);
+        expect(entries[0].$id).toBe('A');
+      });
   });
 
   test('should reject anonymous user', () => {
@@ -43,7 +45,7 @@ describe('entry reads, database without any default rights', () => {
 });
 
 describe('entry editions, database without any default rights', () => {
-  beforeEach(data);
+  beforeAll(data);
 
   test('any user is not allowed to create entry', () => {
     return expect(

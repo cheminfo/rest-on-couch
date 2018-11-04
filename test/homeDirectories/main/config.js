@@ -6,24 +6,23 @@ module.exports = {
   username: 'admin',
   password: 'admin',
   administrators: ['admin@a.com'],
-  autoCreateDatabase: true,
   allowedOrigins: ['http://localhost:8080'],
   sessionSigned: false,
   customDesign: {
     views: {
       entryIdByRight: {
-        map: function(doc) {
+        map: function (doc) {
           emitWithOwner(['x', 'y', 'z'], doc.$id);
         },
         withOwner: true
       },
       testReduce: {
-        map: function(doc) {
+        map: function (doc) {
           if (doc.$type === 'entry') {
             emit(doc._id, 1); // eslint-disable-line no-undef
           }
         },
-        reduce: function(keys, values) {
+        reduce: function (keys, values) {
           return sum(values);
         }
       }
