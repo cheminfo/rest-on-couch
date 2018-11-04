@@ -1,19 +1,23 @@
 'use strict';
 
-const Couch = require('../..');
+const nanoPromise = require('../../src/util/nanoPromise');
+const { resetDatabase } = require('../utils/utils');
 
 const insertDocument = require('./insertDocument');
-const { resetDatabase } = require('./helper');
 
 function populate(db) {
   const prom = [];
   prom.push(
-    insertDocument(db, {
-      _id: 'defaultGroups',
-      $type: 'db',
-      anonymous: ['defaultAnonymousRead', 'inexistantGroup'],
-      anyuser: ['defaultAnyuserRead']
-    })
+    (async () => {
+      const doc = await nanoPromise.getDocument(db, 'defaultGroups');
+      await insertDocument(db, {
+        _id: 'defaultGroups',
+        _rev: doc._rev,
+        $type: 'db',
+        anonymous: ['defaultAnonymousRead', 'inexistantGroup'],
+        anyuser: ['defaultAnyuserRead']
+      });
+    })()
   );
 
   prom.push(
@@ -125,17 +129,6 @@ function populate(db) {
 module.exports = createDatabase;
 
 async function createDatabase() {
-  global.couch = new Couch({ database: 'test' });
-  await global.couch.open();
-  await resetDatabase(
-    global.couch._nano,
-    global.couch._databaseName,
-    global.couch._couchOptions.username
-  );
+  global.couch = await resetDatabase('test');
   await populate(global.couch._db);
-  global.couch = new Couch({
-    database: 'test',
-    rights: {}
-  });
-  await global.couch.open();
 }

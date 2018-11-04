@@ -57,12 +57,6 @@ Default: `570`
 Time in seconds that the application waits before revalidating the session with CouchDB.
 This number should be smaller than the session's cookie life.
 
-##### autoCreateDatabase
-
-Type: boolean  
-Default: `false`  
-If set to `true`, the application will try to automatically create the database on CouchDB if it is missing.
-
 #### Server options
 
 ##### port

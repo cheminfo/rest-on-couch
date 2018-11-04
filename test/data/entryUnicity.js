@@ -1,8 +1,7 @@
 'use strict';
 
-const Couch = require('../..');
+const { resetDatabase } = require('../utils/utils');
 
-const { resetDatabase } = require('./helper');
 const insertDocument = require('./insertDocument');
 
 function populate(db) {
@@ -21,20 +20,11 @@ function populate(db) {
 }
 
 module.exports = async function () {
-  global.couch = new Couch({ database: 'test3' });
-  await global.couch.open();
-  await resetDatabase(
-    global.couch._nano,
-    global.couch._databaseName,
-    global.couch._couchOptions.username
-  );
-
-  global.couch = new Couch({
+  global.couch = await resetDatabase('test3', {
     database: 'test3',
     rights: {
       create: ['anyuser']
     }
   });
-  await global.couch.open();
   await populate(global.couch._db);
 };
