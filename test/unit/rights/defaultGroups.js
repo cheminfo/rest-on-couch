@@ -1,6 +1,6 @@
 'use strict';
 
-const data = require('../data/noRights');
+const data = require('../../data/noRights');
 
 describe('entry reads, database with default groups', () => {
   beforeEach(data);

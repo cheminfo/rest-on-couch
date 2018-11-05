@@ -10,7 +10,7 @@ function populate(db) {
   prom.push(
     (async () => {
       const doc = await nanoPromise.getDocument(db, 'defaultGroups');
-      await insertDocument(db, {
+      await nanoPromise.insertDocument(db, {
         _id: 'defaultGroups',
         _rev: doc._rev,
         $type: 'db',

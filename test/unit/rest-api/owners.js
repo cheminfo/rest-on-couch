@@ -1,8 +1,8 @@
 'use strict';
 
-const request = require('../setup/setup').getAgent();
-const data = require('../data/data');
-const authenticateAs = require('../utils/authenticate');
+const request = require('../../setup/setup').getAgent();
+const data = require('../../data/data');
+const authenticateAs = require('../../utils/authenticate');
 
 describe('rest api - manage owners', () => {
   const id = 'A';

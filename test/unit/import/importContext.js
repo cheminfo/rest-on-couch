@@ -4,13 +4,13 @@ const path = require('path');
 
 const fs = require('fs-extra');
 
-const ImportContext = require('../../src/import/ImportContext');
+const ImportContext = require('../../../src/import/ImportContext');
 
 describe('ImportContext', () => {
   test('should instanciate a new import context', async () => {
     const file = path.join(
       __dirname,
-      '../homeDirectories/main/test-new-import/simple/to_process/test.txt'
+      '../../homeDirectories/main/test-new-import/simple/to_process/test.txt'
     );
     const fileContents = await fs.readFileSync(file, 'utf-8');
     const databaseName = 'test-new-import';

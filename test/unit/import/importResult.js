@@ -1,7 +1,7 @@
 'use strict';
 
-const ImportResult = require('../../src/import/ImportResult');
-const constants = require('../../src/constants');
+const ImportResult = require('../../../src/import/ImportResult');
+const constants = require('../../../src/constants');
 
 function getValidResult(importType) {
   const result = new ImportResult();

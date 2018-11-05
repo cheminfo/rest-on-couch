@@ -1,6 +1,6 @@
 'use strict';
 
-const validateDocUpdate = require('../../src/design/validateDocUpdate');
+const validateDocUpdate = require('../../../src/design/validateDocUpdate');
 
 // TODO workaround for CentOS 6.
 global.isArray = function (obj) {
