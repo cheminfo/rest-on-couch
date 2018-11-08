@@ -56,26 +56,6 @@ app.use(
 
 app.use(koaStatic(path.resolve(__dirname, '../../public')));
 
-const bundlePath = path.join(__dirname, '../../public/bundle.js');
-if (fs.existsSync(bundlePath)) {
-  // always render index.html unless it's an API route
-  let indexHtml = fs.readFileSync(
-    path.join(__dirname, '../../public/index.html'),
-    'utf8'
-  );
-  indexHtml = indexHtml.replace(/assets\//g, `${proxyPrefix}/assets/`);
-  const bundleJs = fs.readFileSync(bundlePath, 'utf8');
-  app.use(async (ctx, next) => {
-    if (ctx.path.startsWith('/db') || ctx.path.startsWith('/auth')) {
-      await next();
-    } else if (ctx.path.endsWith('/bundle.js')) {
-      ctx.body = bundleJs;
-    } else {
-      ctx.body = indexHtml;
-    }
-  });
-}
-
 const allowedOrigins = config.allowedOrigins;
 debug(`allowed cors origins: ${allowedOrigins}`);
 app.use(
