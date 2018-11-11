@@ -18,25 +18,14 @@ let _started = false;
 const app = new Koa();
 app.proxy = config.fileDropProxy;
 
-async function getHomeDir(ctx, next) {
-  let homeDir = config.homeDir;
-  if (!homeDir) {
-    ctx.body = 'No homeDir';
-    ctx.status = 500;
-    return;
-  }
-  ctx.state.homeDir = homeDir;
-  await next();
-}
-
 router.get('/', (ctx) => {
   ctx.body = 'hello world';
   ctx.status = 200;
 });
 
 async function writeUpload(ctx, database, kind, filename) {
-  const dir = path.join(ctx.state.homeDir, database, kind, 'to_process');
-  const tmpDir = path.join(ctx.state.homeDir, database, kind, 'tmp');
+  const dir = path.join(config.homeDir, database, kind, 'to_process');
+  const tmpDir = path.join(config.homeDir, database, kind, 'tmp');
   await fs.mkdirp(tmpDir);
   const uploadDir = await fs.mkdtemp(path.join(tmpDir, 'roc-upload-'));
   const uploadPath = path.join(uploadDir, filename);
@@ -72,12 +61,12 @@ async function writeUpload(ctx, database, kind, filename) {
   }
 }
 
-router.post('/upload/:database/:kind/:filename', getHomeDir, async (ctx) => {
+router.post('/upload/:database/:kind/:filename', async (ctx) => {
   const { database, kind, filename } = ctx.params;
   await writeUpload(ctx, database, kind, filename);
 });
 
-router.post('/upload', getHomeDir, async (ctx) => {
+router.post('/upload', async (ctx) => {
   const { database, kind, filename } = ctx.query;
   await writeUpload(ctx, database, kind, filename);
 });

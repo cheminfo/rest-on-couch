@@ -14,7 +14,7 @@ const program = require('commander');
 const connect = require('../src/connect');
 const debug = require('../src/util/debug')('bin:import');
 const die = require('../src/util/die');
-const { getHomeDir } = require('../src/config/home');
+const { globalConfig } = require('../src/config/config');
 const { importFile } = require('../src/index');
 const { getImportConfig } = require('../src/config/config');
 const tryMove = require('../src/util/tryMove');
@@ -56,10 +56,9 @@ async function doContinuous(waitTime) {
 }
 
 async function importAll() {
-  const homeDir = getHomeDirOrDie();
   const limit = program.limit || 0;
   debug('limit is %d. Searching files...', limit);
-  const files = await findFiles(homeDir, limit);
+  const files = await findFiles(globalConfig.homeDir, limit);
   debug('found %d files to import', files.length);
   const waitingFiles = [];
   const readyFiles = [];
@@ -258,14 +257,6 @@ function getFilesToProcess(directory, maxElements) {
         reject(err);
       });
   });
-}
-
-function getHomeDirOrDie() {
-  let homeDir = getHomeDir();
-  if (!homeDir) {
-    die('homeDir must be set to import all');
-  }
-  return homeDir;
 }
 
 async function processFile(file) {
