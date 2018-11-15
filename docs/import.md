@@ -157,7 +157,6 @@ const fs = require('fs');
 
 module.exports = async function import(ctx, result) {
   let reference = ctx.filename.replace(/(.fid|.jdx)$/,'');
-  result.contents = ctx.getContents('utf8');
   result.reference = ctx.filename;
   if (ctx.fileExt === 'fid') {
     result.field = 'jcampFID';
