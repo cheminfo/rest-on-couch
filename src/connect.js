@@ -9,9 +9,8 @@ const debug = require('./util/debug')('main:connect');
 const nanoPromise = require('./util/nanoPromise');
 
 const nanoAgent = new agentkeepalive({
-  maxSockets: 50,
-  maxKeepAliveRequests: 0,
-  maxKeepAliveTime: 20000
+  maxFreeSockets: 50,
+  timeout: 1000 * 60 * 5
 });
 
 const authRenewal = config.authRenewal * 1000;
