@@ -3,6 +3,7 @@
   "version": "7.0.0",
   "description": "Interface to CouchDB that allows the control of permissions on the documents",
   "main": "src/index.js",
+  "types": "roc.d.ts",
   "files": [
     "bin",
     "public",
