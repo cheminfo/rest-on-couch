@@ -43,10 +43,10 @@
 //    }
 // }
 
+const got = require('got');
 const GitHubStrategy = require('passport-github').Strategy;
 
 const { auditLogin } = require('../../../audit/actions');
-const request = require('../../../util/requestPromise');
 
 exports.init = function (passport, router, config) {
   passport.use(
@@ -60,12 +60,16 @@ exports.init = function (passport, router, config) {
       function (req, accessToken, refreshToken, profile, done) {
         // Get the user's email
         (async function () {
-          const answer = await request({
-            url: `https://api.github.com/user/emails?access_token=${accessToken}`,
-            headers: {
-              'User-Agent': 'request'
+          const answer = (await got(
+            `https://api.github.com/user/emails?access_token=${accessToken}`,
+            {
+              json: true,
+              headers: {
+                'User-Agent': 'got'
+              },
+              throwHttpErrors: false
             }
-          });
+          )).body;
           const email = answer.filter(function (val) {
             return val.primary === true;
           });

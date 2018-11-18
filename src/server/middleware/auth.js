@@ -3,7 +3,6 @@
 const got = require('got');
 const passport = require('koa-passport');
 
-const request = require('../../util/requestPromise');
 const connect = require('../../connect');
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
@@ -112,7 +111,8 @@ async function getUserEmailFromToken(ctx) {
         json: true,
         headers: {
           cookie: token
-        }
+        },
+        throwHttpErrors: false
       }
     );
 
@@ -179,8 +179,9 @@ exports.changePassword = async (ctx) => {
   if (provider === 'local') {
     // check oldPassword
     try {
-      await request.post(`${config.url}/_session`, {
-        form: {
+      await got.post(`${config.url}/_session`, {
+        json: true,
+        body: {
           name: email,
           password: body.oldPassword
         }
