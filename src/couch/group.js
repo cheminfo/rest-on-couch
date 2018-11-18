@@ -5,7 +5,6 @@ const _ = require('lodash');
 const ldapSearch = require('../util/LDAP').search;
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:group');
-const nanoPromise = require('../util/nanoPromise');
 const constants = require('../constants');
 
 const nanoMethods = require('./nano');
@@ -27,10 +26,7 @@ const methods = {
       );
     }
 
-    const doc = await nanoPromise.getDocument(
-      this._db,
-      constants.DEFAULT_GROUPS_DOC_ID
-    );
+    const doc = await this._db.getDocument(constants.DEFAULT_GROUPS_DOC_ID);
     if (!doc) {
       throw new Error(
         'default groups document should always exist',
@@ -52,7 +48,7 @@ const methods = {
       }
     }
 
-    return nanoPromise.insertDocument(this._db, doc);
+    return this._db.insertDocument(doc);
   },
 
   addDefaultGroup(group, type) {
@@ -81,7 +77,7 @@ const methods = {
     }
 
     // TODO Change entries which have this group
-    return nanoPromise.destroyDocument(this._db, doc._id);
+    return this._db.destroyDocument(doc._id);
   },
 
   async createGroup(groupName, user, rights, groupType) {
@@ -146,8 +142,7 @@ const methods = {
     await this.open();
     const ok = await validate.checkGlobalRight(this, user, 'readGroup');
     if (ok) {
-      return nanoPromise.queryView(
-        this._db,
+      return this._db.queryView(
         'documentByType',
         { key: 'group', include_docs: true },
         { onlyDoc: true }
@@ -169,8 +164,7 @@ const methods = {
     // Search in default groups
     const defaultGroups = await validate.getDefaultGroups(this._db, user, true);
     // Search inside groups
-    const userGroups = await nanoPromise.queryView(
-      this._db,
+    const userGroups = await this._db.queryView(
       'groupByUserAndRight',
       { key: [user, right] },
       { onlyValue: true }
@@ -255,11 +249,11 @@ const methods = {
   },
 
   async syncLDAPGroups(groups) {
-    debug(`sync LDAP groups in database ${this._db.config.db}`);
+    debug(`sync LDAP groups in database ${this._db.dbName}`);
     await this.open();
     // Find all the ldap groups
     debug.trace('sync all ldap groups');
-    groups = await nanoPromise.queryView(this._db, 'documentByType', {
+    groups = await this._db.queryView('documentByType', {
       key: 'group',
       include_docs: true
     });

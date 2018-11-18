@@ -2,7 +2,6 @@
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:user');
-const nanoPromise = require('../util/nanoPromise');
 const simpleMerge = require('../util/simpleMerge');
 
 const nanoMethods = require('./nano');
@@ -26,7 +25,7 @@ const methods = {
 
     data.$type = 'user';
     data.user = user;
-    return nanoPromise.insertDocument(this._db, data);
+    return this._db.insertDocument(data);
   },
 
   async getUser(user) {
@@ -42,7 +41,7 @@ const methods = {
 
   async getUserGroups(user) {
     await this.open();
-    let groups = await nanoPromise.queryView(this._db, 'groupByUser', {
+    let groups = await this._db.queryView('groupByUser', {
       key: user
     });
     groups = groups.map((doc) => doc.value);
@@ -68,7 +67,7 @@ const methods = {
 };
 
 async function getUser(db, user) {
-  const rows = await nanoPromise.queryView(db, 'user', {
+  const rows = await db.queryView('user', {
     key: user,
     include_docs: true
   });

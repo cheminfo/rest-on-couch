@@ -4,7 +4,6 @@ const _ = require('lodash');
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:query');
-const nanoPromise = require('../util/nanoPromise');
 
 const validateMethods = require('./validate');
 
@@ -27,7 +26,7 @@ const methods = {
     if (hasGlobalRight) {
       // When there is a global right, we cannot use queries because the first element of the
       // key will match all documents
-      const result = await nanoPromise.queryView(this._db, view, {
+      const result = await this._db.queryView(view, {
         reduce: false
       });
       return _.uniqBy(result, 'id');
@@ -72,7 +71,7 @@ const methods = {
       const endkey = [group].concat(userEndKey);
       endkey.push({});
       // eslint-disable-next-line no-await-in-loop
-      const result = await nanoPromise.queryView(this._db, view, {
+      const result = await this._db.queryView(view, {
         include_docs: options.include_docs,
         startkey,
         endkey,
@@ -109,7 +108,7 @@ const methods = {
       }
       // !! if reduce we bypass security
       // Reduce should not contain sensible data
-      return nanoPromise.queryView(this._db, view, options);
+      return this._db.queryView(view, options);
     }
 
     options.include_docs = true;
@@ -118,7 +117,7 @@ const methods = {
     var cumRows = [];
     while (cumRows.length < limit) {
       // eslint-disable-next-line no-await-in-loop
-      let rows = await nanoPromise.queryView(this._db, view, options);
+      let rows = await this._db.queryView(view, options);
       // No more results
       if (!rows.length) break;
 

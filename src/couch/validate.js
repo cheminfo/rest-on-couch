@@ -2,7 +2,6 @@
 
 const constants = require('../constants');
 const debug = require('../util/debug')('main:validate');
-const nanoPromise = require('../util/nanoPromise');
 const ensureStringArray = require('../util/ensureStringArray');
 
 const getGroup = require('./nano').getGroup;
@@ -42,8 +41,7 @@ async function validateRights(ctx, ownerArrays, user, rights, type = 'entry') {
 
     const [defaultGroups, groups] = await Promise.all([
       getDefaultGroups(db, user),
-      nanoPromise.queryView(
-        db,
+      db.queryView(
         'groupByUserAndRight',
         { key: [user, right] },
         { onlyValue: true }
@@ -150,8 +148,7 @@ async function checkGlobalRight(ctx, user, right) {
     return true;
   }
 
-  const result = await nanoPromise.queryView(
-    ctx._db,
+  const result = await ctx._db.queryView(
     'globalRight',
     { key: right },
     { onlyValue: true }
@@ -183,7 +180,7 @@ async function checkRightAnyGroup(ctx, user, right) {
     }
   }
 
-  const result = await nanoPromise.queryView(db, 'groupByUserAndRight', {
+  const result = await db.queryView('groupByUserAndRight', {
     key: [user, right]
   });
   return result.length > 0;
@@ -191,10 +188,7 @@ async function checkRightAnyGroup(ctx, user, right) {
 
 async function getDefaultGroups(db, user, listOnly) {
   debug.trace('getDefaultGroups');
-  const defaultGroups = await nanoPromise.getDocument(
-    db,
-    constants.DEFAULT_GROUPS_DOC_ID
-  );
+  const defaultGroups = await db.getDocument(constants.DEFAULT_GROUPS_DOC_ID);
   const toGet = new Set();
   for (let i = 0; i < defaultGroups.anonymous.length; i++) {
     toGet.add(defaultGroups.anonymous[i]);

@@ -5,7 +5,6 @@ const _ = require('lodash');
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:right');
-const nanoPromise = require('../util/nanoPromise');
 
 const util = require('./util');
 const nano = require('./nano');
@@ -41,7 +40,7 @@ const methods = {
     }
 
     if (hasChanged) {
-      return nanoPromise.insertDocument(this._db, doc);
+      return this._db.insertDocument(doc);
     } else {
       return null;
     }
@@ -90,7 +89,7 @@ const methods = {
     const doc = await getDefaultGroupsDocument(this);
     doc.anonymous = data.anonymous;
     doc.anyuser = data.anyuser;
-    return nanoPromise.insertDocument(this._db, doc);
+    return this._db.insertDocument(doc);
   },
 
   async editGlobalDefaultGroup(user, genUser, group, action) {
@@ -112,7 +111,7 @@ const methods = {
     } else {
       doc[genUser] = _.difference(doc[genUser], [group]);
     }
-    return nanoPromise.insertDocument(this._db, doc);
+    return this._db.insertDocument(doc);
   },
 
   async removeGlobalDefaultGroup(user, genUser, group) {
@@ -204,10 +203,7 @@ const methods = {
 };
 
 async function getDefaultGroupsDocument(couch) {
-  const doc = await nanoPromise.getDocument(
-    couch._db,
-    constants.DEFAULT_GROUPS_DOC_ID
-  );
+  const doc = await couch._db.getDocument(constants.DEFAULT_GROUPS_DOC_ID);
   if (!doc) {
     throw new Error(
       'Default groups document should always exist',
@@ -218,7 +214,7 @@ async function getDefaultGroupsDocument(couch) {
 }
 
 async function getGlobalRightsDocument(couch) {
-  const doc = await nanoPromise.getDocument(couch._db, constants.RIGHTS_DOC_ID);
+  const doc = await couch._db.getDocument(constants.RIGHTS_DOC_ID);
   if (!doc) {
     throw new Error('Rights document should always exist', 'unreachable');
   }

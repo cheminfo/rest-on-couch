@@ -2,7 +2,6 @@
 
 const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('main:initCouch');
-const nanoPromise = require('../util/nanoPromise');
 const auditDesignDoc = require('../design/audit');
 
 async function setupAuditActions(nano) {
@@ -10,7 +9,7 @@ async function setupAuditActions(nano) {
   const auditActionsDb = config.auditActionsDb;
   // Check if database is accessible
   try {
-    const dbExists = await nanoPromise.getDatabase(nano, auditActionsDb);
+    const dbExists = await nano.hasDatabase(auditActionsDb);
     if (!dbExists) {
       throw new Error(
         `audit actions database does not exist: ${auditActionsDb}`
@@ -22,15 +21,15 @@ async function setupAuditActions(nano) {
   }
 
   // Check design docs
-  const db = nano.db.use(config.auditActionsDb);
-  const oldDesignDoc = await nanoPromise.getDocument(db, '_design/audit');
+  const db = nano.useDb(config.auditActionsDb);
+  const oldDesignDoc = await db.getDocument('_design/audit');
   if (!oldDesignDoc || oldDesignDoc.version !== auditDesignDoc.version) {
     debug('updating audit design doc');
     const newDesignDoc = Object.assign({}, auditDesignDoc);
     if (oldDesignDoc) {
       newDesignDoc._rev = oldDesignDoc._rev;
     }
-    await nanoPromise.insertDocument(db, newDesignDoc);
+    await db.insertDocument(newDesignDoc);
   }
 }
 

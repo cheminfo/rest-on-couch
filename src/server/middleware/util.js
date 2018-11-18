@@ -42,29 +42,32 @@ exports.composeWithError = function composeWithError(middleware) {
 };
 
 function onGetError(ctx, e, secure) {
-  switch (e.reason) {
+  const reason = e.reason;
+  const message = e.message;
+
+  switch (reason) {
     case 'unauthorized':
       if (!secure) {
-        decorateError(ctx, 401, e.message);
+        decorateError(ctx, 401, message);
         break;
       }
     // fallthrough
     case 'not found':
-      decorateError(ctx, 404, e.message);
+      decorateError(ctx, 404, message);
       break;
     case 'conflict':
-      decorateError(ctx, 409, e.message);
+      decorateError(ctx, 409, message);
       break;
     case 'invalid':
-      decorateError(ctx, 400, e.message);
+      decorateError(ctx, 400, message);
       break;
     case 'forbidden':
-      decorateError(ctx, 403, e.message);
+      decorateError(ctx, 403, message);
       break;
     default:
       if (!handleCouchError(ctx, e, secure)) {
-        decorateError(ctx, 500, e.message);
-        debug.error(e + e.stack);
+        decorateError(ctx, 500, message);
+        debug.error(e, e.stack);
       }
       break;
   }
@@ -83,7 +86,7 @@ async function errorMiddleware(ctx, next) {
 }
 
 function handleCouchError(ctx, e, secure) {
-  if (e.scope !== 'couch') {
+  if (e.name !== 'HTTPError') {
     return false;
   }
   var statusCode = e.statusCode;
@@ -93,10 +96,10 @@ function handleCouchError(ctx, e, secure) {
     }
 
     if (statusCode === 500) {
-      debug.error(e + e.stack);
+      debug.error(e, e.stack);
     }
 
-    decorateError(ctx, statusCode, e.message);
+    decorateError(ctx, statusCode, e.body.reason);
     return true;
   }
   return false;

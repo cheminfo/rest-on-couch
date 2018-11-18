@@ -7,14 +7,13 @@ const connect = require('../connect');
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:init');
-const nanoPromise = require('../util/nanoPromise');
 
 const methods = {
   async open() {
     const _nano = await connect.open();
     if (this._nano !== _nano) {
       this._nano = _nano;
-      this._db = this._nano.db.use(this._databaseName);
+      this._db = this._nano.useDb(this._databaseName);
     }
 
     if (this._initPromise) {
@@ -30,7 +29,7 @@ const methods = {
 
   async getInitPromise() {
     debug(`initialize db ${this._databaseName}`);
-    const db = await nanoPromise.getDatabase(this._nano, this._databaseName);
+    const db = await this._nano.hasDatabase(this._databaseName);
     if (!db) {
       debug('db not found: %s', this._databaseName);
       throw new CouchError(
@@ -79,18 +78,15 @@ async function tryLDAPSync(db) {
 
 async function checkSecurity(db, admin) {
   debug.trace('check security');
-  const security = await nanoPromise.getDocument(db, '_security');
+  const security = await db.getDocument('_security');
   if (!security.admins || !security.admins.names.includes(admin)) {
-    throw new CouchError(
-      `${admin} is not an admin of ${db.config.db}`,
-      'fatal'
-    );
+    throw new CouchError(`${admin} is not an admin of ${db.dbName}`, 'fatal');
   }
 }
 
 async function checkDesignDoc(couch) {
   const db = couch._db;
-  const dbName = db.config.db;
+  const { dbName } = db;
   debug.trace(`check design documents for database ${dbName}`);
   var custom = couch._customDesign;
   custom.views = custom.views || {};
@@ -107,10 +103,7 @@ async function checkDesignDoc(couch) {
   for (let designName of designNames) {
     const newDesignDoc = getNewDesignDoc(designName);
     // eslint-disable-next-line no-await-in-loop
-    const oldDesignDoc = await nanoPromise.getDocument(
-      db,
-      `_design/${designName}`
-    );
+    const oldDesignDoc = await db.getDocument(`_design/${designName}`);
     if (designDocNeedsUpdate(newDesignDoc, oldDesignDoc)) {
       debug.trace(`design doc ${designName} needs update, saving new revision`);
       // eslint-disable-next-line no-await-in-loop
@@ -164,12 +157,12 @@ function createDesignDoc(db, revID, designDoc) {
   if (revID) {
     designDoc._rev = revID;
   }
-  return nanoPromise.insertDocument(db, designDoc);
+  return db.insertDocument(designDoc);
 }
 
 async function checkRightsDoc(db, rights) {
   debug.trace('check rights doc');
-  const doc = await nanoPromise.getDocument(db, constants.RIGHTS_DOC_ID);
+  const doc = await db.getDocument(constants.RIGHTS_DOC_ID);
   if (doc === null) {
     debug.trace('rights doc does not exist');
     return createRightsDoc(db, rights);
@@ -178,18 +171,15 @@ async function checkRightsDoc(db, rights) {
 }
 
 function createRightsDoc(db, rightsDoc) {
-  return nanoPromise.insertDocument(db, rightsDoc);
+  return db.insertDocument(rightsDoc);
 }
 
 async function checkDefaultGroupsDoc(db) {
   debug.trace('check defaultGroups doc');
-  const doc = await nanoPromise.getDocument(
-    db,
-    constants.DEFAULT_GROUPS_DOC_ID
-  );
+  const doc = await db.getDocument(constants.DEFAULT_GROUPS_DOC_ID);
   if (doc === null) {
     debug.trace('defaultGroups doc does not exist');
-    return nanoPromise.insertDocument(db, {
+    return db.insertDocument({
       _id: constants.DEFAULT_GROUPS_DOC_ID,
       $type: 'db',
       anonymous: [],

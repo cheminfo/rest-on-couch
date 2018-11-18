@@ -1,7 +1,6 @@
 'use strict';
 
 const Couch = require('../..');
-const nanoPromise = require('../../src/util/nanoPromise');
 const connect = require('../../src/connect');
 
 module.exports = {
@@ -14,9 +13,9 @@ async function resetDatabase(
   options = { database: databaseName }
 ) {
   await resetDatabaseWithoutCouch(databaseName);
-  const importCouch = new Couch(options);
-  await importCouch.open();
-  return importCouch;
+  const couchInstance = new Couch(options);
+  await couchInstance.open();
+  return couchInstance;
 }
 
 async function resetDatabaseWithoutCouch(databaseName) {
@@ -32,12 +31,12 @@ async function resetDatabaseWithoutCouch(databaseName) {
 }
 
 function destroy(nano, db) {
-  return nanoPromise.destroyDatabase(nano, db);
+  return nano.destroyDatabase(db);
 }
 
 async function create(nano, db) {
-  await nanoPromise.createDatabase(nano, db);
-  await nanoPromise.request(nano, {
+  await nano.createDatabase(db);
+  await nano.request({
     method: 'PUT',
     db,
     doc: '_security',

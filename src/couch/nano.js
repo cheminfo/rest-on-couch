@@ -2,11 +2,10 @@
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:nano');
-const nanoPromise = require('../util/nanoPromise');
 
 async function getGroup(db, name) {
   debug.trace('get group');
-  const groups = await nanoPromise.queryView(db, 'groupByName', {
+  const groups = await db.queryView('groupByName', {
     key: name,
     reduce: false,
     include_docs: true
@@ -55,7 +54,7 @@ async function saveWithFields(db, object, user) {
     object.$creationDate = now;
   }
 
-  const result = await nanoPromise.insertDocument(db, object);
+  const result = await db.insertDocument(object);
   result.$modificationDate = object.$modificationDate;
   result.$creationDate = object.$creationDate;
   return result;
@@ -73,7 +72,7 @@ function getUuidFromId(db, id, user, type) {
 }
 
 async function getUuidFromIdEntry(db, id, user) {
-  const owners = await nanoPromise.queryView(db, 'ownerByTypeAndId', {
+  const owners = await db.queryView('ownerByTypeAndId', {
     key: ['entry', id]
   });
   if (owners.length === 0) {
@@ -87,7 +86,7 @@ async function getUuidFromIdEntry(db, id, user) {
 }
 
 async function getUuidFromIdGroup(db, id) {
-  const owners = await nanoPromise.queryView(db, 'ownerByTypeAndId', {
+  const owners = await db.queryView('ownerByTypeAndId', {
     key: ['group', id]
   });
   if (owners.length === 0) {

@@ -6,7 +6,6 @@ const passport = require('koa-passport');
 const connect = require('../../connect');
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
-const nanoPromise = require('../../util/nanoPromise');
 const isEmail = require('../../util/isEmail');
 
 const respondOk = require('./respondOk');
@@ -217,8 +216,8 @@ exports.changePassword = async (ctx) => {
 
 async function getCouchdbUser(email) {
   const nano = await connect.open();
-  const db = nano.db.use('_users');
-  return nanoPromise.getDocument(db, `org.couchdb.user:${email}`);
+  const db = nano.useDb('_users');
+  return db.getDocument(`org.couchdb.user:${email}`);
 }
 
 function userDatabaseDenied(ctx) {
@@ -228,6 +227,6 @@ function userDatabaseDenied(ctx) {
 
 async function updateCouchdbUser(user) {
   const nano = await connect.open();
-  const db = nano.db.use('_users');
-  return nanoPromise.insertDocument(db, user);
+  const db = nano.useDb('_users');
+  return db.insertDocument(user);
 }
