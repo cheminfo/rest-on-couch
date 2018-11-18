@@ -4,7 +4,6 @@ const _ = require('lodash');
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:doc');
-const nanoPromise = require('../util/nanoPromise');
 
 const util = require('./util');
 const validate = require('./validate');
@@ -23,7 +22,7 @@ const methods = {
       throw new CouchError(`invalid type argument: ${type}`);
     }
 
-    const doc = await nanoPromise.getDocument(this._db, uuid);
+    const doc = await this._db.getDocument(uuid);
     if (!doc) {
       throw new CouchError('document not found', 'not found');
     }
@@ -45,7 +44,7 @@ const methods = {
         type
       )
     ) {
-      return nanoPromise.getDocument(this._db, uuid, options);
+      return this._db.getDocument(uuid, options);
     }
     throw new CouchError('user has no access', 'unauthorized');
   },
@@ -79,8 +78,7 @@ const methods = {
     await this.open();
     options = Object.assign({}, options);
     if (this.isSuperAdmin(user)) {
-      return nanoPromise.queryView(
-        this._db,
+      return this._db.queryView(
         'documentByType',
         {
           key: type,
@@ -89,8 +87,7 @@ const methods = {
         options
       );
     } else {
-      return nanoPromise.queryView(
-        this._db,
+      return this._db.queryView(
         'documentByOwners',
         {
           key: [type, user],

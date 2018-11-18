@@ -1,6 +1,5 @@
 'use strict';
 
-const nanoPromise = require('../../src/util/nanoPromise');
 const { resetDatabase } = require('../utils/utils');
 
 const insertDocument = require('./insertDocument');
@@ -9,8 +8,8 @@ function populate(db) {
   const prom = [];
   prom.push(
     (async () => {
-      const doc = await nanoPromise.getDocument(db, 'defaultGroups');
-      await nanoPromise.insertDocument(db, {
+      const doc = await db.getDocument('defaultGroups');
+      await db.insertDocument({
         _id: 'defaultGroups',
         _rev: doc._rev,
         $type: 'db',

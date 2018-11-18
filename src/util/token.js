@@ -5,7 +5,6 @@ const randomatic = require('randomatic');
 const getRandomToken = () => randomatic('Aa0', 32);
 
 const CouchError = require('./CouchError');
-const nanoPromise = require('./nanoPromise');
 const ensureStringArray = require('./ensureStringArray');
 
 exports.createEntryToken = async function createEntryToken(
@@ -24,7 +23,7 @@ exports.createEntryToken = async function createEntryToken(
     uuid,
     rights
   };
-  await nanoPromise.insertDocument(db, token);
+  await db.insertDocument(token);
   return token;
 };
 
@@ -38,13 +37,12 @@ exports.createUserToken = async function createUserToken(db, user, rights) {
     $creationDate: Date.now(),
     rights
   };
-  await nanoPromise.insertDocument(db, token);
+  await db.insertDocument(token);
   return token;
 };
 
 exports.getToken = async function getToken(db, tokenId) {
-  const result = await nanoPromise.queryView(
-    db,
+  const result = await db.queryView(
     'tokenById',
     { key: tokenId, include_docs: true },
     { onlyDoc: true }
@@ -59,8 +57,7 @@ exports.getToken = async function getToken(db, tokenId) {
 };
 
 exports.getTokens = function getTokens(db, user) {
-  return nanoPromise.queryView(
-    db,
+  return db.queryView(
     'tokenByOwner',
     { key: user, include_docs: true },
     { onlyDoc: true }
@@ -68,5 +65,5 @@ exports.getTokens = function getTokens(db, user) {
 };
 
 exports.destroyToken = function destroyToken(db, tokenId, rev) {
-  return nanoPromise.destroyDocument(db, tokenId, rev);
+  return db.destroyDocument(tokenId, rev);
 };

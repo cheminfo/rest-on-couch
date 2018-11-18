@@ -7,7 +7,12 @@ const BaseImport = require('./ImportContext');
 const ImportResult = require('./ImportResult');
 const saveResult = require('./saveResult');
 
-exports.import = async function (database, importName, filePath, options = {}) {
+exports.import = async function importFile(
+  database,
+  importName,
+  filePath,
+  options = {}
+) {
   debug(`import ${filePath} (${database}, ${importName})`);
 
   const dryRun = !!options.dryRun;

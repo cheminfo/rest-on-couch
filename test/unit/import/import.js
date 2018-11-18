@@ -113,6 +113,15 @@ describe('import', () => {
     const secondaryAttachment = data._attachments['other/jpath/test.txt'];
     expect(secondaryAttachment).toBeDefined();
     expect(secondaryAttachment.content_type).toBe('text/plain');
+    const attachmentStream = await importCouch.getAttachmentByName(
+      data._id,
+      'other/jpath/test.txt',
+      'anonymous',
+      true
+    );
+    const text = await readStream(attachmentStream);
+    const split = text.split('\n');
+    expect(split).toHaveLength(200);
 
     const otherAttachment = data._attachments['other2/jpath/test2.txt'];
     expect(otherAttachment).toBeDefined();
@@ -124,3 +133,13 @@ describe('import', () => {
     expect(attachmentData.toString('utf8')).toBe('test2');
   });
 });
+
+function readStream(stream) {
+  return new Promise((resolve, reject) => {
+    var str = '';
+    stream.setEncoding('utf8');
+    stream.on('data', (chunk) => (str += chunk));
+    stream.on('end', () => resolve(str));
+    stream.on('error', reject);
+  });
+}

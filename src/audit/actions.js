@@ -1,7 +1,6 @@
 'use strict';
 
 const config = require('../config/config').globalConfig;
-const nanoPromise = require('../util/nanoPromise');
 const debug = require('../util/debug')('audit:actions');
 const { open } = require('../connect');
 
@@ -13,7 +12,7 @@ let _db = null;
 async function ensureNano() {
   const newGlobalNano = await open();
   if (_globalNano !== newGlobalNano) {
-    _db = newGlobalNano.db.use(config.auditActionsDb);
+    _db = newGlobalNano.useDb(config.auditActionsDb);
   }
   return _db;
 }
@@ -34,7 +33,7 @@ async function auditAction(action, username, ip, meta) {
     doc.meta = meta;
   }
   const db = await ensureNano();
-  await nanoPromise.insertDocument(db, doc);
+  await db.insertDocument(doc);
 }
 
 async function auditLogin(username, success, provider, ctx) {

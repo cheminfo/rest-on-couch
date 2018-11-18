@@ -2,7 +2,6 @@
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:entry');
-const nanoPromise = require('../util/nanoPromise');
 const ensureStringArray = require('../util/ensureStringArray');
 const kEntryUnicity = require('../constants').kEntryUnicity;
 
@@ -15,7 +14,7 @@ const methods = {
     debug(`getEntryWithRights (${uuid}, ${user}, ${rights})`);
     await this.open();
 
-    const doc = await nanoPromise.getDocument(this._db, uuid);
+    const doc = await this._db.getDocument(uuid);
     if (!doc) {
       debug.trace('document not found');
       throw new CouchError('document not found', 'not found');
@@ -41,7 +40,7 @@ const methods = {
       if (!options) {
         return doc;
       } else {
-        return nanoPromise.getDocument(this._db, uuid, options);
+        return this._db.getDocument(uuid, options);
       }
     }
 
@@ -139,15 +138,11 @@ const methods = {
     await this.open();
 
     // First we get a list of owners for each document
-    let owners = await nanoPromise.queryView(
-      this._db,
-      'ownersByModificationDate',
-      {
-        reduce: false,
-        include_docs: false,
-        startkey: from
-      }
-    );
+    let owners = await this._db.queryView('ownersByModificationDate', {
+      reduce: false,
+      include_docs: false,
+      startkey: from
+    });
 
     if (
       token &&
@@ -183,7 +178,7 @@ const methods = {
     if (includeDocs) {
       // Get each document from CouchDB
       return Promise.all(
-        allowedDocs.map((doc) => nanoPromise.getDocument(this._db, doc.id))
+        allowedDocs.map((doc) => this._db.getDocument(doc.id))
       );
     } else if (includeDate) {
       return allowedDocs.map((doc) => ({
@@ -205,7 +200,7 @@ const methods = {
         'unauthorized'
       );
     }
-    return nanoPromise.updateWithHandler(this._db, update, uuid, updateBody);
+    return this._db.updateWithHandler(update, uuid, updateBody);
   },
 
   async insertEntry(entry, user, options) {
@@ -341,13 +336,13 @@ async function updateEntry(ctx, oldDoc, newDoc, user, options) {
 async function getUniqueEntryById(ctx, user, id) {
   let result;
   if (ctx[kEntryUnicity] === 'byOwner') {
-    result = await nanoPromise.queryView(ctx._db, 'entryByOwnerAndId', {
+    result = await ctx._db.queryView('entryByOwnerAndId', {
       key: [user, id],
       reduce: false,
       include_docs: true
     });
   } else if (ctx[kEntryUnicity] === 'global') {
-    result = await nanoPromise.queryView(ctx._db, 'entryById', {
+    result = await ctx._db.queryView('entryById', {
       key: id,
       reduce: false,
       include_docs: true

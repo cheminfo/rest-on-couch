@@ -4,13 +4,12 @@ const extend = require('extend');
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:attachment');
-const nanoPromise = require('../util/nanoPromise');
 
 const nanoMethods = require('./nano');
 
 const methods = {
   async addAttachments(uuid, user, attachments) {
-    debug(`addAttachments (${uuid}, ${user})`);
+    debug('addAttachments (%s, %s)', uuid, user);
     if (!Array.isArray(attachments)) {
       attachments = [attachments];
     }
@@ -18,11 +17,11 @@ const methods = {
       'write',
       'addAttachment'
     ]);
-    return nanoPromise.attachFiles(this._db, entry, attachments);
+    return this._db.attachFiles(entry, attachments);
   },
 
   async deleteAttachment(uuid, user, attachmentName) {
-    debug(`deleteAttachment (${uuid}, ${user})`);
+    debug('deleteAttachment (%s, %s)', uuid, user);
     const entry = await this.getEntryWithRights(uuid, user, [
       'delete',
       'addAttachment'
@@ -35,7 +34,7 @@ const methods = {
   },
 
   async getAttachmentByName(uuid, name, user, asStream, options) {
-    debug(`getAttachmentByName (${uuid}, ${name}, ${user})`);
+    debug('getAttachmentByName (%s, %s, %s)', uuid, name, user);
     const entry = await this.getEntry(uuid, user, options);
     return getAttachmentFromEntry(entry, this, name, asStream);
   },
@@ -51,7 +50,7 @@ const methods = {
   // - newContent: object to deep-merge with the found document. New content precedes over old content
   // - noFile: set to true if the attachment should not be added to the document
   async addFileToJpath(id, user, jpath, json, file, newContent, noFile) {
-    debug(`addFileToJpath (${id}, ${user}`);
+    debug('addFileToJpath (%s, %s)', id, user);
     if (!Array.isArray(jpath)) {
       throw new CouchError('jpath must be an array');
     }
@@ -125,9 +124,9 @@ const methods = {
 
 methods.addAttachment = methods.addAttachments;
 
-function getAttachmentFromEntry(entry, ctx, name, asStream) {
+async function getAttachmentFromEntry(entry, ctx, name, asStream) {
   if (entry._attachments && entry._attachments[name]) {
-    return nanoPromise.getAttachment(ctx._db, entry._id, name, asStream, {
+    return ctx._db.getAttachment(entry._id, name, asStream, {
       rev: entry._rev
     });
   } else {

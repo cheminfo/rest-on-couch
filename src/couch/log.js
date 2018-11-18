@@ -3,7 +3,6 @@
 const util = require('util');
 
 const debug = require('../util/debug')('main:log');
-const nanoPromise = require('../util/nanoPromise');
 
 const levels = {
   FATAL: 1,
@@ -44,7 +43,7 @@ exports.log = async function (db, currentLevel, message, level) {
   if (level > currentLevel) {
     return false;
   }
-  await nanoPromise.insertDocument(db, {
+  await db.insertDocument({
     $type: 'log',
     epoch: Date.now(),
     level,
@@ -56,8 +55,7 @@ exports.log = async function (db, currentLevel, message, level) {
 const ONE_DAY = 1000 * 60 * 60 * 24;
 exports.getLogs = function (db, epoch) {
   if (epoch === undefined) epoch = Date.now() - ONE_DAY;
-  return nanoPromise.queryView(
-    db,
+  return db.queryView(
     'logsByEpoch',
     { startkey: epoch, include_docs: true },
     { onlyDoc: true }

@@ -2,7 +2,6 @@
 const assert = require('assert');
 
 const Couch = require('../..');
-const nanoPromise = require('../../src/util/nanoPromise');
 const constants = require('../../src/constants');
 const { resetDatabaseWithoutCouch } = require('../utils/utils');
 const entryUnicity = require('../data/entryUnicity');
@@ -41,24 +40,22 @@ describe('basic initialization with custom design docs', () => {
   beforeEach(entryUnicity);
 
   test('should load the design doc files at initialization', () => {
-    const app = nanoPromise
-      .getDocument(couch._db, `_design/${constants.DESIGN_DOC_NAME}`)
+    const app = couch._db
+      .getDocument(`_design/${constants.DESIGN_DOC_NAME}`)
       .then((app) => {
         assert.notEqual(app, null);
         assert.ok(app.filters.abc);
       });
-    const customApp = nanoPromise
-      .getDocument(couch._db, `_design/${constants.CUSTOM_DESIGN_DOC_NAME}`)
+    const customApp = couch._db
+      .getDocument(`_design/${constants.CUSTOM_DESIGN_DOC_NAME}`)
       .then((app) => {
         assert.notEqual(app, null);
         assert.ok(app.views.test);
       });
-    const custom = nanoPromise
-      .getDocument(couch._db, '_design/custom')
-      .then((custom) => {
-        assert.notEqual(custom, null);
-        assert.ok(custom.views.testCustom);
-      });
+    const custom = couch._db.getDocument('_design/custom').then((custom) => {
+      assert.notEqual(custom, null);
+      assert.ok(custom.views.testCustom);
+    });
 
     return Promise.all([app, customApp, custom]);
   });

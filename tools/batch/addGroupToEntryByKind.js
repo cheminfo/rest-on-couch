@@ -7,7 +7,6 @@
  */
 
 const program = require('commander');
-const nanoPromise = require('../../src/util/nanoPromise');
 
 program
   .option('-c --config <path>', 'Path to custom config file')
@@ -34,10 +33,10 @@ const couch = Couch.get(program.db);
     console.log(`treating kind ${kind}`);
     const owners = suffixes.map((suffix) => kind + suffix);
     const body = { group: owners };
-    const docs = await nanoPromise.queryView(db, 'entryByKind', { key: kind });
+    const docs = await db.queryView('entryByKind', { key: kind });
     console.log(`${docs.length} documents match`);
     for (const { id } of docs) {
-      await nanoPromise.updateWithHandler(db, 'addGroupToEntry', id, body);
+      await db.updateWithHandler('addGroupToEntry', id, body);
     }
   }
 })()

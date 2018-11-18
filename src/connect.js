@@ -1,17 +1,9 @@
 'use strict';
 
-const nanoLib = require('nano');
-const agentkeepalive = require('agentkeepalive');
-
 const config = require('./config/config').globalConfig;
 const CouchError = require('./util/CouchError');
 const debug = require('./util/debug')('main:connect');
-const nanoPromise = require('./util/nanoPromise');
-
-const nanoAgent = new agentkeepalive({
-  maxFreeSockets: 50,
-  timeout: 1000 * 60 * 5
-});
+const getNano = require('./util/nanoShim');
 
 const authRenewal = config.authRenewal * 1000;
 
@@ -33,24 +25,7 @@ function open() {
 async function getGlobalNano() {
   debug.trace('renew CouchDB cookie');
   if (config.url && config.username && config.password) {
-    let _nano = nanoLib({
-      url: config.url,
-      requestDefaults: {
-        agent: nanoAgent
-      }
-    });
-    const cookie = await nanoPromise.authenticate(
-      _nano,
-      config.username,
-      config.password
-    );
-    return nanoLib({
-      url: config.url,
-      cookie,
-      requestDefaults: {
-        agent: nanoAgent
-      }
-    });
+    return getNano(config.url, config.username, config.password);
   } else {
     throw new CouchError(
       'rest-on-couch cannot be used without url, username and password',

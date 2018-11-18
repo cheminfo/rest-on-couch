@@ -1,10 +1,8 @@
 'use strict';
 
-const nanoPromise = require('../../src/util/nanoPromise');
-
 module.exports = function (db, entry) {
   processEntry(entry);
-  return nanoPromise.insertDocument(db, entry);
+  return db.insertDocument(entry);
 };
 
 function processEntry(entry) {
