@@ -1,11 +1,11 @@
 'use strict';
 
+const got = require('got');
 const LocalStrategy = require('passport-local').Strategy;
 
 const { auditLogin } = require('../../../audit/actions');
 const couchUrl = require('../../../config/config').globalConfig.url;
 const isEmail = require('../../../util/isEmail');
-const request = require('../../../util/requestPromise');
 const util = require('../../middleware/util');
 const auth = require('../../middleware/auth');
 
@@ -30,15 +30,15 @@ exports.init = function (passport, router) {
             return done(null, false, 'username must be an email');
           }
           try {
-            let res = await request.post(`${couchUrl}/_session`, {
-              form: {
+            const res = (await got.post(`${couchUrl}/_session`, {
+              json: true,
+              body: {
                 name: username,
                 password: password
               },
-              resolveWithFullResponse: true
-            });
+              throwHttpErrors: false
+            })).body;
 
-            res = JSON.parse(res.body);
             if (res.error) {
               auditLogin(username, false, 'couchdb', req.ctx);
               return done(null, false, res.reason);
