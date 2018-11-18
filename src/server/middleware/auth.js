@@ -1,10 +1,7 @@
 'use strict';
 
+const got = require('got');
 const passport = require('koa-passport');
-const superagent = require('superagent-promise')(
-  require('superagent'),
-  Promise
-);
 
 const request = require('../../util/requestPromise');
 const connect = require('../../connect');
@@ -109,12 +106,18 @@ async function getUserEmailFromToken(ctx) {
 
   for (let i = 0; i < config.authServers.length; i++) {
     // eslint-disable-next-line no-await-in-loop
-    const res = await superagent
-      .get(`${config.authServers[i].replace(/\/$/, '')}/_session`)
-      .set('cookie', token);
-    const parsed = JSON.parse(res.text);
-    if (parsed.userCtx) {
-      return parsed.userCtx.name;
+    const res = await got(
+      `${config.authServers[i].replace(/\/$/, '')}/_session`,
+      {
+        json: true,
+        headers: {
+          cookie: token
+        }
+      }
+    );
+
+    if (res.body && res.body.userCtx) {
+      return res.body.userCtx.name;
     }
   }
 
