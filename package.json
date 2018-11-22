@@ -31,7 +31,7 @@
     "prettier": "prettier-eslint bin/*.js src/**/*.js test/**/*.js --write",
     "start:dev": "webpack-dev-server --mode development --content-base ./public --progress",
     "start:prod": "NODE_ENV=production npm run build && node bin/rest-on-couch-server.js",
-    "start:devserver": "cross-env REST_ON_COUCH_HOME_DIR=test/homedir DEBUG=couch:* nodemon bin/rest-on-couch-server.js --config=conf/devConfig.js",
+    "start:devserver": "cross-env REST_ON_COUCH_HOME_DIR=test/homedir DEBUG=couch:* nodemon --ignore ./src/client bin/rest-on-couch-server.js --config=conf/devConfig.js",
     "test": "npm run test-only && npm run eslint",
     "test-coverage": "npm run test-only -- --coverage",
     "test-only": "jest --runInBand",
