@@ -1,9 +1,11 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
+import { clearGroupError, clearGroupSuccess } from '../actions/db';
 
 import GroupDataEditor from './GroupDataEditor';
 import EditableTextField from './EditableTextField';
-import Ephemere from './Ephemere';
 
 class GroupEditor extends PureComponent {
   render() {
@@ -14,7 +16,9 @@ class GroupEditor extends PureComponent {
       removeGroup,
       setGroupProperties,
       setLdapGroupProperties,
-      syncLdapGroup
+      syncLdapGroup,
+      clearGroupSuccess,
+      clearGroupError
     } = this.props;
     return (
       <div>
@@ -118,9 +122,18 @@ class GroupEditor extends PureComponent {
               </div>
             </div>
             {group.success ? (
-              <Ephemere>
-                <div className="alert alert-success">{group.success}</div>
-              </Ephemere>
+              <div
+                className="alert alert-success"
+                style={{ display: 'flex', justifyContent: 'space-between' }}
+              >
+                <div>{group.success}</div>
+                <div
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => clearGroupSuccess(group.name)}
+                >
+                  close
+                </div>
+              </div>
             ) : null}
             {group.error ? (
               <div className="alert alert-danger">{group.error}</div>
@@ -139,4 +152,7 @@ GroupEditor.propTypes = {
   removeValueFromGroup: PropTypes.func.isRequired
 };
 
-export default GroupEditor;
+export default connect(
+  null,
+  { clearGroupError, clearGroupSuccess }
+)(GroupEditor);

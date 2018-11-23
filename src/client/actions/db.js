@@ -31,6 +31,24 @@ export const setMemberships = createAction(SET_MEMBERSHIPS);
 
 export const UPDATE_GROUP = 'UPDATE_GROUP';
 
+export const CLEAR_GROUP_SUCCESS = 'CLEAR_GROUP_SUCCESS';
+
+export const CLEAR_GROUP_ERROR = 'CLEAR_GROUP_ERROR';
+
+export function clearGroupSuccess(groupName) {
+  return {
+    type: CLEAR_GROUP_SUCCESS,
+    meta: groupName
+  };
+}
+
+export function clearGroupError(groupName) {
+  return {
+    type: CLEAR_GROUP_ERROR,
+    meta: groupName
+  };
+}
+
 export function addValueToGroup(groupName, type, value) {
   return updateGroup(groupName, type, value, 'PUT');
 }

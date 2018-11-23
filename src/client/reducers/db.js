@@ -1,3 +1,5 @@
+import { produce } from 'immer';
+
 import {
   GET_DB_LIST,
   SET_USER_RIGHTS,
@@ -7,7 +9,9 @@ import {
   SET_MEMBERSHIPS,
   CREATE_GROUP,
   REMOVE_GROUP,
-  UPDATE_GROUP
+  UPDATE_GROUP,
+  CLEAR_GROUP_SUCCESS,
+  CLEAR_GROUP_ERROR
 } from '../actions/db';
 
 const initialState = {
@@ -19,6 +23,20 @@ const initialState = {
 
 const dbReducer = (state = initialState, action) => {
   switch (action.type) {
+    case CLEAR_GROUP_ERROR: {
+      const index = getGroupIndex(state.userGroups, action);
+      const newState = produce(state, (draft) => {
+        draft.userGroups[index].error = null;
+      });
+      return newState;
+    }
+    case CLEAR_GROUP_SUCCESS: {
+      const index = getGroupIndex(state.userGroups, action);
+      const newState = produce(state, (draft) => {
+        draft.userGroups[index].success = null;
+      });
+      return newState;
+    }
     case `${GET_DB_LIST}_FULFILLED`:
       return Object.assign({}, state, { dbList: action.payload });
     case SET_USER_RIGHTS:
