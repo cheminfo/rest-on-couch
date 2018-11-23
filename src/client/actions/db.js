@@ -38,29 +38,29 @@ export const CLEAR_GROUP_ERROR = 'CLEAR_GROUP_ERROR';
 export function clearGroupSuccess(groupName) {
   return {
     type: CLEAR_GROUP_SUCCESS,
-    meta: groupName
+    meta: { groupName }
   };
 }
 
 export function clearGroupError(groupName) {
   return {
     type: CLEAR_GROUP_ERROR,
-    meta: groupName
+    meta: { groupName }
   };
 }
 
-export function addValueToGroup(groupName, type, value) {
-  return updateGroup(groupName, type, value, 'PUT');
+export function addValueToGroup(groupName, type, value, options) {
+  return updateGroup(groupName, type, value, 'PUT', options);
 }
 
-export function removeValueFromGroup(groupName, type, value) {
-  return updateGroup(groupName, type, value, 'DELETE');
+export function removeValueFromGroup(groupName, type, value, options) {
+  return updateGroup(groupName, type, value, 'DELETE', options);
 }
 
-function updateGroup(groupName, type, value, method) {
+function updateGroup(groupName, type, value, method, options) {
   return {
     type: UPDATE_GROUP,
-    meta: groupName,
+    meta: Object.assign({}, options, { groupName }),
     payload: doUpdateGroup(groupName, type, value, method)
   };
 }
@@ -111,7 +111,7 @@ export function removeGroup(groupName) {
   const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
   return {
     type: REMOVE_GROUP,
-    meta: groupName,
+    meta: { groupName },
     payload: apiFetchJSON(groupUrl, { method: 'DELETE' })
   };
 }
@@ -121,7 +121,7 @@ export function setGroupProperties(groupName, properties) {
   const setPropUrl = `${groupUrl}/properties`;
   return {
     type: UPDATE_GROUP,
-    meta: groupName,
+    meta: { groupName },
     payload: doUpdateGroupProperties(groupUrl, setPropUrl, properties)
   };
 }
@@ -131,7 +131,7 @@ export function setLdapGroupProperties(groupName, properties) {
   const setPropUrl = `${groupUrl}/ldap/properties`;
   return {
     type: UPDATE_GROUP,
-    meta: groupName,
+    meta: { groupName },
     payload: doUpdateGroupProperties(groupUrl, setPropUrl, properties)
   };
 }
@@ -147,7 +147,7 @@ async function doUpdateGroupProperties(groupUrl, setPropUrl, properties) {
 export function syncLdapGroup(groupName) {
   return {
     type: UPDATE_GROUP,
-    meta: groupName,
+    meta: { groupName },
     payload: doLdapSync(groupName)
   };
 }
