@@ -2,7 +2,6 @@
 
 const crypto = require('crypto');
 
-const agentkeepalive = require('agentkeepalive');
 const got = require('got');
 
 const { DESIGN_DOC_NAME } = require('../constants');
@@ -13,11 +12,6 @@ const CouchError = require('./CouchError');
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
-const agent = new agentkeepalive({
-  maxFreeSockets: 50,
-  timeout: 1000 * 60 * 5
-});
-
 class NanoShim {
   constructor(url, cookie) {
     this.client = got.extend({
@@ -25,8 +19,7 @@ class NanoShim {
       json: true,
       headers: {
         cookie
-      },
-      agent
+      }
     });
   }
 
