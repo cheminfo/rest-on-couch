@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const http = require('http');
 
 const got = require('got');
 
@@ -14,12 +15,16 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 class NanoShim {
   constructor(url, cookie) {
+    const agent = new http.Agent({
+      timeout: 1000 * 60 * 5
+    });
     this.client = got.extend({
       baseUrl: url,
       json: true,
       headers: {
         cookie
-      }
+      },
+      agent
     });
   }
 
