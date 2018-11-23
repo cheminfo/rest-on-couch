@@ -61,7 +61,7 @@ const dbReducer = (state = initialState, action) => {
         return getNewStateOnGroupError(state, action);
       }
       const newGroupList = state.userGroups.filter(
-        (group) => group.name !== action.meta
+        (group) => group.name !== action.meta.groupName
       );
       return Object.assign({}, state, { userGroups: newGroupList });
     }
@@ -69,13 +69,14 @@ const dbReducer = (state = initialState, action) => {
       if (action.payload.error) {
         return getNewStateOnGroupError(state, action);
       } else {
-        if (action.payload.name !== action.meta) {
+        if (action.payload.name !== action.meta.groupName) {
           throw new Error('should not happen');
         }
         const index = getGroupIndex(state.userGroups, action);
         const newGroupList = state.userGroups.slice();
         newGroupList[index] = action.payload;
-        newGroupList[index].success = 'Group sucessfully updated';
+        newGroupList[index].success =
+          action.meta.success || 'Group sucessfully updated';
         newGroupList[index].error = null;
         return Object.assign({}, state, {
           userGroups: newGroupList
@@ -97,7 +98,9 @@ const dbReducer = (state = initialState, action) => {
 };
 
 function getGroupIndex(userGroups, action) {
-  const index = userGroups.findIndex((group) => group.name === action.meta);
+  const index = userGroups.findIndex(
+    (group) => group.name === action.meta.groupName
+  );
   if (index === -1) {
     throw new Error('should not happen');
   }

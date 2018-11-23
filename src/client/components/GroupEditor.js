@@ -87,10 +87,14 @@ class GroupEditor extends PureComponent {
                   owners={true}
                   data={group.$owners}
                   addValue={(value) =>
-                    addValueToGroup(group.name, 'owners', value)
+                    addValueToGroup(group.name, 'owners', value, {
+                      success: 'Successfully added owner to group'
+                    })
                   }
                   removeValue={(value) =>
-                    removeValueFromGroup(group.name, 'owners', value)
+                    removeValueFromGroup(group.name, 'owners', value, {
+                      success: 'Successfully removed owner from group'
+                    })
                   }
                 />
               </div>
@@ -101,10 +105,14 @@ class GroupEditor extends PureComponent {
                   canAdd={group.groupType !== 'ldap'}
                   data={group.users}
                   addValue={(value) =>
-                    addValueToGroup(group.name, 'users', value)
+                    addValueToGroup(group.name, 'users', value, {
+                      success: 'Successfully added user to group'
+                    })
                   }
                   removeValue={(value) =>
-                    removeValueFromGroup(group.name, 'users', value)
+                    removeValueFromGroup(group.name, 'users', value, {
+                      success: 'Successfully removed user from group'
+                    })
                   }
                 />
               </div>
@@ -113,10 +121,14 @@ class GroupEditor extends PureComponent {
                   type="rights"
                   data={group.rights}
                   addValue={(value) =>
-                    addValueToGroup(group.name, 'rights', value)
+                    addValueToGroup(group.name, 'rights', value, {
+                      success: 'Successfully added right to group'
+                    })
                   }
                   removeValue={(value) =>
-                    removeValueFromGroup(group.name, 'rights', value)
+                    removeValueFromGroup(group.name, 'rights', value, {
+                      success: 'Successfully removed right from group'
+                    })
                   }
                 />
               </div>
@@ -136,7 +148,18 @@ class GroupEditor extends PureComponent {
               </div>
             ) : null}
             {group.error ? (
-              <div className="alert alert-danger">{group.error}</div>
+              <div
+                className="alert alert-danger"
+                style={{ display: 'flex', justifyContent: 'space-between' }}
+              >
+                <div>{group.error}</div>
+                <div
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => clearGroupError(group.name)}
+                >
+                  close
+                </div>
+              </div>
             ) : null}
           </div>
         </div>
