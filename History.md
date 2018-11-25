@@ -1,3 +1,35 @@
+# [7.0.0](https://github.com/cheminfo/rest-on-couch/compare/v6.0.0...v7.0.0) (2018-11-25)
+
+
+### Bug Fixes
+
+* allow a longer socket timeout for CouchDB requests ([#184](https://github.com/cheminfo/rest-on-couch/issues/184)) ([33f0d42](https://github.com/cheminfo/rest-on-couch/commit/33f0d42))
+* don't restart dev roc server when ui files are updated ([d90c40c](https://github.com/cheminfo/rest-on-couch/commit/d90c40c))
+* **api:** only return configured databases in _all_dbs ([d4c42ec](https://github.com/cheminfo/rest-on-couch/commit/d4c42ec))
+* **dev:** use webpack in development mode ([c706f01](https://github.com/cheminfo/rest-on-couch/commit/c706f01))
+* **front:** enhance UX when no db is selected or user is logged out ([560e072](https://github.com/cheminfo/rest-on-couch/commit/560e072))
+* **front:** refetch view data if we go from offline to online ([cf80f1c](https://github.com/cheminfo/rest-on-couch/commit/cf80f1c))
+* **front:** show an error if db is not responding ([8c796f8](https://github.com/cheminfo/rest-on-couch/commit/8c796f8))
+* **front:** simplify home page ([b3ee1ae](https://github.com/cheminfo/rest-on-couch/commit/b3ee1ae))
+* **test:** anonymous can never create entries ([a7a1e89](https://github.com/cheminfo/rest-on-couch/commit/a7a1e89))
+* **ui:** remove unnecessary index fallback ([#182](https://github.com/cheminfo/rest-on-couch/issues/182)) ([b7f4d3d](https://github.com/cheminfo/rest-on-couch/commit/b7f4d3d))
+* correctly pass arguments to debug calls ([5146812](https://github.com/cheminfo/rest-on-couch/commit/5146812))
+
+
+### Features
+
+* add audit actions feature and audit login attempts ([6d1406c](https://github.com/cheminfo/rest-on-couch/commit/6d1406c))
+* add audit design doc ([2d17b31](https://github.com/cheminfo/rest-on-couch/commit/2d17b31))
+* add Dockerfile to this project ([#173](https://github.com/cheminfo/rest-on-couch/issues/173)) ([cb4b560](https://github.com/cheminfo/rest-on-couch/commit/cb4b560))
+* remove autoCreateDatabase option ([0f939c0](https://github.com/cheminfo/rest-on-couch/commit/0f939c0))
+
+
+### BREAKING CHANGES
+
+* The `autoCreateDatabase` option has been removed.
+
+
+
 <a name="6.0.0"></a>
 # [6.0.0](https://github.com/cheminfo/rest-on-couch/compare/v5.8.0...v6.0.0) (2018-10-18)
 
