@@ -8,7 +8,7 @@ const { isValidUsername, ensureRightsArray } = require('./util');
 
 const methods = {
   async createEntryToken(user, uuid) {
-    debug(`createEntryToken (${user}, ${uuid})`);
+    debug('createEntryToken (%s, %s)', user, uuid);
     if (!isValidUsername(user)) {
       throw new CouchError('only a user can create a token', 'unauthorized');
     }
@@ -19,7 +19,7 @@ const methods = {
   },
 
   async createUserToken(user, rights = ['read']) {
-    debug(`createUserToken (${user})`);
+    debug('createUserToken (%s)', user);
     if (!isValidUsername(user)) {
       throw new CouchError('only a user can create a token', 'unauthorized');
     }
@@ -29,7 +29,7 @@ const methods = {
   },
 
   async deleteToken(user, tokenId) {
-    debug(`deleteToken (${user}, ${tokenId})`);
+    debug('deleteToken (%s, %s)', user, tokenId);
     await this.open();
     const tokenValue = await token.getToken(this._db, tokenId);
     if (!tokenValue) {
@@ -42,7 +42,7 @@ const methods = {
   },
 
   async getToken(tokenId) {
-    debug(`getToken (${tokenId})`);
+    debug('getToken (%s)', tokenId);
     await this.open();
     const tokenValue = await token.getToken(this._db, tokenId);
     if (!tokenValue) {
@@ -52,7 +52,7 @@ const methods = {
   },
 
   async getTokens(user) {
-    debug(`getTokens (${user})`);
+    debug('getTokens (%s)', user);
     await this.open();
     return token.getTokens(this._db, user);
   }

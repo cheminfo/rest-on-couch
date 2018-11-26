@@ -9,7 +9,7 @@ const validateMethods = require('./validate');
 
 const methods = {
   async queryEntriesByRight(user, view, right, options) {
-    debug(`queryEntriesByRights (${user}, ${view}, ${right})`);
+    debug('queryEntriesByRights (%s, %s, %s)', user, view, right);
     await this.open();
     options = options || {};
     if (!this._viewsWithOwner.has(view)) {
@@ -97,7 +97,7 @@ const methods = {
   },
 
   async queryViewByUser(user, view, options, rights) {
-    debug(`queryViewByUser (${user}, ${view})`);
+    debug('queryViewByUser (%s, %s)', user, view);
     options = Object.assign({}, options);
     await this.open();
     if (options.reduce) {

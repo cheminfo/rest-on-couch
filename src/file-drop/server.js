@@ -102,14 +102,14 @@ if (config.debugrest) {
 app.use(router.routes());
 
 function printError(err) {
-  debug.error(`unexpected error: ${err.stack || err}`);
+  debug.error('unexpected error:', err.stack || err);
 }
 
 module.exports.start = function () {
   if (_started) return _started;
   _started = new Promise(function (resolve) {
     http.createServer(app.callback()).listen(config.fileDropPort, function () {
-      debug.warn(`file-drop running on localhost:${config.fileDropPort}`);
+      debug.warn('file-drop running on localhost:%s', config.fileDropPort);
       resolve(app);
     });
   });

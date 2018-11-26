@@ -35,7 +35,7 @@ if (config.auth) {
   authPlugins.forEach((authPlugin) => {
     const pluginConfig = config.auth[authPlugin];
     if (!pluginConfig) {
-      debug(`plugin ${authPlugin} not configured`);
+      debug('plugin %s not configured', authPlugin);
       return;
     }
     authPluginConfig[authPlugin] = Object.assign(
@@ -44,7 +44,7 @@ if (config.auth) {
       pluginConfig
     );
     try {
-      debug(`loading auth plugin: ${authPlugin}`);
+      debug('loading auth plugin: %s', authPlugin);
       // eslint-disable-next-line import/no-dynamic-require
       require(`../auth/${authPlugin}/index.js`).init(
         passport,

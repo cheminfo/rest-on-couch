@@ -60,7 +60,7 @@ const methods = {
   },
 
   async deleteGroup(groupName, user) {
-    debug(`deleteGroup (${groupName}, ${user})`);
+    debug('deleteGroup (%s, %s)', groupName, user);
     await this.open();
 
     const doc = await nanoMethods.getGroup(this._db, groupName);
@@ -81,7 +81,7 @@ const methods = {
   },
 
   async createGroup(groupName, user, rights, groupType) {
-    debug(`createGroup (${groupName}, ${user})`);
+    debug('createGroup (%s, %s)', groupName, user);
     if (!Array.isArray(rights)) rights = [];
 
     await this.open();
@@ -115,7 +115,7 @@ const methods = {
   },
 
   async getGroup(groupName, user) {
-    debug(`getGroup (${groupName}, ${user})`);
+    debug('getGroup (%s, %s)', groupName, user);
     await this.open();
     const doc = await nanoMethods.getGroup(this._db, groupName);
     if (!doc) {
@@ -138,7 +138,7 @@ const methods = {
    * @return {Array}
    */
   async getGroups(user) {
-    debug.trace(`getGroups (${user})`);
+    debug.trace('getGroups (%s)', user);
     await this.open();
     const ok = await validate.checkGlobalRight(this, user, 'readGroup');
     if (ok) {
@@ -159,7 +159,7 @@ const methods = {
    * @return {Array}
    */
   async getGroupsByRight(user, right) {
-    debug.trace(`getGroupsByRight (${user}, ${right})`);
+    debug.trace('getGroupsByRight (%s, %s)', user, right);
     await this.open();
     // Search in default groups
     const defaultGroups = await validate.getDefaultGroups(this._db, user, true);
@@ -174,7 +174,7 @@ const methods = {
   },
 
   async addUsersToGroup(uuid, user, usernames) {
-    debug(`addUserToGroup (${uuid}, ${user}, ${usernames})`);
+    debug('addUserToGroup (%s, %s, %o)', uuid, user, usernames);
     await this.open();
     usernames = util.ensureUsersArray(usernames);
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
@@ -183,7 +183,7 @@ const methods = {
   },
 
   async removeUsersFromGroup(uuid, user, usernames) {
-    debug(`removeUsersFromGroup (${uuid}, ${user}, ${usernames})`);
+    debug('removeUsersFromGroup (%s, %s, %o)', uuid, user, usernames);
     await this.open();
     usernames = util.ensureUsersArray(usernames);
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
@@ -192,7 +192,7 @@ const methods = {
   },
 
   async addRightsToGroup(uuid, user, rights) {
-    debug(`addRightsToGroup (${uuid}, ${user}, ${rights})`);
+    debug('addRightsToGroup (%s, %s, %o)', uuid, user, rights);
     await this.open();
     rights = util.ensureRightsArray(rights);
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
@@ -201,7 +201,7 @@ const methods = {
   },
 
   async removeRightsFromGroup(uuid, user, rights) {
-    debug(`removeRightsFromGroup (${uuid}, ${user}, ${rights})`);
+    debug('removeRightsFromGroup (%s, %s, %o)', uuid, user, rights);
     await this.open();
     rights = util.ensureRightsArray(rights);
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
@@ -210,7 +210,7 @@ const methods = {
   },
 
   async setGroupProperties(uuid, user, properties = {}) {
-    debug(`setGroupProperties (${uuid}, ${user}, ${properties})`);
+    debug('setGroupProperties (%s, %s, %o)', uuid, user, properties);
     await this.open();
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
     if (properties.description) {
@@ -220,7 +220,7 @@ const methods = {
   },
 
   async setLdapGroupProperties(uuid, user, properties = {}) {
-    debug(`setLdapGroupProperties (${uuid}, ${user}, ${properties}`);
+    debug('setLdapGroupProperties (%s, %s, %o)', uuid, user, properties);
     await this.open();
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
     if (group.groupType !== 'ldap') {
@@ -239,7 +239,7 @@ const methods = {
   },
 
   async syncLdapGroup(uuid, user) {
-    debug.trace(`sync LDAP group (${uuid}, ${user})`);
+    debug.trace('sync LDAP group (%s, %s)', uuid, user);
     await this.open();
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
     if (group.groupType !== 'ldap') {
@@ -249,7 +249,7 @@ const methods = {
   },
 
   async syncLDAPGroups(groups) {
-    debug(`sync LDAP groups in database ${this._db.dbName}`);
+    debug('sync LDAP groups in database %s', this._db.dbName);
     await this.open();
     // Find all the ldap groups
     debug.trace('sync all ldap groups');
@@ -268,7 +268,7 @@ const methods = {
 };
 
 async function syncOneLdapGroup(ctx, group) {
-  debug.trace(`sync ldap group ${group._id}`);
+  debug.trace('sync ldap group %s', group._id);
   const couchOptions = ctx._couchOptions;
   const entries = await ldapSearch(
     {

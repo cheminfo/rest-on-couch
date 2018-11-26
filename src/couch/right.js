@@ -47,25 +47,25 @@ const methods = {
   },
 
   addGlobalRight(user, type, target) {
-    debug(`addGlobalRight (${user}, ${type}, ${target})`);
+    debug('addGlobalRight (%s, %s, %s)', user, type, target);
     return this.editGlobalRight(user, type, target, 'add');
   },
 
   removeGlobalRight(user, type, target) {
-    debug(`removeGlobalRight (${user}, ${type}, ${target})`);
+    debug('removeGlobalRight (%s, %s, %s)', user, type, target);
     return this.editGlobalRight(user, type, target, 'remove');
   },
 
   async getGlobalRightsDocument(user) {
     await this.open();
-    debug(`getGlobalRightsDocument (${user})`);
+    debug('getGlobalRightsDocument (%s)', user);
     checkAdmin(this, user);
     return getGlobalRightsDocument(this);
   },
 
   async getGlobalRightUsers(user, type) {
     await this.open();
-    debug(`getGlobalRightUsers (${user}, ${type})`);
+    debug('getGlobalRightUsers (%s, %s)', user, type);
     checkAdmin(this, user);
     checkGlobalType(type);
     const doc = await getGlobalRightsDocument(this);
@@ -74,14 +74,14 @@ const methods = {
 
   async getGlobalDefaultGroups(user) {
     await this.open();
-    debug(`getGlobalDefaultGroups (${user})`);
+    debug('getGlobalDefaultGroups (%s)', user);
     checkAdmin(this, user);
     return getDefaultGroupsDocument(this);
   },
 
   async setGlobalDefaultGroups(user, data) {
     await this.open();
-    debug(`setGlobalDefaultGroups (${user})`);
+    debug('setGlobalDefaultGroups (%s)', user);
     checkAdmin(this, user);
     if (!data) {
       throw new CouchError('Missing data', 'invalid');
@@ -94,7 +94,7 @@ const methods = {
 
   async editGlobalDefaultGroup(user, genUser, group, action) {
     await this.open();
-    debug(`addGlobalDefaultGroup (${user}, ${genUser}, ${group})`);
+    debug('addGlobalDefaultGroup (%s, %s, %s)', user, genUser, group);
     if (action !== 'add' && action !== 'remove') {
       throw new CouchError(
         'Edit global default group invalid action',
@@ -116,13 +116,13 @@ const methods = {
 
   async removeGlobalDefaultGroup(user, genUser, group) {
     await this.open();
-    debug(`removeGlobalDefaultGroup (${user}, ${genUser}, ${group})`);
+    debug('removeGlobalDefaultGroup (%s, %s, %s)', user, genUser, group);
     return this.editGlobalDefaultGroup(user, genUser, group, 'remove');
   },
 
   async addGlobalDefaultGroup(user, genUser, group) {
     await this.open();
-    debug(`addGlobalDefaultGroup (${user}, ${genUser}, ${group})`);
+    debug('addGlobalDefaultGroup (%s, %s, %s)', user, genUser, group);
     return this.editGlobalDefaultGroup(user, genUser, group, 'add');
   },
 
@@ -181,7 +181,7 @@ const methods = {
   },
 
   async hasRightForEntry(uuid, user, right, options) {
-    debug(`has right for entry (${uuid}, ${user}, ${right})`);
+    debug('has right for entry (%s, %s, %s)', uuid, user, right);
     await this.open();
     try {
       await this.getEntryWithRights(uuid, user, right, options);

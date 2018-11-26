@@ -72,13 +72,13 @@ exports.format = function (log) {
 
 exports.methods = {
   async log(message, level) {
-    debug(`log (${message}, ${level})`);
+    debug('log (%s, %s)', message, level);
     await this.open();
     return exports.log(this._db, this._logLevel, message, level);
   },
 
   async getLogs(epoch) {
-    debug(`getLogs (${epoch}`);
+    debug('getLogs (%s)', epoch);
     await this.open();
     return exports.getLogs(this._db, epoch);
   }

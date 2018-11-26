@@ -138,7 +138,7 @@ function isOwner(owners, user) {
 }
 
 async function checkGlobalRight(ctx, user, right) {
-  debug.trace(`checkGlobalRight (${user}, ${right})`);
+  debug.trace('checkGlobalRight (%s, %s)', user, right);
   if (ctx.isSuperAdmin(user)) {
     return true;
   } else if (
@@ -159,16 +159,16 @@ async function checkGlobalRight(ctx, user, right) {
       result[i] === user ||
       (result[i] === 'anyuser' && user !== 'anonymous')
     ) {
-      debug.trace(`user ${user} has global right`);
+      debug.trace('user %s has global right', user);
       return true;
     }
   }
-  debug.trace(`user ${user} does not have global right`);
+  debug.trace('user %s does not have global right', user);
   return false;
 }
 
 async function checkRightAnyGroup(ctx, user, right) {
-  debug.trace(`checkRightAnyGroup (${user}, ${right}`);
+  debug.trace('checkRightAnyGroup (%s, %s)', user, right);
   const db = ctx._db;
   const hasGlobal = await checkGlobalRight(ctx, user, right);
   if (hasGlobal) return true;

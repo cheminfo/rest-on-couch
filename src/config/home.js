@@ -26,7 +26,7 @@ function getHomeConfig(homeDir) {
     return null;
   }
 
-  debug(`get home dir config from ${homeDir}`);
+  debug('get home dir config from %s', homeDir);
   result.homeDir = homeDir;
   try {
     // eslint-disable-next-line import/no-dynamic-require

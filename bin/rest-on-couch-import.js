@@ -50,7 +50,7 @@ async function doContinuous(waitTime) {
   while (true) {
     debug('starting full import');
     await importAll();
-    debug(`now waiting ${waitTime / 1000} seconds`);
+    debug('now waiting %d seconds', waitTime / 1000);
     await delay(waitTime);
   }
 }
@@ -58,9 +58,9 @@ async function doContinuous(waitTime) {
 async function importAll() {
   const homeDir = getHomeDirOrDie();
   const limit = program.limit || 0;
-  debug(`limit is ${limit}. Searching files...`);
+  debug('limit is %d. Searching files...', limit);
   const files = await findFiles(homeDir, limit);
-  debug(`found ${files.length} files to import`);
+  debug('found %d files to import', files.length);
   const waitingFiles = [];
   const readyFiles = [];
   for (const file of files) {
@@ -270,7 +270,7 @@ function getHomeDirOrDie() {
 
 async function processFile(file) {
   const { database, importName, path: filePath } = file;
-  debug.debug(`process file ${filePath}`);
+  debug.debug('process file %s', filePath);
   const parsedPath = path.parse(filePath);
   const splitParsedPath = parsedPath.dir.split('/');
   const toProcess = splitParsedPath.indexOf('to_process');
@@ -290,9 +290,9 @@ async function processFile(file) {
         'processed'
       );
     } else if (importResult.skip) {
-      debug.debug(`skipped import (${importResult.skip})`);
+      debug.debug('skipped import (%s)', importResult.skip);
     } else {
-      debug.error(`unexpected import result: ${JSON.stringify(importResult)}`);
+      debug.error('unexpected import result: %o', importResult);
     }
   } catch (e) {
     if (e.skip) return;
@@ -301,7 +301,7 @@ async function processFile(file) {
       debug.warn('no import configuration found, skipping this file');
       return;
     }
-    debug.error(`${e}\n${e.stack}`);
+    debug.error('import error: %o, %s', e, e.stack);
     await moveFile(
       filePath,
       parsedPath.base,
@@ -340,7 +340,7 @@ function shouldIgnore(name) {
     if (program.args.length !== 3) {
       program.help();
     }
-    debug(`import with arguments: ${program.args.join(' ')}`);
+    debug('import with arguments: %o', program.args);
     const filePath = path.resolve(program.args[0]);
     const database = program.args[1];
     const importName = program.args[2];
@@ -354,7 +354,7 @@ function shouldIgnore(name) {
     }
   } else if (program.continuous) {
     const waitTime = program.wait * 1000;
-    debug(`continuous import. Wait time is ${program.wait}s`);
+    debug('continuous import. Wait time is %d s', program.wait);
     await doContinuous(waitTime);
   } else {
     await importAll();

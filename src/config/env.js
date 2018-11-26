@@ -13,7 +13,7 @@ for (const name in process.env) {
       .replace(/_([a-z])/g, function (value) {
         return value[1].toUpperCase();
       });
-    debug(`Setting config from env, ${realName}: ${process.env[name]}`);
+    debug('setting config from env, %s: %s', realName, process.env[name]);
     envConfig[realName] = process.env[name];
   }
 }
