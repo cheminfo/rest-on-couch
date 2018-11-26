@@ -32,7 +32,7 @@ exports.createEntry = composeWithError(async (ctx) => {
     return;
   }
   const { couch, userEmail } = ctx.state;
-  debug(`create Zenodo entry: ${entryId} (${userEmail})`);
+  debug('create Zenodo entry: %s (%s)', entryId, userEmail);
   const zenodoEntry = await couch.getEntryWithRights(
     entryId,
     userEmail,

@@ -24,7 +24,7 @@ const app = new Koa();
 let _started;
 
 app.use(async function (ctx, next) {
-  debug.trace(`Method: ${ctx.method}; Path: ${ctx.path}`);
+  debug.trace('Method: %s; Path: %s', ctx.method, ctx.path);
   await next();
 });
 
@@ -36,7 +36,7 @@ app.proxy = config.proxy;
 
 // support proxyPrefix in this.redirect()
 let proxyPrefix = config.proxyPrefix;
-debug(`proxy prefix: ${proxyPrefix}`);
+debug('proxy prefix: %s', proxyPrefix);
 if (proxyPrefix !== '') {
   const _redirect = app.context.redirect;
   app.context.redirect = function (url, alt) {
@@ -56,7 +56,7 @@ app.use(
 app.use(koaStatic(path.resolve(__dirname, '../../public')));
 
 const allowedOrigins = config.allowedOrigins;
-debug(`allowed cors origins: ${allowedOrigins}`);
+debug('allowed cors origins: %o', allowedOrigins);
 app.use(
   cors({
     origin: (ctx) => {
@@ -129,7 +129,7 @@ module.exports.start = function () {
     initCouch().then(
       () => {
         http.createServer(app.callback()).listen(config.port, function () {
-          debug.warn(`running on localhost: ${config.port}`);
+          debug.warn('running on localhost: %d', config.port);
           resolve(app);
         });
       },
@@ -148,5 +148,5 @@ module.exports.start = function () {
 module.exports.app = app;
 
 function printError(err) {
-  debug.error(`unexpected error: ${err.stack || err}`);
+  debug.error('unexpected error', err.stack || err);
 }

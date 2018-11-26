@@ -50,7 +50,7 @@ const methods = {
   },
 
   async addOwnersToDoc(uuid, user, owners, type, options) {
-    debug(`addOwnersToDoc (${uuid}, ${user})`);
+    debug('addOwnersToDoc (%s, %s)', uuid, user);
     await this.open();
     owners = util.ensureOwnersArray(owners);
     const doc = await this.getDocByRights(uuid, user, 'owner', type, options);
@@ -59,7 +59,7 @@ const methods = {
   },
 
   async removeOwnersFromDoc(uuid, user, owners, type, options) {
-    debug.trace(`removeOwnersFromDoc (${uuid}, ${user})`);
+    debug.trace('removeOwnersFromDoc (%s, %s)', uuid, user);
     await this.open();
     owners = util.ensureOwnersArray(owners);
     const doc = await this.getDocByRights(uuid, user, 'owner', type, options);

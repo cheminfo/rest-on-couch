@@ -139,7 +139,7 @@ exports.createUser = async (ctx) => {
   }
 
   if (currentUser !== null) {
-    debug.debug('Cannot create couchdb user, user already exists');
+    debug('Cannot create couchdb user, user already exists');
     decorateError(ctx, 400, 'user already exists');
     return;
   }

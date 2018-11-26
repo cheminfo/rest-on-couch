@@ -11,7 +11,7 @@ const util = require('./util');
 
 const methods = {
   async getEntryWithRights(uuid, user, rights, options = {}) {
-    debug(`getEntryWithRights (${uuid}, ${user}, ${rights})`);
+    debug('getEntryWithRights (%s, %s, %o)', uuid, user, rights);
     await this.open();
 
     const doc = await this._db.getDocument(uuid);
@@ -36,7 +36,7 @@ const methods = {
         'entry'
       )
     ) {
-      debug.trace(`user ${user} has access`);
+      debug.trace('user %s has access', user);
       if (!options) {
         return doc;
       } else {
@@ -44,7 +44,7 @@ const methods = {
       }
     }
 
-    debug.trace(`user ${user} has no ${rights} access`);
+    debug.trace('user %s has no %o access', user, rights);
     throw new CouchError('user has no access', 'unauthorized');
   },
 
@@ -55,13 +55,13 @@ const methods = {
   // this function can only return an entry for its primary owner
   async getEntryById(id, user, options) {
     await this.open();
-    debug(`getEntryById (${id}, ${user})`);
+    debug('getEntryById (%s, %s)', id, user);
     const uuid = await this.getDocUuidFromId(id, user, 'entry');
     return this.getDocByRights(uuid, user, 'owner', 'entry', options);
   },
 
   async deleteEntry(uuid, user) {
-    debug(`deleteEntry (${uuid}, ${user})`);
+    debug('deleteEntry (%s, %s)', uuid, user);
     const entry = await this.getEntryWithRights(uuid, user, 'delete');
     entry._deleted = true;
     return nanoMethods.saveEntry(this._db, entry, user);
@@ -70,7 +70,7 @@ const methods = {
   // Create entry if does not exist
   async createEntry(id, user, options) {
     options = options || {};
-    debug(`createEntry (id: ${id}, user: ${user}, kind: ${options.kind})`);
+    debug('createEntry (id: %s, user: %s, kind: %s)', id, user, options.kind);
     await this.open();
     const result = await getUniqueEntryById(this, user, id);
 
@@ -121,7 +121,7 @@ const methods = {
   },
 
   async getEntriesByUserAndRights(user, rights = ['read'], options = {}) {
-    debug(`getEntriesByUserAndRights (${user}, ${rights})`);
+    debug('getEntriesByUserAndRights (%s, %o)', user, rights);
     rights = ensureStringArray(rights, 'rights');
 
     const limit = options.limit;
@@ -204,7 +204,12 @@ const methods = {
   },
 
   async insertEntry(entry, user, options) {
-    debug(`insertEntry (id: ${entry._id}, user: ${user}, options: ${options})`);
+    debug(
+      'insertEntry (id: %s, user: %s, options: %o)',
+      entry._id,
+      user,
+      options
+    );
     await this.open();
 
     options = options || {};
@@ -238,7 +243,7 @@ const methods = {
         }
       }
     } else if (entry.$id) {
-      debug.trace('entry has no _id but has $id');
+      debug.trace('entry has no _id but has $id: %o', entry.$id);
       if (await getUniqueEntryById(this, user, entry.$id)) {
         throw new CouchError('entry already exists', 'conflict');
       } else {

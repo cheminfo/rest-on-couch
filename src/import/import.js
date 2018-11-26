@@ -13,7 +13,7 @@ exports.import = async function importFile(
   filePath,
   options = {}
 ) {
-  debug(`import ${filePath} (${database}, ${importName})`);
+  debug('import %s (%s, %s)', filePath, database, importName);
 
   const dryRun = !!options.dryRun;
 

@@ -28,7 +28,7 @@ const methods = {
   },
 
   async getInitPromise() {
-    debug(`initialize db ${this._databaseName}`);
+    debug('initialize db %s', this._databaseName);
     const db = await this._nano.hasDatabase(this._databaseName);
     if (!db) {
       debug('db not found: %s', this._databaseName);
@@ -87,7 +87,7 @@ async function checkSecurity(db, admin) {
 async function checkDesignDoc(couch) {
   const db = couch._db;
   const { dbName } = db;
-  debug.trace(`check design documents for database ${dbName}`);
+  debug.trace('check design documents for database %s', dbName);
   var custom = couch._customDesign;
   custom.views = custom.views || {};
   const designNames = new Set();
@@ -105,7 +105,10 @@ async function checkDesignDoc(couch) {
     // eslint-disable-next-line no-await-in-loop
     const oldDesignDoc = await db.getDocument(`_design/${designName}`);
     if (designDocNeedsUpdate(newDesignDoc, oldDesignDoc)) {
-      debug.trace(`design doc ${designName} needs update, saving new revision`);
+      debug.trace(
+        'design doc %s needs update, saving new revision',
+        designName
+      );
       // eslint-disable-next-line no-await-in-loop
       await createDesignDoc(
         db,

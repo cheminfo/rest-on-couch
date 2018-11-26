@@ -9,7 +9,7 @@ const validate = require('./validate');
 
 const methods = {
   async editUser(user, data) {
-    debug(`editUser (${user})`);
+    debug('editUser (%s)', user);
     if (typeof data !== 'object' || data === null) {
       throw new CouchError('user data should be an object', 'bad argument');
     }
@@ -29,13 +29,13 @@ const methods = {
   },
 
   async getUser(user) {
-    debug(`getUser (${user})`);
+    debug('getUser (%s)', user);
     await this.open();
     return getUser(this._db, user);
   },
 
   getUserInfo(user) {
-    debug(`getUserInfo (${user})`);
+    debug('getUserInfo (%s)', user);
     return this._getUserInfo(user);
   },
 
