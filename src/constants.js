@@ -8,7 +8,8 @@ const globalRightTypes = [
   'create',
   'readGroup',
   'writeGroup',
-  'createGroup'
+  'createGroup',
+  'owner'
 ];
 
 // administrators only have these rights
