@@ -60,8 +60,8 @@ describe('import', () => {
           data._attachments['other/jpath/testFilename.txt'];
         expect(mainAttachment).toBeDefined();
         expect(secondaryAttachment).toBeDefined();
-        expect(mainAttachment.content_type).toBe('plain/text');
-        expect(secondaryAttachment.content_type).toBe('plain/text');
+        expect(mainAttachment.content_type).toBe('text/plain');
+        expect(secondaryAttachment.content_type).toBe('text/plain');
       });
     });
   });

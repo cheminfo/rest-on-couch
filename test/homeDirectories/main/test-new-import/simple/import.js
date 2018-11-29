@@ -8,7 +8,7 @@ module.exports = async function nmrImport(ctx, result) {
   result.field = 'field';
   result.jpath = ['jpath', 'in', 'document'];
   if (ctx.fileExt === '.txt') {
-    result.content_type = 'plain/text';
+    result.content_type = 'text/plain';
   }
   result.content = {
     sideEffect: true
@@ -20,7 +20,7 @@ module.exports = async function nmrImport(ctx, result) {
     contents: Buffer.from('other attachment content', 'utf-8'),
     field: 'testField',
     filename: 'testFilename.txt',
-    content_type: 'plain/text'
+    content_type: 'text/plain'
   });
   result.metadata = {
     hasMetadata: true

@@ -9,7 +9,7 @@ module.exports = async function importFunction(ctx, result) {
   result.field = 'field';
   result.jpath = ['jpath', 'in', 'document'];
   if (ctx.fileExt === '.txt') {
-    result.content_type = 'plain/text';
+    result.content_type = 'text/plain';
   }
   result.metadata = {
     hasMetadata: true
