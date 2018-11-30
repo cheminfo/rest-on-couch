@@ -13,6 +13,14 @@ const CouchError = require('./CouchError');
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
+const CRLF = Buffer.from('\r\n', 'utf8');
+const CRLFCRLF = Buffer.from('\r\n\r\n', 'utf8');
+const MIMETYPE = Buffer.from(
+  '\r\nContent-Type: application/json\r\n\r\n',
+  'utf8'
+);
+const ENDBOUNDARY = Buffer.from('--', 'utf8');
+
 class NanoShim {
   constructor(url, cookie) {
     const agent = new http.Agent({
@@ -216,28 +224,26 @@ class NanoDbShim {
     query = prepareQuery(query);
     const docId = cleanDocId(doc._id);
     const boundary = getBoundary();
-    const prefixedBoundary = Buffer.from(`\n--${boundary}`);
+    const prefixedBoundary = Buffer.from(`--${boundary}`, 'utf8');
     const multipart = [];
     for (const att of attachments) {
       doc._attachments[att.name] = {
         follows: true,
-        length: att.data.length,
-        content_type: att.content_type
+        content_type: att.content_type,
+        length: att.data.length
       };
-      multipart.push(
-        Buffer.from('\n'),
-        Buffer.from(att.data),
-        prefixedBoundary,
-        Buffer.from('\n')
-      );
+      multipart.push(CRLFCRLF, att.data, CRLF, prefixedBoundary);
     }
+    const docString = JSON.stringify(doc);
     multipart.unshift(
       prefixedBoundary,
-      Buffer.from('Content-Type: application/json\n\n'),
-      Buffer.from(JSON.stringify(doc)),
+      MIMETYPE,
+      Buffer.from(docString, 'utf8'),
+      CRLF,
       prefixedBoundary
     );
-    multipart.push(Buffer.from('--'));
+    multipart.push(ENDBOUNDARY);
+
     return this.client.put(docId, {
       json: false,
       body: Buffer.concat(multipart),

@@ -37,7 +37,7 @@ module.exports = async function saveResult(importBase, result) {
         {
           field: result.field,
           name: `${result.jpath.join('/')}/${fold(mainFilename, '_')}`,
-          data: await importBase.getContents('base64'),
+          data: await importBase.getContents(),
           reference: result.reference,
           content_type: result.content_type
         },

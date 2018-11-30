@@ -9,14 +9,23 @@ const nanoMethods = require('./nano');
 
 const methods = {
   async addAttachments(uuid, user, attachments) {
+    let entry;
+    if (typeof uuid === 'object') {
+      entry = uuid;
+      uuid = entry._id;
+    }
     debug('addAttachments (%s, %s)', uuid, user);
     if (!Array.isArray(attachments)) {
       attachments = [attachments];
     }
-    const entry = await this.getEntryWithRights(uuid, user, [
+    // This acts as a rights check.
+    const dbEntry = await this.getEntryWithRights(uuid, user, [
       'write',
       'addAttachment'
     ]);
+    if (!entry) {
+      entry = dbEntry;
+    }
     return this._db.attachFiles(entry, attachments);
   },
 
@@ -102,23 +111,20 @@ const methods = {
       current.push(json);
     }
 
-    if (!noFile) {
+    if (noFile) {
+      debug.trace('noFile is true, saving without attachment');
+      return this.insertEntry(entry, user);
+    } else {
       debug.trace('add attachment');
       json[file.field] = {
         filename: file.name
       };
-
-      if (!entry._attachments) entry._attachments = {};
-
-      entry._attachments[file.name] = {
-        content_type: file.content_type,
-        data:
-          typeof file.data === 'string'
-            ? file.data
-            : file.data.toString('base64')
-      };
+      const fileCopy = Object.assign({}, file);
+      if (typeof fileCopy.data === 'string') {
+        fileCopy.data = Buffer.from(fileCopy.data, 'base64');
+      }
+      return this.addAttachments(entry, user, file);
     }
-    return this.insertEntry(entry, user);
   }
 };
 
