@@ -15,6 +15,10 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 const CRLF = Buffer.from('\r\n', 'utf8');
 const CRLFCRLF = Buffer.from('\r\n\r\n', 'utf8');
+const MIMETYPE = Buffer.from(
+  '\r\nContent-Type: application/json\r\n\r\n',
+  'utf8'
+);
 const ENDBOUNDARY = Buffer.from('--', 'utf8');
 
 class NanoShim {
@@ -233,7 +237,7 @@ class NanoDbShim {
     const docString = JSON.stringify(doc);
     multipart.unshift(
       prefixedBoundary,
-      Buffer.from('\r\nContent-Type: application/json\r\n\r\n', 'utf8'),
+      MIMETYPE,
       Buffer.from(docString, 'utf8'),
       CRLF,
       prefixedBoundary
