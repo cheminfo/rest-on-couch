@@ -1,10 +1,10 @@
-declare class Couch {
+export declare class Couch {
   static get(databaseName: string): Couch;
 
   getEntry(uuid: string, user: string): Promise<any>;
 }
 
-interface IConfig {
+export interface IConfig {
   url?: string;
   authRenewal?: number;
   ldapGroupsRenewal?: number;
@@ -39,21 +39,21 @@ interface IConfig {
   auditActionsDb?: string;
 }
 
-declare var globalConfig: IConfig;
+export declare const globalConfig: IConfig;
 
-interface IImportOptions {
+export interface IImportOptions {
   dryRun?: boolean;
 }
 
-interface IImportResult {}
+export interface IImportResult {}
 
-declare function importFile(
+export declare function importFile(
   database: string,
   importName: string,
   filePath: string,
   options?: IImportOptions
 ): Promise<IImportResult>;
 
-declare class CouchError extends Error {
+export declare class CouchError extends Error {
   reason: string;
 }
