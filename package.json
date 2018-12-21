@@ -8,7 +8,8 @@
     "bin",
     "public",
     "src",
-    "views"
+    "views",
+    "roc.d.ts"
   ],
   "bin": {
     "rest-on-couch-import": "./bin/rest-on-couch-import.js"
