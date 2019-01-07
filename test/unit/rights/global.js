@@ -1,4 +1,5 @@
 'use strict';
+
 const anyuserData = require('../../data/anyuser');
 const noRights = require('../../data/noRights');
 

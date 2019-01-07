@@ -37,7 +37,8 @@ exports.setupCouch = async (ctx, next) => {
 exports.tokenLookup = async (ctx, next) => {
   if (ctx.query.token) {
     try {
-      ctx.query.token = await ctx.state.couch.getToken(ctx.query.token);
+      const token = await ctx.state.couch.getToken(ctx.query.token);
+      ctx.query.token = token;
     } catch (e) {
       if (e.reason === 'not found') {
         onGetError(ctx, new CouchError('token not found', 'unauthorized'));
