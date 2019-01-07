@@ -1,5 +1,7 @@
 'use strict';
 
+const assert = require('assert');
+
 const constants = require('../constants');
 const debug = require('../util/debug')('main:validate');
 const ensureStringArray = require('../util/ensureStringArray');
@@ -115,19 +117,6 @@ async function validateTokenOrRights(
   return ok[0];
 }
 
-function areRightsInToken(rights, token) {
-  if (rights.length > token.rights.length) {
-    return false;
-  }
-  const tokenRights = new Set(token.rights);
-  for (const right of rights) {
-    if (!tokenRights.has(right)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 function isOwner(owners, user) {
   for (var i = 0; i < owners.length; i++) {
     if (owners[i] === user) {
@@ -209,12 +198,34 @@ async function getDefaultGroups(db, user, listOnly) {
   }
 }
 
+function userFromTokenAndRights(user, token, rights) {
+  assert(Array.isArray(rights));
+  if (token && token.$kind === 'user' && areRightsInToken(rights, token)) {
+    return token.$owner;
+  } else {
+    return user;
+  }
+}
+
+function areRightsInToken(rights, token) {
+  if (rights.length > token.rights.length) {
+    return false;
+  }
+  const tokenRights = new Set(token.rights);
+  for (const right of rights) {
+    if (!tokenRights.has(right)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 module.exports = {
   validateRights,
   validateTokenOrRights,
-  areRightsInToken,
   isOwner,
   checkGlobalRight,
   checkRightAnyGroup,
-  getDefaultGroups
+  getDefaultGroups,
+  userFromTokenAndRights
 };

@@ -128,7 +128,6 @@ const methods = {
     const skip = options.skip;
     const from = +options.from || 0;
     const owner = options.owner;
-    const token = options.token;
     let includeDocs = true;
     if (options.includeDocs === false || options.includeDocs === 'false') {
       includeDocs = false;
@@ -144,13 +143,7 @@ const methods = {
       startkey: from
     });
 
-    if (
-      token &&
-      token.$kind === 'user' &&
-      validateMethods.areRightsInToken(rights, token)
-    ) {
-      user = token.$owner;
-    }
+    user = validateMethods.userFromTokenAndRights(user, options.token, rights);
 
     let allowedDocs;
     if (typeof owner === 'string') {

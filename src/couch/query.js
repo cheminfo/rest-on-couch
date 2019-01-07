@@ -4,18 +4,21 @@ const _ = require('lodash');
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:query');
+const ensureStringArray = require('../util/ensureStringArray');
 
 const validateMethods = require('./validate');
 
 const methods = {
   async queryEntriesByRight(user, view, right, options) {
-    debug('queryEntriesByRights (%s, %s, %s)', user, view, right);
+    debug('queryEntriesByRight (%s, %s, %s)', user, view, right);
     await this.open();
     options = options || {};
     if (!this._viewsWithOwner.has(view)) {
       throw new CouchError(`${view} is not a view with owner`, 'unauthorized');
     }
     right = right || 'read';
+
+    user = validateMethods.userFromTokenAndRights(user, options.token, [right]);
 
     // First check if user has global right
     const hasGlobalRight = await validateMethods.checkGlobalRight(
@@ -96,9 +99,12 @@ const methods = {
     return docs.filter((doc) => doc.$type === 'entry');
   },
 
-  async queryViewByUser(user, view, options, rights) {
+  async queryViewByUser(user, view, options, rights = 'read') {
     debug('queryViewByUser (%s, %s)', user, view);
     options = Object.assign({}, options);
+    rights = ensureStringArray(rights, 'rights');
+    user = validateMethods.userFromTokenAndRights(user, options.token, rights);
+
     await this.open();
     if (options.reduce) {
       if (this._viewsWithOwner.has(view)) {
@@ -127,7 +133,7 @@ const methods = {
         this,
         owners,
         user,
-        rights || 'read'
+        rights
       );
       rows = rows.map((entry) => entry.doc);
       rows = rows.filter((r, idx) => hasRights[idx]);
