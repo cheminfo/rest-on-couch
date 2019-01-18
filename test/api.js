@@ -122,8 +122,10 @@ describe('rest-api as anonymous (data)', () => {
   beforeEach(data);
 
   test('save and delete an attachment', async () => {
+    // The attachment name intentionally has an encoded + to make sure URLs are
+    // correctly encoded and decoded by the API.
     let res = await request
-      .put('/db/test/entry/B/myattachment.txt')
+      .put('/db/test/entry/B/my%2Battachment.txt')
       .set('Content-Type', 'text/plain')
       .set('Accept', 'application/json')
       .send('rest-on-couch!!')
@@ -132,16 +134,19 @@ describe('rest-api as anonymous (data)', () => {
     expect(res.body.id).toBe('B');
     expect(res.body.rev).toMatch(/^2/);
 
-    res = await request.get('/db/test/entry/B/myattachment.txt');
+    const doc = await request.get('/db/test/entry/B');
+    expect(doc.body._attachements['my+attachment.txt']).not.toBe(undefined);
+
+    res = await request.get('/db/test/entry/B/my%2Battachment.txt');
     expect(res.text).toBe('rest-on-couch!!');
     expect(res.headers['content-type']).toBe('text/plain');
 
     await request
-      .delete('/db/test/entry/B/myattachment.txt')
+      .delete('/db/test/entry/B/my%2Battachment.txt')
       .send()
       .expect(200);
 
-    await request.get('/db/test/entry/B/myattachment.txt').expect(404);
+    await request.get('/db/test/entry/B/my%2Battachment.txt').expect(404);
   });
 });
 
