@@ -195,9 +195,10 @@ class NanoDbShim {
   }
 
   async getAttachment(docId, attName, asStream, query) {
-    docId = cleanDocId(docId);
-    query = prepareQuery(query);
     debug.trace('get attachment', docId, attName);
+    docId = cleanDocId(docId);
+    attName = encodeURIComponent(attName);
+    query = prepareQuery(query);
     const attachmentPath = `${docId}/${attName}`;
     if (asStream) {
       return this.client.get(attachmentPath, {
