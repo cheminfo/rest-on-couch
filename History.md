@@ -1,3 +1,16 @@
+# [7.1.0](https://github.com/cheminfo/rest-on-couch/compare/v7.0.0...v7.1.0) (2019-02-21)
+
+
+### Bug Fixes
+
+* add owner right to list of allowed rights ([3311865](https://github.com/cheminfo/rest-on-couch/commit/3311865))
+* make multipart upload work and use it for saving attachments in import ([#194](https://github.com/cheminfo/rest-on-couch/issues/194)) ([2b4ba5e](https://github.com/cheminfo/rest-on-couch/commit/2b4ba5e))
+* remove agentkeepalive ([96bd7ab](https://github.com/cheminfo/rest-on-couch/commit/96bd7ab))
+* support user token in view queries ([eb72961](https://github.com/cheminfo/rest-on-couch/commit/eb72961))
+* **nanoShim:** encode attachment name in CouchDB query ([#202](https://github.com/cheminfo/rest-on-couch/issues/202)) ([066c668](https://github.com/cheminfo/rest-on-couch/commit/066c668))
+
+
+
 # [7.0.0](https://github.com/cheminfo/rest-on-couch/compare/v6.0.0...v7.0.0) (2018-11-25)
 
 
