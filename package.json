@@ -36,7 +36,9 @@
     "test": "npm run test-only && npm run eslint",
     "test-coverage": "npm run test-only -- --coverage",
     "test-only": "jest --runInBand",
-    "test-travis": "npm run test-coverage && npm run eslint"
+    "test-travis": "npm run test-coverage && npm run eslint",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -86,7 +88,8 @@
     "passport-local": "^1.0.0",
     "randomatic": "^3.1.1",
     "raw-body": "^2.3.3",
-    "zenodo": "^1.0.1"
+    "zenodo": "^1.0.1",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -128,5 +131,6 @@
     "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.1.14",
     "whatwg-fetch": "^3.0.0"
-  }
+  },
+  "snyk": true
 }
