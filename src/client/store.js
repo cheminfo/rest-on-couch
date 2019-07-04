@@ -13,7 +13,7 @@ import { setDbName } from './actions/db';
 import { getRocStatus } from './actions/main';
 
 const composeStoreWithMiddleware = applyMiddleware(
-  promiseMiddleware(),
+  promiseMiddleware,
   thunkMiddleware
 )(createStore);
 

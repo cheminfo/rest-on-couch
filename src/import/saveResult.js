@@ -1,6 +1,6 @@
 'use strict';
 
-const fold = require('fold-to-ascii').fold;
+const fold = require('fold-to-ascii').foldReplacing;
 
 const constants = require('../constants');
 
