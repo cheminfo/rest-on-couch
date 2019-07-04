@@ -1,6 +1,6 @@
 'use strict';
 
-const fold = require('fold-to-ascii').foldReplacing;
+const ASCIIFolder = require('fold-to-ascii');
 
 const constants = require('../constants');
 
@@ -36,7 +36,10 @@ module.exports = async function saveResult(importBase, result) {
         result.metadata,
         {
           field: result.field,
-          name: `${result.jpath.join('/')}/${fold(mainFilename, '_')}`,
+          name: `${result.jpath.join('/')}/${ASCIIFolder.foldReplacing(
+            mainFilename,
+            '_'
+          )}`,
           data: await importBase.getContents(),
           reference: result.reference,
           content_type: result.content_type
@@ -90,7 +93,10 @@ module.exports = async function saveResult(importBase, result) {
       {
         field: attachment.field,
         reference: attachment.reference,
-        name: `${attachment.jpath.join('/')}/${fold(attachment.filename, '_')}`,
+        name: `${attachment.jpath.join('/')}/${ASCIIFolder.foldReplacing(
+          attachment.filename,
+          '_'
+        )}`,
         data: contents,
         content_type: attachment.content_type
       }
