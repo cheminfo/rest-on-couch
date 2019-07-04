@@ -1,3 +1,7 @@
+## [7.1.1](https://github.com/cheminfo/rest-on-couch/compare/v7.1.0...v7.1.1) (2019-07-04)
+
+
+
 # [7.1.0](https://github.com/cheminfo/rest-on-couch/compare/v7.0.0...v7.1.0) (2019-02-21)
 
 
