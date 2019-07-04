@@ -46,9 +46,9 @@ exports.init = function (passport, router, config, mainConfig) {
         passReqToCallback: true
       },
       function (req, accessToken, refreshToken, profile, done) {
-        const email = profile.emails.find((email) => email.type === 'account');
+        const email = profile.emails[0];
         if (!email) {
-          return done(null, false, { message: 'No account email' });
+          return done(null, false, { message: 'No profile email' });
         } else {
           auditLogin(email.value, true, 'google', req.ctx);
           done(null, {
