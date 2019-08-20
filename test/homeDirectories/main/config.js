@@ -2,7 +2,11 @@
 
 /* eslint-disable no-undef */
 
+const couchdbHost = process.env.COUCHDB_HOST || 'localhost';
+const couchdbPort = process.env.COUCHDB_PORT || '5984';
+
 module.exports = {
+  url: `http://${couchdbHost}:${couchdbPort}`,
   username: 'admin',
   password: 'admin',
   administrators: ['admin@a.com'],
@@ -11,33 +15,33 @@ module.exports = {
   customDesign: {
     views: {
       entryIdByRight: {
-        map: function (doc) {
+        map: function(doc) {
           emitWithOwner(['x', 'y', 'z'], doc.$id);
         },
-        withOwner: true
+        withOwner: true,
       },
       testReduce: {
-        map: function (doc) {
+        map: function(doc) {
           if (doc.$type === 'entry') {
             emit(doc._id, 1); // eslint-disable-line no-undef
           }
         },
-        reduce: function (keys, values) {
+        reduce: function(keys, values) {
           return sum(values);
-        }
-      }
-    }
+        },
+      },
+    },
   },
   auth: {
     couchdb: {
       title: 'CouchDB authentication',
-      showLogin: true
-    }
+      showLogin: true,
+    },
   },
   getUserInfo(email) {
     return Promise.resolve({
       email,
-      value: 42
+      value: 42,
     });
-  }
+  },
 };
