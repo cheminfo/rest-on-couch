@@ -6,6 +6,9 @@ jobs:
     services:
       couchdb:
         image: couchdb:latest
+        env:
+          COUCHDB_USER: admin
+          COUCHDB_PASSWORD: admin
         ports:
           - 5984:5984
     strategy:
