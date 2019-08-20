@@ -3,6 +3,7 @@
 COUCHDB_HOST=${COUCHDB_HOST:-localhost}
 COUCHDB_PORT=${COUCHDB_PORT:-5984}
 
+# CouchDB takes some time to start. We have to wait before setting it up.
 while [ $(curl --write-out %{http_code} --silent --output /dev/null http://${COUCHDB_HOST}:${COUCHDB_PORT}/_users) == "000" ]; do
     echo "CouchDB is starting up..."
     sleep 5
