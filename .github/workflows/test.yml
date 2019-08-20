@@ -19,11 +19,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Setup test database
         env:
-          COUCHDB_HOST: couchdb
+          COUCHDB_HOST: localhost
+          COUCHDB_PORT: ${{ job.services.couchdb.ports[5984] }}
         run: sh setupDatabase.sh
       - name: npm install and test
         env:
           COUCHDB_HOST: couchdb
+          COUCHDB_PORT: ${{ job.services.couchdb.ports[5984] }}
           REST_ON_COUCH_USERNAME: admin
           REST_ON_COUCH_PASSWORD: admin
         run: |

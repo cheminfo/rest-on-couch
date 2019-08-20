@@ -2,8 +2,11 @@
 
 /* eslint-disable no-undef */
 
+const couchdbHost = process.env.COUCHDB_HOST || 'localhost';
+const couchdbPort = process.env.COUCHDB_PORT || '5984';
+
 module.exports = {
-  url: `http://${process.env.COUCHDB_HOST || 'localhost'}:5984`,
+  url: `http://${couchdbHost}:${couchdbPort}`,
   username: 'admin',
   password: 'admin',
   administrators: ['admin@a.com'],

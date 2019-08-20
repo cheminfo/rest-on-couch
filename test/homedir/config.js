@@ -1,7 +1,10 @@
 'use strict';
 
+const couchdbHost = process.env.COUCHDB_HOST || 'localhost';
+const couchdbPort = process.env.COUCHDB_PORT || '5984';
+
 module.exports = {
-  url: `http://${process.env.COUCHDB_HOST || 'localhost'}:5984`,
+  url: `http://${couchdbHost}:${couchdbPort}`,
   port: 3000,
   auth: {
     couchdb: {
