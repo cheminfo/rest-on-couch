@@ -1,11 +1,5 @@
 name: Node.js Package
-on:
-  pull_request:
-    branches:
-      - master
-  push:
-    branches:
-      - master
+on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
