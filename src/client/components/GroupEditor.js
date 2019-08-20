@@ -18,7 +18,7 @@ class GroupEditor extends PureComponent {
       setLdapGroupProperties,
       syncLdapGroup,
       clearGroupSuccess,
-      clearGroupError
+      clearGroupError,
     } = this.props;
     return (
       <div>
@@ -52,7 +52,7 @@ class GroupEditor extends PureComponent {
             value={group.description}
             onSubmit={(value) =>
               setGroupProperties(group.name, {
-                description: value
+                description: value,
               })
             }
           />
@@ -63,7 +63,7 @@ class GroupEditor extends PureComponent {
                 value={group.DN}
                 onSubmit={(value) =>
                   setLdapGroupProperties(group.name, {
-                    DN: value
+                    DN: value,
                   })
                 }
               />
@@ -72,7 +72,7 @@ class GroupEditor extends PureComponent {
                 value={group.filter}
                 onSubmit={(value) =>
                   setLdapGroupProperties(group.name, {
-                    filter: value
+                    filter: value,
                   })
                 }
               />
@@ -88,12 +88,12 @@ class GroupEditor extends PureComponent {
                   data={group.$owners}
                   addValue={(value) =>
                     addValueToGroup(group.name, 'owners', value, {
-                      success: 'Successfully added owner to group'
+                      success: 'Successfully added owner to group',
                     })
                   }
                   removeValue={(value) =>
                     removeValueFromGroup(group.name, 'owners', value, {
-                      success: 'Successfully removed owner from group'
+                      success: 'Successfully removed owner from group',
                     })
                   }
                 />
@@ -106,12 +106,12 @@ class GroupEditor extends PureComponent {
                   data={group.users}
                   addValue={(value) =>
                     addValueToGroup(group.name, 'users', value, {
-                      success: 'Successfully added user to group'
+                      success: 'Successfully added user to group',
                     })
                   }
                   removeValue={(value) =>
                     removeValueFromGroup(group.name, 'users', value, {
-                      success: 'Successfully removed user from group'
+                      success: 'Successfully removed user from group',
                     })
                   }
                 />
@@ -122,12 +122,12 @@ class GroupEditor extends PureComponent {
                   data={group.rights}
                   addValue={(value) =>
                     addValueToGroup(group.name, 'rights', value, {
-                      success: 'Successfully added right to group'
+                      success: 'Successfully added right to group',
                     })
                   }
                   removeValue={(value) =>
                     removeValueFromGroup(group.name, 'rights', value, {
-                      success: 'Successfully removed right from group'
+                      success: 'Successfully removed right from group',
                     })
                   }
                 />
@@ -172,10 +172,10 @@ GroupEditor.propTypes = {
   group: PropTypes.object.isRequired,
   addValueToGroup: PropTypes.func.isRequired,
   removeGroup: PropTypes.func.isRequired,
-  removeValueFromGroup: PropTypes.func.isRequired
+  removeValueFromGroup: PropTypes.func.isRequired,
 };
 
 export default connect(
   null,
-  { clearGroupError, clearGroupSuccess }
+  { clearGroupError, clearGroupSuccess },
 )(GroupEditor);

@@ -11,14 +11,14 @@ import {
   REMOVE_GROUP,
   UPDATE_GROUP,
   CLEAR_GROUP_SUCCESS,
-  CLEAR_GROUP_ERROR
+  CLEAR_GROUP_ERROR,
 } from '../actions/db';
 
 const initialState = {
   dbList: [],
   userRights: [],
   userGroups: [],
-  errors: {}
+  errors: {},
 };
 
 const dbReducer = (state = initialState, action) => {
@@ -43,12 +43,12 @@ const dbReducer = (state = initialState, action) => {
       return Object.assign({}, state, { userRights: action.payload });
     case SET_USER_GROUPS:
       return Object.assign({}, state, {
-        userGroups: action.payload.sort(sortByName)
+        userGroups: action.payload.sort(sortByName),
       });
     case `${CREATE_GROUP}_FULFILLED`: {
       if (action.payload.error) {
         const errors = Object.assign({}, state.errors, {
-          createGroup: action.payload.error
+          createGroup: action.payload.error,
         });
         return Object.assign({}, state, { errors });
       }
@@ -61,7 +61,7 @@ const dbReducer = (state = initialState, action) => {
         return getNewStateOnGroupError(state, action);
       }
       const newGroupList = state.userGroups.filter(
-        (group) => group.name !== action.meta.groupName
+        (group) => group.name !== action.meta.groupName,
       );
       return Object.assign({}, state, { userGroups: newGroupList });
     }
@@ -79,7 +79,7 @@ const dbReducer = (state = initialState, action) => {
           action.meta.success || 'Group sucessfully updated';
         newGroupList[index].error = null;
         return Object.assign({}, state, {
-          userGroups: newGroupList
+          userGroups: newGroupList,
         });
       }
     }
@@ -99,7 +99,7 @@ const dbReducer = (state = initialState, action) => {
 
 function getGroupIndex(userGroups, action) {
   const index = userGroups.findIndex(
-    (group) => group.name === action.meta.groupName
+    (group) => group.name === action.meta.groupName,
   );
   if (index === -1) {
     throw new Error('should not happen');
@@ -112,10 +112,10 @@ function getNewStateOnGroupError(state, action) {
   const newGroupList = state.userGroups.slice();
   newGroupList[index] = Object.assign({}, newGroupList[index], {
     error: action.payload.error,
-    success: null
+    success: null,
   });
   return Object.assign({}, state, {
-    userGroups: newGroupList
+    userGroups: newGroupList,
   });
 }
 

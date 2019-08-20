@@ -7,7 +7,7 @@ const warn = Debug('couch:warn');
 const debug = Debug('couch:debug');
 const trace = Debug('couch:trace');
 
-module.exports = function (prefix) {
+module.exports = function(prefix) {
   const func = (message, ...args) => debug(`(${prefix}) ${message}`, ...args);
   func.error = (message, ...args) => error(`(${prefix}) ${message}`, ...args);
   func.warn = (message, ...args) => warn(`(${prefix}) ${message}`, ...args);

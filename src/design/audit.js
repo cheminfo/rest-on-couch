@@ -7,16 +7,16 @@ const auditDesignDoc = {
   _id: '_design/audit',
   views: {
     byDate: {
-      map: function (doc) {
+      map: function(doc) {
         emit(doc.date);
-      }
+      },
     },
     byUsername: {
-      map: function (doc) {
+      map: function(doc) {
         emit([doc.username, doc.date]);
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 module.exports = auditDesignDoc;

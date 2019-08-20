@@ -12,12 +12,12 @@ describe('getGroupsByRight', () => {
   });
   test('user without write right', () => {
     return expect(
-      global.couch.getGroupsByRight('a@a.com', 'write')
+      global.couch.getGroupsByRight('a@a.com', 'write'),
     ).resolves.toEqual(['groupA']);
   });
   test('user without dummy right', () => {
     return expect(
-      global.couch.getGroupsByRight('a@a.com', 'dummy')
+      global.couch.getGroupsByRight('a@a.com', 'dummy'),
     ).resolves.toEqual([]);
   });
 });
@@ -28,7 +28,7 @@ describe('getGroupsByRight with default groups', () => {
     return global.couch.getGroupsByRight('anonymous', 'read').then((result) => {
       expect(result.sort()).toEqual([
         'defaultAnonymousRead',
-        'inexistantGroup'
+        'inexistantGroup',
       ]);
     });
   });

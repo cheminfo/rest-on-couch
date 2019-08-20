@@ -17,29 +17,29 @@ const CRLF = Buffer.from('\r\n', 'utf8');
 const CRLFCRLF = Buffer.from('\r\n\r\n', 'utf8');
 const MIMETYPE = Buffer.from(
   '\r\nContent-Type: application/json\r\n\r\n',
-  'utf8'
+  'utf8',
 );
 const ENDBOUNDARY = Buffer.from('--', 'utf8');
 
 class NanoShim {
   constructor(url, cookie) {
     const agent = new http.Agent({
-      timeout: 1000 * 60 * 5
+      timeout: 1000 * 60 * 5,
     });
     this.client = got.extend({
       baseUrl: url,
       json: true,
       headers: {
-        cookie
+        cookie,
       },
-      agent
+      agent,
     });
   }
 
   useDb(dbName) {
     dbName = cleanDbName(dbName);
     const client = this.client.extend({
-      baseUrl: this.client.defaults.options.baseUrl + dbName
+      baseUrl: this.client.defaults.options.baseUrl + dbName,
     });
     return new NanoDbShim(dbName, client);
   }
@@ -92,7 +92,7 @@ class NanoShim {
     return this.client(url, {
       method,
       query,
-      body
+      body,
     });
   }
 }
@@ -112,8 +112,8 @@ class NanoDbShim {
         body: JSON.stringify(doc, stringifyFunctions),
         headers: {
           accept: 'application/json',
-          'content-type': 'application/json'
-        }
+          'content-type': 'application/json',
+        },
       };
     } else {
       options = { body: doc };
@@ -206,13 +206,13 @@ class NanoDbShim {
         query,
         stream: true,
         encoding: null,
-        decompress: false
+        decompress: false,
       });
     } else {
       const response = await this.client.get(attachmentPath, {
         json: false,
         query,
-        encoding: null
+        encoding: null,
       });
       return response.body;
     }
@@ -231,7 +231,7 @@ class NanoDbShim {
       doc._attachments[att.name] = {
         follows: true,
         content_type: att.content_type,
-        length: att.data.length
+        length: att.data.length,
       };
       multipart.push(CRLFCRLF, att.data, CRLF, prefixedBoundary);
     }
@@ -241,7 +241,7 @@ class NanoDbShim {
       MIMETYPE,
       Buffer.from(docString, 'utf8'),
       CRLF,
-      prefixedBoundary
+      prefixedBoundary,
     );
     multipart.push(ENDBOUNDARY);
 
@@ -251,8 +251,8 @@ class NanoDbShim {
       query,
       headers: {
         accept: 'application/json',
-        'content-type': `multipart/related;boundary="${boundary}"`
-      }
+        'content-type': `multipart/related;boundary="${boundary}"`,
+      },
     });
   }
 }
@@ -275,7 +275,7 @@ const specialKeys = [
   'key',
   'keys',
   'start_key',
-  'end_key'
+  'end_key',
 ];
 function prepareQuery(query) {
   if (!query) return {};
@@ -283,7 +283,7 @@ function prepareQuery(query) {
   if (query.token) {
     delete query.token;
   }
-  specialKeys.forEach(function (key) {
+  specialKeys.forEach(function(key) {
     if (key in query) {
       query[key] = JSON.stringify(query[key]);
     }
@@ -293,7 +293,7 @@ function prepareQuery(query) {
 
 const paramsToEncode = ['counts', 'drilldown', 'group_sort', 'ranges', 'sort'];
 function prepareQueryForView(query) {
-  paramsToEncode.forEach(function (param) {
+  paramsToEncode.forEach(function(param) {
     if (param in query) {
       if (typeof query[param] !== 'string') {
         query[param] = JSON.stringify(query[param]);
@@ -325,8 +325,8 @@ async function getNano(url, username, password) {
     json: true,
     body: {
       name: username,
-      password
-    }
+      password,
+    },
   });
   const headers = response.headers;
   if (!headers['set-cookie']) {

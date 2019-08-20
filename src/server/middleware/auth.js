@@ -11,15 +11,15 @@ const isEmail = require('../../util/isEmail');
 const respondOk = require('./respondOk');
 const { decorateError } = require('./decorateError');
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser(function(user, done) {
   done(null, user);
 });
 
-passport.deserializeUser(function (obj, done) {
+passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-exports.okOrRedirect = function (ctx) {
+exports.okOrRedirect = function(ctx) {
   switch (ctx.accepts('json', 'html')) {
     case 'json':
       // We do not use respondOk because status must stay as it was set by passport
@@ -50,7 +50,7 @@ exports.ensureAdmin = async (ctx, next) => {
   }
 };
 
-exports.isAdmin = function (ctx) {
+exports.isAdmin = function(ctx) {
   // Don't allow tokens to check for admins
   if (ctx.isAuthenticated()) {
     const email = ctx.session.passport.user.email;
@@ -69,7 +69,7 @@ exports.ensureAuthenticated = async (ctx, next) => {
   ctx.status = 401;
 };
 
-exports.getUserEmail = function (ctx) {
+exports.getUserEmail = function(ctx) {
   let email, user;
   if (!ctx.session.passport) {
     email = 'anonymous';
@@ -87,7 +87,7 @@ exports.getUserEmail = function (ctx) {
   return email || 'anonymous';
 };
 
-exports.getProvider = function (ctx) {
+exports.getProvider = function(ctx) {
   let user;
   if (ctx.session.passport && (user = ctx.session.passport.user)) {
     return user.provider;
@@ -109,10 +109,10 @@ async function getUserEmailFromToken(ctx) {
       {
         json: true,
         headers: {
-          cookie: token
+          cookie: token,
         },
-        throwHttpErrors: false
-      }
+        throwHttpErrors: false,
+      },
     );
 
     if (res.body && res.body.userCtx) {
@@ -149,7 +149,7 @@ exports.createUser = async (ctx) => {
     name: email,
     password,
     type: 'user',
-    roles: []
+    roles: [],
   });
 
   respondOk(ctx, 201);
@@ -161,7 +161,7 @@ exports.changePassword = async (ctx) => {
     decorateError(
       ctx,
       400,
-      'oldPassword and newPassword fields must be present'
+      'oldPassword and newPassword fields must be present',
     );
     return;
   }
@@ -182,8 +182,8 @@ exports.changePassword = async (ctx) => {
         json: true,
         body: {
           name: email,
-          password: body.oldPassword
-        }
+          password: body.oldPassword,
+        },
       });
     } catch (e) {
       if (e.statusCode === 401) {
@@ -209,7 +209,7 @@ exports.changePassword = async (ctx) => {
     decorateError(
       ctx,
       403,
-      `login provider "${provider} does not support password change`
+      `login provider "${provider} does not support password change`,
     );
   }
 };

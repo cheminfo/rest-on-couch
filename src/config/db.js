@@ -51,7 +51,7 @@ module.exports = function getDbConfig(homeDir) {
               const intersectionKeys = _.intersection(currentKeys, newKeys);
               if (intersectionKeys.length !== 0) {
                 throw new Error(
-                  `a view is defined more than once: ${intersectionKeys}`
+                  `a view is defined more than once: ${intersectionKeys}`,
                 );
               }
               Object.assign(views, v);
@@ -80,7 +80,7 @@ module.exports = function getDbConfig(homeDir) {
     } catch (e) {
       die(
         `could not read database configurations from ${homeDir}\n${e.stack ||
-          e}`
+          e}`,
       );
     }
   }
@@ -106,7 +106,7 @@ function readImportConfig(databasePath, databaseConfig) {
         databaseConfig.import[importDir] = Object.assign(
           {},
           databaseConfig.import[importDir],
-          importConfig
+          importConfig,
         );
       }
     }

@@ -12,9 +12,9 @@ const validateDocUpdate = require('./validateDocUpdate');
 const views = require('./views');
 
 /* istanbul ignore next */
-const mapTpl = function (doc) {
+const mapTpl = function(doc) {
   if (doc.$type !== 'entry') return;
-  var emitWithOwner = function (key, data) {
+  var emitWithOwner = function(key, data) {
     for (var i = 0; i < doc.$owners.length; i++) {
       if (key == null) {
         emit([doc.$owners[i]], data);
@@ -29,7 +29,7 @@ const mapTpl = function (doc) {
 
 // Extends design doc with default views
 // Adds the special lib view to the design doc
-module.exports = function (custom, dbName) {
+module.exports = function(custom, dbName) {
   custom = custom || {};
   const config = getConfig(dbName);
   processViews(custom, config);
@@ -41,7 +41,7 @@ module.exports = function (custom, dbName) {
       updates: Object.assign({}, custom.updates, updates),
       views: Object.assign({}, custom.views, views),
       validate_doc_update: validateDocUpdate,
-      lists: Object.assign({}, custom.lists)
+      lists: Object.assign({}, custom.lists),
     };
   } else {
     return custom;
@@ -79,7 +79,7 @@ function processViews(custom, config) {
         if (libCode.endsWith('.js')) {
           libCode = fs.readFileSync(
             path.resolve(config.homeDir, config.database, libCode),
-            'utf8'
+            'utf8',
           );
         }
         if (lib.length === 1) {

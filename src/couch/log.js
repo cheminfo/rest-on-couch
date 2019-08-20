@@ -10,7 +10,7 @@ const levels = {
   WARN: 3,
   INFO: 4,
   DEBUG: 5,
-  TRACE: 6
+  TRACE: 6,
 };
 const levelNames = ['', 'FATAL', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE'];
 
@@ -18,7 +18,7 @@ for (var i in levels) {
   exports[i] = levels[i];
 }
 
-const isValidLevel = (exports.isValidLevel = function (level) {
+const isValidLevel = (exports.isValidLevel = function(level) {
   return !!levels[level];
 });
 
@@ -28,12 +28,12 @@ function checkLevel(level) {
   }
 }
 
-exports.getLevel = function (level) {
+exports.getLevel = function(level) {
   checkLevel(level);
   return levels[level];
 };
 
-exports.log = async function (db, currentLevel, message, level) {
+exports.log = async function(db, currentLevel, message, level) {
   if (typeof currentLevel !== 'number') {
     throw new TypeError('current log level must be a number');
   }
@@ -47,26 +47,26 @@ exports.log = async function (db, currentLevel, message, level) {
     $type: 'log',
     epoch: Date.now(),
     level,
-    message
+    message,
   });
   return true;
 };
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
-exports.getLogs = function (db, epoch) {
+exports.getLogs = function(db, epoch) {
   if (epoch === undefined) epoch = Date.now() - ONE_DAY;
   return db.queryView(
     'logsByEpoch',
     { startkey: epoch, include_docs: true },
-    { onlyDoc: true }
+    { onlyDoc: true },
   );
 };
 
-exports.format = function (log) {
+exports.format = function(log) {
   const name = levelNames[log.level];
   const date = new Date(log.epoch);
   return `[${date.toISOString()}] [${name}]${' '.repeat(
-    5 - name.length
+    5 - name.length,
   )} ${util.format(log.message)}`;
 };
 
@@ -81,5 +81,5 @@ exports.methods = {
     debug('getLogs (%s)', epoch);
     await this.open();
     return exports.getLogs(this._db, epoch);
-  }
+  },
 };

@@ -21,7 +21,7 @@ const methods = {
     // This acts as a rights check.
     const dbEntry = await this.getEntryWithRights(uuid, user, [
       'write',
-      'addAttachment'
+      'addAttachment',
     ]);
     if (!entry) {
       entry = dbEntry;
@@ -33,7 +33,7 @@ const methods = {
     debug('deleteAttachment (%s, %s)', uuid, user);
     const entry = await this.getEntryWithRights(uuid, user, [
       'delete',
-      'addAttachment'
+      'addAttachment',
     ]);
     if (!entry._attachments[attachmentName]) {
       return false;
@@ -117,7 +117,7 @@ const methods = {
     } else {
       debug.trace('add attachment');
       json[file.field] = {
-        filename: file.name
+        filename: file.name,
       };
       const fileCopy = Object.assign({}, file);
       if (typeof fileCopy.data === 'string') {
@@ -125,7 +125,7 @@ const methods = {
       }
       return this.addAttachments(entry, user, file);
     }
-  }
+  },
 };
 
 methods.addAttachment = methods.addAttachments;
@@ -133,7 +133,7 @@ methods.addAttachment = methods.addAttachments;
 async function getAttachmentFromEntry(entry, ctx, name, asStream) {
   if (entry._attachments && entry._attachments[name]) {
     return ctx._db.getAttachment(entry._id, name, asStream, {
-      rev: entry._rev
+      rev: entry._rev,
     });
   } else {
     throw new CouchError(`attachment ${name} not found`, 'not found');
@@ -141,5 +141,5 @@ async function getAttachmentFromEntry(entry, ctx, name, asStream) {
 }
 
 module.exports = {
-  methods
+  methods,
 };

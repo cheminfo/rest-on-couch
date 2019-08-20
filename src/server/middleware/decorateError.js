@@ -6,7 +6,7 @@ const statusMessages = {
   403: 'forbidden',
   404: 'not found',
   409: 'conflict',
-  500: 'internal server error'
+  500: 'internal server error',
 };
 
 function decorateError(ctx, status, error = true) {
@@ -14,7 +14,7 @@ function decorateError(ctx, status, error = true) {
   if (responseHasBody(ctx)) {
     ctx.body = {
       error,
-      code: statusMessages[status] || `error ${status}`
+      code: statusMessages[status] || `error ${status}`,
     };
   }
 }

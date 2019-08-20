@@ -9,12 +9,12 @@ const isEmail = require('../../../util/isEmail');
 const util = require('../../middleware/util');
 const auth = require('../../middleware/auth');
 
-exports.init = function (passport, router) {
+exports.init = function(passport, router) {
   router.post(
     '/couchdb/user',
     util.parseBody({ jsonLimit: '1kb' }),
     auth.ensureAdmin,
-    auth.createUser
+    auth.createUser,
   );
 
   passport.use(
@@ -22,10 +22,10 @@ exports.init = function (passport, router) {
       {
         usernameField: 'username',
         passwordField: 'password',
-        passReqToCallback: true
+        passReqToCallback: true,
       },
-      function (req, username, password, done) {
-        (async function () {
+      function(req, username, password, done) {
+        (async function() {
           if (!isEmail(username)) {
             return done(null, false, 'username must be an email');
           }
@@ -34,9 +34,9 @@ exports.init = function (passport, router) {
               json: true,
               body: {
                 name: username,
-                password: password
+                password: password,
               },
-              throwHttpErrors: false
+              throwHttpErrors: false,
             })).body;
 
             if (res.error) {
@@ -46,14 +46,14 @@ exports.init = function (passport, router) {
             auditLogin(username, true, 'couchdb', req.ctx);
             return done(null, {
               email: res.name,
-              provider: 'local'
+              provider: 'local',
             });
           } catch (err) {
             return done(err);
           }
         })();
-      }
-    )
+      },
+    ),
   );
 
   router.post(
@@ -61,6 +61,6 @@ exports.init = function (passport, router) {
     util.parseBody(),
     auth.afterFailure,
     passport.authenticate('local'),
-    auth.afterSuccess
+    auth.afterSuccess,
   );
 };

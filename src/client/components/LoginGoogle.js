@@ -13,7 +13,7 @@ const LoginGoogle = ({ doGoogleLogin }) => (
 );
 
 LoginGoogle.propTypes = {
-  doGoogleLogin: PropTypes.func.isRequired
+  doGoogleLogin: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -27,7 +27,7 @@ export default connect(
       const win = window.open(
         `${API_ROOT}auth/login/google/popup`,
         'loginPopup',
-        `location=1,scrollbars=1,height=${height},width=${width},left=${left},top=${top}`
+        `location=1,scrollbars=1,height=${height},width=${width},left=${left},top=${top}`,
       );
       if (win.focus) win.focus();
       checkWindowStatus();
@@ -40,6 +40,6 @@ export default connect(
           setTimeout(checkWindowStatus, 250);
         }
       }
-    }
-  })
+    },
+  }),
 )(LoginGoogle);

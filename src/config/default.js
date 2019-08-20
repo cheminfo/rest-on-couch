@@ -13,7 +13,7 @@ module.exports = {
   port: 3000,
   fileDropPort: 3001,
   auth: {
-    couchdb: {}
+    couchdb: {},
   },
   authServers: [],
   proxy: true,
@@ -49,5 +49,5 @@ module.exports = {
   zenodoName: null,
   zenodoVisualizationUrl: null,
   zenodoReadme: null,
-  zenodoAttachments: null
+  zenodoAttachments: null,
 };

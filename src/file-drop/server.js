@@ -105,10 +105,10 @@ function printError(err) {
   debug.error('unexpected error:', err.stack || err);
 }
 
-module.exports.start = function () {
+module.exports.start = function() {
   if (_started) return _started;
-  _started = new Promise(function (resolve) {
-    http.createServer(app.callback()).listen(config.fileDropPort, function () {
+  _started = new Promise(function(resolve) {
+    http.createServer(app.callback()).listen(config.fileDropPort, function() {
       debug.warn('file-drop running on localhost:%s', config.fileDropPort);
       resolve(app);
     });

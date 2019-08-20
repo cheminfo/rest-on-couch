@@ -23,7 +23,7 @@ const app = new Koa();
 
 let _started;
 
-app.use(async function (ctx, next) {
+app.use(async function(ctx, next) {
   debug.trace('Method: %s; Path: %s', ctx.method, ctx.path);
   await next();
 });
@@ -39,7 +39,7 @@ let proxyPrefix = config.proxyPrefix;
 debug('proxy prefix: %s', proxyPrefix);
 if (proxyPrefix !== '') {
   const _redirect = app.context.redirect;
-  app.context.redirect = function (url, alt) {
+  app.context.redirect = function(url, alt) {
     if (typeof url === 'string' && url.startsWith('/')) {
       url = proxyPrefix + url;
     }
@@ -49,8 +49,8 @@ if (proxyPrefix !== '') {
 
 app.use(
   hbs.middleware({
-    viewPath: path.join(__dirname, '../../views')
-  })
+    viewPath: path.join(__dirname, '../../views'),
+  }),
 );
 
 app.use(koaStatic(path.resolve(__dirname, '../../public')));
@@ -68,8 +68,8 @@ app.use(
       }
       return '*';
     },
-    credentials: true
-  })
+    credentials: true,
+  }),
 );
 
 app.keys = config.keys;
@@ -82,10 +82,10 @@ app.use(
       domain: config.sessionDomain,
       secure: config.sessionSecure,
       httpOnly: true,
-      signed: config.sessionSigned
+      signed: config.sessionSigned,
     },
-    app
-  )
+    app,
+  ),
 );
 app.use(passport.initialize());
 app.use(passport.session());
@@ -123,12 +123,12 @@ app.use(auth.routes());
 // ROC API
 app.use(api.routes());
 
-module.exports.start = function () {
+module.exports.start = function() {
   if (_started) return _started;
-  _started = new Promise(function (resolve, reject) {
+  _started = new Promise(function(resolve, reject) {
     initCouch().then(
       () => {
-        http.createServer(app.callback()).listen(config.port, function () {
+        http.createServer(app.callback()).listen(config.port, function() {
           debug.warn('running on localhost: %d', config.port);
           resolve(app);
         });
@@ -139,7 +139,7 @@ module.exports.start = function () {
           debug.error('initialization failed');
           throw e;
         });
-      }
+      },
     );
   });
   return _started;

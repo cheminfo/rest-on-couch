@@ -22,7 +22,7 @@ const methods = {
     if (!util.isValidGroupName(group)) {
       throw new CouchError(
         'edit default group invalid group name',
-        'bad argument'
+        'bad argument',
       );
     }
 
@@ -30,7 +30,7 @@ const methods = {
     if (!doc) {
       throw new Error(
         'default groups document should always exist',
-        'unreachable'
+        'unreachable',
       );
     }
     if (action === 'add') {
@@ -72,7 +72,7 @@ const methods = {
       debug.trace('not allowed to delete group');
       throw new CouchError(
         `user ${user} is not an owner of the group`,
-        'unauthorized'
+        'unauthorized',
       );
     }
 
@@ -89,7 +89,7 @@ const methods = {
     const hasRight = await validate.checkRightAnyGroup(
       this,
       user,
-      'createGroup'
+      'createGroup',
     );
     if (!hasRight) {
       throw new CouchError(`user ${user} does not have createGroup right`);
@@ -108,9 +108,9 @@ const methods = {
         $owners: [user],
         name: groupName,
         users: [],
-        rights: rights
+        rights: rights,
       },
-      user
+      user,
     );
   },
 
@@ -126,7 +126,7 @@ const methods = {
       debug.trace('not allowed to get group');
       throw new CouchError(
         `user ${user} is not an owner of the group`,
-        'unauthorized'
+        'unauthorized',
       );
     }
     return doc;
@@ -145,7 +145,7 @@ const methods = {
       return this._db.queryView(
         'documentByType',
         { key: 'group', include_docs: true },
-        { onlyDoc: true }
+        { onlyDoc: true },
       );
     } else {
       return this.getDocsAsOwner(user, 'group', { onlyDoc: true });
@@ -167,7 +167,7 @@ const methods = {
     const userGroups = await this._db.queryView(
       'groupByUserAndRight',
       { key: [user, right] },
-      { onlyValue: true }
+      { onlyValue: true },
     );
     // Merge both lists
     return _.union(defaultGroups, userGroups);
@@ -226,7 +226,7 @@ const methods = {
     if (group.groupType !== 'ldap') {
       throw new CouchError(
         'Cannot set ldap group properties on non-ldap group',
-        'bad argument'
+        'bad argument',
       );
     }
     if (properties.filter) {
@@ -255,7 +255,7 @@ const methods = {
     debug.trace('sync all ldap groups');
     groups = await this._db.queryView('documentByType', {
       key: 'group',
-      include_docs: true
+      include_docs: true,
     });
     groups = groups.map((group) => group.doc);
 
@@ -264,7 +264,7 @@ const methods = {
       // eslint-disable-next-line no-await-in-loop
       await syncOneLdapGroup(this, groups[i]);
     }
-  }
+  },
 };
 
 async function syncOneLdapGroup(ctx, group) {
@@ -274,12 +274,12 @@ async function syncOneLdapGroup(ctx, group) {
     {
       url: couchOptions.ldapUrl,
       bindDN: couchOptions.ldapBindDN,
-      bindPassword: couchOptions.ldapBindPassword
+      bindPassword: couchOptions.ldapBindPassword,
     },
     {
       DN: group.DN,
-      filter: group.filter
-    }
+      filter: group.filter,
+    },
   );
 
   let emails = [];
@@ -288,7 +288,7 @@ async function syncOneLdapGroup(ctx, group) {
     // Custom email extraction
     if (user) {
       emails.push(
-        ...util.ensureUsersArray(couchOptions.ldapGetUserEmail(user))
+        ...util.ensureUsersArray(couchOptions.ldapGetUserEmail(user)),
       );
     } else {
       debug.error('ldap entry does not have "object" property');
@@ -314,5 +314,5 @@ function arraysAreEqual(arr1, arr2) {
 }
 
 module.exports = {
-  methods
+  methods,
 };

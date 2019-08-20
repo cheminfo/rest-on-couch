@@ -6,12 +6,12 @@ const rightImportance = {
   read: 1,
   create: 2,
   write: 3,
-  delete: 4
+  delete: 4,
 };
 
 const DisplayRightList = (props) => {
   if (!props.rights) return null;
-  const rights = props.rights.slice().sort(function (a, b) {
+  const rights = props.rights.slice().sort(function(a, b) {
     return (rightImportance[a] || 0) - (rightImportance[b] || 0);
   });
 

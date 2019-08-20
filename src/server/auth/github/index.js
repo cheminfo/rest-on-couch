@@ -48,29 +48,29 @@ const GitHubStrategy = require('passport-github').Strategy;
 
 const { auditLogin } = require('../../../audit/actions');
 
-exports.init = function (passport, router, config) {
+exports.init = function(passport, router, config) {
   passport.use(
     new GitHubStrategy(
       {
         clientID: config.clientID,
         clientSecret: config.clientSecret,
         callbackURL: config.publicAddress + config.callbackURL,
-        passReqToCallback: true
+        passReqToCallback: true,
       },
-      function (req, accessToken, refreshToken, profile, done) {
+      function(req, accessToken, refreshToken, profile, done) {
         // Get the user's email
-        (async function () {
+        (async function() {
           const answer = (await got(
             `https://api.github.com/user/emails?access_token=${accessToken}`,
             {
               json: true,
               headers: {
-                'User-Agent': 'got'
+                'User-Agent': 'got',
               },
-              throwHttpErrors: false
-            }
+              throwHttpErrors: false,
+            },
           )).body;
-          const email = answer.filter(function (val) {
+          const email = answer.filter(function(val) {
             return val.primary === true;
           });
           if (email.length === 0 && answer[0] && answer[0].email) {
@@ -80,11 +80,11 @@ exports.init = function (passport, router, config) {
           auditLogin(profile.email, true, 'github', req.ctx);
           done(null, {
             provider: 'github',
-            email: profile.email
+            email: profile.email,
           });
         })();
-      }
-    )
+      },
+    ),
   );
 
   router.get(
@@ -93,13 +93,13 @@ exports.init = function (passport, router, config) {
       ctx.session.redirect = `${config.successRedirect}?${ctx.querystring}`;
       await next();
     },
-    passport.authenticate('github', { scope: ['user:email'] })
+    passport.authenticate('github', { scope: ['user:email'] }),
   );
 
   router.get(
     config.callbackURL,
     passport.authenticate('github', {
-      failureRedirect: config.failureRedirect
+      failureRedirect: config.failureRedirect,
     }),
     (ctx) => {
       // Successful authentication, redirect home.
@@ -108,6 +108,6 @@ exports.init = function (passport, router, config) {
       } else {
         ctx.response.redirect(config.successRedirect);
       }
-    }
+    },
   );
 };

@@ -24,19 +24,19 @@ program
   .option('-l, --limit <number>', 'Limit of files to import', Number)
   .option(
     '--continuous',
-    'Continuous mode. When import is finished, wait for some time and then import again'
+    'Continuous mode. When import is finished, wait for some time and then import again',
   )
   .option(
     '--wait <time>',
     'Wait time in seconds between imports for continuous mode (default: 60)',
     Number,
-    60
+    60,
   )
   .option(
     '--sort <order>',
     'Sorting order of the files when to_processed is walked (default: asc)',
     String,
-    'asc'
+    'asc',
   )
   .option('--dry-run', 'Do all the steps without updating the database')
   .parse(process.argv);
@@ -70,7 +70,7 @@ async function importAll() {
         waitTime,
         sizeBefore: 0,
         waiting: false,
-        file
+        file,
       });
     } else {
       readyFiles.push(file);
@@ -89,7 +89,7 @@ async function importAll() {
   // Get initial size for every waiting file
   try {
     const sizes = await Promise.all(
-      waitingFiles.map((waitingFile) => getFileSize(waitingFile))
+      waitingFiles.map((waitingFile) => getFileSize(waitingFile)),
     );
     waitingFiles.forEach((waitingFile, i) => {
       waitingFile.sizeBefore = sizes[i];
@@ -108,11 +108,11 @@ async function importAll() {
   do {
     await Promise.race(
       remainingWaitingFiles.map(
-        (remainingWaitingFile) => remainingWaitingFile.waiting
-      )
+        (remainingWaitingFile) => remainingWaitingFile.waiting,
+      ),
     );
     remainingWaitingFiles = await importNonWaitingFilesOrExtend(
-      remainingWaitingFiles
+      remainingWaitingFiles,
     );
   } while (remainingWaitingFiles.length > 0);
 }
@@ -157,7 +157,7 @@ function wait(waitingFile) {
     setTimeout(function waitCallback() {
       waitingFile.waiting = false;
       resolve(waitingFile);
-    }, waitingFile.waitTime)
+    }, waitingFile.waitTime),
   );
 }
 
@@ -192,12 +192,12 @@ async function findFiles(homeDir, limit) {
                 const maxElements = limit > 0 ? limit - files.length : 0;
                 const fileList = await getFilesToProcess(
                   sourceToProcessPath,
-                  maxElements
+                  maxElements,
                 );
                 const objFiles = fileList.map((file) => ({
                   database,
                   importName,
-                  path: file
+                  path: file,
                 }));
                 files = files.concat(objFiles);
                 if (limit > 0 && files.length >= limit) {
@@ -222,7 +222,7 @@ async function findFiles(homeDir, limit) {
           const objFiles = fileList.map((file) => ({
             database,
             importName,
-            path: file
+            path: file,
           }));
           files = files.concat(objFiles);
           if (limit > 0 && files.length >= limit) {
@@ -243,7 +243,7 @@ function getFilesToProcess(directory, maxElements) {
     const items = [];
     const walkStream = klaw(directory, { queueMethod: sortWalk });
     walkStream
-      .on('data', function (item) {
+      .on('data', function(item) {
         if (item.stats.isFile()) {
           items.push(item.path);
           if (maxElements > 0 && items.length >= maxElements) {
@@ -253,7 +253,7 @@ function getFilesToProcess(directory, maxElements) {
         }
       })
       .on('end', () => resolve(items))
-      .on('error', function (err) {
+      .on('error', function(err) {
         this.close();
         reject(err);
       });
@@ -287,7 +287,7 @@ async function processFile(file) {
         parsedPath.base,
         splitParsedPath,
         toProcess,
-        'processed'
+        'processed',
       );
     } else if (importResult.skip) {
       debug.debug('skipped import (%s)', importResult.skip);
@@ -307,7 +307,7 @@ async function processFile(file) {
       parsedPath.base,
       splitParsedPath,
       toProcess,
-      'errored'
+      'errored',
     );
   }
 }
@@ -327,7 +327,7 @@ async function moveFile(filePath, fileName, splitParsedPath, toProcess, dest) {
 function getDatePath() {
   const now = new Date();
   return `${now.getUTCFullYear()}/${`0${now.getUTCMonth() + 1}`.slice(
-    -2
+    -2,
   )}/${`0${now.getUTCDate()}`.slice(-2)}`;
 }
 
@@ -345,7 +345,7 @@ function shouldIgnore(name) {
     const database = program.args[1];
     const importName = program.args[2];
     await importFile(database, importName, filePath, {
-      dryRun: program.dryRun
+      dryRun: program.dryRun,
     });
     if (program.dryRun) {
       debug('dry run finished without errors');

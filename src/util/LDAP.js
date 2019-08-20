@@ -6,12 +6,12 @@ const debug = require('./debug')('ldap:client');
 
 const defaultSearchOptions = {
   scope: 'sub',
-  timeLimit: 1
+  timeLimit: 1,
 };
 
 const defaultLdapOptions = {
   connectTimeout: 2000,
-  timeout: 2000
+  timeout: 2000,
 };
 
 function search(ldapOptions, searchOptions) {
@@ -22,16 +22,16 @@ function search(ldapOptions, searchOptions) {
     // if client could know when it is ready
     // promises would be much easier to handle :-(
     const client = ldapjs.createClient(ldapOptions);
-    client.on('error', function (e) {
+    client.on('error', function(e) {
       reject(e);
     });
 
-    client.__resolve__ = function (value) {
+    client.__resolve__ = function(value) {
       client.destroy();
       resolve(value);
     };
 
-    client.__reject__ = function (err) {
+    client.__reject__ = function(err) {
       client.destroy();
       reject(err);
     };
@@ -44,13 +44,13 @@ function search(ldapOptions, searchOptions) {
               return;
             }
             const entries = [];
-            res.on('searchEntry', function (entry) {
+            res.on('searchEntry', function(entry) {
               entries.push(entry);
             });
-            res.on('error', function (err) {
+            res.on('error', function(err) {
               client.__reject__(err);
             });
-            res.on('end', function () {
+            res.on('end', function() {
               client.__resolve__(entries);
             });
           });
@@ -72,7 +72,7 @@ function bind(client, DN, password) {
   }
   return new Promise((resolve, reject) => {
     try {
-      client.bind(DN, password, function (err) {
+      client.bind(DN, password, function(err) {
         if (err) {
           client.__reject__(err);
           reject(err);
@@ -88,5 +88,5 @@ function bind(client, DN, password) {
 }
 
 module.exports = {
-  search
+  search,
 };

@@ -3,7 +3,7 @@
 const validateDocUpdate = require('../../../src/design/validateDocUpdate');
 
 // TODO workaround for CentOS 6.
-global.isArray = function (obj) {
+global.isArray = function(obj) {
   return Array.isArray(obj);
 };
 
@@ -19,59 +19,59 @@ describe('validate_doc_update', () => {
       assert(
         addOwners(addDate({ $type: 'entry', $id: 'abc' })),
         addOwners(addDate({ $type: 'entry', $id: 'xyz' })),
-        'Cannot change the ID'
+        'Cannot change the ID',
       );
       var doc = addOwners(addDate({ $type: 'entry', $id: ['a', 'b'] }));
       assertNot(addOwners(addDate({ $type: 'entry', $id: ['a', 'b'] })), doc);
       assert(
         addOwners(addDate({ $type: 'entry', $id: ['a', 'c'] })),
         doc,
-        'Cannot change the ID'
+        'Cannot change the ID',
       );
       assert(
         addOwners(addDate({ $type: 'entry', $id: [] })),
         doc,
-        'Cannot change the ID'
+        'Cannot change the ID',
       );
       assert(
         addOwners(addDate({ $type: 'entry', $id: ['a', 'c', 'd'] })),
         doc,
-        'Cannot change the ID'
+        'Cannot change the ID',
       );
     });
     test('date', () => {
       assert(
         addOwners({ $type: 'entry', $id: 'abc' }),
         null,
-        /dates are mandatory/
+        /dates are mandatory/,
       );
       assert(
         addOwners(addTypeID({ $creationDate: 100 })),
         null,
-        /dates are mandatory/
+        /dates are mandatory/,
       );
       assert(
         addOwners(addTypeID({ $creationDate: 100, $modificationDate: 50 })),
         null,
-        /cannot be before/
+        /cannot be before/,
       );
       assert(
         addOwners(
           addTypeID({
             $creationDate: 99,
-            $modificationDate: 100
-          })
+            $modificationDate: 100,
+          }),
         ),
         addTypeID({ $creationDate: 100 }),
-        'Cannot change creation date'
+        'Cannot change creation date',
       );
       assert(
         addOwners(addTypeID({ $creationDate: 200, $modificationDate: 220 })),
         addTypeID({
           $creationDate: 200,
-          $modificationDate: 250
+          $modificationDate: 250,
         }),
-        /cannot change to the past/
+        /cannot change to the past/,
       );
     });
     test('owners', () => {
@@ -79,7 +79,7 @@ describe('validate_doc_update', () => {
       assert(
         addDate(addTypeID({ $owners: ['abc'] })),
         null,
-        /must be an email/
+        /must be an email/,
       );
       assert(addDate(addTypeID({})), null, /Missing owners/);
     });
@@ -87,19 +87,19 @@ describe('validate_doc_update', () => {
       assert(
         addDate(addOwners(addGroup({ name: 'a@a.com', users: [] }))),
         null,
-        /Names can only contain alphanumerical characters and _-\./
+        /Names can only contain alphanumerical characters and _-\./,
       );
     });
     test('kind', () => {
       assert(
         addOwners(addDate({ $type: 'entry', $id: 'abc' })),
         addOwners(addDate({ $type: 'entry', $id: 'abc', $kind: 'xy' })),
-        'Cannot change the kind'
+        'Cannot change the kind',
       );
       assert(
         addOwners(addDate({ $type: 'entry', $id: 'abc', $kind: 'yz' })),
         addOwners(addDate({ $type: 'entry', $id: 'abc', $kind: 'xy' })),
-        'Cannot change the kind'
+        'Cannot change the kind',
       );
     });
   });
@@ -114,7 +114,7 @@ function assert(newDoc, oldDoc, message) {
 }
 
 function assertNot(newDoc, oldDoc) {
-  expect(function () {
+  expect(function() {
     validateDocUpdate(newDoc, oldDoc, { name: 'admin' });
   }).not.toThrow();
 }

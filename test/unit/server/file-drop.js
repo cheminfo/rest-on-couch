@@ -22,7 +22,7 @@ describe('drop file server', () => {
       .then(() => {
         const content = fs.readFileSync(
           path.join(homedir, 'test/kind1/to_process/test 123'),
-          'utf-8'
+          'utf-8',
         );
         expect(content).toBe('test with query strings');
       });
@@ -37,7 +37,7 @@ describe('drop file server', () => {
       .then(() => {
         const content = fs.readFileSync(
           path.join(homedir, 'test/kind1/to_process/test123'),
-          'utf-8'
+          'utf-8',
         );
         expect(content).toBe('test with params');
       });
@@ -57,11 +57,11 @@ describe('drop file server', () => {
     await req2;
     const content1 = fs.readFileSync(
       path.join(homedir, 'test/kind1/to_process/testConflict.txt'),
-      'utf-8'
+      'utf-8',
     );
     const content2 = fs.readFileSync(
       path.join(homedir, 'test/kind1/to_process/testConflict.txt.1'),
-      'utf-8'
+      'utf-8',
     );
     expect(content1).toBe('test conflict');
     expect(content2).toBe('test conflict');

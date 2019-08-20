@@ -21,10 +21,11 @@ function GlobalRights(props) {
 
 const mapStateToProps = (state) => {
   return {
-    globalRights: state.db.globalRights
+    globalRights: state.db.globalRights,
   };
 };
 
-export default connect(mapStateToProps, { addGlobalRight, removeGlobalRight })(
-  GlobalRights
-);
+export default connect(
+  mapStateToProps,
+  { addGlobalRight, removeGlobalRight },
+)(GlobalRights);

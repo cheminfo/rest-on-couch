@@ -9,7 +9,7 @@ describe('token methods', () => {
   test('user should be able to create and get tokens', async () => {
     const tokens = await Promise.all([
       couch.createEntryToken('b@b.com', 'A'),
-      couch.createEntryToken('b@b.com', 'B')
+      couch.createEntryToken('b@b.com', 'B'),
     ]);
     expect(tokens[0].$id).not.toBe(tokens[1].$id);
     const token = tokens[0];
@@ -49,14 +49,14 @@ describe('token methods', () => {
       $type: 'token',
       $kind: 'user',
       $owner: 'b@b.com',
-      rights: ['read']
+      rights: ['read'],
     });
   });
 
   test('token should give read access to non public data', async () => {
     const token = await couch.createUserToken('b@b.com');
     await expect(couch.getEntryById('A', 'a@a.com')).rejects.toThrow(
-      'document not found'
+      'document not found',
     );
     const entry = await couch.getEntry('A', 'a@a.com', { token });
     expect(entry).toBeDefined();
@@ -65,26 +65,26 @@ describe('token methods', () => {
   test('token should give only the right for which it was created', async () => {
     const token = await couch.createUserToken('b@b.com', 'delete');
     await expect(couch.getEntryById('A', 'a@a.com', { token })).rejects.toThrow(
-      'document not found'
+      'document not found',
     );
     await couch.deleteEntry('A', 'a@a.com', { token });
   });
 
   test('anonymous user should not be able to create a token', async () => {
     await expect(couch.createEntryToken('anonymous', 'A')).rejects.toThrow(
-      'only a user can create a token'
+      'only a user can create a token',
     );
     await expect(couch.createUserToken('anonymous')).rejects.toThrow(
-      'only a user can create a token'
+      'only a user can create a token',
     );
   });
 
   test('token should not accept invalid right', async () => {
     await expect(couch.createUserToken('a@a.com', 'test1')).rejects.toThrow(
-      'invalid right: test1'
+      'invalid right: test1',
     );
     await expect(
-      couch.createUserToken('a@a.com', ['read', 'test2'])
+      couch.createUserToken('a@a.com', ['read', 'test2']),
     ).rejects.toThrow('invalid right: test2');
   });
 });

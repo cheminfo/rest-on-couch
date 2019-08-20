@@ -34,7 +34,7 @@ const DefaultGroupsEditor = ({ defaultGroups, addGroup, removeGroup }) => (
 DefaultGroupsEditor.propTypes = {
   defaultGroups: PropTypes.object.isRequired,
   addGroup: PropTypes.func.isRequired,
-  removeGroup: PropTypes.func.isRequired
+  removeGroup: PropTypes.func.isRequired,
 };
 
 export default DefaultGroupsEditor;

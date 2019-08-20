@@ -42,7 +42,7 @@ const methods = {
   async getUserGroups(user) {
     await this.open();
     let groups = await this._db.queryView('groupByUser', {
-      key: user
+      key: user,
     });
     groups = groups.map((doc) => doc.value);
     const groupNameSet = new Set(groups.map((g) => g.name));
@@ -50,7 +50,7 @@ const methods = {
     let defaultGroupNames = await validate.getDefaultGroups(
       this._db,
       user,
-      true
+      true,
     );
     const defaultGroups = [];
     for (let groupName of defaultGroupNames) {
@@ -58,29 +58,29 @@ const methods = {
         let group = await nanoMethods.getGroup(this._db, groupName);
         defaultGroups.push({
           name: groupName,
-          rights: group ? group.rights : []
+          rights: group ? group.rights : [],
         });
       }
     }
     return groups.concat(defaultGroups);
-  }
+  },
 };
 
 async function getUser(db, user) {
   const rows = await db.queryView('user', {
     key: user,
-    include_docs: true
+    include_docs: true,
   });
   if (!rows.length) throw new CouchError('user not found', 'not found');
   if (rows.length > 1) {
     throw new CouchError(
       'unexepected: more than 1 user profile',
-      'unreachable'
+      'unreachable',
     );
   }
   return rows[0].doc;
 }
 
 module.exports = {
-  methods
+  methods,
 };

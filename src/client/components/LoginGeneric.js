@@ -5,7 +5,7 @@ class LoginGeneric extends React.Component {
     super(props);
     this.state = {
       username: '',
-      password: ''
+      password: '',
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -14,7 +14,7 @@ class LoginGeneric extends React.Component {
 
   handleChange(event) {
     this.setState({
-      [event.target.name]: event.target.value
+      [event.target.name]: event.target.value,
     });
   }
 

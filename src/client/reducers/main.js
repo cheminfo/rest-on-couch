@@ -1,7 +1,7 @@
 import { ROC_ONLINE } from '../actions/main';
 
 const initialState = {
-  rocOnline: null
+  rocOnline: null,
 };
 
 const mainReducer = (state = initialState, action) => {

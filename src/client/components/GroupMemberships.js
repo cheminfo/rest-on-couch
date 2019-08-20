@@ -23,7 +23,7 @@ class GroupMemberships extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    groups: state.db.memberships
+    groups: state.db.memberships,
   };
 };
 

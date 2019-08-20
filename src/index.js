@@ -3,7 +3,7 @@
 const Couch = require('./couch');
 const debug = require('./util/debug')('main');
 
-process.on('unhandledRejection', function (err) {
+process.on('unhandledRejection', function(err) {
   debug.error('unhandled rejection: %s', err.stack);
 });
 

@@ -19,7 +19,7 @@ function getConfig(database, customConfig) {
       getHomeConfig(),
       dbConfig[database],
       envConfig,
-      cliConfig
+      cliConfig,
     );
   }
   if (!customConfig) {
@@ -57,5 +57,5 @@ globalConfig.publicAddress =
 module.exports = {
   getConfig,
   getImportConfig,
-  globalConfig
+  globalConfig,
 };

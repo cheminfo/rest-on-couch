@@ -59,7 +59,7 @@ exports.headDocument = composeWithError(async (ctx) => {
   const result = await ctx.state.couch.getEntry(
     ctx.params.uuid,
     ctx.state.userEmail,
-    ctx.query
+    ctx.query,
   );
   const ifNoneMatch = ctx.request.get('If-None-Match');
   const rev = `"${result._rev}"`;
@@ -75,7 +75,7 @@ exports.getDocument = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getEntry(
     ctx.params.uuid,
     ctx.state.userEmail,
-    ctx.query
+    ctx.query,
   );
 });
 
@@ -83,7 +83,7 @@ exports.updateEntry = composeWithError(async (ctx) => {
   const body = ctx.request.body;
   if (body) body._id = ctx.params.uuid;
   const result = await ctx.state.couch.insertEntry(body, ctx.state.userEmail, {
-    isUpdate: true
+    isUpdate: true,
   });
   assert.strictEqual(result.action, 'updated');
   ctx.body = result.info;
@@ -102,14 +102,14 @@ exports.newOrUpdateEntry = composeWithError(async (ctx) => {
   const result = await ctx.state.couch.insertEntry(
     ctx.request.body,
     ctx.state.userEmail,
-    options
+    options,
   );
   ctx.body = result.info;
   if (result.action === 'created') {
     ctx.status = 201;
     ctx.set(
       'Location',
-      `${ctx.state.urlPrefix}db/${ctx.state.dbName}/entry/${result.info.id}`
+      `${ctx.state.urlPrefix}db/${ctx.state.dbName}/entry/${result.info.id}`,
     );
   } else {
     ctx.status = 200;
@@ -120,7 +120,7 @@ exports.deleteAttachment = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.deleteAttachment(
     ctx.params.uuid,
     ctx.state.userEmail,
-    ctx.params.attachment
+    ctx.params.attachment,
   );
 });
 
@@ -131,8 +131,8 @@ exports.saveAttachment = composeWithError(async (ctx) => {
     {
       name: ctx.params.attachment,
       data: ctx.request.body,
-      content_type: ctx.get('Content-Type')
-    }
+      content_type: ctx.get('Content-Type'),
+    },
   );
 });
 
@@ -142,7 +142,7 @@ exports.getAttachment = composeWithError(async (ctx) => {
     ctx.params.attachment,
     ctx.state.userEmail,
     true,
-    ctx.query
+    ctx.query,
   );
 });
 
@@ -151,7 +151,7 @@ exports.allEntries = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getEntriesByUserAndRights(
     ctx.state.userEmail,
     right,
-    ctx.query
+    ctx.query,
   );
 });
 
@@ -160,13 +160,13 @@ exports.queryEntriesByUser = composeWithError(async (ctx) => {
     ctx.body = await ctx.state.couch.queryViewByUser(
       ctx.state.userEmail,
       ctx.params.view,
-      ctx.query
+      ctx.query,
     );
   } else {
     ctx.body = await ctx.state.couch.queryEntriesByUser(
       ctx.state.userEmail,
       ctx.params.view,
-      ctx.query
+      ctx.query,
     );
   }
 });
@@ -176,7 +176,7 @@ exports.queryEntriesByRight = composeWithError(async (ctx) => {
     ctx.state.userEmail,
     ctx.params.view,
     ctx.query.right,
-    ctx.query
+    ctx.query,
   );
 });
 
@@ -187,7 +187,7 @@ exports.entriesByKindAndId = composeWithError(async (ctx) => {
     if (queryParam || bodyParam) {
       ctx.query[couchNeedsParse[i]] = [
         ctx.params.kind,
-        queryParam ? queryParam : bodyParam
+        queryParam ? queryParam : bodyParam,
       ];
     }
   }
@@ -195,7 +195,7 @@ exports.entriesByKindAndId = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.queryEntriesByUser(
     ctx.state.userEmail,
     'entryByKindAndId',
-    ctx.query
+    ctx.query,
   );
 });
 
@@ -206,14 +206,14 @@ exports.entriesByOwnerAndId = composeWithError(async (ctx) => {
     if (queryParam || bodyParam) {
       ctx.query[couchNeedsParse[i]] = [
         ctx.params.email,
-        queryParam ? queryParam : bodyParam
+        queryParam ? queryParam : bodyParam,
       ];
     }
   }
   ctx.body = await ctx.state.couch.queryEntriesByUser(
     ctx.state.userEmail,
     'entryByOwnerAndId',
-    ctx.query
+    ctx.query,
   );
 });
 
@@ -224,7 +224,7 @@ exports.getUser = composeWithError(async (ctx) => {
 exports.editUser = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.editUser(
     ctx.state.userEmail,
-    ctx.request.body
+    ctx.request.body,
   );
 });
 
@@ -232,37 +232,37 @@ exports.getUserInfo = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getUserInfo(ctx.state.userEmail);
 });
 
-exports.getOwners = function (type) {
+exports.getOwners = function(type) {
   return composeWithError(async (ctx) => {
     const doc = await ctx.state.couch.getDocByRights(
       ctx.params.uuid,
       ctx.state.userEmail,
       'read',
-      type
+      type,
     );
     ctx.body = doc.$owners;
   });
 };
 
-exports.addOwner = function (type) {
+exports.addOwner = function(type) {
   return composeWithError(async (ctx) => {
     await ctx.state.couch.addOwnersToDoc(
       ctx.params.uuid,
       ctx.state.userEmail,
       ctx.params.owner,
-      type
+      type,
     );
     respondOk(ctx);
   });
 };
 
-exports.removeOwner = function (type) {
+exports.removeOwner = function(type) {
   return composeWithError(async (ctx) => {
     await ctx.state.couch.removeOwnersFromDoc(
       ctx.params.uuid,
       ctx.state.userEmail,
       ctx.params.owner,
-      type
+      type,
     );
     respondOk(ctx);
   });
@@ -271,7 +271,7 @@ exports.removeOwner = function (type) {
 exports.getGroup = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getGroup(
     ctx.params.name,
-    ctx.state.userEmail
+    ctx.state.userEmail,
   );
 });
 
@@ -280,7 +280,7 @@ exports.createGroup = composeWithError(async (ctx) => {
     ctx.params.name,
     ctx.state.userEmail,
     null,
-    ctx.query.type
+    ctx.query.type,
   );
   respondOk(ctx);
 });
@@ -294,7 +294,7 @@ exports.getGroupUsers = composeWithError(async (ctx) => {
     ctx.params.uuid,
     ctx.state.userEmail,
     'read',
-    'group'
+    'group',
   );
   ctx.body = group.users;
 });
@@ -307,7 +307,7 @@ exports.addUserToGroup = composeWithError(async (ctx) => {
   await ctx.state.couch.addUsersToGroup(
     ctx.params.uuid,
     ctx.state.userEmail,
-    ctx.params.username
+    ctx.params.username,
   );
   respondOk(ctx);
 });
@@ -316,7 +316,7 @@ exports.removeUserFromGroup = composeWithError(async (ctx) => {
   await ctx.state.couch.removeUsersFromGroup(
     ctx.params.uuid,
     ctx.state.userEmail,
-    ctx.params.username
+    ctx.params.username,
   );
   respondOk(ctx);
 });
@@ -326,7 +326,7 @@ exports.getGroupRights = composeWithError(async (ctx) => {
     ctx.params.uuid,
     ctx.state.userEmail,
     'read',
-    'group'
+    'group',
   );
   ctx.body = group.rights;
 });
@@ -335,7 +335,7 @@ exports.addRightToGroup = composeWithError(async (ctx) => {
   await ctx.state.couch.addRightsToGroup(
     ctx.params.uuid,
     ctx.state.userEmail,
-    ctx.params.right
+    ctx.params.right,
   );
   respondOk(ctx);
 });
@@ -344,7 +344,7 @@ exports.removeRightFromGroup = composeWithError(async (ctx) => {
   await ctx.state.couch.removeRightsFromGroup(
     ctx.params.uuid,
     ctx.state.userEmail,
-    ctx.params.right
+    ctx.params.right,
   );
   respondOk(ctx);
 });
@@ -356,7 +356,7 @@ exports.getRights = composeWithError(async (ctx) => {
     uuid,
     ctx.state.userEmail,
     right,
-    ctx.query
+    ctx.query,
   );
 });
 
@@ -369,7 +369,7 @@ exports.setGroupProperties = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.setGroupProperties(
     ctx.params.uuid,
     ctx.state.userEmail,
-    ctx.request.body
+    ctx.request.body,
   );
 });
 
@@ -377,7 +377,7 @@ exports.setLdapGroupProperties = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.setLdapGroupProperties(
     ctx.params.uuid,
     ctx.state.userEmail,
-    ctx.request.body
+    ctx.request.body,
   );
 });
 
@@ -397,7 +397,7 @@ exports.getGlobalRightsDoc = composeWithError(async (ctx) => {
 exports.getGlobalRightsDocUsers = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getGlobalRightUsers(
     ctx.state.userEmail,
-    ctx.params.right
+    ctx.params.right,
   );
 });
 
@@ -405,7 +405,7 @@ exports.addGlobalRightsDocUser = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.addGlobalRight(
     ctx.state.userEmail,
     ctx.params.right,
-    ctx.params.user
+    ctx.params.user,
   );
 });
 
@@ -413,7 +413,7 @@ exports.removeGlobalRightsDocUser = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.removeGlobalRight(
     ctx.state.userEmail,
     ctx.params.right,
-    ctx.params.user
+    ctx.params.user,
   );
 });
 
@@ -424,7 +424,7 @@ exports.getGlobalDefaultGroups = composeWithError(async (ctx) => {
 exports.setGlobalDefaultGroups = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.setGlobalDefaultGroups(
     ctx.state.userEmail,
-    ctx.request.body
+    ctx.request.body,
   );
 });
 
@@ -432,7 +432,7 @@ exports.addGlobalDefaultGroup = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.addGlobalDefaultGroup(
     ctx.state.userEmail,
     ctx.params.user,
-    ctx.params.group
+    ctx.params.group,
   );
 });
 
@@ -440,14 +440,14 @@ exports.removeGlobalDefaultGroup = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.removeGlobalDefaultGroup(
     ctx.state.userEmail,
     ctx.params.user,
-    ctx.params.group
+    ctx.params.group,
   );
 });
 
 exports.createEntryToken = composeWithError(async (ctx) => {
   const token = await ctx.state.couch.createEntryToken(
     ctx.state.userEmail,
-    ctx.params.uuid
+    ctx.params.uuid,
   );
   ctx.status = 201;
   ctx.body = token;
@@ -457,7 +457,7 @@ exports.createUserToken = composeWithError(async (ctx) => {
   const rights = ctx.query.rights ? ctx.query.rights.split(',') : undefined;
   const token = await ctx.state.couch.createUserToken(
     ctx.state.userEmail,
-    rights
+    rights,
   );
   ctx.status = 201;
   ctx.body = token;
@@ -481,7 +481,7 @@ function processCouchQuery(ctx) {
     if (ctx.query[couchNeedsParse[i]]) {
       try {
         ctx.query[couchNeedsParse[i]] = JSON.parse(
-          ctx.query[couchNeedsParse[i]]
+          ctx.query[couchNeedsParse[i]],
         );
       } catch (e) {
         // Keep original value if parsing failed

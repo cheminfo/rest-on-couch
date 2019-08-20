@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (agent, username, password) {
+module.exports = function(agent, username, password) {
   return agent
     .post('/auth/login/couchdb')
     .type('form')
@@ -9,7 +9,7 @@ module.exports = function (agent, username, password) {
     .then((res) => {
       if (!res.body.authenticated) {
         throw new Error(
-          `Could not authenticate on CouchDB as ${username}:${password}`
+          `Could not authenticate on CouchDB as ${username}:${password}`,
         );
       }
     });

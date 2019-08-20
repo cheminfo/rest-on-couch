@@ -35,7 +35,7 @@ const FacebookStrategy = require('passport-facebook');
 
 const { auditLogin } = require('../../../audit/actions');
 
-exports.init = function (passport, router, config) {
+exports.init = function(passport, router, config) {
   passport.use(
     new FacebookStrategy(
       {
@@ -43,34 +43,32 @@ exports.init = function (passport, router, config) {
         clientSecret: config.appSecret,
         callbackURL: config.publicAddress + config.callbackURL,
         enableProof: false,
-        passReqToCallback: true
+        passReqToCallback: true,
       },
-      function (req, accessToken, refreshToken, profile, done) {
+      function(req, accessToken, refreshToken, profile, done) {
         const email = profile._json.email;
         auditLogin(email, true, 'facebook', req.ctx);
         done(null, {
           provider: 'facebook',
-          email
+          email,
         });
-      }
-    )
+      },
+    ),
   );
 
   router.get(
     config.loginURL,
     async (ctx, next) => {
-      ctx.session.redirect = `${config.successRedirect}?${
-        ctx.request.querystring
-      }`;
+      ctx.session.redirect = `${config.successRedirect}?${ctx.request.querystring}`;
       await next();
     },
-    passport.authenticate('facebook', { scope: ['email'] })
+    passport.authenticate('facebook', { scope: ['email'] }),
   );
 
   router.get(
     config.callbackURL,
     passport.authenticate('facebook', {
-      failureRedirect: config.failureRedirect
+      failureRedirect: config.failureRedirect,
     }),
     (ctx) => {
       // Successful authentication, redirect home.
@@ -79,6 +77,6 @@ exports.init = function (passport, router, config) {
       } else {
         ctx.response.redirect(config.successRedirect);
       }
-    }
+    },
   );
 };

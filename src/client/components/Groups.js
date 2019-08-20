@@ -9,7 +9,7 @@ import {
   removeGroup,
   setGroupProperties,
   setLdapGroupProperties,
-  syncLdapGroup
+  syncLdapGroup,
 } from '../actions/db';
 
 import GroupCreator from './GroupCreator';
@@ -43,13 +43,13 @@ Groups.propTypes = {
   userGroups: PropTypes.array.isRequired,
   addValueToGroup: PropTypes.func.isRequired,
   removeValueFromGroup: PropTypes.func.isRequired,
-  removeGroup: PropTypes.func.isRequired
+  removeGroup: PropTypes.func.isRequired,
 };
 
 export default connect(
   (state) => ({
     userGroups: state.db.userGroups,
-    hasCreateGroupRight: state.db.userRights.includes('createGroup')
+    hasCreateGroupRight: state.db.userRights.includes('createGroup'),
   }),
   {
     addValueToGroup,
@@ -58,6 +58,6 @@ export default connect(
     removeGroup,
     setGroupProperties,
     setLdapGroupProperties,
-    syncLdapGroup
-  }
+    syncLdapGroup,
+  },
 )(Groups);

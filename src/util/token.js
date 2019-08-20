@@ -11,7 +11,7 @@ exports.createEntryToken = async function createEntryToken(
   db,
   user,
   uuid,
-  rights
+  rights,
 ) {
   rights = ensureStringArray(rights, 'rights');
   const token = {
@@ -21,7 +21,7 @@ exports.createEntryToken = async function createEntryToken(
     $owner: user,
     $creationDate: Date.now(),
     uuid,
-    rights
+    rights,
   };
   await db.insertDocument(token);
   return token;
@@ -35,7 +35,7 @@ exports.createUserToken = async function createUserToken(db, user, rights) {
     $id: getRandomToken(),
     $owner: user,
     $creationDate: Date.now(),
-    rights
+    rights,
   };
   await db.insertDocument(token);
   return token;
@@ -45,7 +45,7 @@ exports.getToken = async function getToken(db, tokenId) {
   const result = await db.queryView(
     'tokenById',
     { key: tokenId, include_docs: true },
-    { onlyDoc: true }
+    { onlyDoc: true },
   );
   if (result.length === 0) {
     return null;
@@ -60,7 +60,7 @@ exports.getTokens = function getTokens(db, user) {
   return db.queryView(
     'tokenByOwner',
     { key: user, include_docs: true },
-    { onlyDoc: true }
+    { onlyDoc: true },
   );
 };
 

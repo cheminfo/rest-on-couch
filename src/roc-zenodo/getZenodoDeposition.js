@@ -12,10 +12,10 @@ function getZenodoDeposition(entry, self) {
       keywords: [
         'cheminfo:roc',
         `from:${self.name}`,
-        ...validateKeywords(entry.keywords)
+        ...validateKeywords(entry.keywords),
       ],
-      notes: entry.notes || ''
-    }
+      notes: entry.notes || '',
+    },
   };
   if (entry.version) {
     result.version = entry.version;
@@ -50,7 +50,7 @@ function validateCreators(creators) {
     if (typeof creator.name === 'string') {
       if (!creator.name.includes(', ')) {
         throw new TypeError(
-          'creator must have a lastname and firstname, comma-separated'
+          'creator must have a lastname and firstname, comma-separated',
         );
       }
       creatorName = creator.name;
@@ -61,7 +61,7 @@ function validateCreators(creators) {
       creatorName = `${creator.lastname}, ${creator.firstname}`;
     } else {
       throw new TypeError(
-        'creator must have a lastname and firstname, comma-separated'
+        'creator must have a lastname and firstname, comma-separated',
       );
     }
     if (typeof creator.affiliation !== 'string') {
@@ -69,7 +69,7 @@ function validateCreators(creators) {
     }
     toReturn.push({
       name: creatorName,
-      affiliation: creator.affiliation
+      affiliation: creator.affiliation,
     });
   }
   return toReturn;

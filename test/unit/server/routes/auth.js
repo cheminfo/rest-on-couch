@@ -9,7 +9,7 @@ describe('server/routes/auth', () => {
         .post('/auth/login/couchdb')
         .send({
           username: 'bad',
-          password: 'robot'
+          password: 'robot',
         })
         .expect(401)
         .then((res) => {
@@ -28,7 +28,7 @@ describe('server/routes/auth', () => {
             authenticated: false,
             username: 'anonymous',
             provider: null,
-            admin: false
+            admin: false,
           });
         });
     });

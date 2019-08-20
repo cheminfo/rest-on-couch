@@ -5,7 +5,7 @@ export const CHECK_LOGIN = 'CHECK_LOGIN';
 export function checkLogin(dispatch, provider) {
   dispatch({
     type: CHECK_LOGIN,
-    payload: checkTheLogin(provider)
+    payload: checkTheLogin(provider),
   });
 }
 
@@ -22,7 +22,7 @@ export function logout() {
   logoutRequest.then(() => dbManager.syncDb());
   return {
     type: LOGOUT,
-    payload: logoutRequest
+    payload: logoutRequest,
   };
 }
 
@@ -36,7 +36,7 @@ export function loginLDAP(dispatch) {
     loginRequest.then(() => dbManager.syncDb());
     dispatch({
       type: CHECK_LOGIN,
-      payload: loginRequest
+      payload: loginRequest,
     });
   };
 }
@@ -47,7 +47,7 @@ export function loginCouchDB(dispatch) {
     loginRequest.then(() => dbManager.syncDb());
     dispatch({
       type: CHECK_LOGIN,
-      payload: loginRequest
+      payload: loginRequest,
     });
   };
 }
@@ -66,7 +66,7 @@ export const GET_LOGIN_PROVIDERS = 'GET_LOGIN_PROVIDERS';
 export function getLoginProviders(dispatch) {
   dispatch({
     type: GET_LOGIN_PROVIDERS,
-    payload: apiFetchJSON('auth/providers')
+    payload: apiFetchJSON('auth/providers'),
   });
 }
 
@@ -74,7 +74,7 @@ export const CHANGE_COUCHDB_PASSWORD = 'CHANGE_COUCHDB_PASSWORD';
 export function changeCouchDBPassword(oldPassword, newPassword) {
   return {
     type: CHANGE_COUCHDB_PASSWORD,
-    payload: apiFetchFormJSON('auth/password', { oldPassword, newPassword })
+    payload: apiFetchFormJSON('auth/password', { oldPassword, newPassword }),
   };
 }
 
@@ -82,6 +82,6 @@ export const CREATE_COUCHDB_USER = 'CREATE_COUCHDB_USER';
 export function createCouchDBUser(email, password) {
   return {
     type: CREATE_COUCHDB_USER,
-    payload: apiFetchFormJSON('auth/couchdb/user', { email, password })
+    payload: apiFetchFormJSON('auth/couchdb/user', { email, password }),
   };
 }
