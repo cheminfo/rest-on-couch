@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 COUCHDB_HOST=${COUCHDB_HOST:-localhost}
 COUCHDB_PORT=${COUCHDB_PORT:-5984}
