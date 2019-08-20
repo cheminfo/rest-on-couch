@@ -8,7 +8,7 @@ describe('entry reads, database without any default rights', () => {
 
   test('should grant read access to group member with read access', () => {
     return expect(couch.getEntry('A', 'a@a.com')).resolves.toBeInstanceOf(
-      Object
+      Object,
     );
   });
 
@@ -39,7 +39,7 @@ describe('entry reads, database without any default rights', () => {
 
   test('should reject anonymous user', () => {
     return expect(couch.getEntry('A', 'anonymous')).rejects.toThrow(
-      /no access/
+      /no access/,
     );
   });
 });
@@ -49,7 +49,7 @@ describe('entry editions, database without any default rights', () => {
 
   test('any user is not allowed to create entry', () => {
     return expect(
-      couch.insertEntry(constants.newEntry, 'z@z.com')
+      couch.insertEntry(constants.newEntry, 'z@z.com'),
     ).rejects.toThrow(/not allowed to create/);
   });
 });

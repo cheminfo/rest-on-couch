@@ -7,7 +7,7 @@ class EditableTextField extends React.Component {
     this.state = {
       editedValue: props.value || '',
       isEdited: false,
-      focus: false
+      focus: false,
     };
     this.textInput = React.createRef();
     this.handleChange = this.handleChange.bind(this);
@@ -28,7 +28,7 @@ class EditableTextField extends React.Component {
   handleChange(event) {
     this.setState({
       editedValue: event.target.value,
-      focus: false
+      focus: false,
     });
   }
 
@@ -37,7 +37,7 @@ class EditableTextField extends React.Component {
     this.props.onSubmit(this.state.editedValue);
     this.setState({
       isEdited: false,
-      focus: false
+      focus: false,
     });
   }
 
@@ -59,14 +59,14 @@ class EditableTextField extends React.Component {
     this.setState({
       isEdited: false,
       editedValue: this.props.value,
-      focus: false
+      focus: false,
     });
   }
 
   makeEditable() {
     this.setState({
       isEdited: true,
-      focus: true
+      focus: true,
     });
   }
 
@@ -99,13 +99,8 @@ class EditableTextField extends React.Component {
                 (no value)
               </span>
             )}
-            {' '}
-            &nbsp; &nbsp;
-            <a
-              onClick={this.makeEditable}
-              style={{ cursor: 'pointer' }}
-              className=""
-            >
+            &nbsp;&nbsp;
+            <a onClick={this.makeEditable} style={{ cursor: 'pointer' }}>
               <i className="fa fa-edit" />
             </a>
           </div>
@@ -117,7 +112,7 @@ class EditableTextField extends React.Component {
 
 EditableTextField.propTypes = {
   onSubmit: PropTypes.func.isRequired,
-  value: PropTypes.string
+  value: PropTypes.string,
 };
 
 export default EditableTextField;

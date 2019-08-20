@@ -24,13 +24,13 @@ const methods = {
     const hasGlobalRight = await validateMethods.checkGlobalRight(
       this,
       user,
-      right
+      right,
     );
     if (hasGlobalRight) {
       // When there is a global right, we cannot use queries because the first element of the
       // key will match all documents
       const result = await this._db.queryView(view, {
-        reduce: false
+        reduce: false,
       });
       return _.uniqBy(result, 'id');
     }
@@ -60,14 +60,14 @@ const methods = {
       options.key !== undefined
         ? options.key
         : options.startkey !== undefined
-          ? options.startkey
-          : [];
+        ? options.startkey
+        : [];
     const userEndKey =
       options.key !== undefined
         ? options.key
         : options.endkey !== undefined
-          ? options.endkey
-          : [];
+        ? options.endkey
+        : [];
 
     for (const group of userGroups) {
       const startkey = [group].concat(userStartKey);
@@ -78,7 +78,7 @@ const methods = {
         include_docs: options.include_docs,
         startkey,
         endkey,
-        reduce: false
+        reduce: false,
       });
       for (const el of result) {
         if (!data.has(el.id)) {
@@ -133,7 +133,7 @@ const methods = {
         this,
         owners,
         user,
-        rights
+        rights,
       );
       rows = rows.map((entry) => entry.doc);
       rows = rows.filter((r, idx) => hasRights[idx]);
@@ -149,9 +149,9 @@ const methods = {
 
     // Get rid of extra rows
     return cumRows.filter((r, idx) => idx < limit);
-  }
+  },
 };
 
 module.exports = {
-  methods
+  methods,
 };

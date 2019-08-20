@@ -62,7 +62,7 @@ describe('basic rest-api as anonymous (noRights)', () => {
       .then((data) => {
         expect(data.body).toMatchObject({
           error: 'invalid database name',
-          code: 'forbidden'
+          code: 'forbidden',
         });
       });
   });
@@ -86,8 +86,8 @@ describe('rest-api as b@b.com (noRights)', () => {
     return request
       .get(
         `/db/test/_query/entryIdByRight?key=${encodeURIComponent(
-          JSON.stringify(['x', 'y', 'z'])
-        )}`
+          JSON.stringify(['x', 'y', 'z']),
+        )}`,
       )
       .expect(200)
       .then((rows) => {
@@ -286,7 +286,7 @@ describe('basic rest-api as a@a.com', () => {
     return request
       .get('/db/test/group/groupA')
       .expect(200)
-      .then(function (response) {
+      .then(function(response) {
         expect(response.body).toHaveProperty('name');
         expect(response.body).toHaveProperty('users');
         expect(response.body).toHaveProperty('rights');
@@ -297,7 +297,7 @@ describe('basic rest-api as a@a.com', () => {
     return request
       .get('/db/test/groups')
       .expect(200)
-      .then(function (response) {
+      .then(function(response) {
         expect(response.body).toHaveLength(2);
         expect(response.body[0]).toBeDefined();
       });

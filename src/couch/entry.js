@@ -33,7 +33,7 @@ const methods = {
         rights,
         user,
         options.token,
-        'entry'
+        'entry',
       )
     ) {
       debug.trace('user %s has access', user);
@@ -78,7 +78,7 @@ const methods = {
       const hasRight = await validateMethods.checkRightAnyGroup(
         this,
         user,
-        'create'
+        'create',
       );
       if (!hasRight) {
         throw new CouchError('user is missing create right', 'unauthorized');
@@ -90,7 +90,7 @@ const methods = {
       } else if (typeof defaultEntry[options.kind] === 'function') {
         newEntry = defaultEntry[options.kind].apply(
           null,
-          options.createParameters || []
+          options.createParameters || [],
         );
       } else {
         throw new CouchError('unexpected type for default entry');
@@ -102,7 +102,7 @@ const methods = {
         $type: 'entry',
         $owners: [user].concat(owners),
         $content: entry,
-        $kind: options.kind
+        $kind: options.kind,
       };
       return nanoMethods.saveEntry(this._db, toInsert, user);
     }
@@ -116,7 +116,7 @@ const methods = {
       id: result.doc._id,
       rev: result.doc._rev,
       $modificationDate: result.doc.$modificationDate,
-      $creationDate: result.doc.$creationDate
+      $creationDate: result.doc.$creationDate,
     };
   },
 
@@ -140,7 +140,7 @@ const methods = {
     let owners = await this._db.queryView('ownersByModificationDate', {
       reduce: false,
       include_docs: false,
-      startkey: from
+      startkey: from,
     });
 
     user = validateMethods.userFromTokenAndRights(user, options.token, rights);
@@ -159,7 +159,7 @@ const methods = {
         this,
         owners.map((r) => r.value),
         user,
-        rights || 'read'
+        rights || 'read',
       );
       allowedDocs = owners.filter((r, idx) => hasRights[idx]);
     }
@@ -171,12 +171,12 @@ const methods = {
     if (includeDocs) {
       // Get each document from CouchDB
       return Promise.all(
-        allowedDocs.map((doc) => this._db.getDocument(doc.id))
+        allowedDocs.map((doc) => this._db.getDocument(doc.id)),
       );
     } else if (includeDate) {
       return allowedDocs.map((doc) => ({
         id: doc.id,
-        date: doc.key
+        date: doc.key,
       }));
     } else {
       return allowedDocs.map((doc) => doc.id);
@@ -190,7 +190,7 @@ const methods = {
     if (!hasRight) {
       throw new CouchError(
         'unauthorized to edit group (only owner can)',
-        'unauthorized'
+        'unauthorized',
       );
     }
     return this._db.updateWithHandler(update, uuid, updateBody);
@@ -201,7 +201,7 @@ const methods = {
       'insertEntry (id: %s, user: %s, options: %o)',
       entry._id,
       user,
-      options
+      options,
     );
     await this.open();
 
@@ -210,7 +210,7 @@ const methods = {
     if (options.groups !== undefined && !Array.isArray(options.groups)) {
       throw new CouchError(
         'options.groups should be an array if defined',
-        'invalid argument'
+        'invalid argument',
       );
     }
 
@@ -257,7 +257,7 @@ const methods = {
     }
 
     return { info: result, action };
-  }
+  },
 };
 
 function onNotFound(ctx, entry, user, options) {
@@ -290,7 +290,7 @@ async function createNew(ctx, entry, user) {
       $kind: entry.$kind,
       $owners: [user],
       $content: entry.$content,
-      _attachments: entry._attachments
+      _attachments: entry._attachments,
     };
     return nanoMethods.saveEntry(ctx._db, newEntry, user);
   } else {
@@ -337,13 +337,13 @@ async function getUniqueEntryById(ctx, user, id) {
     result = await ctx._db.queryView('entryByOwnerAndId', {
       key: [user, id],
       reduce: false,
-      include_docs: true
+      include_docs: true,
     });
   } else if (ctx[kEntryUnicity] === 'global') {
     result = await ctx._db.queryView('entryById', {
       key: id,
       reduce: false,
-      include_docs: true
+      include_docs: true,
     });
   } else {
     throw new Error(`wrong entryUnicity value: ${ctx[kEntryUnicity]}`);
@@ -352,5 +352,5 @@ async function getUniqueEntryById(ctx, user, id) {
 }
 
 module.exports = {
-  methods
+  methods,
 };

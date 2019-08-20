@@ -5,12 +5,12 @@ const connect = require('../../src/connect');
 
 module.exports = {
   resetDatabase,
-  resetDatabaseWithoutCouch
+  resetDatabaseWithoutCouch,
 };
 
 async function resetDatabase(
   databaseName,
-  options = { database: databaseName }
+  options = { database: databaseName },
 ) {
   await resetDatabaseWithoutCouch(databaseName);
   const couchInstance = new Couch(options);
@@ -43,13 +43,13 @@ async function create(nano, db) {
     body: {
       admins: {
         names: ['admin'],
-        roles: []
+        roles: [],
       },
       members: {
         names: ['admin'],
-        roles: []
-      }
-    }
+        roles: [],
+      },
+    },
   });
 }
 

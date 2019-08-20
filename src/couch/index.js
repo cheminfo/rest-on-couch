@@ -11,7 +11,7 @@ const basicRights = {
   _id: constants.RIGHTS_DOC_ID,
   createGroup: [],
   create: [],
-  read: []
+  read: [],
 };
 
 const databaseCache = new Map();
@@ -46,7 +46,7 @@ class Couch {
       ldapBindPassword: config.ldapBindPassword,
       ldapUrl: config.ldapUrl,
       ldapSync: config.ldapSync,
-      ldapGetUserEmail: config.ldapGetUserEmail
+      ldapGetUserEmail: config.ldapGetUserEmail,
     };
 
     this._logLevel = log.getLevel(config.logLevel);

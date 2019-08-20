@@ -1,6 +1,6 @@
 'use strict';
 
-exports.handleError = function (ctx, code, error) {
+exports.handleError = function(ctx, code, error) {
   if (code instanceof Error) {
     error = code;
     code = null;
@@ -12,21 +12,21 @@ exports.handleError = function (ctx, code, error) {
     case 'private':
       err = {
         error: 'unauthorized',
-        reason: 'The resource is private'
+        reason: 'The resource is private',
       };
       errCode = 401;
       break;
     case 'readonly':
       err = {
         error: 'unauthorized',
-        reason: 'The resource is readonly'
+        reason: 'The resource is readonly',
       };
       errCode = 401;
       break;
     default:
       err = {
         error: 'unknown',
-        reason: 'Unknown'
+        reason: 'Unknown',
       };
       errCode = 520;
       break;

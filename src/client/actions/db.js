@@ -7,7 +7,7 @@ export const GET_DB_LIST = 'GET_DB_LIST';
 export function getDbList(dispatch) {
   dispatch({
     type: GET_DB_LIST,
-    payload: apiFetchJSON('db/_all_dbs')
+    payload: apiFetchJSON('db/_all_dbs'),
   });
 }
 
@@ -38,14 +38,14 @@ export const CLEAR_GROUP_ERROR = 'CLEAR_GROUP_ERROR';
 export function clearGroupSuccess(groupName) {
   return {
     type: CLEAR_GROUP_SUCCESS,
-    meta: { groupName }
+    meta: { groupName },
   };
 }
 
 export function clearGroupError(groupName) {
   return {
     type: CLEAR_GROUP_ERROR,
-    meta: { groupName }
+    meta: { groupName },
   };
 }
 
@@ -61,7 +61,7 @@ function updateGroup(groupName, type, value, method, options) {
   return {
     type: UPDATE_GROUP,
     meta: Object.assign({}, options, { groupName }),
-    payload: doUpdateGroup(groupName, type, value, method)
+    payload: doUpdateGroup(groupName, type, value, method),
   };
 }
 
@@ -94,7 +94,7 @@ export function createGroup(groupName, type) {
   const groupUrl = `db/${dbManager.currentDb}/group/${groupName}?type=${type}`;
   return {
     type: CREATE_GROUP,
-    payload: doCreateGroup(groupUrl)
+    payload: doCreateGroup(groupUrl),
   };
 }
 
@@ -112,7 +112,7 @@ export function removeGroup(groupName) {
   return {
     type: REMOVE_GROUP,
     meta: { groupName },
-    payload: apiFetchJSON(groupUrl, { method: 'DELETE' })
+    payload: apiFetchJSON(groupUrl, { method: 'DELETE' }),
   };
 }
 
@@ -122,7 +122,7 @@ export function setGroupProperties(groupName, properties) {
   return {
     type: UPDATE_GROUP,
     meta: { groupName },
-    payload: doUpdateGroupProperties(groupUrl, setPropUrl, properties)
+    payload: doUpdateGroupProperties(groupUrl, setPropUrl, properties),
   };
 }
 
@@ -132,14 +132,14 @@ export function setLdapGroupProperties(groupName, properties) {
   return {
     type: UPDATE_GROUP,
     meta: { groupName },
-    payload: doUpdateGroupProperties(groupUrl, setPropUrl, properties)
+    payload: doUpdateGroupProperties(groupUrl, setPropUrl, properties),
   };
 }
 
 async function doUpdateGroupProperties(groupUrl, setPropUrl, properties) {
   await apiFetchJSON(setPropUrl, {
     method: 'PUT',
-    body: JSON.stringify(properties)
+    body: JSON.stringify(properties),
   });
   return apiFetchJSON(groupUrl);
 }
@@ -148,7 +148,7 @@ export function syncLdapGroup(groupName) {
   return {
     type: UPDATE_GROUP,
     meta: { groupName },
-    payload: doLdapSync(groupName)
+    payload: doLdapSync(groupName),
   };
 }
 
@@ -173,7 +173,7 @@ export function removeDefaultGroup(user, group) {
 function editDefaultGroup(user, group, action) {
   const defaultGroupsUrl = `db/${dbManager.currentDb}/rights/defaultGroups`;
   const url = `${defaultGroupsUrl}/${user}/${group}`;
-  return async function (dispatch) {
+  return async function(dispatch) {
     if (action === 'add') {
       await apiFetchJSON(url, { method: 'PUT' });
     } else if (action === 'remove') {
@@ -195,7 +195,7 @@ export function removeGlobalRight(right, user) {
 function editGlobalRight(right, user, action) {
   const globalRightsUrl = `db/${dbManager.currentDb}/rights/doc`;
   const url = `${globalRightsUrl}/${right}/${user}`;
-  return async function (dispatch) {
+  return async function(dispatch) {
     if (action === 'add') {
       await apiFetchJSON(url, { method: 'PUT' });
     } else if (action === 'remove') {

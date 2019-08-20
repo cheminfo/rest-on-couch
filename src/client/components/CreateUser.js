@@ -8,7 +8,7 @@ class CreateUser extends React.Component {
     super(props);
     this.state = {
       email: '',
-      password: ''
+      password: '',
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -17,7 +17,7 @@ class CreateUser extends React.Component {
 
   handleChange(event) {
     this.setState({
-      [event.target.name]: event.target.value
+      [event.target.name]: event.target.value,
     });
   }
 
@@ -96,8 +96,11 @@ function mapStateToProps(state) {
   return {
     username: state.login.username,
     error: state.login.errors.createUser,
-    success: state.login.success.createUser
+    success: state.login.success.createUser,
   };
 }
 
-export default connect(mapStateToProps, { createCouchDBUser })(CreateUser);
+export default connect(
+  mapStateToProps,
+  { createCouchDBUser },
+)(CreateUser);

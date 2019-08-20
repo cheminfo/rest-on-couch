@@ -21,11 +21,14 @@ function DefaultGroups(props) {
 
 const mapStateToProps = (state) => {
   return {
-    defaultGroups: state.db.defaultGroups
+    defaultGroups: state.db.defaultGroups,
   };
 };
 
-export default connect(mapStateToProps, {
-  addDefaultGroup,
-  removeDefaultGroup
-})(DefaultGroups);
+export default connect(
+  mapStateToProps,
+  {
+    addDefaultGroup,
+    removeDefaultGroup,
+  },
+)(DefaultGroups);

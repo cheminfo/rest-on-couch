@@ -32,7 +32,7 @@ const GlobalRightsEditor = ({ globalRights, addRight, removeRight }) => (
 GlobalRightsEditor.propTypes = {
   globalRights: PropTypes.object.isRequired,
   addRight: PropTypes.func.isRequired,
-  removeRight: PropTypes.func.isRequired
+  removeRight: PropTypes.func.isRequired,
 };
 
 export default GlobalRightsEditor;

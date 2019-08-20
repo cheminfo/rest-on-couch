@@ -2,7 +2,7 @@
 
 const passport = require('koa-passport');
 const router = require('koa-router')({
-  prefix: '/auth'
+  prefix: '/auth',
 });
 
 router.use(async (ctx, next) => {
@@ -23,11 +23,11 @@ const showLoginAuthPlugins = [];
 
 const defaultAuthPluginConfig = {
   ldap: {
-    title: 'LDAP login'
+    title: 'LDAP login',
   },
   couchdb: {
-    title: 'CouchDB login'
-  }
+    title: 'CouchDB login',
+  },
 };
 const authPluginConfig = {};
 
@@ -41,7 +41,7 @@ if (config.auth) {
     authPluginConfig[authPlugin] = Object.assign(
       {},
       defaultAuthPluginConfig[authPlugin],
-      pluginConfig
+      pluginConfig,
     );
     try {
       debug('loading auth plugin: %s', authPlugin);
@@ -50,7 +50,7 @@ if (config.auth) {
         passport,
         router,
         config.auth[authPlugin],
-        config
+        config,
       );
       enabledAuthPlugins.push(authPlugin);
       if (pluginConfig.showLogin !== false) {
@@ -71,7 +71,7 @@ router.get('/providers', (ctx) => {
   ctx.body = enabledAuthPlugins.map((plugin) => {
     return {
       name: plugin,
-      visible: enabledAuthPlugins.includes(plugin)
+      visible: enabledAuthPlugins.includes(plugin),
     };
   });
 });
@@ -87,7 +87,7 @@ router.get('/login', async (ctx) => {
     ctx.session.popup = false;
     const hbsCtx = {
       pathPrefix: ctx.state.pathPrefix,
-      pluginConfig: authPluginConfig
+      pluginConfig: authPluginConfig,
     };
     for (const authPlugin of showLoginAuthPlugins) {
       hbsCtx[authPlugin] = true;
@@ -108,14 +108,14 @@ router.get('/session', async (ctx) => {
     username: await auth.getUserEmail(ctx),
     admin: auth.isAdmin(ctx),
     provider: auth.getProvider(ctx),
-    authenticated: ctx.isAuthenticated()
+    authenticated: ctx.isAuthenticated(),
   };
 });
 
 router.post(
   '/password',
   util.parseBody({ jsonLimit: '1kb' }),
-  auth.changePassword
+  auth.changePassword,
 );
 
 module.exports = router;

@@ -5,7 +5,7 @@ class EnterTextField extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: props.value || ''
+      value: props.value || '',
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -14,7 +14,7 @@ class EnterTextField extends React.Component {
 
   handleChange(event) {
     this.setState({
-      value: event.target.value
+      value: event.target.value,
     });
   }
 
@@ -22,7 +22,7 @@ class EnterTextField extends React.Component {
     if (this.isEmpty()) return;
     this.props.onSubmit(this.state.value);
     this.setState({
-      value: ''
+      value: '',
     });
   }
 
@@ -55,7 +55,7 @@ class EnterTextField extends React.Component {
 }
 
 EnterTextField.propTypes = {
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default EnterTextField;

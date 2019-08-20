@@ -12,16 +12,16 @@ var importCouch;
 // We just have to pick an existing file
 const textFile1 = path.resolve(
   __dirname,
-  '../../homeDirectories/main/test-new-import/simple/to_process/test.txt'
+  '../../homeDirectories/main/test-new-import/simple/to_process/test.txt',
 );
 
 const textFile2 = path.resolve(
   __dirname,
-  '../../homeDirectories/main/test-new-import/changeFilename/to_process/test.txt'
+  '../../homeDirectories/main/test-new-import/changeFilename/to_process/test.txt',
 );
 
 describe('import', () => {
-  beforeEach(async function () {
+  beforeEach(async function() {
     importCouch = await testUtils.resetDatabase(databaseName);
   });
   test('full import', () => {
@@ -51,7 +51,7 @@ describe('import', () => {
         expect(metadata.hasMetadata).toBe(true);
         expect(metadata.reference).toBe('testRef');
         expect(metadata.testField.filename).toBe(
-          'other/jpath/testFilename.txt'
+          'other/jpath/testFilename.txt',
         );
 
         // check attachments
@@ -83,10 +83,10 @@ describe('import', () => {
         $kind: 'sample',
         $id: 'separate',
         $content: {
-          existingValue: 42
-        }
+          existingValue: 42,
+        },
       },
-      'a@a.com'
+      'a@a.com',
     );
     await importFile(databaseName, 'separate', textFile1);
     const data = await importCouch.getEntryById('separate', 'a@a.com');
@@ -117,7 +117,7 @@ describe('import', () => {
       data._id,
       'other/jpath/test.txt',
       'anonymous',
-      true
+      true,
     );
     const text = await readStream(attachmentStream);
     const split = text.split('\n');
@@ -128,7 +128,7 @@ describe('import', () => {
     expect(otherAttachment.content_type).toBe('text/plain');
     const attachmentData = await importCouch.getAttachmentByName(
       data._id,
-      'other2/jpath/test2.txt'
+      'other2/jpath/test2.txt',
     );
     expect(attachmentData.toString('utf8')).toBe('test2');
   });

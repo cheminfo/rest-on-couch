@@ -55,7 +55,7 @@ const Login = (props) => (
 Login.propTypes = {
   errors: PropTypes.object.isRequired,
   loginLDAP: PropTypes.func,
-  loginProviders: PropTypes.array.isRequired
+  loginProviders: PropTypes.array.isRequired,
 };
 
 export default connect(
@@ -63,10 +63,10 @@ export default connect(
     errors: state.login.errors,
     loginProviders: state.login.loginProviders
       .filter((p) => p.visible)
-      .map((p) => p.name)
+      .map((p) => p.name),
   }),
   (dispatch) => ({
     loginLDAP: loginLDAP(dispatch),
-    loginCouchDB: loginCouchDB(dispatch)
-  })
+    loginCouchDB: loginCouchDB(dispatch),
+  }),
 )(Login);

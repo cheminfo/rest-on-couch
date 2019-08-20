@@ -45,23 +45,23 @@ module.exports = class ImportResult {
       assertType(
         this.attachments[i].filename,
         'String',
-        'In attachment: filename'
+        'In attachment: filename',
       );
       assertType(
         this.attachments[i].content_type,
         'String',
-        'In attachment: content_type'
+        'In attachment: content_type',
       );
       assertType(this.attachments[i].jpath, 'Array', 'In attachment: jpath');
       assertType(
         this.attachments[i].metadata,
         'Object',
-        'In attachment: metadata'
+        'In attachment: metadata',
       );
       assertType(
         this.attachments[i].reference,
         'String',
-        'In attachment: reference'
+        'In attachment: reference',
       );
       assertTypedArray(this.attachments[i].contents, 'In attachment: contents');
     }

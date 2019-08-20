@@ -145,7 +145,7 @@ const App = (props) => {
 };
 
 App.propTypes = {
-  loggedIn: PropTypes.bool.isRequired
+  loggedIn: PropTypes.bool.isRequired,
 };
 
 export default connect((state) => ({
@@ -158,5 +158,5 @@ export default connect((state) => ({
   isGroupOwner: state.db.userGroups.length !== 0,
   dbList: state.db.dbList,
   dbName: state.dbName,
-  hasDb: !!state.dbName
+  hasDb: !!state.dbName,
 }))(App);

@@ -14,9 +14,9 @@ function populate(db) {
         _rev: doc._rev,
         $type: 'db',
         anonymous: ['defaultAnonymousRead', 'inexistantGroup'],
-        anyuser: ['defaultAnyuserRead']
+        anyuser: ['defaultAnyuserRead'],
       });
-    })()
+    })(),
   );
 
   prom.push(
@@ -25,8 +25,8 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'groupA',
       users: ['a@a.com'],
-      rights: ['create', 'write', 'delete', 'read']
-    })
+      rights: ['create', 'write', 'delete', 'read'],
+    }),
   );
 
   prom.push(
@@ -35,8 +35,8 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'groupB',
       users: ['b@b.com', 'c@c.com'],
-      rights: ['create']
-    })
+      rights: ['create'],
+    }),
   );
 
   prom.push(
@@ -45,8 +45,8 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'defaultAnonymousRead',
       users: [],
-      rights: ['read']
-    })
+      rights: ['read'],
+    }),
   );
 
   prom.push(
@@ -55,8 +55,8 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'defaultAnyuserRead',
       users: [],
-      rights: ['read']
-    })
+      rights: ['read'],
+    }),
   );
 
   prom.push(
@@ -64,8 +64,8 @@ function populate(db) {
       $type: 'entry',
       $owners: ['b@b.com', 'groupA', 'groupB'],
       $id: 'A',
-      $content: {}
-    })
+      $content: {},
+    }),
   );
 
   prom.push(
@@ -73,8 +73,8 @@ function populate(db) {
       $type: 'entry',
       $owners: ['b@b.com'],
       $id: 'B',
-      $content: {}
-    })
+      $content: {},
+    }),
   );
 
   prom.push(
@@ -82,32 +82,32 @@ function populate(db) {
       $type: 'entry',
       $owners: ['a@a.com'],
       $id: 'onlyA',
-      $content: {}
-    })
+      $content: {},
+    }),
   );
 
   prom.push(
     insertDocument(db, {
       $type: 'entry',
       $owners: ['x@x.com', 'defaultAnonymousRead'],
-      $id: 'entryWithDefaultAnonymousRead'
-    })
+      $id: 'entryWithDefaultAnonymousRead',
+    }),
   );
 
   prom.push(
     insertDocument(db, {
       $type: 'entry',
       $owners: ['x@x.com', 'defaultAnyuserRead'],
-      $id: 'entryWithDefaultAnyuserRead'
-    })
+      $id: 'entryWithDefaultAnyuserRead',
+    }),
   );
 
   prom.push(
     insertDocument(db, {
       $type: 'entry',
       $owners: ['x@x.com', 'defaultAnonymousRead', 'defaultAnyuserRead'],
-      $id: 'entryWithDefaultMultiRead'
-    })
+      $id: 'entryWithDefaultMultiRead',
+    }),
   );
 
   prom.push(
@@ -118,8 +118,8 @@ function populate(db) {
       $id: 'mytoken',
       $creationDate: 0,
       uuid: 'A',
-      rights: ['read']
-    })
+      rights: ['read'],
+    }),
   );
 
   return Promise.all(prom);

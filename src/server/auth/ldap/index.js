@@ -7,21 +7,21 @@ const { auditLogin } = require('../../../audit/actions');
 const util = require('../../middleware/util');
 const auth = require('../../middleware/auth');
 
-exports.init = function (passport, router, config) {
+exports.init = function(passport, router, config) {
   const strategyConfig = Object.assign({ passReqToCallback: true }, config);
   passport.use(
-    new LdapStrategy(strategyConfig, function (req, user, done) {
+    new LdapStrategy(strategyConfig, function(req, user, done) {
       const data = {
         provider: 'ldap',
         email: user.mail,
-        info: {}
+        info: {},
       };
       if (typeof config.getUserEmail === 'function') {
         data.email = config.getUserEmail(user);
       }
       if (typeof data.email !== 'string') {
         return done(
-          new Error(`LDAP email must be a string. Saw ${data.email} instead.`)
+          new Error(`LDAP email must be a string. Saw ${data.email} instead.`),
         );
       }
       if (typeof config.getUserInfo === 'function') {
@@ -31,14 +31,14 @@ exports.init = function (passport, router, config) {
             auditLogin(data.email, true, 'ldap', req.ctx);
             done(null, data);
           },
-          (err) => done(err)
+          (err) => done(err),
         );
       } else {
         auditLogin(data.email, true, 'ldap', req.ctx);
         done(null, data);
         return true;
       }
-    })
+    }),
   );
 
   router.post(
@@ -46,6 +46,6 @@ exports.init = function (passport, router, config) {
     util.parseBody(),
     auth.afterFailure,
     passport.authenticate('ldapauth'),
-    auth.afterSuccess
+    auth.afterSuccess,
   );
 };

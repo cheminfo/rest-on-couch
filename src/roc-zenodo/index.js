@@ -11,7 +11,7 @@ class RocZenodo {
       visualizationUrl,
       attachments,
       sandbox = true,
-      token
+      token,
     } = options;
     if (typeof sandbox !== 'boolean') {
       throw new TypeError('sandbox must be a boolean');
@@ -58,7 +58,7 @@ class RocZenodo {
     return {
       filename: '_README.md',
       contentType: 'text/markdown',
-      data: readme
+      data: readme,
     };
   }
 
@@ -105,27 +105,27 @@ class RocZenodo {
 
   async createNewVersion(parentRecid, meta) {
     const newVersionResult = await this.zenodo.depositions.newversion({
-      id: parentRecid
+      id: parentRecid,
     });
     const latestDraft = newVersionResult.data.links.latest_draft;
     const newVersionRecid = /\/([^/]+)$/.exec(latestDraft)[1];
     const newVersion = await this.zenodo.depositions.retrieve({
-      id: newVersionRecid
+      id: newVersionRecid,
     });
     const newVersionMeta = newVersion.data.metadata;
     await this.zenodo.depositions.update({
       id: newVersionRecid,
-      metadata: Object.assign(newVersionMeta, meta.metadata)
+      metadata: Object.assign(newVersionMeta, meta.metadata),
     });
     for (const file of newVersion.data.files) {
       // eslint-disable-next-line no-await-in-loop
       await this.zenodo.files.delete({
         deposition: newVersion.data,
-        filename: file.filename
+        filename: file.filename,
       });
     }
     const final = await this.zenodo.depositions.retrieve({
-      id: newVersionRecid
+      id: newVersionRecid,
     });
     return final.data;
   }

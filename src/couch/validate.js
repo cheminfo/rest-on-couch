@@ -46,8 +46,8 @@ async function validateRights(ctx, ownerArrays, user, rights, type = 'entry') {
       db.queryView(
         'groupByUserAndRight',
         { key: [user, right] },
-        { onlyValue: true }
-      )
+        { onlyValue: true },
+      ),
     ]);
     return ownerArrays.map((owners, idx) => {
       if (areOwners[idx]) return true;
@@ -94,7 +94,7 @@ async function validateTokenOrRights(
   rights,
   user,
   token,
-  type = 'entry'
+  type = 'entry',
 ) {
   rights = ensureStringArray(rights);
 
@@ -140,7 +140,7 @@ async function checkGlobalRight(ctx, user, right) {
   const result = await ctx._db.queryView(
     'globalRight',
     { key: right },
-    { onlyValue: true }
+    { onlyValue: true },
   );
   for (let i = 0; i < result.length; i++) {
     if (
@@ -170,7 +170,7 @@ async function checkRightAnyGroup(ctx, user, right) {
   }
 
   const result = await db.queryView('groupByUserAndRight', {
-    key: [user, right]
+    key: [user, right],
   });
   return result.length > 0;
 }
@@ -192,7 +192,7 @@ async function getDefaultGroups(db, user, listOnly) {
     return Array.from(toGet);
   } else {
     const groups = await Promise.all(
-      Array.from(toGet).map((group) => getGroup(db, group))
+      Array.from(toGet).map((group) => getGroup(db, group)),
     );
     return groups.filter((group) => group !== null);
   }
@@ -227,5 +227,5 @@ module.exports = {
   checkGlobalRight,
   checkRightAnyGroup,
   getDefaultGroups,
-  userFromTokenAndRights
+  userFromTokenAndRights,
 };

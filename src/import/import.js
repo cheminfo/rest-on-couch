@@ -11,7 +11,7 @@ exports.import = async function importFile(
   database,
   importName,
   filePath,
-  options = {}
+  options = {},
 ) {
   debug('import %s (%s, %s)', filePath, database, importName);
 

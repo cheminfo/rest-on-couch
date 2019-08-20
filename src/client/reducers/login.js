@@ -3,7 +3,7 @@ import {
   LOGOUT,
   GET_LOGIN_PROVIDERS,
   CHANGE_COUCHDB_PASSWORD,
-  CREATE_COUCHDB_USER
+  CREATE_COUCHDB_USER,
 } from '../actions/login';
 
 const initialState = {
@@ -12,7 +12,7 @@ const initialState = {
   provider: null,
   admin: null,
   errors: {},
-  success: {}
+  success: {},
 };
 
 const loginReducer = (state = initialState, action) => {
@@ -25,7 +25,7 @@ const loginReducer = (state = initialState, action) => {
         errors: {},
         username: null,
         provider: null,
-        admin: null
+        admin: null,
       });
     case `${GET_LOGIN_PROVIDERS}_FULFILLED`:
       return Object.assign({}, state, { loginProviders: action.payload });
@@ -35,15 +35,15 @@ const loginReducer = (state = initialState, action) => {
         success: {
           changePassword: action.payload.error
             ? ''
-            : 'Successfully changed password'
-        }
+            : 'Successfully changed password',
+        },
       });
     case `${CREATE_COUCHDB_USER}_FULFILLED`:
       return Object.assign({}, state, {
         errors: { createUser: action.payload.error || '' },
         success: {
-          createUser: action.payload.error ? '' : 'Successfully created user'
-        }
+          createUser: action.payload.error ? '' : 'Successfully created user',
+        },
       });
     default:
       return state;
@@ -60,7 +60,7 @@ function onLogin(result) {
       errors: {},
       username: result.username,
       provider: result.provider,
-      admin: result.admin
+      admin: result.admin,
     };
   }
 }

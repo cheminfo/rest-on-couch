@@ -38,7 +38,7 @@ describe('entry reads', () => {
 
   test('should not find document', () => {
     return expect(couch.getEntry('inexistant', 'b@b.com')).rejects.toThrow(
-      /not found/
+      /not found/,
     );
   });
 
@@ -82,7 +82,7 @@ describe('entry creation and editions', () => {
 
   test('anonymous cannot insert a new entry', () => {
     return expect(
-      couch.insertEntry(constants.newEntry, 'anonymous')
+      couch.insertEntry(constants.newEntry, 'anonymous'),
     ).rejects.toThrow(/anonymous not allowed to create/);
   });
 
@@ -90,10 +90,10 @@ describe('entry creation and editions', () => {
     return expect(
       couch.insertEntry(
         {
-          $id: 'D'
+          $id: 'D',
         },
-        'z@z.com'
-      )
+        'z@z.com',
+      ),
     ).rejects.toThrow(/has no content/);
   });
 
@@ -102,11 +102,11 @@ describe('entry creation and editions', () => {
       couch.insertEntry(
         {
           _id: 'new',
-          $content: {}
+          $content: {},
         },
         'z@z.com',
-        { isUpdate: true }
-      )
+        { isUpdate: true },
+      ),
     ).rejects.toThrow(/does not exist/);
   });
 
@@ -114,11 +114,11 @@ describe('entry creation and editions', () => {
     return expect(
       couch.insertEntry(
         {
-          $content: {}
+          $content: {},
         },
         'z@z.com',
-        { isUpdate: true }
-      )
+        { isUpdate: true },
+      ),
     ).rejects.toThrow(/should have an _id/);
   });
 
@@ -127,11 +127,11 @@ describe('entry creation and editions', () => {
       couch.insertEntry(
         {
           $content: {},
-          _id: 'new'
+          _id: 'new',
         },
         'z@z.com',
-        { isNew: true }
-      )
+        { isNew: true },
+      ),
     ).rejects.toThrow(/should not have _id/);
   });
 
@@ -141,7 +141,7 @@ describe('entry creation and editions', () => {
       expect(res.info.id).toMatch(testUtils.uuidReg);
       expect(res.info.rev).toMatch(testUtils.revReg);
       return expect(
-        couch.getEntryById(constants.newEntry.$id, 'z@z.com')
+        couch.getEntryById(constants.newEntry.$id, 'z@z.com'),
       ).resolves.toBeDefined();
     });
   });
@@ -155,7 +155,7 @@ describe('entry creation and editions', () => {
   test('insert new entry with groups', () => {
     return couch
       .insertEntry(constants.newEntry, 'z@z.com', {
-        groups: ['groupX', 'groupY']
+        groups: ['groupX', 'groupY'],
       })
       .then(() => couch.getEntryById(constants.newEntry.$id, 'z@z.com'))
       .then((entry) => {
@@ -167,7 +167,7 @@ describe('entry creation and editions', () => {
     return couch.getEntryById('A', 'b@b.com').then((doc) => {
       return couch.insertEntry(doc, 'b@b.com').then(() => {
         return expect(couch.insertEntry(doc, 'b@b.com')).rejects.toThrow(
-          /_rev differ/
+          /_rev differ/,
         );
       });
     });
@@ -187,7 +187,7 @@ describe('entry creation and editions', () => {
   test('should delete an entry by uuid', () => {
     return couch.deleteEntry('A', 'a@a.com').then(() => {
       return expect(couch.getEntry('A', 'a@a.com')).rejects.toThrow(
-        /not found/
+        /not found/,
       );
     });
   });
@@ -219,7 +219,7 @@ describe('entry creation and editions', () => {
     return couch
       .addOwnersToDoc('A', 'b@b.com', 'anonymousRead', 'entry')
       .then(() =>
-        couch.addOwnersToDoc('A', 'b@b.com', 'anonymousRead', 'entry')
+        couch.addOwnersToDoc('A', 'b@b.com', 'anonymousRead', 'entry'),
       )
       .then(() => couch.getEntry('A', 'b@b.com'))
       .then((entry) => {
@@ -233,7 +233,7 @@ describe('entry creation and editions', () => {
 
   test('should fail to add group to entry', () => {
     return expect(
-      couch.addOwnersToDoc('A', 'a@a.com', 'groupC', 'entry')
+      couch.addOwnersToDoc('A', 'a@a.com', 'groupC', 'entry'),
     ).rejects.toThrow(/user has no access/);
   });
 
@@ -248,13 +248,13 @@ describe('entry creation and editions', () => {
 
   test('should fail to remove group from entry', () => {
     return expect(
-      couch.removeOwnersFromDoc('A', 'a@a.com', 'groupB', 'entry')
+      couch.removeOwnersFromDoc('A', 'a@a.com', 'groupB', 'entry'),
     ).rejects.toThrow(/user has no access/);
   });
 
   test('should fail to remove primary owner', () => {
     return expect(
-      couch.removeOwnersFromDoc('A', 'b@b.com', 'b@b.com', 'entry')
+      couch.removeOwnersFromDoc('A', 'b@b.com', 'b@b.com', 'entry'),
     ).rejects.toThrow(/cannot remove primary owner/);
   });
 });
@@ -265,29 +265,29 @@ describe('entry rights', () => {
     expect(couch.hasRightForEntry('A', 'a@a.com', 'read')).resolves.toBe(true));
   test('should check if user a@a.com has write access to entry', () =>
     expect(couch.hasRightForEntry('A', 'a@a.com', 'write')).resolves.toBe(
-      true
+      true,
     ));
   test('should check if user a@a.com has delete access to entry', () =>
     expect(couch.hasRightForEntry('A', 'a@a.com', 'delete')).resolves.toBe(
-      true
+      true,
     ));
   test('should reject when entry does not exist', () =>
     expect(
-      couch.hasRightForEntry('does_not_exist', 'a@a.com', 'read')
+      couch.hasRightForEntry('does_not_exist', 'a@a.com', 'read'),
     ).rejects.toThrow(/not found/));
   // Global rights grant read and addAttachment rights
   test('should check if user b@b.com has read access to entry', () =>
     expect(couch.hasRightForEntry('B', 'b@b.com', 'read')).resolves.toBe(true));
   test('should check if user b@b.com has addAttachment access to entry', () =>
     expect(
-      couch.hasRightForEntry('B', 'b@b.com', 'addAttachment')
+      couch.hasRightForEntry('B', 'b@b.com', 'addAttachment'),
     ).resolves.toBe(true));
   test('should check if user b@b.com has write access to entry', () =>
     expect(couch.hasRightForEntry('B', 'b@b.com', 'write')).resolves.toBe(
-      false
+      false,
     ));
   test('should check if user b@b.com has delete access to entry', () =>
     expect(couch.hasRightForEntry('B', 'b@b.com', 'delete')).resolves.toBe(
-      false
+      false,
     ));
 });

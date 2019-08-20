@@ -27,7 +27,7 @@ async function auditAction(action, username, ip, meta) {
     action,
     username,
     ip,
-    date: new Date().toISOString()
+    date: new Date().toISOString(),
   };
   if (meta) {
     doc.meta = meta;
@@ -50,5 +50,5 @@ function validateString(name, value) {
 
 module.exports = {
   auditAction,
-  auditLogin
+  auditLogin,
 };

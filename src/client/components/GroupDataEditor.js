@@ -11,7 +11,7 @@ const GroupDataEditor = ({
   type,
   data,
   addValue,
-  removeValue
+  removeValue,
 }) => (
   <ResponsiveTable>
     <thead>
@@ -44,7 +44,7 @@ GroupDataEditor.propTypes = {
   addValue: PropTypes.func.isRequired,
   removeValue: PropTypes.func.isRequired,
   data: PropTypes.array.isRequired,
-  type: PropTypes.string.isRequired
+  type: PropTypes.string.isRequired,
 };
 
 function isEditable(type, idx) {

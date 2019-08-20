@@ -8,7 +8,7 @@ async function getGroup(db, name) {
   const groups = await db.queryView('groupByName', {
     key: name,
     reduce: false,
-    include_docs: true
+    include_docs: true,
   });
   if (!groups || groups.length === 0) {
     debug.trace('group does not exist');
@@ -73,7 +73,7 @@ function getUuidFromId(db, id, user, type) {
 
 async function getUuidFromIdEntry(db, id, user) {
   const owners = await db.queryView('ownerByTypeAndId', {
-    key: ['entry', id]
+    key: ['entry', id],
   });
   if (owners.length === 0) {
     throw new CouchError('document not found', 'not found');
@@ -87,14 +87,14 @@ async function getUuidFromIdEntry(db, id, user) {
 
 async function getUuidFromIdGroup(db, id) {
   const owners = await db.queryView('ownerByTypeAndId', {
-    key: ['group', id]
+    key: ['group', id],
   });
   if (owners.length === 0) {
     throw new CouchError('document not found', 'not found');
   }
   if (owners.length !== 1) {
     throw new CouchError(
-      `unexpected number of results: ${owners.length}. There should be only one`
+      `unexpected number of results: ${owners.length}. There should be only one`,
     );
   }
   return owners[0].id;
@@ -105,5 +105,5 @@ module.exports = {
   saveEntry,
   saveGroup,
   save,
-  getUuidFromId
+  getUuidFromId,
 };

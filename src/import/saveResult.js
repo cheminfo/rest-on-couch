@@ -11,7 +11,7 @@ module.exports = async function saveResult(importBase, result) {
   // Create the new document if it does not exist
   let document = await couch.createEntry(result.id, result.owner, {
     kind: result.kind,
-    owners: result.groups
+    owners: result.groups,
   });
 
   // In case the document already existed, we need update the  list of owners
@@ -20,7 +20,7 @@ module.exports = async function saveResult(importBase, result) {
       document.id,
       result.owner,
       result.groups,
-      'entry'
+      'entry',
     );
   }
 
@@ -38,13 +38,13 @@ module.exports = async function saveResult(importBase, result) {
           field: result.field,
           name: `${result.jpath.join('/')}/${ASCIIFolder.foldReplacing(
             mainFilename,
-            '_'
+            '_',
           )}`,
           data: await importBase.getContents(),
           reference: result.reference,
-          content_type: result.content_type
+          content_type: result.content_type,
         },
-        result.content
+        result.content,
       );
       break;
     case constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT:
@@ -54,10 +54,10 @@ module.exports = async function saveResult(importBase, result) {
         result.jpath,
         result.metadata,
         {
-          reference: result.reference
+          reference: result.reference,
         },
         result.content,
-        true
+        true,
       );
       break;
     case constants.IMPORT_UPDATE_$CONTENT_ONLY:
@@ -67,10 +67,10 @@ module.exports = async function saveResult(importBase, result) {
           $kind: result.kind,
           $content: result.content,
           _id: document.id,
-          _rev: document.rev
+          _rev: document.rev,
         },
         result.owner,
-        { merge: true }
+        { merge: true },
       );
       break;
     default:
@@ -82,7 +82,7 @@ module.exports = async function saveResult(importBase, result) {
     const contents = Buffer.from(
       attachment.contents.buffer,
       attachment.contents.byteOffset,
-      attachment.contents.byteLength
+      attachment.contents.byteLength,
     );
     // eslint-disable-next-line no-await-in-loop
     await couch.addFileToJpath(
@@ -95,11 +95,11 @@ module.exports = async function saveResult(importBase, result) {
         reference: attachment.reference,
         name: `${attachment.jpath.join('/')}/${ASCIIFolder.foldReplacing(
           attachment.filename,
-          '_'
+          '_',
         )}`,
         data: contents,
-        content_type: attachment.content_type
-      }
+        content_type: attachment.content_type,
+      },
     );
   }
 };

@@ -7,18 +7,18 @@ export default function DatabaseSelector({ dbName, dbList, onDbSelected }) {
     <div
       style={{
         margin: '10px 3px',
-        position: 'relative'
+        position: 'relative',
       }}
     >
       <Select2
         style={{
-          width: '200px'
+          width: '200px',
         }}
         multiple={false}
         value={dbName}
         data={[''].concat(dbList)}
         options={{
-          placeholder: 'Select a database'
+          placeholder: 'Select a database',
         }}
         onSelect={onDbSelected}
       />

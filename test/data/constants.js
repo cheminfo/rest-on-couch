@@ -4,16 +4,16 @@ const constants = {
   newEntry: {
     $id: 'E',
     $content: {
-      test: true
-    }
+      test: true,
+    },
   },
   newEntryWithId: {
     $id: 'D',
     $content: {
-      test: true
+      test: true,
     },
-    _id: 'D'
-  }
+    _id: 'D',
+  },
 };
 
 module.exports = constants;

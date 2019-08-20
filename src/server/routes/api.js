@@ -1,7 +1,7 @@
 'use strict';
 
 const router = require('koa-router')({
-  prefix: '/db'
+  prefix: '/db',
 });
 
 const config = require('../../config/config').globalConfig;
@@ -33,12 +33,12 @@ router.get('/:dbname/entry/:uuid/_owner', couch.getOwners('entry'));
 router.put(
   '/:dbname/entry/:uuid/_owner/:owner',
   parseJson1mb,
-  couch.addOwner('entry')
+  couch.addOwner('entry'),
 );
 router.delete(
   '/:dbname/entry/:uuid/_owner/:owner',
   parseJson1mb,
-  couch.removeOwner('entry')
+  couch.removeOwner('entry'),
 );
 
 // Entry rights
@@ -51,7 +51,7 @@ router.delete('/:dbname/entry/:uuid/:attachment+', couch.deleteAttachment);
 router.put(
   '/:dbname/entry/:uuid/:attachment+',
   util.parseRawBody({ limit: '100mb' }),
-  couch.saveAttachment
+  couch.saveAttachment,
 );
 
 // User related routes
@@ -70,12 +70,12 @@ router.get('/:dbname/_query/:view', couch.queryEntriesByRight);
 router.post(
   '/:dbname/_query/byKindAndId/:kind',
   parseJson100mb,
-  couch.entriesByKindAndId
+  couch.entriesByKindAndId,
 );
 router.post(
   '/:dbname/_query/byOwnerAndId/:email',
   parseJson100mb,
-  couch.entriesByOwnerAndId
+  couch.entriesByOwnerAndId,
 );
 
 // Groups
@@ -86,7 +86,7 @@ router.put(
   '/:dbname/group/:name/properties',
   getUuidFromGroupName,
   parseJson1mb,
-  couch.setGroupProperties
+  couch.setGroupProperties,
 );
 router.delete('/:dbname/group/:name', couch.deleteGroup);
 
@@ -94,53 +94,53 @@ router.delete('/:dbname/group/:name', couch.deleteGroup);
 router.get(
   '/:dbname/group/:name/users',
   getUuidFromGroupName,
-  couch.getGroupUsers
+  couch.getGroupUsers,
 );
 router.put(
   '/:dbname/group/:name/user/:username',
   getUuidFromGroupName,
-  couch.addUserToGroup
+  couch.addUserToGroup,
 );
 router.delete(
   '/:dbname/group/:name/user/:username',
   getUuidFromGroupName,
-  couch.removeUserFromGroup
+  couch.removeUserFromGroup,
 );
 
 // Group rights management
 router.get(
   '/:dbname/group/:name/rights',
   getUuidFromGroupName,
-  couch.getGroupRights
+  couch.getGroupRights,
 );
 router.put(
   '/:dbname/group/:name/right/:right',
   getUuidFromGroupName,
-  couch.addRightToGroup
+  couch.addRightToGroup,
 );
 router.delete(
   '/:dbname/group/:name/right/:right',
   getUuidFromGroupName,
-  couch.removeRightFromGroup
+  couch.removeRightFromGroup,
 );
 
 // Group owners
 router.get(
   '/:dbname/group/:name/_owner',
   getUuidFromGroupName,
-  couch.getOwners('group')
+  couch.getOwners('group'),
 );
 router.put(
   '/:dbname/group/:name/_owner/:owner',
   getUuidFromGroupName,
   parseJson1mb,
-  couch.addOwner('group')
+  couch.addOwner('group'),
 );
 router.delete(
   '/:dbname/group/:name/_owner/:owner',
   getUuidFromGroupName,
   parseJson1mb,
-  couch.removeOwner('group')
+  couch.removeOwner('group'),
 );
 
 // LDAP groups
@@ -148,12 +148,12 @@ router.put(
   '/:dbname/group/:name/ldap/properties',
   getUuidFromGroupName,
   parseJson1mb,
-  couch.setLdapGroupProperties
+  couch.setLdapGroupProperties,
 );
 router.get(
   '/:dbname/group/:name/ldap/sync',
   getUuidFromGroupName,
-  couch.syncLdapGroup
+  couch.syncLdapGroup,
 );
 
 // Global rights
@@ -163,7 +163,7 @@ router.get('/:dbname/rights/doc/:right', couch.getGlobalRightsDocUsers);
 router.put('/:dbname/rights/doc/:right/:user', couch.addGlobalRightsDocUser);
 router.delete(
   '/:dbname/rights/doc/:right/:user',
-  couch.removeGlobalRightsDocUser
+  couch.removeGlobalRightsDocUser,
 );
 
 // Default groups
@@ -171,15 +171,15 @@ router.get('/:dbname/rights/defaultGroups', couch.getGlobalDefaultGroups);
 router.put(
   '/:dbname/rights/defaultGroups',
   parseJson1mb,
-  couch.setGlobalDefaultGroups
+  couch.setGlobalDefaultGroups,
 );
 router.put(
   '/:dbname/rights/defaultGroups/:user/:group',
-  couch.addGlobalDefaultGroup
+  couch.addGlobalDefaultGroup,
 );
 router.delete(
   '/:dbname/rights/defaultGroups/:user/:group',
-  couch.removeGlobalDefaultGroup
+  couch.removeGlobalDefaultGroup,
 );
 
 // Tokens

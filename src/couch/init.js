@@ -34,7 +34,7 @@ const methods = {
       debug('db not found: %s', this._databaseName);
       throw new CouchError(
         `database ${this._databaseName} does not exist`,
-        'not found'
+        'not found',
       );
     }
     // Must be done before the other checks because they can add documents to the db
@@ -43,7 +43,7 @@ const methods = {
     const updateDocs = Promise.all([
       checkDesignDoc(this),
       checkRightsDoc(this._db, this._rights),
-      checkDefaultGroupsDoc(this._db)
+      checkDefaultGroupsDoc(this._db),
     ]);
 
     updateDocs.catch((e) => {
@@ -58,7 +58,7 @@ const methods = {
     if (this._couchOptions.ldapSync) {
       startLDAPSync(this);
     }
-  }
+  },
 };
 
 async function startLDAPSync(db) {
@@ -107,13 +107,13 @@ async function checkDesignDoc(couch) {
     if (designDocNeedsUpdate(newDesignDoc, oldDesignDoc)) {
       debug.trace(
         'design doc %s needs update, saving new revision',
-        designName
+        designName,
       );
       // eslint-disable-next-line no-await-in-loop
       await createDesignDoc(
         db,
         (oldDesignDoc && oldDesignDoc._rev) || null,
-        newDesignDoc
+        newDesignDoc,
       );
     }
   }
@@ -125,8 +125,9 @@ async function checkDesignDoc(couch) {
 
   // Generates design document from customViews config
   function getNewDesignDoc(designName) {
+    var designDoc;
     if (designName === constants.DESIGN_DOC_NAME) {
-      var designDoc = Object.assign({}, custom);
+      designDoc = Object.assign({}, custom);
     } else {
       designDoc = {};
     }
@@ -186,12 +187,12 @@ async function checkDefaultGroupsDoc(db) {
       _id: constants.DEFAULT_GROUPS_DOC_ID,
       $type: 'db',
       anonymous: [],
-      anyuser: []
+      anyuser: [],
     });
   }
   return true;
 }
 
 module.exports = {
-  methods
+  methods,
 };

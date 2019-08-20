@@ -15,7 +15,7 @@ describe('Couch user API', () => {
 
   test('Edit user should throw when anonymous', () => {
     return expect(couch.editUser('anonymous', { val: 'test' })).rejects.toThrow(
-      /must be an email/
+      /must be an email/,
     );
   });
 

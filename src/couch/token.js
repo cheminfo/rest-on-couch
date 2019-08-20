@@ -55,9 +55,9 @@ const methods = {
     debug('getTokens (%s)', user);
     await this.open();
     return token.getTokens(this._db, user);
-  }
+  },
 };
 
 module.exports = {
-  methods
+  methods,
 };

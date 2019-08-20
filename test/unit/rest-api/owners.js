@@ -6,7 +6,7 @@ const authenticateAs = require('../../utils/authenticate');
 
 describe('rest api - manage owners', () => {
   const id = 'A';
-  beforeEach(function () {
+  beforeEach(function() {
     return data().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
   test('get owners', () => {

@@ -14,7 +14,7 @@ import { getRocStatus } from './actions/main';
 
 const composeStoreWithMiddleware = applyMiddleware(
   promiseMiddleware,
-  thunkMiddleware
+  thunkMiddleware,
 )(createStore);
 
 const rootReducer = persistCombineReducers(
@@ -22,19 +22,19 @@ const rootReducer = persistCombineReducers(
     key: 'reduxPersist',
     storage,
     whitelist: ['dbName'],
-    throttle: 1000
+    throttle: 1000,
   },
   {
     main: mainReducer,
     db: dbReducer,
     dbName: dbNameReducer,
-    login: loginReducer
-  }
+    login: loginReducer,
+  },
 );
 
 const store = composeStoreWithMiddleware(
   rootReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
 );
 
 persistStore(store, null, onRehydrated);

@@ -14,7 +14,7 @@ describe('Access based on global rights', () => {
 
   test('Should not grant read access to anonymous', () => {
     return expect(couch.getEntry('A', 'anonymous')).rejects.toThrow(
-      /no access/
+      /no access/,
     );
   });
 });
@@ -24,13 +24,13 @@ describe('Edit global rights', () => {
 
   test('Should refuse non-admins', () => {
     return expect(
-      couch.addGlobalRight('a@a.com', 'read', 'a@a.com')
+      couch.addGlobalRight('a@a.com', 'read', 'a@a.com'),
     ).rejects.toThrow(/administrators/);
   });
 
   test('Should only accept valid types', () => {
     return expect(
-      couch.addGlobalRight('admin@a.com', 'invalid', 'a@a.com')
+      couch.addGlobalRight('admin@a.com', 'invalid', 'a@a.com'),
     ).rejects.toThrow(/Invalid global right type/);
   });
 
@@ -42,7 +42,7 @@ describe('Edit global rights', () => {
     return expect(
       couch
         .addGlobalRight('admin@a.com', 'read', 'a@a.com')
-        .then(() => couch.getEntry('B', 'a@a.com'))
+        .then(() => couch.getEntry('B', 'a@a.com')),
     ).resolves.toBeDefined();
   });
 
@@ -50,7 +50,7 @@ describe('Edit global rights', () => {
     return expect(
       couch
         .removeGlobalRight('admin@a.com', 'read', 'a@a.com')
-        .then(() => couch.getEntry('B', 'a@a.com'))
+        .then(() => couch.getEntry('B', 'a@a.com')),
     ).rejects.toThrow(/no access/);
   });
 });

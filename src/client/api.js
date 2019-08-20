@@ -18,10 +18,10 @@ export function apiFetch(path, options) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     },
-    options
+    options,
   );
   return fetch(`${API_ROOT}${path}`, options);
 }
@@ -41,7 +41,7 @@ export function apiFetchForm(path, data) {
     method: 'POST',
     body: formData,
     redirect: 'manual',
-    headers: {}
+    headers: {},
   });
 }
 

@@ -42,7 +42,7 @@ module.exports = class ImportContext {
       if (!this[kContents][encoding]) {
         this[kContents][encoding] = await fs.readFile(
           this[kFilePath],
-          encoding
+          encoding,
         );
       }
       return this[kContents][encoding];

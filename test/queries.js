@@ -49,7 +49,7 @@ describe('Query view with owner (global right)', () => {
           'B',
           'C',
           'anonymousEntry',
-          'entryWithAttachment'
+          'entryWithAttachment',
         ]);
       });
   });
@@ -67,7 +67,7 @@ describe('Query view with owner (group right)', () => {
           'entryWithDefaultAnonymousRead',
           'entryWithDefaultAnyuserRead',
           'entryWithDefaultMultiRead',
-          'onlyA'
+          'onlyA',
         ]);
       });
   });
@@ -78,7 +78,7 @@ describe('Query view with owner (group right)', () => {
         res = res.map((x) => x.value);
         expect(res.sort()).toEqual([
           'entryWithDefaultAnonymousRead',
-          'entryWithDefaultMultiRead'
+          'entryWithDefaultMultiRead',
         ]);
       });
   });
@@ -89,7 +89,7 @@ describe('Query entries filter groups', () => {
   test('should only return entries owned by the user', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
-        groups: 'a@a.com'
+        groups: 'a@a.com',
       })
       .then((res) => {
         expect(res.length).toBe(1);
@@ -100,7 +100,7 @@ describe('Query entries filter groups', () => {
   test('should only return entries owned by the defaultAnonymousRead group', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
-        groups: ['defaultAnonymousRead']
+        groups: ['defaultAnonymousRead'],
       })
       .then((res) => {
         expect(res.length).toBe(2);
@@ -113,7 +113,7 @@ describe('Query entries filter groups', () => {
   test('should only return entries owned by the defaultAnonymousRead or defaultAnyuserRead groups', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
-        groups: ['defaultAnonymousRead', 'defaultAnyuserRead']
+        groups: ['defaultAnonymousRead', 'defaultAnyuserRead'],
       })
       .then((res) => {
         expect(res.length).toBe(3);
@@ -137,7 +137,7 @@ describe('Query entries filter groups', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
         mine: 1,
-        groups: 'defaultAnonymousRead'
+        groups: 'defaultAnonymousRead',
       })
       .then((res) => {
         expect(res.length).toBe(3);
@@ -147,7 +147,7 @@ describe('Query entries filter groups', () => {
   test('should ignore groups in the "groups" option if the user does not belong to it', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
-        groups: 'x@x.com'
+        groups: 'x@x.com',
       })
       .then((res) => {
         expect(res.length).toBe(0);
@@ -167,13 +167,13 @@ describe('Query view with reduce', () => {
   });
   test('should fail because emits owners', () => {
     return expect(
-      couch.queryViewByUser('a@a.com', 'entryIdByRight', { reduce: true })
+      couch.queryViewByUser('a@a.com', 'entryIdByRight', { reduce: true }),
     ).rejects.toThrow(/is a view with owner/);
   });
 
   test('Should fail because no reduce', () => {
     return expect(
-      couch.queryViewByUser('a@a.com', 'globalRight', { reduce: true })
+      couch.queryViewByUser('a@a.com', 'globalRight', { reduce: true }),
     ).rejects.toThrow(/invalid for map-only views/);
   });
 });

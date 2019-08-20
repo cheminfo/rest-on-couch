@@ -28,7 +28,7 @@ const methods = {
     }
     if (doc.$type !== type) {
       throw new CouchError(
-        `wrong document type: ${doc.$type}. Expected: ${type}`
+        `wrong document type: ${doc.$type}. Expected: ${type}`,
       );
     }
 
@@ -41,7 +41,7 @@ const methods = {
         rights,
         user,
         token,
-        type
+        type,
       )
     ) {
       return this._db.getDocument(uuid, options);
@@ -82,23 +82,23 @@ const methods = {
         'documentByType',
         {
           key: type,
-          include_docs: true
+          include_docs: true,
         },
-        options
+        options,
       );
     } else {
       return this._db.queryView(
         'documentByOwners',
         {
           key: [type, user],
-          include_docs: true
+          include_docs: true,
         },
-        options
+        options,
       );
     }
-  }
+  },
 };
 
 module.exports = {
-  methods
+  methods,
 };

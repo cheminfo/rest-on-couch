@@ -98,7 +98,7 @@ const methods = {
     if (action !== 'add' && action !== 'remove') {
       throw new CouchError(
         'Edit global default group invalid action',
-        'bad argument'
+        'bad argument',
       );
     }
     checkAdmin(this, user);
@@ -136,12 +136,12 @@ const methods = {
     if (this.isSuperAdmin(user)) {
       return _.union(
         constants.globalRightTypes,
-        constants.globalAdminRightTypes
+        constants.globalAdminRightTypes,
       );
     } else {
       const globalRightsDoc = await getGlobalRightsDocument(this);
       const globalRightsKeys = Object.keys(globalRightsDoc).filter((key) =>
-        constants.globalRightTypes.includes(key)
+        constants.globalRightTypes.includes(key),
       );
       const userRights = new Set();
       for (const right of globalRightsKeys) {
@@ -199,7 +199,7 @@ const methods = {
 
   isSuperAdmin(user) {
     return this._superAdministrators.includes(user);
-  }
+  },
 };
 
 async function getDefaultGroupsDocument(couch) {
@@ -207,7 +207,7 @@ async function getDefaultGroupsDocument(couch) {
   if (!doc) {
     throw new Error(
       'Default groups document should always exist',
-      'unreachable'
+      'unreachable',
     );
   }
   return doc;
@@ -237,11 +237,11 @@ function checkAdmin(ctx, user) {
   if (!ctx.isAdmin(user)) {
     throw new CouchError(
       'Restricted to database administrators',
-      'unauthorized'
+      'unauthorized',
     );
   }
 }
 
 module.exports = {
-  methods
+  methods,
 };

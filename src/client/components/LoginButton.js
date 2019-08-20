@@ -19,12 +19,12 @@ const LoginButton = ({ message = 'Login', logout, username }) => {
 
 LoginButton.propTypes = {
   logout: PropTypes.func.isRequired,
-  username: PropTypes.string
+  username: PropTypes.string,
 };
 
 export default connect(
   (state) => ({ username: state.login.username }),
   {
-    logout: logoutAction
-  }
+    logout: logoutAction,
+  },
 )(LoginButton);

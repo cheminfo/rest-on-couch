@@ -14,8 +14,8 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'groupA',
       users: ['a@a.com'],
-      rights: ['create', 'write', 'delete', 'read']
-    })
+      rights: ['create', 'write', 'delete', 'read'],
+    }),
   );
 
   prom.push(
@@ -24,8 +24,8 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'groupB',
       users: ['a@a.com'],
-      rights: ['create']
-    })
+      rights: ['create'],
+    }),
   );
 
   // Add users
@@ -33,8 +33,8 @@ function populate(db) {
     insertDocument(db, {
       $type: 'user',
       user: 'a@a.com',
-      val: 'a'
-    })
+      val: 'a',
+    }),
   );
 
   // Add entries
@@ -43,8 +43,8 @@ function populate(db) {
       $type: 'entry',
       $owners: ['b@b.com', 'groupA', 'groupB'],
       $id: 'A',
-      $content: {}
-    })
+      $content: {},
+    }),
   );
 
   prom.push(
@@ -52,8 +52,8 @@ function populate(db) {
       $type: 'entry',
       $owners: ['a@a.com'],
       $id: 'B',
-      $content: {}
-    })
+      $content: {},
+    }),
   );
 
   prom.push(
@@ -61,16 +61,16 @@ function populate(db) {
       $type: 'entry',
       $owners: ['b@b.com'],
       $id: 'C',
-      $content: {}
-    })
+      $content: {},
+    }),
   );
 
   prom.push(
     insertDocument(db, {
       $type: 'entry',
       $owners: ['b@b.com', 'groupC'],
-      $id: 'anonymousEntry'
-    })
+      $id: 'anonymousEntry',
+    }),
   );
 
   prom.push(
@@ -81,16 +81,16 @@ function populate(db) {
       _attachments: {
         'test.txt': {
           content_type: 'text/plain',
-          data: 'VEhJUyBJUyBBIFRFU1Q='
-        }
-      }
-    })
+          data: 'VEhJUyBJUyBBIFRFU1Q=',
+        },
+      },
+    }),
   );
 
   return Promise.all(prom);
 }
 
-module.exports = async function () {
+module.exports = async function() {
   global.couch = await resetDatabase('test', {
     database: 'test',
     rights: {
@@ -98,8 +98,8 @@ module.exports = async function () {
       createGroup: ['anyuser'],
       create: ['anyuser'],
       addAttachment: ['anyuser'],
-      readGroup: ['b@b.com']
-    }
+      readGroup: ['b@b.com'],
+    },
   });
   await populate(global.couch._db);
 };

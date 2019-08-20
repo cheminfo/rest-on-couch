@@ -29,7 +29,7 @@ async function getGlobalNano() {
   } else {
     throw new CouchError(
       'rest-on-couch cannot be used without url, username and password',
-      'fatal'
+      'fatal',
     );
   }
 }
@@ -40,5 +40,5 @@ function close() {
 
 module.exports = {
   open,
-  close
+  close,
 };

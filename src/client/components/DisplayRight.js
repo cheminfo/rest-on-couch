@@ -4,7 +4,7 @@ const labelTypes = {
   create: 'success',
   read: 'info',
   write: 'warning',
-  delete: 'danger'
+  delete: 'danger',
 };
 
 const DisplayRight = (props) => {

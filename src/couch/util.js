@@ -84,5 +84,5 @@ module.exports = {
   isManagedDocumentType,
   ensureOwnersArray,
   ensureUsersArray,
-  ensureRightsArray
+  ensureRightsArray,
 };

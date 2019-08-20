@@ -5,7 +5,7 @@
 /* eslint-disable no-throw-literal */
 /* eslint-disable prefer-template */
 
-module.exports = function (newDoc, oldDoc, userCtx) {
+module.exports = function(newDoc, oldDoc, userCtx) {
   if (userCtx.name === null) {
     throw { forbidden: 'must be connected' };
   }
@@ -36,7 +36,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
   function validateName(name) {
     if (!validName.test(name)) {
       throw {
-        forbidden: 'Names can only contain alphanumerical characters and _-.'
+        forbidden: 'Names can only contain alphanumerical characters and _-.',
       };
     }
   }
@@ -71,12 +71,12 @@ module.exports = function (newDoc, oldDoc, userCtx) {
       typeof newDoc.$modificationDate !== 'number'
     ) {
       throw {
-        forbidden: 'Creation and modification dates are mandatory'
+        forbidden: 'Creation and modification dates are mandatory',
       };
     }
     if (newDoc.$modificationDate < newDoc.$creationDate) {
       throw {
-        forbidden: 'Modification date cannot be before creation date'
+        forbidden: 'Modification date cannot be before creation date',
       };
     }
     if (oldDoc) {
@@ -85,7 +85,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
       }
       if (newDoc.$modificationDate < oldDoc.$modificationDate) {
         throw {
-          forbidden: 'Modification date cannot change to the past'
+          forbidden: 'Modification date cannot change to the past',
         };
       }
     }
@@ -114,13 +114,12 @@ module.exports = function (newDoc, oldDoc, userCtx) {
   } else if (newDoc.$type === 'entry') {
     validateOwners(newDoc);
     validateDates(newDoc, oldDoc);
-    var i;
     if (oldDoc) {
       if (Array.isArray(newDoc.$id) && Array.isArray(oldDoc.$id)) {
         if (newDoc.$id.length !== oldDoc.$id.length) {
           throw { forbidden: 'Cannot change the ID' };
         }
-        for (i = 0; i < newDoc.$id.length; i++) {
+        for (var i = 0; i < newDoc.$id.length; i++) {
           if (newDoc.$id[i] !== oldDoc.$id[i]) {
             throw { forbidden: 'Cannot change the ID' };
           }
@@ -136,13 +135,13 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     throw { forbidden: 'Logs cannot be changed' };
   } else if (newDoc.$type === 'db') {
     if (newDoc._id === 'rights') {
-      for (i = 0; i < validRights.length; i++) {
+      for (var j = 0; j < validRights.length; j++) {
         if (
-          newDoc[validRights[i]] !== undefined &&
-          !Array.isArray(newDoc[validRights[i]])
+          newDoc[validRights[j]] !== undefined &&
+          !Array.isArray(newDoc[validRights[j]])
         ) {
           throw {
-            forbidden: 'global db right should always be an array'
+            forbidden: 'global db right should always be an array',
           };
         }
       }
@@ -153,7 +152,7 @@ module.exports = function (newDoc, oldDoc, userCtx) {
   } else if (newDoc.$type === 'user') {
     if (!newDoc.user || !validEmail.test(newDoc.user)) {
       throw {
-        forbidden: 'user must have user property, which must be an email'
+        forbidden: 'user must have user property, which must be an email',
       };
     }
   } else if (newDoc.$type === 'token') {

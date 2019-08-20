@@ -12,7 +12,7 @@ async function setupAuditActions(nano) {
     const dbExists = await nano.hasDatabase(auditActionsDb);
     if (!dbExists) {
       throw new Error(
-        `audit actions database does not exist: ${auditActionsDb}`
+        `audit actions database does not exist: ${auditActionsDb}`,
       );
     }
   } catch (e) {

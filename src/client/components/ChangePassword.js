@@ -8,7 +8,7 @@ class ChangePassword extends React.Component {
     super(props);
     this.state = {
       oldPassword: '',
-      newPassword: ''
+      newPassword: '',
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -17,7 +17,7 @@ class ChangePassword extends React.Component {
 
   handleChange(event) {
     this.setState({
-      [event.target.name]: event.target.value
+      [event.target.name]: event.target.value,
     });
   }
 
@@ -25,11 +25,11 @@ class ChangePassword extends React.Component {
     if (this.isEmpty()) return;
     this.props.changeCouchDBPassword(
       this.state.oldPassword,
-      this.state.newPassword
+      this.state.newPassword,
     );
     this.setState({
       oldPassword: '',
-      newPassword: ''
+      newPassword: '',
     });
   }
 
@@ -103,10 +103,11 @@ function mapStateToProps(state) {
   return {
     username: state.login.username,
     error: state.login.errors.changePassword,
-    success: state.login.success.changePassword
+    success: state.login.success.changePassword,
   };
 }
 
-export default connect(mapStateToProps, { changeCouchDBPassword })(
-  ChangePassword
-);
+export default connect(
+  mapStateToProps,
+  { changeCouchDBPassword },
+)(ChangePassword);

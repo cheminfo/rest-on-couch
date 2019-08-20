@@ -10,7 +10,7 @@ export default function Sidebar({
   loginProvider,
   isAdmin,
   userRights,
-  isGroupOwner
+  isGroupOwner,
 }) {
   return (
     <div className="sidebar" data-color="blue">

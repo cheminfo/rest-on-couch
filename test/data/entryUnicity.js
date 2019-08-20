@@ -12,19 +12,19 @@ function populate(db) {
       $type: 'entry',
       $owners: ['b@b.com', 'groupA', 'groupB'],
       $id: 'A',
-      $content: {}
-    })
+      $content: {},
+    }),
   );
 
   return Promise.all(prom);
 }
 
-module.exports = async function () {
+module.exports = async function() {
   global.couch = await resetDatabase('test3', {
     database: 'test3',
     rights: {
-      create: ['anyuser']
-    }
+      create: ['anyuser'],
+    },
   });
   await populate(global.couch._db);
 };

@@ -6,7 +6,7 @@ class GroupCreator extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: ''
+      value: '',
     };
   }
 
@@ -24,7 +24,7 @@ class GroupCreator extends Component {
               className="form-control"
               onChange={(event) => {
                 this.setState({
-                  value: event.target.value
+                  value: event.target.value,
                 });
               }}
             />
@@ -57,12 +57,12 @@ class GroupCreator extends Component {
 }
 
 GroupCreator.propTypes = {
-  createGroup: PropTypes.func.isRequired
+  createGroup: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
   return {
-    error: state.db.errors.createGroup
+    error: state.db.errors.createGroup,
   };
 };
 

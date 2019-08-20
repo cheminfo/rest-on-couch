@@ -9,7 +9,7 @@ const globalRightTypes = [
   'readGroup',
   'writeGroup',
   'createGroup',
-  'owner'
+  'owner',
 ];
 
 // administrators only have these rights
@@ -35,5 +35,5 @@ module.exports = {
   kEntryUnicity: Symbol('entryUnicity'),
   IMPORT_UPDATE_FULL,
   IMPORT_UPDATE_WITHOUT_ATTACHMENT,
-  IMPORT_UPDATE_$CONTENT_ONLY
+  IMPORT_UPDATE_$CONTENT_ONLY,
 };
