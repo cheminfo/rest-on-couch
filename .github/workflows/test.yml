@@ -24,9 +24,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Setup test database
+        env:
+          COUCHDB_HOST: couchdb
         run: sh setupDatabase.sh
       - name: npm install and test
         env:
+          COUCHDB_HOST: couchdb
           REST_ON_COUCH_USERNAME: admin
           REST_ON_COUCH_PASSWORD: admin
         run: |

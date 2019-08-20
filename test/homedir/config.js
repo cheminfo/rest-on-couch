@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
+  url: `http://${process.env.COUCHDB_HOST || 'localhost'}:5984`,
   port: 3000,
   auth: {
     couchdb: {
