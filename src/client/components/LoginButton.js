@@ -22,9 +22,6 @@ LoginButton.propTypes = {
   username: PropTypes.string,
 };
 
-export default connect(
-  (state) => ({ username: state.login.username }),
-  {
-    logout: logoutAction,
-  },
-)(LoginButton);
+export default connect((state) => ({ username: state.login.username }), {
+  logout: logoutAction,
+})(LoginButton);

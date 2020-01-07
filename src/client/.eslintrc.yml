@@ -1,3 +1,3 @@
-extends: neptune-react
+extends: cheminfo-react
 rules:
-  react/forbid-prop-types: 0
+  react/forbid-prop-types: off

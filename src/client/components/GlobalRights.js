@@ -25,7 +25,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { addGlobalRight, removeGlobalRight },
-)(GlobalRights);
+export default connect(mapStateToProps, { addGlobalRight, removeGlobalRight })(
+  GlobalRights,
+);

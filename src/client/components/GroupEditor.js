@@ -175,7 +175,6 @@ GroupEditor.propTypes = {
   removeValueFromGroup: PropTypes.func.isRequired,
 };
 
-export default connect(
-  null,
-  { clearGroupError, clearGroupSuccess },
-)(GroupEditor);
+export default connect(null, { clearGroupError, clearGroupSuccess })(
+  GroupEditor,
+);
