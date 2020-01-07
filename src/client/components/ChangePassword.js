@@ -107,7 +107,6 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  { changeCouchDBPassword },
-)(ChangePassword);
+export default connect(mapStateToProps, { changeCouchDBPassword })(
+  ChangePassword,
+);

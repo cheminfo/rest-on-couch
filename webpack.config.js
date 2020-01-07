@@ -8,9 +8,9 @@ const TerserPlugin = require('terser-webpack-plugin');
 const babelConfig = {
   plugins: [
     '@babel/proposal-object-rest-spread',
-    '@babel/transform-async-to-generator'
+    '@babel/transform-async-to-generator',
   ],
-  presets: ['@babel/react']
+  presets: ['@babel/react'],
 };
 const entry = ['whatwg-fetch', './src/client/index.js'];
 
@@ -21,22 +21,17 @@ if (isProduction) {
     {
       targets: {
         browsers: [
-          'chrome >= 51',
+          'chrome >= 64',
           'last 2 firefox versions',
-          'last 1 safari version',
-          'last 2 edge versions'
-        ]
-      }
-    }
+          'last 2 safari versions',
+          'last 2 edge versions',
+        ],
+      },
+    },
   ]);
   entry.unshift('regenerator-runtime/runtime');
   optimization = {
-    minimizer: [
-      new TerserPlugin({
-        parallel: true,
-        sourceMap: true
-      })
-    ]
+    minimizer: [new TerserPlugin()],
   };
 }
 
@@ -46,7 +41,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: '/',
   },
 
   optimization,
@@ -57,15 +52,15 @@ module.exports = {
         loader: 'babel-loader',
         test: /\.js$/,
         exclude: /node_modules/,
-        options: babelConfig
+        options: babelConfig,
       },
       {
         use: ['style-loader', 'css-loader'],
-        test: /\.css$/
-      }
-    ]
+        test: /\.css$/,
+      },
+    ],
   },
   devServer: {
-    open: true
-  }
+    open: true,
+  },
 };

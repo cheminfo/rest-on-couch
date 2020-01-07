@@ -100,7 +100,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  { createCouchDBUser },
-)(CreateUser);
+export default connect(mapStateToProps, { createCouchDBUser })(CreateUser);

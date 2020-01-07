@@ -107,7 +107,7 @@ async function getUserEmailFromToken(ctx) {
     const res = await got(
       `${config.authServers[i].replace(/\/$/, '')}/_session`,
       {
-        json: true,
+        responseType: 'json',
         headers: {
           cookie: token,
         },
@@ -179,14 +179,13 @@ exports.changePassword = async (ctx) => {
     // check oldPassword
     try {
       await got.post(`${config.url}/_session`, {
-        json: true,
-        body: {
+        json: {
           name: email,
           password: body.oldPassword,
         },
       });
     } catch (e) {
-      if (e.statusCode === 401) {
+      if (e.response.statusCode === 401) {
         decorateError(ctx, 401, 'wrong old password');
         return;
       } else {

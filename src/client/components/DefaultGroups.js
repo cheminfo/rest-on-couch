@@ -25,10 +25,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  {
-    addDefaultGroup,
-    removeDefaultGroup,
-  },
-)(DefaultGroups);
+export default connect(mapStateToProps, {
+  addDefaultGroup,
+  removeDefaultGroup,
+})(DefaultGroups);

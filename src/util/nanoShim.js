@@ -26,9 +26,13 @@ class NanoShim {
     const agent = new http.Agent({
       timeout: 1000 * 60 * 5,
     });
+    if (!url.endsWith('/')) {
+      url += '/';
+    }
+    this.prefixUrl = url;
     this.client = got.extend({
-      baseUrl: url,
-      json: true,
+      prefixUrl: url,
+      responseType: 'json',
       headers: {
         cookie,
       },
@@ -39,7 +43,7 @@ class NanoShim {
   useDb(dbName) {
     dbName = cleanDbName(dbName);
     const client = this.client.extend({
-      baseUrl: this.client.defaults.options.baseUrl + dbName,
+      prefixUrl: this.prefixUrl + dbName,
     });
     return new NanoDbShim(dbName, client);
   }
@@ -53,9 +57,10 @@ class NanoShim {
       return true;
     } catch (err) {
       if (
-        err.body &&
-        (err.body.reason === 'no_db_file' /* couchdb 1.6 */ ||
-          err.body.reason === 'Database does not exist.') /* couchdb 2.x.x */
+        err.response.body &&
+        (err.response.body.reason === 'no_db_file' /* couchdb 1.6 */ ||
+          err.response.body.reason ===
+            'Database does not exist.') /* couchdb 2.x.x */
       ) {
         debug.trace('database not found');
         return false;
@@ -85,14 +90,14 @@ class NanoShim {
   async request(options) {
     debug.trace('request');
     const { method = 'GET', db, doc, body } = options;
-    const query = prepareQuery(options.query);
+    const searchParams = prepareSearchParams(options.searchParams);
     let url = '';
     if (db) url += cleanDbName(db);
     if (doc) url += `/${cleanDocId(doc)}`;
     return this.client(url, {
       method,
-      query,
-      body,
+      searchParams,
+      json: body,
     });
   }
 }
@@ -108,7 +113,6 @@ class NanoDbShim {
     let options;
     if (doc._id && doc._id.startsWith('_design')) {
       options = {
-        json: false,
         body: JSON.stringify(doc, stringifyFunctions),
         headers: {
           accept: 'application/json',
@@ -116,7 +120,7 @@ class NanoDbShim {
         },
       };
     } else {
-      options = { body: doc };
+      options = { json: doc };
     }
     try {
       const response = await this.client.post('/', options);
@@ -124,26 +128,27 @@ class NanoDbShim {
       return response.body;
     } catch (e) {
       debug.trace('document insert failed', doc._id);
-      if (e.body && e.body.error) {
-        throw new CouchError(e.body.reason, e.body.error);
+      if (e.response.body && e.response.body.error) {
+        throw new CouchError(e.response.body.reason, e.response.body.error);
       } else {
         throw e;
       }
     }
   }
 
-  async getDocument(docId, query) {
+  async getDocument(docId, searchParams) {
     docId = cleanDocId(docId);
-    query = prepareQuery(query);
+    searchParams = prepareSearchParams(searchParams);
     debug.trace('getDocument', docId);
     try {
-      const result = await this.client.get(docId, { query });
+      const result = await this.client.get(docId, { searchParams });
       debug.trace('found document');
       return result.body;
     } catch (err) {
       if (
-        err.statusCode === 404 &&
-        (err.body.reason === 'missing' || err.body.reason === 'deleted')
+        err.response.statusCode === 404 &&
+        (err.response.body.reason === 'missing' ||
+          err.response.body.reason === 'deleted')
       ) {
         debug.trace('document missing');
         return null;
@@ -161,14 +166,14 @@ class NanoDbShim {
       if (!doc || !doc._rev) return null;
       rev = doc._rev;
     }
-    return this.client.delete(docId, { query: { rev } });
+    return this.client.delete(docId, { searchParams: { rev } });
   }
 
-  async queryView(view, query, options = {}) {
-    query = prepareQuery(query);
-    prepareQueryForView(query);
-    if (!hasOwnProperty.call(query, 'reduce')) {
-      query.reduce = false;
+  async queryView(view, searchParams, options = {}) {
+    searchParams = prepareSearchParams(searchParams);
+    prepareSearchParamsForView(searchParams);
+    if (!hasOwnProperty.call(searchParams, 'reduce')) {
+      searchParams.reduce = false;
     }
     debug.trace('queryView', view);
     var config = getConfig(this.dbName);
@@ -176,7 +181,7 @@ class NanoDbShim {
       (config.designDocNames && config.designDocNames[view]) || DESIGN_DOC_NAME;
     debug.trace('designDoc', designDoc);
     const viewPath = `_design/${designDoc}/_view/${view}`;
-    const { body } = await this.client.get(viewPath, { query });
+    const { body } = await this.client.get(viewPath, { searchParams });
     if (options.onlyValue) {
       return body.rows.map((row) => row.value);
     } else if (options.onlyDoc) {
@@ -187,42 +192,40 @@ class NanoDbShim {
   }
 
   async updateWithHandler(update, docId, requestBody) {
-    debug.trace('update with handler', docId, body);
+    debug.trace('update with handler', docId, requestBody);
     docId = cleanDocId(docId);
     const viewPath = `_design/${DESIGN_DOC_NAME}/_update/${update}/${docId}`;
-    const { body } = await this.client.post(viewPath, { requestBody });
+    const { body } = await this.client.post(viewPath, { json: requestBody });
     return body;
   }
 
-  async getAttachment(docId, attName, asStream, query) {
+  async getAttachment(docId, attName, asStream, searchParams) {
     debug.trace('get attachment', docId, attName);
     docId = cleanDocId(docId);
     attName = encodeURIComponent(attName);
-    query = prepareQuery(query);
+    searchParams = prepareSearchParams(searchParams);
     const attachmentPath = `${docId}/${attName}`;
     if (asStream) {
       return this.client.get(attachmentPath, {
-        json: false,
-        query,
-        stream: true,
-        encoding: null,
+        searchParams,
+        responseType: 'buffer',
+        isStream: true,
         decompress: false,
       });
     } else {
       const response = await this.client.get(attachmentPath, {
-        json: false,
-        query,
-        encoding: null,
+        searchParams,
+        responseType: 'buffer',
       });
       return response.body;
     }
   }
 
   // multipart body created based on http://docs.couchdb.org/en/stable/api/document/common.html
-  attachFiles(doc, attachments, query) {
+  attachFiles(doc, attachments, searchParams) {
     debug.trace('attach files');
     doc = Object.assign({ _attachments: {} }, doc);
-    query = prepareQuery(query);
+    searchParams = prepareSearchParams(searchParams);
     const docId = cleanDocId(doc._id);
     const boundary = getBoundary();
     const prefixedBoundary = Buffer.from(`--${boundary}`, 'utf8');
@@ -246,9 +249,8 @@ class NanoDbShim {
     multipart.push(ENDBOUNDARY);
 
     return this.client.put(docId, {
-      json: false,
+      searchParams,
       body: Buffer.concat(multipart),
-      query,
       headers: {
         accept: 'application/json',
         'content-type': `multipart/related;boundary="${boundary}"`,
@@ -277,31 +279,31 @@ const specialKeys = [
   'start_key',
   'end_key',
 ];
-function prepareQuery(query) {
-  if (!query) return {};
-  query = Object.assign({}, query);
-  if (query.token) {
-    delete query.token;
+function prepareSearchParams(searchParams) {
+  if (!searchParams) return {};
+  searchParams = Object.assign({}, searchParams);
+  if (searchParams.token) {
+    delete searchParams.token;
   }
   specialKeys.forEach(function(key) {
-    if (key in query) {
-      query[key] = JSON.stringify(query[key]);
+    if (key in searchParams) {
+      searchParams[key] = JSON.stringify(searchParams[key]);
     }
   });
-  return query;
+  return searchParams;
 }
 
 const paramsToEncode = ['counts', 'drilldown', 'group_sort', 'ranges', 'sort'];
-function prepareQueryForView(query) {
+function prepareSearchParamsForView(searchParams) {
   paramsToEncode.forEach(function(param) {
-    if (param in query) {
-      if (typeof query[param] !== 'string') {
-        query[param] = JSON.stringify(query[param]);
+    if (param in searchParams) {
+      if (typeof searchParams[param] !== 'string') {
+        searchParams[param] = JSON.stringify(searchParams[param]);
       } else {
         try {
-          JSON.parse(query[param]);
+          JSON.parse(searchParams[param]);
         } catch (e) {
-          query[param] = JSON.stringify(query[param]);
+          searchParams[param] = JSON.stringify(searchParams[param]);
         }
       }
     }
@@ -322,8 +324,8 @@ function stringifyFunctions(key, value) {
 
 async function getNano(url, username, password) {
   const response = await got.post(`${url}/_session`, {
-    json: true,
-    body: {
+    responseType: 'json',
+    json: {
       name: username,
       password,
     },

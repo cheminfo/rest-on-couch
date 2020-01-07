@@ -60,16 +60,18 @@ exports.init = function(passport, router, config) {
       function(req, accessToken, refreshToken, profile, done) {
         // Get the user's email
         (async function() {
-          const answer = (await got(
-            `https://api.github.com/user/emails?access_token=${accessToken}`,
-            {
-              json: true,
-              headers: {
-                'User-Agent': 'got',
+          const answer = (
+            await got(
+              `https://api.github.com/user/emails?access_token=${accessToken}`,
+              {
+                responseType: 'json',
+                headers: {
+                  'User-Agent': 'got',
+                },
+                throwHttpErrors: false,
               },
-              throwHttpErrors: false,
-            },
-          )).body;
+            )
+          ).body;
           const email = answer.filter(function(val) {
             return val.primary === true;
           });

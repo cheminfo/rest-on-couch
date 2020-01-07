@@ -30,14 +30,16 @@ exports.init = function(passport, router) {
             return done(null, false, 'username must be an email');
           }
           try {
-            const res = (await got.post(`${couchUrl}/_session`, {
-              json: true,
-              body: {
-                name: username,
-                password: password,
-              },
-              throwHttpErrors: false,
-            })).body;
+            const res = (
+              await got.post(`${couchUrl}/_session`, {
+                responseType: 'json',
+                json: {
+                  name: username,
+                  password: password,
+                },
+                throwHttpErrors: false,
+              })
+            ).body;
 
             if (res.error) {
               auditLogin(username, false, 'couchdb', req.ctx);
