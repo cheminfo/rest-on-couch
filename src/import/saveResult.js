@@ -102,4 +102,6 @@ module.exports = async function saveResult(importBase, result) {
       },
     );
   }
+
+  return document.id;
 };

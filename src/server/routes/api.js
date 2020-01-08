@@ -189,6 +189,10 @@ router.get('/:dbname/token', couch.getTokens);
 router.get('/:dbname/token/:tokenid', couch.getTokenById);
 router.delete('/:dbname/token/:tokenid', couch.deleteTokenById);
 
+// Importations
+router.get('/:dbname/imports', couch.getImports);
+router.get('/:dbname/import/:uuid', couch.getImport);
+
 // Zenodo
 if (config.zenodo === true) {
   const zenodo = require('../middleware/zenodo');

@@ -9,6 +9,7 @@ const globalRightTypes = [
   'readGroup',
   'writeGroup',
   'createGroup',
+  'readImport',
   'owner',
 ];
 

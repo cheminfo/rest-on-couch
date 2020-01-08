@@ -476,6 +476,17 @@ exports.deleteTokenById = composeWithError(async (ctx) => {
   respondOk(ctx);
 });
 
+exports.getImports = composeWithError(async (ctx) => {
+  ctx.body = await ctx.state.couch.getImports(ctx.state.userEmail, ctx.query);
+});
+
+exports.getImport = composeWithError(async (ctx) => {
+  ctx.body = await ctx.state.couch.getImport(
+    ctx.state.userEmail,
+    ctx.params.uuid,
+  );
+});
+
 function processCouchQuery(ctx) {
   for (let i = 0; i < couchNeedsParse.length; i++) {
     if (ctx.query[couchNeedsParse[i]]) {

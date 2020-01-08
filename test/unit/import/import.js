@@ -24,45 +24,62 @@ describe('import', () => {
   beforeEach(async function() {
     importCouch = await testUtils.resetDatabase(databaseName);
   });
-  test('full import', () => {
-    return importFile(databaseName, 'simple', textFile1).then(() => {
-      return importCouch.getEntryById('test.txt', 'a@a.com').then((data) => {
-        expect(data).toBeDefined();
-        expect(data.$content).toBeDefined();
-        // Check that new content has been merged
-        expect(data.$content.sideEffect).toBe(true);
+  test('full import', async () => {
+    await importFile(databaseName, 'simple', textFile1);
+    const data = await importCouch.getEntryById('test.txt', 'a@a.com');
+    expect(data).toBeDefined();
+    expect(data.$content).toBeDefined();
+    // Check that new content has been merged
+    expect(data.$content.sideEffect).toBe(true);
 
-        // Check that the correct owners have been added
-        expect(data.$owners).toEqual(['a@a.com', 'group1', 'group2', 'group3']);
+    // Check that the correct owners have been added
+    expect(data.$owners).toEqual(['a@a.com', 'group1', 'group2', 'group3']);
 
-        // Main metadata
-        let metadata = data.$content.jpath.in.document[0];
-        expect(metadata).toBeDefined();
-        // metadata has been added
-        expect(metadata.hasMetadata).toBe(true);
-        // a reference to the attachment has been added
-        expect(metadata.field.filename).toBe('jpath/in/document/test.txt');
-        // Reference has been added
-        expect(metadata.reference).toBe('test.txt');
+    // Main metadata
+    let metadata = data.$content.jpath.in.document[0];
+    expect(metadata).toBeDefined();
+    // metadata has been added
+    expect(metadata.hasMetadata).toBe(true);
+    // a reference to the attachment has been added
+    expect(metadata.field.filename).toBe('jpath/in/document/test.txt');
+    // Reference has been added
+    expect(metadata.reference).toBe('test.txt');
 
-        // Additional metadata
-        metadata = data.$content.other.jpath[0];
-        expect(metadata).toBeDefined();
-        expect(metadata.hasMetadata).toBe(true);
-        expect(metadata.reference).toBe('testRef');
-        expect(metadata.testField.filename).toBe(
-          'other/jpath/testFilename.txt',
-        );
+    // Additional metadata
+    metadata = data.$content.other.jpath[0];
+    expect(metadata).toBeDefined();
+    expect(metadata.hasMetadata).toBe(true);
+    expect(metadata.reference).toBe('testRef');
+    expect(metadata.testField.filename).toBe('other/jpath/testFilename.txt');
 
-        // check attachments
-        const mainAttachment = data._attachments['jpath/in/document/test.txt'];
-        const secondaryAttachment =
-          data._attachments['other/jpath/testFilename.txt'];
-        expect(mainAttachment).toBeDefined();
-        expect(secondaryAttachment).toBeDefined();
-        expect(mainAttachment.content_type).toBe('text/plain');
-        expect(secondaryAttachment.content_type).toBe('text/plain');
-      });
+    // check attachments
+    const mainAttachment = data._attachments['jpath/in/document/test.txt'];
+    const secondaryAttachment =
+      data._attachments['other/jpath/testFilename.txt'];
+    expect(mainAttachment).toBeDefined();
+    expect(secondaryAttachment).toBeDefined();
+    expect(mainAttachment.content_type).toBe('text/plain');
+    expect(secondaryAttachment.content_type).toBe('text/plain');
+
+    // check log
+    const importLogs = await importCouch._db.queryView(
+      'importsByDate',
+      {
+        descending: true,
+        include_docs: true,
+      },
+      { onlyDoc: true },
+    );
+    expect(importLogs).toHaveLength(1);
+    expect(importLogs[0]).toMatchObject({
+      name: 'simple',
+      filename: 'test.txt',
+      status: 'SUCCESS',
+    });
+    expect(importLogs[0].result).toMatchObject({
+      id: 'test.txt',
+      owner: 'a@a.com',
+      kind: 'sample',
     });
   });
 
@@ -131,6 +148,30 @@ describe('import', () => {
       'other2/jpath/test2.txt',
     );
     expect(attachmentData.toString('utf8')).toBe('test2');
+  });
+
+  test('error when the import function throws', async () => {
+    await expect(importFile(databaseName, 'error', textFile1)).rejects.toThrow(
+      /this import is wrong/,
+    );
+
+    // check log
+    const importLogs = await importCouch._db.queryView(
+      'importsByDate',
+      {
+        descending: true,
+        include_docs: true,
+      },
+      { onlyDoc: true },
+    );
+    expect(importLogs).toHaveLength(1);
+    expect(importLogs[0]).toMatchObject({
+      name: 'error',
+      filename: 'test.txt',
+      status: 'ERROR',
+    });
+    expect(importLogs[0].error.message).toBe('this import is wrong');
+    expect(typeof importLogs[0].error.stack).toBe('string');
   });
 });
 
