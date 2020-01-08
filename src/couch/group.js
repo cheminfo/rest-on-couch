@@ -253,11 +253,14 @@ const methods = {
     await this.open();
     // Find all the ldap groups
     debug.trace('sync all ldap groups');
-    groups = await this._db.queryView('documentByType', {
-      key: 'group',
-      include_docs: true,
-    });
-    groups = groups.map((group) => group.doc);
+    groups = await this._db.queryView(
+      'documentByType',
+      {
+        key: 'group',
+        include_docs: true,
+      },
+      { onlyDoc: true },
+    );
 
     groups = groups.filter((group) => group.DN);
     for (let i = 0; i < groups.length; i++) {

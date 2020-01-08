@@ -21,7 +21,7 @@
 
 | Method | Route                                   |               Action                |                Description                 |
 | :----: | :-------------------------------------- | :---------------------------------: | :----------------------------------------: |
-|  POST  | `/db/:dbname/entry`                     |      Insert / Update an entry       |     Based on \_id or $id of the entry      |
+|  POST  | `/db/:dbname/entry`                     |      Insert / Update an entry       |     Based on \_id or \$id of the entry     |
 |  GET   | `/db/:dbname/entry/_all`                |           Get all entries           |       Returns an array of documents        |
 |  HEAD  | `/db/:dbname/entry/:uuid`               | Get HTTP headers about the document | Similar to HEAD /:dbname/:docid in CouchDB |
 |  GET   | `/db/:dbname/entry/:uuid`               |        Get an entry by UUID         |                                            |
@@ -54,6 +54,7 @@
 
 | Method | Route                                  |                Action                 |                     Description                      |
 | :----: | :------------------------------------- | :-----------------------------------: | :--------------------------------------------------: |
+|  GET   | `/db/:dbname/groups`                   |            Get all groups             |                                                      |
 |  GET   | `/db/:dbname/group/:name`              |          Get a group by name          |                                                      |
 |  PUT   | `/db/:dbname/group/:name`              |            Create a group             |                                                      |
 | DELETE | `/db/:dbname/group/:name`              |            Remove a group             |                                                      |
@@ -71,6 +72,13 @@
 |  GET   | `/db/:dbname/token`              |    Get all tokens for current user     |                                                                            |
 |  GET   | `/db/:dbname/token/:tokenid`     |     Get information about a token      |                                                                            |
 | DELETE | `/db/:dbname/token/:tokenid`     |             Delete a token             |                                                                            |
+
+### Importations
+
+| Method | Route                       |       Action        |     Description     |
+| :----: | :-------------------------- | :-----------------: | :-----------------: |
+|  GET   | `/db/:dbname/imports`       | Get list of imports | Params: limit, skip |
+|  GET   | `/db/:dbname/imports/:uuid` |  Get import by id   |                     |
 
 ### Zenodo
 

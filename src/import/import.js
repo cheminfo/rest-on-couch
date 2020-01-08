@@ -21,7 +21,32 @@ exports.import = async function importFile(
 
   const baseImport = new BaseImport(filePath, database);
   const result = new ImportResult();
-  await config(baseImport, result);
+
+  const { couch, filename } = baseImport;
+
+  try {
+    await config(baseImport, result);
+  } catch (e) {
+    await couch
+      .logImport({
+        name: importName,
+        filename,
+        status: 'ERROR',
+        error: {
+          message: e.message || '',
+          stack: e.stack || '',
+        },
+      })
+      .catch((error) => {
+        debug.error(
+          'error while logging import error for (%s)',
+          filename,
+          error,
+        );
+      });
+    throw e;
+  }
+
   if (result.isSkipped) {
     return { skip: 'skip' };
   }
@@ -30,6 +55,27 @@ exports.import = async function importFile(
   if (dryRun) {
     return { skip: 'dryRun', result };
   }
-  await saveResult(baseImport, result);
-  return { ok: true };
+  const uuid = await saveResult(baseImport, result);
+
+  await couch
+    .logImport({
+      name: importName,
+      filename,
+      status: 'SUCCESS',
+      result: {
+        uuid,
+        id: result.id,
+        kind: result.kind,
+        owner: result.owner,
+      },
+    })
+    .catch((error) => {
+      debug.error(
+        'error while logging import success for (%s)',
+        filename,
+        error,
+      );
+    });
+
+  return { ok: true, result };
 };

@@ -180,3 +180,11 @@ views.tokenByOwner = {
     emit(doc.$owner);
   },
 };
+
+views.importsByDate = {
+  map: function(doc) {
+    if (doc.$type !== 'import') return;
+    emit(doc.date);
+  },
+  reduce: '_count',
+};

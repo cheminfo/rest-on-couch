@@ -13,7 +13,7 @@ module.exports = function(newDoc, oldDoc, userCtx) {
   if (newDoc._deleted) {
     return;
   }
-  var validTypes = ['entry', 'group', 'db', 'log', 'user', 'token'];
+  var validTypes = ['entry', 'group', 'db', 'log', 'user', 'token', 'import'];
   var validRights = ['create', 'read', 'write', 'createGroup'];
   // see http://emailregex.com/
   var validEmail = /^.+@.+$/;
@@ -160,7 +160,7 @@ module.exports = function(newDoc, oldDoc, userCtx) {
       throw { forbidden: 'Tokens are immutable' };
     }
     if (newDoc.$kind !== 'entry' && newDoc.$kind !== 'user') {
-      throw { forbidden: 'Only entry tokens are supported' };
+      throw { forbidden: 'Only entry and user tokens are supported' };
     }
     if (
       !newDoc.$id ||
@@ -172,6 +172,37 @@ module.exports = function(newDoc, oldDoc, userCtx) {
     }
     if (newDoc.$kind === 'entry' && !newDoc.uuid) {
       throw { forbidden: 'token is missing fields' };
+    }
+  } else if (newDoc.$type === 'import') {
+    if (oldDoc) {
+      throw { forbidden: 'import logs are immutable' };
+    }
+    if (
+      (!newDoc.$creationDate,
+      !newDoc.name || !newDoc.filename || !newDoc.status)
+    ) {
+      throw { forbidden: 'import is missing fields' };
+    }
+    if (newDoc.status === 'SUCCESS') {
+      if (
+        !newDoc.result ||
+        !newDoc.result.uuid ||
+        !newDoc.result.kind ||
+        !newDoc.result.id ||
+        !newDoc.result.owner
+      ) {
+        throw { forbidden: 'success import is missing fields' };
+      }
+    } else if (newDoc.status === 'ERROR') {
+      if (
+        !newDoc.error ||
+        typeof newDoc.error.message !== 'string' ||
+        typeof newDoc.error.stack !== 'string'
+      ) {
+        throw { forbidden: 'error import is missing fields' };
+      }
+    } else {
+      throw { forbidden: 'Bad import status: ' + newDoc.status };
     }
   }
 };

@@ -102,6 +102,7 @@ extendCouch('query');
 extendCouch('right');
 extendCouch('token');
 extendCouch('user');
+extendCouch('imports');
 
 function extendCouch(name) {
   // eslint-disable-next-line import/no-dynamic-require
