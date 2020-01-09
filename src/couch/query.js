@@ -75,7 +75,7 @@ const methods = {
       endkey.push({});
       // eslint-disable-next-line no-await-in-loop
       const result = await this._db.queryView(view, {
-        include_docs: options.include_docs,
+        include_docs: Boolean(options.include_docs),
         startkey,
         endkey,
         reduce: false,
