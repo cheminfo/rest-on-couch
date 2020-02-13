@@ -1,3 +1,27 @@
+# [8.0.0](https://github.com/cheminfo/rest-on-couch/compare/v7.1.1...v8.0.0) (2020-02-13)
+
+
+### Bug Fixes
+
+* **api:** do not pass undefined value to search params ([fbd43bc](https://github.com/cheminfo/rest-on-couch/commit/fbd43bc72b20eb16e8e7c8a5843ba7c9c17b4b5a))
+
+
+### chore
+
+* update dependencies and remove support for Node.js 8 ([5e417a4](https://github.com/cheminfo/rest-on-couch/commit/5e417a4f43789eb38e580c9d24934fa9568f739d))
+
+
+### Features
+
+* store import logs and add API to access them ([89edc1d](https://github.com/cheminfo/rest-on-couch/commit/89edc1dd37feef875acf17100a9308e4edd39e5e))
+
+
+### BREAKING CHANGES
+
+* Node.js 8 is no longer supported.
+
+
+
 ## [7.1.1](https://github.com/cheminfo/rest-on-couch/compare/v7.1.0...v7.1.1) (2019-07-04)
 
 
