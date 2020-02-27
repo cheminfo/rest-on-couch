@@ -157,7 +157,6 @@ const methods = {
    * Only contains the group's name and description
    * Does not return the list of user's or type of group
    * @param {*} user
-   * @param {*} right
    */
   async getGroupsInfo(user) {
     debug.trace('getGroupsInfo (%s)', user);
