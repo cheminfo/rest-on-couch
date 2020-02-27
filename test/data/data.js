@@ -13,6 +13,7 @@ function populate(db) {
       $type: 'group',
       $owners: ['a@a.com'],
       name: 'groupA',
+      description: 'groupA description',
       users: ['a@a.com'],
       rights: ['create', 'write', 'delete', 'read'],
     }),

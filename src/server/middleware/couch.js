@@ -289,6 +289,10 @@ exports.getGroups = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getGroups(ctx.state.userEmail);
 });
 
+exports.getGroupsInfo = composeWithError(async (ctx) => {
+  ctx.body = await ctx.state.couch.getGroupsInfo(ctx.state.userEmail);
+});
+
 exports.getGroupUsers = composeWithError(async (ctx) => {
   const group = await ctx.state.couch.getDocByRights(
     ctx.params.uuid,

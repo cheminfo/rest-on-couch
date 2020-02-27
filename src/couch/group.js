@@ -153,6 +153,36 @@ const methods = {
   },
 
   /**
+   * Return info about every group
+   * Only contains the group's name and description
+   * Does not return the list of user's or type of group
+   * @param {*} user
+   * @param {*} right
+   */
+  async getGroupsInfo(user) {
+    debug.trace('getGroupsInfo (%s)', user);
+
+    if (user === 'anonymous') {
+      throw new CouchError(
+        'user must be authenticated to get groups info',
+        'unauthorized',
+      );
+    }
+    await this.open();
+
+    const groups = await this._db.queryView(
+      'documentByType',
+      { key: 'group', include_docs: true },
+      { onlyDoc: true },
+    );
+
+    return groups.map((group) => ({
+      name: group.name,
+      description: group.description,
+    }));
+  },
+
+  /**
    * Returns a list of groups that grant a given right to the user
    * @param {string} user
    * @param {string} right
