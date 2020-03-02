@@ -80,6 +80,7 @@ router.post(
 
 // Groups
 router.get('/:dbname/groups', couch.getGroups);
+router.get('/:dbname/groups/info', couch.getGroupsInfo);
 router.get('/:dbname/group/:name', couch.getGroup);
 router.put('/:dbname/group/:name', couch.createGroup);
 router.put(

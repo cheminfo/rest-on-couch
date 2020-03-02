@@ -84,6 +84,22 @@ describe('group methods', () => {
     });
   });
 
+  test('getGroupsInfo should return name and description all the groups', () => {
+    return couch.getGroupsInfo('a@a.com').then(function(groups) {
+      expect(groups.length).toEqual(2);
+      expect(groups[0]).toMatchObject({
+        name: 'groupA',
+        description: 'groupA description',
+      });
+    });
+  });
+
+  test('getGroupsInfo should throw if user is anonymous', () => {
+    return expect(couch.getGroupsInfo('anonymous')).rejects.toThrow(
+      /user must be authenticated to get groups info/,
+    );
+  });
+
   test('getGroups should return groups when owner not owner but has global readGroup right', () => {
     return couch.getGroups('b@b.com').then(function(docs) {
       expect(docs).toHaveLength(2);
