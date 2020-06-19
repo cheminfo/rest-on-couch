@@ -2,9 +2,9 @@
 
 const objHash = require('object-hash');
 
-const getDesignDoc = require('../design/app');
 const connect = require('../connect');
 const constants = require('../constants');
+const getDesignDoc = require('../design/app');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:init');
 

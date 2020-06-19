@@ -5,11 +5,11 @@
 const fs = require('fs');
 const path = require('path');
 
-const _ = require('lodash');
 const hasOwn = require('has-own');
+const _ = require('lodash');
 
-const die = require('../util/die');
 const constants = require('../constants');
+const die = require('../util/die');
 
 const { getHomeDir } = require('./home');
 
@@ -79,8 +79,9 @@ module.exports = function getDbConfig(homeDir) {
       return dbConfig;
     } catch (e) {
       die(
-        `could not read database configurations from ${homeDir}\n${e.stack ||
-          e}`,
+        `could not read database configurations from ${homeDir}\n${
+          e.stack || e
+        }`,
       );
     }
   }

@@ -5,7 +5,7 @@
 /* eslint-disable no-throw-literal */
 /* eslint-disable prefer-template */
 
-module.exports = function(newDoc, oldDoc, userCtx) {
+module.exports = function (newDoc, oldDoc, userCtx) {
   if (userCtx.name === null) {
     throw { forbidden: 'must be connected' };
   }

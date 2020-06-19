@@ -5,9 +5,9 @@
 const http = require('http');
 const path = require('path');
 
-const Koa = require('koa');
+const router = require('@koa/router')();
 const fs = require('fs-extra');
-const router = require('koa-router')();
+const Koa = require('koa');
 
 const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
@@ -87,7 +87,7 @@ app.on('error', printError);
 // Unhandled errors
 if (config.debugrest) {
   // In debug mode, show unhandled errors to the user
-  app.use(function*(next) {
+  app.use(function* (next) {
     try {
       yield next;
     } catch (err) {
@@ -105,10 +105,10 @@ function printError(err) {
   debug.error('unexpected error:', err.stack || err);
 }
 
-module.exports.start = function() {
+module.exports.start = function () {
   if (_started) return _started;
-  _started = new Promise(function(resolve) {
-    http.createServer(app.callback()).listen(config.fileDropPort, function() {
+  _started = new Promise(function (resolve) {
+    http.createServer(app.callback()).listen(config.fileDropPort, function () {
       debug.warn('file-drop running on localhost:%s', config.fileDropPort);
       resolve(app);
     });

@@ -6,17 +6,17 @@
 
 const path = require('path');
 
+const program = require('commander');
 const delay = require('delay');
 const fs = require('fs-extra');
 const klaw = require('klaw');
-const program = require('commander');
 
+const { getImportConfig } = require('../src/config/config');
+const { getHomeDir } = require('../src/config/home');
 const connect = require('../src/connect');
+const { importFile } = require('../src/index');
 const debug = require('../src/util/debug')('bin:import');
 const die = require('../src/util/die');
-const { getHomeDir } = require('../src/config/home');
-const { importFile } = require('../src/index');
-const { getImportConfig } = require('../src/config/config');
 const tryMove = require('../src/util/tryMove');
 
 program
@@ -243,7 +243,7 @@ function getFilesToProcess(directory, maxElements) {
     const items = [];
     const walkStream = klaw(directory, { queueMethod: sortWalk });
     walkStream
-      .on('data', function(item) {
+      .on('data', function (item) {
         if (item.stats.isFile()) {
           items.push(item.path);
           if (maxElements > 0 && items.length >= maxElements) {
@@ -253,7 +253,7 @@ function getFilesToProcess(directory, maxElements) {
         }
       })
       .on('end', () => resolve(items))
-      .on('error', function(err) {
+      .on('error', function (err) {
         this.close();
         reject(err);
       });

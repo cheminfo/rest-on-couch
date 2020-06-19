@@ -1,16 +1,16 @@
 import { createStore, applyMiddleware } from 'redux';
-import promiseMiddleware from 'redux-promise-middleware';
-import thunkMiddleware from 'redux-thunk';
 import { persistStore, persistCombineReducers } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import promiseMiddleware from 'redux-promise-middleware';
+import thunkMiddleware from 'redux-thunk';
 
+import { setDbName } from './actions/db';
+import { getRocStatus } from './actions/main';
 import DbManager from './dbManager';
-import mainReducer from './reducers/main';
 import dbReducer from './reducers/db';
 import dbNameReducer from './reducers/dbName';
 import loginReducer from './reducers/login';
-import { setDbName } from './actions/db';
-import { getRocStatus } from './actions/main';
+import mainReducer from './reducers/main';
 
 const composeStoreWithMiddleware = applyMiddleware(
   promiseMiddleware,

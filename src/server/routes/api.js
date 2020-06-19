@@ -1,6 +1,6 @@
 'use strict';
 
-const router = require('koa-router')({
+const router = require('@koa/router')({
   prefix: '/db',
 });
 

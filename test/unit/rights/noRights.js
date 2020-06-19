@@ -1,7 +1,7 @@
 'use strict';
 
-const data = require('../../data/noRights');
 const constants = require('../../data/constants');
+const data = require('../../data/noRights');
 
 describe('entry reads, database without any default rights', () => {
   beforeAll(data);

@@ -3,10 +3,10 @@
 const assert = require('assert');
 
 const getConfig = require('../../config/config').getConfig;
-const Couch = require('../../index');
-const debug = require('../../util/debug')('middleware:couch');
 const views = require('../../design/views');
+const Couch = require('../../index');
 const CouchError = require('../../util/CouchError');
+const debug = require('../../util/debug')('middleware:couch');
 const getConfiguredDbs = require('../../util/getConfiguredDbs');
 
 const auth = require('./auth');
@@ -232,7 +232,7 @@ exports.getUserInfo = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getUserInfo(ctx.state.userEmail);
 });
 
-exports.getOwners = function(type) {
+exports.getOwners = function (type) {
   return composeWithError(async (ctx) => {
     const doc = await ctx.state.couch.getDocByRights(
       ctx.params.uuid,
@@ -244,7 +244,7 @@ exports.getOwners = function(type) {
   });
 };
 
-exports.addOwner = function(type) {
+exports.addOwner = function (type) {
   return composeWithError(async (ctx) => {
     await ctx.state.couch.addOwnersToDoc(
       ctx.params.uuid,
@@ -256,7 +256,7 @@ exports.addOwner = function(type) {
   });
 };
 
-exports.removeOwner = function(type) {
+exports.removeOwner = function (type) {
   return composeWithError(async (ctx) => {
     await ctx.state.couch.removeOwnersFromDoc(
       ctx.params.uuid,

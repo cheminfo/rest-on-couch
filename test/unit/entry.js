@@ -1,7 +1,7 @@
 'use strict';
 
-const data = require('../data/data');
 const constants = require('../data/constants');
+const data = require('../data/data');
 const testUtils = require('../utils/testUtils');
 
 describe('entry reads', () => {

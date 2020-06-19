@@ -6,10 +6,10 @@ const LocalStrategy = require('passport-local').Strategy;
 const { auditLogin } = require('../../../audit/actions');
 const couchUrl = require('../../../config/config').globalConfig.url;
 const isEmail = require('../../../util/isEmail');
-const util = require('../../middleware/util');
 const auth = require('../../middleware/auth');
+const util = require('../../middleware/util');
 
-exports.init = function(passport, router) {
+exports.init = function (passport, router) {
   router.post(
     '/couchdb/user',
     util.parseBody({ jsonLimit: '1kb' }),
@@ -24,8 +24,8 @@ exports.init = function(passport, router) {
         passwordField: 'password',
         passReqToCallback: true,
       },
-      function(req, username, password, done) {
-        (async function() {
+      function (req, username, password, done) {
+        (async function () {
           if (!isEmail(username)) {
             return done(null, false, 'username must be an email');
           }

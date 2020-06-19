@@ -4,9 +4,9 @@ const util = require('../../middleware/util');
 
 const LdapBindStrategy = require('./strategy');
 
-exports.init = function(passport, router, config) {
+exports.init = function (passport, router, config) {
   passport.use(
-    new LdapBindStrategy(config, function(user, done) {
+    new LdapBindStrategy(config, function (user, done) {
       done(null, {
         provider: 'ldapbind',
         email: user.mail,

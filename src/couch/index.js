@@ -1,7 +1,7 @@
 'use strict';
 
-const CouchError = require('../util/CouchError');
 const constants = require('../constants');
+const CouchError = require('../util/CouchError');
 const getConfig = require('../config/config').getConfig;
 
 const log = require('./log');

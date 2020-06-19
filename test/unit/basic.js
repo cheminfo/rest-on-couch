@@ -4,10 +4,10 @@ const assert = require('assert');
 
 const Couch = require('../..');
 const constants = require('../../src/constants');
-const { resetDatabaseWithoutCouch } = require('../utils/utils');
 const entryUnicity = require('../data/entryUnicity');
+const { resetDatabaseWithoutCouch } = require('../utils/utils');
 
-process.on('unhandledRejection', function(err) {
+process.on('unhandledRejection', function (err) {
   throw err;
 });
 
@@ -27,11 +27,11 @@ describe('basic initialization tests', () => {
   });
 
   test('should throw on invalid db name', () => {
-    expect(function() {
+    expect(function () {
       new Couch({ database: '_test' }); // eslint-disable-line no-new
     }).toThrowError(/invalid database name/);
 
-    expect(function() {
+    expect(function () {
       Couch.get(1);
     }).toThrowError(/database name must be a string/);
   });

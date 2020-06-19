@@ -1,22 +1,22 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { HashRouter, Route, Redirect, Switch } from 'react-router-dom';
+import React from 'react';
 import { connect } from 'react-redux';
+import { HashRouter, Route, Redirect, Switch } from 'react-router-dom';
 
 import { dbManager } from '../store';
 
-import DatabaseSelector from './DatabaseSelector';
-import Home from './Home';
-import Groups from './Groups';
-import Login from './Login';
+import Allowed from './Allowed';
 import ChangePassword from './ChangePassword';
-import LoginButton from './LoginButton';
 import CreateUser from './CreateUser';
+import DatabaseAdministration from './DatabaseAdministration';
+import DatabaseSelector from './DatabaseSelector';
+import GroupMemberships from './GroupMemberships';
+import Groups from './Groups';
+import Home from './Home';
+import Login from './Login';
+import LoginButton from './LoginButton';
 import NoMatch from './NoMatch';
 import Sidebar from './Sidebar';
-import DatabaseAdministration from './DatabaseAdministration';
-import GroupMemberships from './GroupMemberships';
-import Allowed from './Allowed';
 
 const App = (props) => {
   const { rocOnline } = props;
