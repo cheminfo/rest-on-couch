@@ -1,7 +1,7 @@
 'use strict';
 
 const passport = require('koa-passport');
-const router = require('koa-router')({
+const router = require('@koa/router')({
   prefix: '/auth',
 });
 

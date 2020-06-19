@@ -1,9 +1,9 @@
 'use strict';
 
+const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const ensureStringArray = require('../util/ensureStringArray');
 const isEmail = require('../util/isEmail');
-const constants = require('../constants');
 
 function isSpecialUser(user) {
   return user === 'anonymous' || user === 'anyuser';

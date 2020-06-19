@@ -3,14 +3,14 @@
 const http = require('http');
 const path = require('path');
 
-const compress = require('koa-compress');
 const cors = require('kcors');
 const Koa = require('koa');
-const koaStatic = require('koa-static');
+const compress = require('koa-compress');
+const hbs = require('koa-hbs');
 const passport = require('koa-passport');
 const responseTime = require('koa-response-time');
 const session = require('koa-session');
-const hbs = require('koa-hbs');
+const koaStatic = require('koa-static');
 
 const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
@@ -23,7 +23,7 @@ const app = new Koa();
 
 let _started;
 
-app.use(async function(ctx, next) {
+app.use(async function (ctx, next) {
   debug.trace('Method: %s; Path: %s', ctx.method, ctx.path);
   await next();
 });
@@ -39,7 +39,7 @@ let proxyPrefix = config.proxyPrefix;
 debug('proxy prefix: %s', proxyPrefix);
 if (proxyPrefix !== '') {
   const _redirect = app.context.redirect;
-  app.context.redirect = function(url, alt) {
+  app.context.redirect = function (url, alt) {
     if (typeof url === 'string' && url.startsWith('/')) {
       url = proxyPrefix + url;
     }
@@ -123,12 +123,12 @@ app.use(auth.routes());
 // ROC API
 app.use(api.routes());
 
-module.exports.start = function() {
+module.exports.start = function () {
   if (_started) return _started;
-  _started = new Promise(function(resolve, reject) {
+  _started = new Promise(function (resolve, reject) {
     initCouch().then(
       () => {
-        http.createServer(app.callback()).listen(config.port, function() {
+        http.createServer(app.callback()).listen(config.port, function () {
           debug.warn('running on localhost: %d', config.port);
           resolve(app);
         });

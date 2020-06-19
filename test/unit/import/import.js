@@ -21,7 +21,7 @@ const textFile2 = path.resolve(
 );
 
 describe('import', () => {
-  beforeEach(async function() {
+  beforeEach(async function () {
     importCouch = await testUtils.resetDatabase(databaseName);
   });
   test('full import', async () => {

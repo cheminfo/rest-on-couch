@@ -5,11 +5,11 @@ const http = require('http');
 
 const got = require('got');
 
-const { DESIGN_DOC_NAME } = require('../constants');
 const getConfig = require('../config/config').getConfig;
+const { DESIGN_DOC_NAME } = require('../constants');
 
-const debug = require('./debug')('nanoShim');
 const CouchError = require('./CouchError');
+const debug = require('./debug')('nanoShim');
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -29,21 +29,24 @@ class NanoShim {
     if (!url.endsWith('/')) {
       url += '/';
     }
-    this.prefixUrl = url;
-    this.client = got.extend({
+    this.options = {
       prefixUrl: url,
       responseType: 'json',
       headers: {
         cookie,
       },
-      agent,
-    });
+      agent: {
+        http: agent,
+      },
+    };
+    this.client = got.extend(this.options);
   }
 
   useDb(dbName) {
     dbName = cleanDbName(dbName);
-    const client = this.client.extend({
-      prefixUrl: this.prefixUrl + dbName,
+    const client = got.extend({
+      ...this.options,
+      prefixUrl: this.options.prefixUrl + dbName,
     });
     return new NanoDbShim(dbName, client);
   }
@@ -123,7 +126,7 @@ class NanoDbShim {
       options = { json: doc };
     }
     try {
-      const response = await this.client.post('/', options);
+      const response = await this.client.post(options);
       debug.trace('document inserted', response.body.id);
       return response.body;
     } catch (e) {
@@ -285,7 +288,7 @@ function prepareSearchParams(searchParams) {
   if (searchParams.token) {
     delete searchParams.token;
   }
-  specialKeys.forEach(function(key) {
+  specialKeys.forEach(function (key) {
     if (key in searchParams) {
       searchParams[key] = JSON.stringify(searchParams[key]);
     }
@@ -295,7 +298,7 @@ function prepareSearchParams(searchParams) {
 
 const paramsToEncode = ['counts', 'drilldown', 'group_sort', 'ranges', 'sort'];
 function prepareSearchParamsForView(searchParams) {
-  paramsToEncode.forEach(function(param) {
+  paramsToEncode.forEach(function (param) {
     if (param in searchParams) {
       if (typeof searchParams[param] !== 'string') {
         searchParams[param] = JSON.stringify(searchParams[param]);

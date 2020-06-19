@@ -5,9 +5,9 @@ const _ = require('lodash');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:doc');
 
+const nanoMethods = require('./nano');
 const util = require('./util');
 const validate = require('./validate');
-const nanoMethods = require('./nano');
 
 const methods = {
   async getDocUuidFromId(id, user, type) {

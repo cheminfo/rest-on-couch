@@ -3,7 +3,7 @@
 const validateDocUpdate = require('../../../src/design/validateDocUpdate');
 
 // TODO workaround for CentOS 6.
-global.isArray = function(obj) {
+global.isArray = function (obj) {
   return Array.isArray(obj);
 };
 
@@ -114,7 +114,7 @@ function assert(newDoc, oldDoc, message) {
 }
 
 function assertNot(newDoc, oldDoc) {
-  expect(function() {
+  expect(function () {
     validateDocUpdate(newDoc, oldDoc, { name: 'admin' });
   }).not.toThrow();
 }

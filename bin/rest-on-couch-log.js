@@ -25,21 +25,21 @@ const couch = new Couch(program.database);
 
 if (program.insert) {
   couch.log(program.insert, program.level).then(
-    function(done) {
+    function (done) {
       if (done) {
         debug('log inserted successfully');
       } else {
         debug.warn('log ignored by current level');
       }
     },
-    function(e) {
+    function (e) {
       debug.error(e);
     },
   );
 } else {
   couch
     .getLogs(parseInt(program.epoch, 10))
-    .then(function(logs) {
+    .then(function (logs) {
       for (var i = 0; i < logs.length; i++) {
         write(logs[i]);
       }
@@ -49,13 +49,13 @@ if (program.insert) {
           include_docs: true,
           filter: `${constants.DESIGN_DOC_NAME}/logs`,
         });
-        feed.on('change', function(change) {
+        feed.on('change', function (change) {
           write(change.doc);
         });
         feed.follow();
       }
     })
-    .catch(function(e) {
+    .catch(function (e) {
       debug.error(e);
     });
 }

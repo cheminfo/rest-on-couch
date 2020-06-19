@@ -1,11 +1,11 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import { loginLDAP, loginCouchDB } from '../actions/login';
 
-import LoginGoogle from './LoginGoogle';
 import LoginGeneric from './LoginGeneric';
+import LoginGoogle from './LoginGoogle';
 
 const Login = (props) => (
   <div>

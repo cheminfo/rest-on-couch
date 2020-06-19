@@ -1,19 +1,19 @@
 'use strict';
 
 const bodyParser = require('koa-bodyparser');
-const rawBody = require('raw-body');
 const compose = require('koa-compose');
+const rawBody = require('raw-body');
 
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('middleware:util');
 
 const { decorateError, responseHasBody } = require('./decorateError');
 
-exports.parseBody = function(options) {
+exports.parseBody = function (options) {
   return bodyParser(options);
 };
 
-exports.parseRawBody = function(options) {
+exports.parseRawBody = function (options) {
   return async (ctx, next) => {
     ctx.request.body = await rawBody(ctx.req, options);
     await next();

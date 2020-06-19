@@ -1,11 +1,11 @@
-import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 
 import { clearGroupError, clearGroupSuccess } from '../actions/db';
 
-import GroupDataEditor from './GroupDataEditor';
 import EditableTextField from './EditableTextField';
+import GroupDataEditor from './GroupDataEditor';
 
 class GroupEditor extends PureComponent {
   render() {

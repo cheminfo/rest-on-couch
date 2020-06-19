@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(agent, username, password) {
+module.exports = function (agent, username, password) {
   return agent
     .post('/auth/login/couchdb')
     .type('form')

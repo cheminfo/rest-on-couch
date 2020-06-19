@@ -5,9 +5,9 @@ const debug = require('../util/debug')('main:entry');
 const ensureStringArray = require('../util/ensureStringArray');
 const kEntryUnicity = require('../constants').kEntryUnicity;
 
-const validateMethods = require('./validate');
 const nanoMethods = require('./nano');
 const util = require('./util');
+const validateMethods = require('./validate');
 
 const methods = {
   async getEntryWithRights(uuid, user, rights, options = {}) {

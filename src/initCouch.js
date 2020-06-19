@@ -2,8 +2,8 @@
 
 const config = require('./config/config').globalConfig;
 const { open } = require('./connect');
-const loadCouch = require('./util/load');
 const setupAuditActions = require('./init/auditActions');
+const loadCouch = require('./util/load');
 
 async function initCouch() {
   const nano = await open();

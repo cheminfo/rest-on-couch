@@ -1,7 +1,7 @@
 import { apiFetchJSON } from '../api';
 
-import { checkLogin, getLoginProviders } from './login';
 import { getDbList } from './db';
+import { checkLogin, getLoginProviders } from './login';
 
 export const ROC_ONLINE = 'ROC_ONLINE';
 

@@ -1,8 +1,8 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
-import GroupDataElement from './GroupDataElement';
 import EnterTextField from './EnterTextField';
+import GroupDataElement from './GroupDataElement';
 import ResponsiveTable from './ResponsiveTable';
 
 const GroupDataEditor = ({

@@ -1,9 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 
-import { API_ROOT } from '../api';
 import { checkLogin } from '../actions/login';
+import { API_ROOT } from '../api';
 import { dbManager } from '../store';
 
 const LoginGoogle = ({ doGoogleLogin }) => (

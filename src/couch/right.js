@@ -6,8 +6,8 @@ const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:right');
 
-const util = require('./util');
 const nano = require('./nano');
+const util = require('./util');
 
 const methods = {
   async editGlobalRight(user, type, target, action) {

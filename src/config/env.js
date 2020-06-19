@@ -10,7 +10,7 @@ for (const name in process.env) {
     const realName = name
       .substring(prefix.length)
       .toLowerCase()
-      .replace(/_([a-z])/g, function(value) {
+      .replace(/_([a-z])/g, function (value) {
         return value[1].toUpperCase();
       });
     debug('setting config from env, %s: %s', realName, process.env[name]);

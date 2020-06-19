@@ -12,9 +12,9 @@ const validateDocUpdate = require('./validateDocUpdate');
 const views = require('./views');
 
 /* istanbul ignore next */
-const mapTpl = function(doc) {
+const mapTpl = function (doc) {
   if (doc.$type !== 'entry') return;
-  var emitWithOwner = function(key, data) {
+  var emitWithOwner = function (key, data) {
     for (var i = 0; i < doc.$owners.length; i++) {
       if (key == null) {
         emit([doc.$owners[i]], data);
@@ -29,7 +29,7 @@ const mapTpl = function(doc) {
 
 // Extends design doc with default views
 // Adds the special lib view to the design doc
-module.exports = function(custom, dbName) {
+module.exports = function (custom, dbName) {
   custom = custom || {};
   const config = getConfig(dbName);
   processViews(custom, config);
