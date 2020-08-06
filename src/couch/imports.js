@@ -7,6 +7,7 @@ const validateMethods = require('./validate');
 
 const methods = {
   async logImport(toLog) {
+    await this.open();
     toLog.$type = 'import';
     toLog.$creationDate = Date.now();
     await this._db.insertDocument(toLog);
