@@ -19,20 +19,21 @@
 
 ### Entry
 
-| Method | Route                                   |               Action                |                Description                 |
-| :----: | :-------------------------------------- | :---------------------------------: | :----------------------------------------: |
-|  POST  | `/db/:dbname/entry`                     |      Insert / Update an entry       |     Based on \_id or \$id of the entry     |
-|  GET   | `/db/:dbname/entry/_all`                |           Get all entries           |       Returns an array of documents        |
-|  HEAD  | `/db/:dbname/entry/:uuid`               | Get HTTP headers about the document | Similar to HEAD /:dbname/:docid in CouchDB |
-|  GET   | `/db/:dbname/entry/:uuid`               |        Get an entry by UUID         |                                            |
-|  PUT   | `/db/:dbname/entry/:uuid`               |       Update an entry by UUID       |                                            |
-| DELETE | `/db/:dbname/entry/:uuid`               |     Delete an an entry by UUID      |                                            |
-|  GET   | `/db/:dbname/entry/:uuid/_owner`        |        Get a list of owners         |                                            |
-|  PUT   | `/db/:dbname/entry/:uuid/_owner/:owner` |            Add an owner             |                                            |
-| DELETE | `/db/:dbname/entry/:uuid/_owner/:owner` |           Remove an owner           |                                            |
-|  GET   | `/db/:dbname/entry/:uuid/:attachment+`  |          Get an attachment          |                                            |
-|  PUT   | `/db/:dbname/entry/:uuid/:attachment+`  |         Save an attachment          |                                            |
-| DELETE | `/db/:dbname/entry/:uuid/:attachment+`  |        Delete an attachment         |                                            |
+| Method | Route                                    |               Action                |                Description                 |
+| :----: | :--------------------------------------- | :---------------------------------: | :----------------------------------------: |
+|  POST  | `/db/:dbname/entry`                      |      Insert / Update an entry       |     Based on \_id or \$id of the entry     |
+|  GET   | `/db/:dbname/entry/_all`                 |           Get all entries           |       Returns an array of documents        |
+|  HEAD  | `/db/:dbname/entry/:uuid`                | Get HTTP headers about the document | Similar to HEAD /:dbname/:docid in CouchDB |
+|  GET   | `/db/:dbname/entry/:uuid`                |        Get an entry by UUID         |                                            |
+|  PUT   | `/db/:dbname/entry/:uuid`                |       Update an entry by UUID       |                                            |
+| DELETE | `/db/:dbname/entry/:uuid`                |     Delete an an entry by UUID      |                                            |
+|  GET   | `/db/:dbname/entry/:uuid/_owner`         |        Get a list of owners         |                                            |
+|  PUT   | `/db/:dbname/entry/:uuid/_owner/:owner`  |            Add an owner             |                                            |
+| DELETE | `/db/:dbname/entry/:uuid/_owner/:owner`  |           Remove an owner           |                                            |
+|  GET   | `/db/:dbname/entry/:uuid/_rights/:right` |    Get information about a right    |  Returns true if user has the given right  |
+|  GET   | `/db/:dbname/entry/:uuid/:attachment+`   |          Get an attachment          |                                            |
+|  PUT   | `/db/:dbname/entry/:uuid/:attachment+`   |         Save an attachment          |                                            |
+| DELETE | `/db/:dbname/entry/:uuid/:attachment+`   |        Delete an attachment         |                                            |
 
 ### User
 
