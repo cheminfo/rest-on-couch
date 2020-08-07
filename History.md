@@ -1,3 +1,17 @@
+# [8.1.0](https://github.com/cheminfo/rest-on-couch/compare/v8.0.0...v8.1.0) (2020-08-07)
+
+
+### Bug Fixes
+
+* ensure db connection is open before logging import ([c0ae445](https://github.com/cheminfo/rest-on-couch/commit/c0ae44549292b99f29aaf2e883f37dedf033018d))
+
+
+### Features
+
+* add getGroupsInfo route ([#218](https://github.com/cheminfo/rest-on-couch/issues/218)) ([2b86ee0](https://github.com/cheminfo/rest-on-couch/commit/2b86ee02d30c99f37c6bda816b0914a3faa6f78d))
+
+
+
 # [8.0.0](https://github.com/cheminfo/rest-on-couch/compare/v7.1.1...v8.0.0) (2020-02-13)
 
 
