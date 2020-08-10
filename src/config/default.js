@@ -38,6 +38,14 @@ module.exports = {
   },
   entryUnicity: 'byOwner', // can be byOwner or global
 
+  // Options related to file storage
+  fileStorage: {
+    driver: 'local',
+    config: {
+      root: 'files',
+    },
+  },
+
   // Options related to audit logs
   auditActions: false,
   auditActionsDb: 'roc-audit-actions',

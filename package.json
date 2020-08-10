@@ -60,6 +60,8 @@
   },
   "dependencies": {
     "@koa/router": "^9.3.1",
+    "@lukeed/uuid": "^1.0.1",
+    "@slynova/flydrive": "^1.0.2",
     "commander": "^6.0.0",
     "debug": "^4.1.1",
     "delay": "^4.4.0",
