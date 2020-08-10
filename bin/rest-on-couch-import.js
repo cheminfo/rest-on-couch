@@ -11,8 +11,7 @@ const delay = require('delay');
 const fs = require('fs-extra');
 const klaw = require('klaw');
 
-const { getImportConfig } = require('../src/config/config');
-const { getHomeDir } = require('../src/config/home');
+const { getImportConfig, globalConfig } = require('../src/config/config');
 const connect = require('../src/connect');
 const { importFile } = require('../src/index');
 const debug = require('../src/util/debug')('bin:import');
@@ -56,10 +55,9 @@ async function doContinuous(waitTime) {
 }
 
 async function importAll() {
-  const homeDir = getHomeDirOrDie();
   const limit = program.limit || 0;
   debug('limit is %d. Searching files...', limit);
-  const files = await findFiles(homeDir, limit);
+  const files = await findFiles(globalConfig.homeDir, limit);
   debug('found %d files to import', files.length);
   const waitingFiles = [];
   const readyFiles = [];
@@ -258,14 +256,6 @@ function getFilesToProcess(directory, maxElements) {
         reject(err);
       });
   });
-}
-
-function getHomeDirOrDie() {
-  let homeDir = getHomeDir();
-  if (!homeDir) {
-    die('homeDir must be set to import all');
-  }
-  return homeDir;
 }
 
 async function processFile(file) {
