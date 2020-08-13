@@ -83,6 +83,7 @@ app.use(
       secure: config.sessionSecure,
       httpOnly: true,
       signed: config.sessionSigned,
+      sameSite: config.sessionSameSite,
     },
     app,
   ),
