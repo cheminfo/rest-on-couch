@@ -111,6 +111,12 @@ Type: boolean
 Default: `false`  
 Set to `true` if the cookie should only be valid on secure URLs.
 
+#### sessionSameSite
+
+Type: string
+Default: `'lax'`
+Value of the ["SameSite"](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite) cookie option. Set to `'strict'`, `'lax'`, or `'none'`.
+
 #### debugrest
 
 Type: boolean  
@@ -168,9 +174,9 @@ attachment is to be added
 function zenodoAttachments(content) {
   if (content.general && content.general.molfile) {
     return {
-      filename: "molfile.mol",
-      contentType: "chemical/x-mdl-molfile",
-      data: content.general.molfile
+      filename: 'molfile.mol',
+      contentType: 'chemical/x-mdl-molfile',
+      data: content.general.molfile,
     };
   }
 }

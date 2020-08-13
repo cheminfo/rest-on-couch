@@ -26,6 +26,7 @@ module.exports = {
   sessionPath: '/',
   sessionSecure: false,
   sessionSigned: true,
+  sessionSameSite: 'lax',
 
   allowedOrigins: [],
   debugrest: false,
