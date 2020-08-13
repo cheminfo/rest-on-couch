@@ -202,7 +202,8 @@ Go to http://localhost:5984/_utils/#setup
 ## Automatic importation
 
 `rest-on-couch` is able to watch folders and to automatically import data in the database.
-A specific userguide is available [here](docs/import.md).
+
+A specific userguide is available [here](import.md).
 
 ## License
 
