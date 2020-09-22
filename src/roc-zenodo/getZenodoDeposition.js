@@ -1,6 +1,6 @@
 'use strict';
 
-const okORCID = require('../util/orcid');
+const okOrcid = require('../util/orcid');
 
 function getZenodoDeposition(entry, self) {
   const result = {
@@ -70,7 +70,7 @@ function validateCreators(creators) {
       throw new TypeError('creator must have an affiliation');
     }
     if (orcid in creator) {
-      if (okORCID(creator.orcid)) {
+      if (okOrcid(creator.orcid)) {
         toReturn.push({
           name: creatorName,
           affiliation: creator.affiliation,
