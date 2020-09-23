@@ -1,5 +1,7 @@
 'use strict';
 
+const okOrcid = require('../util/orcid');
+
 function getZenodoDeposition(entry, self) {
   const result = {
     metadata: {
@@ -67,10 +69,20 @@ function validateCreators(creators) {
     if (typeof creator.affiliation !== 'string') {
       throw new TypeError('creator must have an affiliation');
     }
-    toReturn.push({
+
+    const creatorToReturn = {
       name: creatorName,
       affiliation: creator.affiliation,
-    });
+    };
+
+    if ('orcid' in creator) {
+      if (okOrcid(creator.orcid)) {
+        creatorToReturn.orcid = creator.orcid;
+      } else {
+        throw new TypeError(`${creator.orcid} is not a valid ORCID identifier`);
+      }
+    }
+    toReturn.push(creatorToReturn);
   }
   return toReturn;
 }
