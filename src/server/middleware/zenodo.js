@@ -214,7 +214,7 @@ async function publish(
           userEmail,
           true,
         );
-        await delay(60);
+        await delay(600);
         await rocZenodo.uploadFile(deposition, {
           filename: `${filenamePrefix}/${attachmentPath}`,
           contentType,
