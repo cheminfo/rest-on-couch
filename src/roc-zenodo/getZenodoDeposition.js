@@ -79,7 +79,7 @@ function validateCreators(creators) {
       if (okOrcid(creator.orcid)) {
         creatorToReturn.orcid = creator.orcid;
       } else {
-        throw new TypeError('Not a valid ORCID identifier');
+        throw new TypeError(`${creator.orcid} is not a valid ORCID identifier`);
       }
     }
     toReturn.push(creatorToReturn);
