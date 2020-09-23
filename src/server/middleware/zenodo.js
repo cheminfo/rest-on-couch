@@ -1,9 +1,9 @@
 'use strict';
 
+const delay = require('delay');
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('zenodo');
 const { RocZenodo } = require('../../roc-zenodo');
-
 const { decorateError } = require('./decorateError');
 const { composeWithError } = require('./util');
 
@@ -214,6 +214,7 @@ async function publish(
           userEmail,
           true,
         );
+        await delay(600);
         await rocZenodo.uploadFile(deposition, {
           filename: `${filenamePrefix}/${attachmentPath}`,
           contentType,
