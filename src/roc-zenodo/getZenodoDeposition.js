@@ -69,22 +69,20 @@ function validateCreators(creators) {
     if (typeof creator.affiliation !== 'string') {
       throw new TypeError('creator must have an affiliation');
     }
+
+    const creatorToReturn = {
+      name: creatorName,
+      affiliation: creator.affiliation,
+    };
+
     if ('orcid' in creator) {
       if (okOrcid(creator.orcid)) {
-        toReturn.push({
-          name: creatorName,
-          affiliation: creator.affiliation,
-          orcid: creator.orcid,
-        });
+        creatorToReturn.orcid = creator.orcid;
       } else {
         throw new TypeError('Not a valid ORCID identifier');
       }
-    } else {
-      toReturn.push({
-        name: creatorName,
-        affiliation: creator.affiliation,
-      });
     }
+    toReturn.push(creatorToReturn);
   }
   return toReturn;
 }
