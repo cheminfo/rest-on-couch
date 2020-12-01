@@ -1,3 +1,19 @@
+# Changelog
+
+## [8.2.0](https://github.com/cheminfo/rest-on-couch/compare/v8.1.0...v8.2.0) (2020-12-01)
+
+
+### Features
+
+* add support for ORCID id of creator in Zenodo submission ([#238](https://github.com/cheminfo/rest-on-couch/issues/238)) ([eea3faa](https://github.com/cheminfo/rest-on-couch/commit/eea3faaa51cd4ffd4123c6cb2785cc50e7cecfe6))
+
+
+### Bug Fixes
+
+* allow to configure SameSite session cookie option ([#234](https://github.com/cheminfo/rest-on-couch/issues/234)) ([a51fc7b](https://github.com/cheminfo/rest-on-couch/commit/a51fc7baca8ca1ff7c558a11947a103934e1daee))
+* convert "true" and "false" env values to booleans ([#239](https://github.com/cheminfo/rest-on-couch/issues/239)) ([cae3bf9](https://github.com/cheminfo/rest-on-couch/commit/cae3bf92cef054820f3b7065ee3953f03cfd1fb4))
+* throttle Zenodo attachment uploads ([#237](https://github.com/cheminfo/rest-on-couch/issues/237)) ([62d6f12](https://github.com/cheminfo/rest-on-couch/commit/62d6f12a78e489d2d334d8f2fe8b47f8ef5258d8))
+
 # [8.1.0](https://github.com/cheminfo/rest-on-couch/compare/v8.0.0...v8.1.0) (2020-08-07)
 
 
