@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.2.1](https://www.github.com/cheminfo/rest-on-couch/compare/v8.2.0...v8.2.1) (2020-12-18)
+
+
+### Bug Fixes
+
+* update dependencies ([#242](https://www.github.com/cheminfo/rest-on-couch/issues/242)) ([cbb5168](https://www.github.com/cheminfo/rest-on-couch/commit/cbb5168ade97b97e5f44a7c9f8ef0726b85e676e))
+
 ## [8.2.0](https://github.com/cheminfo/rest-on-couch/compare/v8.1.0...v8.2.0) (2020-12-01)
 
 
@@ -724,6 +731,3 @@ getEntryById remains but only returns something if the user requesting the docum
 
 <a name="0.2.0"></a>
 # 0.2.0 (2016-01-05)
-
-
-
