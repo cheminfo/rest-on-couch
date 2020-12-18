@@ -35,7 +35,7 @@ function search(ldapOptions, searchOptions) {
       client.destroy();
       reject(err);
     };
-    return bind(client, ldapOptions.bindDN, ldapOptions.bindPassword)
+    bind(client, ldapOptions.bindDN, ldapOptions.bindPassword)
       .then(() => {
         try {
           client.search(searchOptions.DN, searchOptions, (err, res) => {

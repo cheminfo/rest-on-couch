@@ -1,9 +1,9 @@
 'use strict';
 
+const kEntryUnicity = require('../constants').kEntryUnicity;
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:entry');
 const ensureStringArray = require('../util/ensureStringArray');
-const kEntryUnicity = require('../constants').kEntryUnicity;
 
 const nanoMethods = require('./nano');
 const util = require('./util');

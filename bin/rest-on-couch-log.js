@@ -5,9 +5,9 @@
 const program = require('commander');
 
 const constants = require('../src/constants');
+const log = require('../src/couch/log');
 const Couch = require('../src/index');
 const debug = require('../src/util/debug')('bin:log');
-const log = require('../src/couch/log');
 
 program
   .option('-d, --database <db>', 'Database name')

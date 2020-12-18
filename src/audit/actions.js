@@ -1,8 +1,8 @@
 'use strict';
 
 const config = require('../config/config').globalConfig;
-const debug = require('../util/debug')('audit:actions');
 const { open } = require('../connect');
+const debug = require('../util/debug')('audit:actions');
 
 const auditEnabled = !!config.auditActions;
 
