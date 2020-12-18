@@ -4,8 +4,8 @@
 
 const program = require('commander');
 
-const debug = require('../src/util/debug')('bin:server');
 const server = require('../src/server/server');
+const debug = require('../src/util/debug')('bin:server');
 
 program
   .option('-c --config <path>', 'Path to custom config file')

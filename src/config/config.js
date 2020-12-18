@@ -2,11 +2,11 @@
 
 const debug = require('../util/debug')('config');
 
-const defaultConfig = require('./default');
-const { getHomeConfig } = require('./home');
-const dbConfig = require('./db')();
-const envConfig = require('./env');
 const cliConfig = require('./cli');
+const dbConfig = require('./db')();
+const defaultConfig = require('./default');
+const envConfig = require('./env');
+const { getHomeConfig } = require('./home');
 
 const configStore = {};
 // TODO: would be preferable if returned data was immutable to prevent side effects

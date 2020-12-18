@@ -1,3 +1,4 @@
 extends: cheminfo-react
 rules:
   react/forbid-prop-types: off
+  default-param-last: off

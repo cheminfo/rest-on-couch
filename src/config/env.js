@@ -1,4 +1,3 @@
-/* eslint-disable no-process-env */
 'use strict';
 
 const prefix = 'REST_ON_COUCH_';
@@ -10,7 +9,7 @@ for (const name in process.env) {
     const realName = name
       .substring(prefix.length)
       .toLowerCase()
-      .replace(/_([a-z])/g, function (value) {
+      .replace(/_(?<part>[a-z])/g, function (value) {
         return value[1].toUpperCase();
       });
 

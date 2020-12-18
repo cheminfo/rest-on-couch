@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-/* eslint-disable no-await-in-loop */
-
 'use strict';
 
 const path = require('path');
@@ -153,12 +151,12 @@ async function getFileSize(waitingFile) {
 }
 
 function wait(waitingFile) {
-  return new Promise((resolve) =>
+  return new Promise((resolve) => {
     setTimeout(function waitCallback() {
       waitingFile.waiting = false;
       resolve(waitingFile);
-    }, waitingFile.waitTime),
-  );
+    }, waitingFile.waitTime);
+  });
 }
 
 async function findFiles(homeDir, limit) {
@@ -180,7 +178,6 @@ async function findFiles(homeDir, limit) {
 
       try {
         const importConfigPath = path.join(importNamePath, 'import');
-        // eslint-disable-next-line import/no-dynamic-require
         const importConfig = require(importConfigPath);
         if (importConfig && Array.isArray(importConfig.source)) {
           for (const source of importConfig.source) {
