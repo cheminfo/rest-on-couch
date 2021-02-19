@@ -182,14 +182,16 @@ function zenodoAttachments(content) {
 }
 ```
 
-## Setup environment with Docker (for runnings tests)
+## Setup environment with Docker (for running tests)
 
 ```bash
 docker pull couchdb
 docker create -p 5984:5984 --name couchdb couchdb
-docker start couchdb
+docker start couchdb 
 docker ps # check that the container is running
 ```
+
+(alternatively, `docker-compose  up --file docker-compose.dev.yml -d`)
 
 Go to http://localhost:5984/_utils/#setup
 

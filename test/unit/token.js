@@ -10,8 +10,10 @@ describe('token methods', () => {
     const tokens = await Promise.all([
       couch.createEntryToken('b@b.com', 'A'),
       couch.createEntryToken('b@b.com', 'B'),
+      couch.createEntryToken('b@b.com', 'B', ['read', 'write']),
     ]);
     expect(tokens[0].$id).not.toBe(tokens[1].$id);
+    expect(tokens[0].$id).not.toBe(tokens[2].$id);
     const token = tokens[0];
     expect(token.$type).toBe('token');
     expect(token.$kind).toBe('entry');
@@ -20,11 +22,19 @@ describe('token methods', () => {
     expect(token.uuid).toBe('A');
     expect(token.rights).toEqual(['read']);
 
+    const writeToken = tokens[2];
+    expect(writeToken.$type).toBe('token');
+    expect(writeToken.$kind).toBe('entry');
+    expect(writeToken.$id.length).toBe(32);
+    expect(writeToken.$owner).toBe('b@b.com');
+    expect(writeToken.uuid).toBe('B');
+    expect(writeToken.rights).toEqual(['read', 'write']);
+
     const gotToken = await couch.getToken(token.$id);
     expect(gotToken.$id).toBe(token.$id);
 
     const allTokens = await couch.getTokens('b@b.com');
-    expect(allTokens.length).toBe(2);
+    expect(allTokens.length).toBe(3);
   });
 
   test('user should be able to create and destroy tokens', async () => {
@@ -86,5 +96,9 @@ describe('token methods', () => {
     await expect(
       couch.createUserToken('a@a.com', ['read', 'test2']),
     ).rejects.toThrow('invalid right: test2');
+
+    await expect(
+      couch.createEntryToken('a@a.com', 'A', 'test1'),
+    ).rejects.toThrow('invalid right: test1');
   });
 });
