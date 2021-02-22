@@ -11,6 +11,7 @@ const globalRightTypes = [
   'createGroup',
   'readImport',
   'owner',
+  'addAttachment',
 ];
 
 // administrators only have these rights

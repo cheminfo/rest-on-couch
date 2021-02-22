@@ -53,6 +53,23 @@ describe('token methods', () => {
     });
   });
 
+  test('user should be able to create a user token with rights', async () => {
+    const token = await couch.createUserToken('b@b.com', [
+      'read',
+      'addAttachment',
+    ]);
+    expect(token.$id).toMatch(testUtils.tokenReg);
+    expect(token.$creationDate).toBeGreaterThan(0);
+    delete token.$id;
+    delete token.$creationDate;
+    expect(token).toEqual({
+      $type: 'token',
+      $kind: 'user',
+      $owner: 'b@b.com',
+      rights: ['read', 'addAttachment'],
+    });
+  });
+
   test('token should give read access to non public data', async () => {
     const token = await couch.createUserToken('b@b.com');
     await expect(couch.getEntryById('A', 'a@a.com')).rejects.toThrow(
