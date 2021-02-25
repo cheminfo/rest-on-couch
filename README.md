@@ -191,7 +191,7 @@ docker start couchdb
 docker ps # check that the container is running
 ```
 
-(alternatively, `docker-compose  up --file docker-compose.dev.yml -d`)
+Alternatively: `docker-compose up --file docker-compose.dev.yml -d`
 
 Go to http://localhost:5984/_utils/#setup
 
