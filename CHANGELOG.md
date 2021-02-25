@@ -1,5 +1,19 @@
 # Changelog
 
+## [8.3.0](https://www.github.com/cheminfo/rest-on-couch/compare/v8.2.0...v8.3.0) (2021-02-25)
+
+
+### Features
+
+* add addAttachment to globalRightsTypes ([#250](https://www.github.com/cheminfo/rest-on-couch/issues/250)) ([2089fb1](https://www.github.com/cheminfo/rest-on-couch/commit/2089fb190a9ab221eee17be7c59f763ee197bfb8))
+* **api:** allow to set rights for entry token ([#248](https://www.github.com/cheminfo/rest-on-couch/issues/248)) ([1be1640](https://www.github.com/cheminfo/rest-on-couch/commit/1be1640b7f018cab3fe7895f79e5ca283f2738ff))
+* change node to version 14 ([#246](https://www.github.com/cheminfo/rest-on-couch/issues/246)) ([ccf8696](https://www.github.com/cheminfo/rest-on-couch/commit/ccf869617aba098fa1d2c4c82c3683d8a5a39154))
+
+
+### Bug Fixes
+
+* update dependencies ([#242](https://www.github.com/cheminfo/rest-on-couch/issues/242)) ([cbb5168](https://www.github.com/cheminfo/rest-on-couch/commit/cbb5168ade97b97e5f44a7c9f8ef0726b85e676e))
+
 ## [8.2.0](https://github.com/cheminfo/rest-on-couch/compare/v8.1.0...v8.2.0) (2020-12-01)
 
 
@@ -724,6 +738,3 @@ getEntryById remains but only returns something if the user requesting the docum
 
 <a name="0.2.0"></a>
 # 0.2.0 (2016-01-05)
-
-
-
