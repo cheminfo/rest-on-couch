@@ -7,15 +7,16 @@ const token = require('../util/token');
 const { isValidUsername, ensureRightsArray } = require('./util');
 
 const methods = {
-  async createEntryToken(user, uuid) {
+  async createEntryToken(user, uuid, rights = ['read']) {
     debug('createEntryToken (%s, %s)', user, uuid);
     if (!isValidUsername(user)) {
       throw new CouchError('only a user can create a token', 'unauthorized');
     }
+    ensureRightsArray(rights);
     await this.open();
     // We need write right to create a token. This will throw if not.
     await this.getEntryWithRights(uuid, user, 'write');
-    return token.createEntryToken(this._db, user, uuid, 'read');
+    return token.createEntryToken(this._db, user, uuid, rights);
   },
 
   async createUserToken(user, rights = ['read']) {

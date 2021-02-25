@@ -449,9 +449,11 @@ exports.removeGlobalDefaultGroup = composeWithError(async (ctx) => {
 });
 
 exports.createEntryToken = composeWithError(async (ctx) => {
+  const rights = ctx.query.rights ? ctx.query.rights.split(',') : 'read';
   const token = await ctx.state.couch.createEntryToken(
     ctx.state.userEmail,
     ctx.params.uuid,
+    rights,
   );
   ctx.status = 201;
   ctx.body = token;
