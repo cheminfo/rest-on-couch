@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.3.1](https://www.github.com/cheminfo/rest-on-couch/compare/v8.3.0...v8.3.1) (2021-02-25)
+
+
+### Bug Fixes
+
+* correctly use new commander API ([#252](https://www.github.com/cheminfo/rest-on-couch/issues/252)) ([836ac4b](https://www.github.com/cheminfo/rest-on-couch/commit/836ac4bc9fb0161d3c327d67b52b78ff46598dad))
+
 ## [8.3.0](https://www.github.com/cheminfo/rest-on-couch/compare/v8.2.0...v8.3.0) (2021-02-25)
 
 
