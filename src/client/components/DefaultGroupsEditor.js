@@ -11,7 +11,7 @@ const DefaultGroupsEditor = ({ defaultGroups, addGroup, removeGroup }) => (
           <div className="col-md-6">
             <GroupDataEditor
               type="anonymous"
-              owners={true}
+              owners
               data={defaultGroups.anonymous}
               addValue={(value) => addGroup('anonymous', value)}
               removeValue={(value) => removeGroup('anonymous', value)}
