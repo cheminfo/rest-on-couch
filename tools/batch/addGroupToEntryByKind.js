@@ -17,9 +17,9 @@ program
 
 const options = program.opts();
 
-if (typeof options.db !== 'string') options.missingArgument('db');
-if (typeof options.kind !== 'string') options.missingArgument('kind');
-if (typeof options.suffix !== 'string') options.missingArgument('suffix');
+if (typeof options.db !== 'string') program.missingArgument('db');
+if (typeof options.kind !== 'string') program.missingArgument('kind');
+if (typeof options.suffix !== 'string') program.missingArgument('suffix');
 
 const kinds = new Set(options.kind.split(','));
 const suffixes = options.suffix.split(',');
