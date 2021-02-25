@@ -335,14 +335,14 @@ function shouldIgnore(name) {
 }
 
 (async () => {
-  if (options.args[0]) {
-    if (options.args.length !== 3) {
-      options.help();
+  if (program.args[0]) {
+    if (program.args.length !== 3) {
+      program.help();
     }
-    debug('import with arguments: %o', options.args);
-    const filePath = path.resolve(options.args[0]);
-    const database = options.args[1];
-    const importName = options.args[2];
+    debug('import with arguments: %o', program.args);
+    const filePath = path.resolve(program.args[0]);
+    const database = program.args[1];
+    const importName = program.args[2];
     await importFile(database, importName, filePath, {
       dryRun: options.dryRun,
     });
@@ -363,5 +363,5 @@ function shouldIgnore(name) {
   .then(() => connect.close())
   .catch((err) => {
     connect.close();
-    die(err.message || err);
+    die(err.stack || err);
   });
