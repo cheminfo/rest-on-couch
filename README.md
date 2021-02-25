@@ -187,7 +187,7 @@ function zenodoAttachments(content) {
 ```bash
 docker pull couchdb
 docker create -p 5984:5984 --name couchdb couchdb
-docker start couchdb 
+docker start couchdb
 docker ps # check that the container is running
 ```
 
