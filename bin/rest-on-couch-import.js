@@ -39,10 +39,12 @@ program
   .option('--dry-run', 'Do all the steps without updating the database')
   .parse(process.argv);
 
-if (program.sort !== 'asc' && program.sort !== 'desc') {
+const options = program.opts();
+
+if (options.sort !== 'asc' && options.sort !== 'desc') {
   throw new Error('sort order must be "asc" or "desc"');
 }
-const sortWalk = program.sort === 'asc' ? 'shift' : 'pop';
+const sortWalk = options.sort === 'asc' ? 'shift' : 'pop';
 
 async function doContinuous(waitTime) {
   while (true) {
@@ -55,7 +57,7 @@ async function doContinuous(waitTime) {
 
 async function importAll() {
   const homeDir = getHomeDirOrDie();
-  const limit = program.limit || 0;
+  const limit = options.limit || 0;
   debug('limit is %d. Searching files...', limit);
   const files = await findFiles(homeDir, limit);
   debug('found %d files to import', files.length);
@@ -333,25 +335,25 @@ function shouldIgnore(name) {
 }
 
 (async () => {
-  if (program.args[0]) {
-    if (program.args.length !== 3) {
-      program.help();
+  if (options.args[0]) {
+    if (options.args.length !== 3) {
+      options.help();
     }
-    debug('import with arguments: %o', program.args);
-    const filePath = path.resolve(program.args[0]);
-    const database = program.args[1];
-    const importName = program.args[2];
+    debug('import with arguments: %o', options.args);
+    const filePath = path.resolve(options.args[0]);
+    const database = options.args[1];
+    const importName = options.args[2];
     await importFile(database, importName, filePath, {
-      dryRun: program.dryRun,
+      dryRun: options.dryRun,
     });
-    if (program.dryRun) {
+    if (options.dryRun) {
       debug('dry run finished without errors');
     } else {
       debug('imported successfully');
     }
-  } else if (program.continuous) {
-    const waitTime = program.wait * 1000;
-    debug('continuous import. Wait time is %d s', program.wait);
+  } else if (options.continuous) {
+    const waitTime = options.wait * 1000;
+    debug('continuous import. Wait time is %d s', options.wait);
     await doContinuous(waitTime);
   } else {
     await importAll();

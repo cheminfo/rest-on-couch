@@ -15,16 +15,18 @@ program
   .option('-s, --suffix <suffix>', 'Comma-separated list of suffixes')
   .parse(process.argv);
 
-if (typeof program.db !== 'string') program.missingArgument('db');
-if (typeof program.kind !== 'string') program.missingArgument('kind');
-if (typeof program.suffix !== 'string') program.missingArgument('suffix');
+const options = program.opts();
 
-const kinds = new Set(program.kind.split(','));
-const suffixes = program.suffix.split(',');
+if (typeof options.db !== 'string') options.missingArgument('db');
+if (typeof options.kind !== 'string') options.missingArgument('kind');
+if (typeof options.suffix !== 'string') options.missingArgument('suffix');
+
+const kinds = new Set(options.kind.split(','));
+const suffixes = options.suffix.split(',');
 
 const Couch = require('../..');
 
-const couch = Couch.get(program.db);
+const couch = Couch.get(options.db);
 
 (async function () {
   await couch.open();

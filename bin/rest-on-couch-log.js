@@ -21,10 +21,12 @@ program
   .option('-c --config <path>', 'Path to custom config file')
   .parse(process.argv);
 
-const couch = new Couch(program.database);
+const options = program.opts();
 
-if (program.insert) {
-  couch.log(program.insert, program.level).then(
+const couch = new Couch(options.database);
+
+if (options.insert) {
+  couch.log(options.insert, options.level).then(
     function (done) {
       if (done) {
         debug('log inserted successfully');
@@ -38,12 +40,12 @@ if (program.insert) {
   );
 } else {
   couch
-    .getLogs(parseInt(program.epoch, 10))
+    .getLogs(parseInt(options.epoch, 10))
     .then(function (logs) {
       for (var i = 0; i < logs.length; i++) {
         write(logs[i]);
       }
-      if (program.watch) {
+      if (options.watch) {
         const feed = couch._db.follow({
           since: 'now',
           include_docs: true,
