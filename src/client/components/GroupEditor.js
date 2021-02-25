@@ -84,7 +84,7 @@ class GroupEditor extends PureComponent {
                 <GroupDataEditor
                   type="owners"
                   editable="all-except-first"
-                  owners={true}
+                  owners
                   data={group.$owners}
                   addValue={(value) =>
                     addValueToGroup(group.name, 'owners', value, {
