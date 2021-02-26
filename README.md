@@ -178,6 +178,8 @@ function zenodoAttachments(content) {
       contentType: 'chemical/x-mdl-molfile',
       data: content.general.molfile,
     };
+  } else {
+    return [];
   }
 }
 ```
