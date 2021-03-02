@@ -13,6 +13,31 @@ describe('User REST-api (data, anonymous)', () => {
   // TODO: save user as anonymous. What status code?
 });
 
+describe('User REST-api (token)', () => {
+  beforeEach(data);
+  test('Should be able to PUT', () => {
+    return request
+      .put('/db/test/entry/A/blub.txt?token=myAddAttachmentToken')
+      .set('Content-Type', 'text/plain')
+      .send('rest-on-couch!!')
+      .expect(200);
+  });
+
+  test('Should be able to PUT but not without the right in the token', () => {
+    return request
+      .put('/db/test/entry/A/blub.txt?token=myReadOnlyToken')
+      .set('Content-Type', 'text/plain')
+      .send('rest-on-couch!!')
+      .expect(200);
+  });
+
+  test('Should be able to GET with the token', () => {
+    return request
+      .get('/db/test/entry/A?token=myAddAttachmentToken')
+      .expect(200);
+  });
+});
+
 describe('User REST-api (data, a@a.com', () => {
   beforeEach(() => {
     return data().then(() => authenticateAs(request, 'a@a.com', '123'));

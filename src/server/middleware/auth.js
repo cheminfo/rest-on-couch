@@ -3,8 +3,8 @@
 const got = require('got');
 const passport = require('koa-passport');
 
-const connect = require('../../connect');
 const config = require('../../config/config').globalConfig;
+const connect = require('../../connect');
 const debug = require('../../util/debug')('auth');
 const isEmail = require('../../util/isEmail');
 
@@ -97,30 +97,12 @@ exports.getProvider = function (ctx) {
 };
 
 async function getUserEmailFromToken(ctx) {
-  if (!config.authServers.length) return 'anonymous';
-
-  const token = ctx.headers['x-auth-session'] || ctx.query['x-auth-session'];
-  if (!token) return 'anonymous';
-
-  for (let i = 0; i < config.authServers.length; i++) {
-    // eslint-disable-next-line no-await-in-loop
-    const res = await got(
-      `${config.authServers[i].replace(/\/$/, '')}/_session`,
-      {
-        responseType: 'json',
-        headers: {
-          cookie: token,
-        },
-        throwHttpErrors: false,
-      },
-    );
-
-    if (res.body && res.body.userCtx) {
-      return res.body.userCtx.name;
-    }
+  try {
+    const token = await ctx.state.couch.getToken(ctx.query.token);
+    return token.$owner;
+  } catch (err) {
+    return 'anonymous';
   }
-
-  return 'anonymous';
 }
 
 exports.createUser = async (ctx) => {
