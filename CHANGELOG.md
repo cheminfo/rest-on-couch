@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.3.2](https://www.github.com/cheminfo/rest-on-couch/compare/v8.3.1...v8.3.2) (2021-03-03)
+
+
+### Bug Fixes
+
+* token authentication for API requests dealing with attachments  ([#255](https://www.github.com/cheminfo/rest-on-couch/issues/255)) ([7571bea](https://www.github.com/cheminfo/rest-on-couch/commit/7571bea2a18594bab7b5982b8f2697f64eed7e36))
+
 ### [8.3.1](https://www.github.com/cheminfo/rest-on-couch/compare/v8.3.0...v8.3.1) (2021-02-25)
 
 
