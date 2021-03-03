@@ -97,12 +97,30 @@ exports.getProvider = function (ctx) {
 };
 
 async function getUserEmailFromToken(ctx) {
-  try {
-    const token = await ctx.state.couch.getToken(ctx.query.token);
-    return token.$owner;
-  } catch (err) {
-    return 'anonymous';
+  if (!config.authServers.length) return 'anonymous';
+
+  const token = ctx.headers['x-auth-session'] || ctx.query['x-auth-session'];
+  if (!token) return 'anonymous';
+
+  for (let i = 0; i < config.authServers.length; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    const res = await got(
+      `${config.authServers[i].replace(/\/$/, '')}/_session`,
+      {
+        responseType: 'json',
+        headers: {
+          cookie: token,
+        },
+        throwHttpErrors: false,
+      },
+    );
+
+    if (res.body && res.body.userCtx) {
+      return res.body.userCtx.name;
+    }
   }
+
+  return 'anonymous';
 }
 
 exports.createUser = async (ctx) => {

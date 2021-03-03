@@ -17,7 +17,7 @@ describe('User REST-api (token)', () => {
   beforeEach(data);
   test('Should be able to PUT', () => {
     return request
-      .put('/db/test/entry/A/blub.txt?token=myAddAttachmentToken')
+      .put('/db/test/entry/documentOfA/blub.txt?token=myAddAttachmentToken')
       .set('Content-Type', 'text/plain')
       .send('rest-on-couch!!')
       .expect(200);
@@ -25,10 +25,10 @@ describe('User REST-api (token)', () => {
 
   test('Should be able to PUT but not without the right in the token', () => {
     return request
-      .put('/db/test/entry/A/blub.txt?token=myReadOnlyToken')
+      .put('/db/test/entry/documentOfA/blub.txt?token=myReadOnlyToken')
       .set('Content-Type', 'text/plain')
       .send('rest-on-couch!!')
-      .expect(200);
+      .expect(401);
   });
 
   test('Should be able to GET with the token', () => {

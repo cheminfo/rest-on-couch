@@ -104,7 +104,7 @@ function populate(db) {
       $owner: 'b@b.com',
       $id: 'myReadOnlyToken',
       $creationDate: 0,
-      uuid: 'A',
+      uuid: 'documentOfA',
       rights: ['read'],
     }),
   );
@@ -116,8 +116,8 @@ function populate(db) {
       $owner: 'b@b.com',
       $id: 'myAddAttachmentToken',
       $creationDate: 0,
-      uuid: 'A',
-      rights: ['read', 'addAttachment'],
+      uuid: 'documentOfA',
+      rights: ['read', 'addAttachment', 'write'],
     }),
   );
 
