@@ -11,7 +11,7 @@ const validateMethods = require('./validate');
 
 const methods = {
   async getEntryWithRights(uuid, user, rights, options = {}) {
-    debug('getEntryWithRights (%s, %s, %o, %o)', uuid, user, rights, options);
+    debug('getEntryWithRights (%s, %s, %o)', uuid, user, rights);
     await this.open();
 
     const doc = await this._db.getDocument(uuid);
@@ -24,7 +24,7 @@ const methods = {
       throw new CouchError('document is not an entry', 'not entry');
     }
 
-    debug.trace('check rights for user %s token %o', user, options.token);
+    debug.trace('check rights for user %s', user);
     if (
       await validateMethods.validateTokenOrRights(
         this,
