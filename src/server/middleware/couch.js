@@ -18,18 +18,21 @@ const couchNeedsParse = ['key', 'startkey', 'endkey'];
 const invalidDbName = 'invalid database name';
 exports.setupCouch = async (ctx, next) => {
   const dbname = ctx.params.dbname;
+  debug.trace('setting up couch with db', dbname);
   ctx.state.dbName = dbname;
-  ctx.state.userEmail = ctx.query.asAnonymous
-    ? 'anonymous'
-    : await auth.getUserEmail(ctx);
   try {
     ctx.state.couch = Couch.get(dbname);
   } catch (e) {
+    debug('error setting up couch', e);
     if (e.message === invalidDbName) {
       onGetError(ctx, new CouchError(invalidDbName, 'forbidden'));
       return;
     }
   }
+  ctx.state.userEmail = ctx.query.asAnonymous
+    ? 'anonymous'
+    : await auth.getUserEmail(ctx);
+  debug.trace('user email set to', ctx.state.userEmail);
   processCouchQuery(ctx);
   await next();
 };
@@ -121,6 +124,7 @@ exports.deleteAttachment = composeWithError(async (ctx) => {
     ctx.params.uuid,
     ctx.state.userEmail,
     ctx.params.attachment,
+    { token: ctx.query.token },
   );
 });
 
@@ -133,6 +137,7 @@ exports.saveAttachment = composeWithError(async (ctx) => {
       data: ctx.request.body,
       content_type: ctx.get('Content-Type'),
     },
+    { token: ctx.query.token },
   );
 });
 

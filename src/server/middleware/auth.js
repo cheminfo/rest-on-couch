@@ -3,8 +3,8 @@
 const got = require('got');
 const passport = require('koa-passport');
 
-const connect = require('../../connect');
 const config = require('../../config/config').globalConfig;
+const connect = require('../../connect');
 const debug = require('../../util/debug')('auth');
 const isEmail = require('../../util/isEmail');
 

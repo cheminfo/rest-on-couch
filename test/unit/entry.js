@@ -46,7 +46,7 @@ describe('entry reads', () => {
     return couch
       .getEntriesByUserAndRights('b@b.com', 'read')
       .then((entries) => {
-        expect(entries).toHaveLength(5);
+        expect(entries).toHaveLength(6);
       });
   });
 });

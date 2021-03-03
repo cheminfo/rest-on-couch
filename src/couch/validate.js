@@ -97,17 +97,20 @@ async function validateTokenOrRights(
   type = 'entry',
 ) {
   rights = ensureStringArray(rights);
-
   if (token && token.$kind === 'user') {
+    debug.trace('user token right validation');
     if (!areRightsInToken(rights, token)) {
+      debug.trace('user token that does not have sufficient rights');
       return false;
     }
     user = token.$owner;
   }
 
   if (token && token.$kind === type && token.uuid === uuid) {
+    debug.trace('entry token right validation');
     for (var i = 0; i < rights.length; i++) {
       if (!token.rights.includes(rights[i])) {
+        debug.trace('entry token does not have sufficient rights');
         return false;
       }
     }

@@ -29,6 +29,15 @@ function populate(db) {
     }),
   );
 
+  prom.push(
+    insertDocument(db, {
+      $type: 'entry',
+      $owners: ['a@a.com'],
+      $id: 'documentOfA',
+      $content: {},
+    }),
+  );
+
   // Add users
   prom.push(
     insertDocument(db, {
@@ -85,6 +94,30 @@ function populate(db) {
           data: 'VEhJUyBJUyBBIFRFU1Q=',
         },
       },
+    }),
+  );
+
+  prom.push(
+    insertDocument(db, {
+      $type: 'token',
+      $kind: 'entry',
+      $owner: 'b@b.com',
+      $id: 'myReadOnlyToken',
+      $creationDate: 0,
+      uuid: 'documentOfA',
+      rights: ['read'],
+    }),
+  );
+
+  prom.push(
+    insertDocument(db, {
+      $type: 'token',
+      $kind: 'entry',
+      $owner: 'b@b.com',
+      $id: 'myAddAttachmentToken',
+      $creationDate: 0,
+      uuid: 'documentOfA',
+      rights: ['read', 'addAttachment', 'write'],
     }),
   );
 

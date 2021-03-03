@@ -8,7 +8,7 @@ const debug = require('../util/debug')('main:attachment');
 const nanoMethods = require('./nano');
 
 const methods = {
-  async addAttachments(uuid, user, attachments) {
+  async addAttachments(uuid, user, attachments, options) {
     let entry;
     if (typeof uuid === 'object') {
       entry = uuid;
@@ -19,22 +19,26 @@ const methods = {
       attachments = [attachments];
     }
     // This acts as a rights check.
-    const dbEntry = await this.getEntryWithRights(uuid, user, [
-      'write',
-      'addAttachment',
-    ]);
+    const dbEntry = await this.getEntryWithRights(
+      uuid,
+      user,
+      ['write', 'addAttachment'],
+      options,
+    );
     if (!entry) {
       entry = dbEntry;
     }
     return this._db.attachFiles(entry, attachments);
   },
 
-  async deleteAttachment(uuid, user, attachmentName) {
+  async deleteAttachment(uuid, user, attachmentName, options) {
     debug('deleteAttachment (%s, %s)', uuid, user);
-    const entry = await this.getEntryWithRights(uuid, user, [
-      'delete',
-      'addAttachment',
-    ]);
+    const entry = await this.getEntryWithRights(
+      uuid,
+      user,
+      ['delete', 'addAttachment'],
+      options,
+    );
     if (!entry._attachments[attachmentName]) {
       return false;
     }

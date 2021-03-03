@@ -24,7 +24,7 @@ const methods = {
       throw new CouchError('document is not an entry', 'not entry');
     }
 
-    debug.trace('check rights');
+    debug.trace('check rights for user %s', user);
     if (
       await validateMethods.validateTokenOrRights(
         this,
