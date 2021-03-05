@@ -89,6 +89,9 @@ exports.updateEntry = composeWithError(async (ctx) => {
   if (ctx.query.token) {
     options.token = ctx.query.token;
   }
+  if (ctx.query.merge) {
+    options.merge = ctx.query.merge;
+  }
   const result = await ctx.state.couch.insertEntry(
     body,
     ctx.state.userEmail,
