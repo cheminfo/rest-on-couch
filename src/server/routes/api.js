@@ -13,6 +13,9 @@ const parseJson100mb = util.parseBody({ jsonLimit: '100mb' });
 
 const getUuidFromGroupName = util.getUuidFromGroupName;
 
+// Get version of ROC
+router.get('/_version', couch.getVersion);
+
 // Get list of all databases that ROC can handle
 router.get('/_all_dbs', couch.getAllDbs);
 
