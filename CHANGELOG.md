@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.3.3](https://www.github.com/cheminfo/rest-on-couch/compare/v8.3.2...v8.3.3) (2021-03-05)
+
+
+### Bug Fixes
+
+* pass token and merge options for the updateEntry route ([#257](https://www.github.com/cheminfo/rest-on-couch/issues/257)) ([76bbe6e](https://www.github.com/cheminfo/rest-on-couch/commit/76bbe6e4c1b56b0edd980692ec00bdcb5453de6a))
+
 ### [8.3.2](https://www.github.com/cheminfo/rest-on-couch/compare/v8.3.1...v8.3.2) (2021-03-03)
 
 
