@@ -225,7 +225,9 @@ const methods = {
     let action = 'updated';
     if (entry._id) {
       try {
-        const doc = await this.getEntryWithRights(entry._id, user, ['write']);
+        const doc = await this.getEntryWithRights(entry._id, user, ['write'], {
+          token: options.token,
+        });
         result = await updateEntry(this, doc, entry, user, options);
       } catch (e) {
         if (e.reason === 'not found') {
