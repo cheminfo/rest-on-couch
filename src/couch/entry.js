@@ -214,6 +214,8 @@ const methods = {
       );
     }
 
+    let token = options.token || null;
+
     if (entry._id && options.isNew) {
       debug.trace('new entry has _id');
       throw new CouchError('entry should not have _id', 'bad argument');
@@ -225,7 +227,9 @@ const methods = {
     let action = 'updated';
     if (entry._id) {
       try {
-        const doc = await this.getEntryWithRights(entry._id, user, ['write']);
+        const doc = await this.getEntryWithRights(entry._id, user, ['write'], {
+          token: token,
+        });
         result = await updateEntry(this, doc, entry, user, options);
       } catch (e) {
         if (e.reason === 'not found') {

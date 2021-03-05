@@ -85,9 +85,15 @@ exports.getDocument = composeWithError(async (ctx) => {
 exports.updateEntry = composeWithError(async (ctx) => {
   const body = ctx.request.body;
   if (body) body._id = ctx.params.uuid;
-  const result = await ctx.state.couch.insertEntry(body, ctx.state.userEmail, {
-    isUpdate: true,
-  });
+  let options = { isUpdate: true };
+  if (ctx.query.token) {
+    options.token = ctx.query.token;
+  }
+  const result = await ctx.state.couch.insertEntry(
+    body,
+    ctx.state.userEmail,
+    options,
+  );
   assert.strictEqual(result.action, 'updated');
   ctx.body = result.info;
 });

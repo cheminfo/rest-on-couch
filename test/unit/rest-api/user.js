@@ -36,6 +36,19 @@ describe('User REST-api (token)', () => {
       .get('/db/test/entry/A?token=myAddAttachmentToken')
       .expect(200);
   });
+
+  test('Should be able to update document with user token', () => {
+    return couch.getEntryById('A', 'b@b.com').then((entry) => {
+      return request
+        .put('/db/test/entry/A?token=myUserToken')
+        .send({ $id: 'A', $content: { something: 'new' }, _rev: entry._rev })
+        .expect(200)
+        .then((res) => {
+          expect(res.body).toHaveProperty('rev');
+          expect(res.body.rev).toMatch(/^2/);
+        });
+    });
+  });
 });
 
 describe('User REST-api (data, a@a.com', () => {

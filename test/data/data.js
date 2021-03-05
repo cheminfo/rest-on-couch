@@ -121,6 +121,17 @@ function populate(db) {
     }),
   );
 
+  prom.push(
+    insertDocument(db, {
+      $type: 'token',
+      $kind: 'user',
+      $owner: 'b@b.com',
+      $id: 'myUserToken',
+      $creationDate: 0,
+      rights: ['read', 'write', 'addAttachment'],
+    }),
+  );
+
   return Promise.all(prom);
 }
 
