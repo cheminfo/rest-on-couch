@@ -13,9 +13,10 @@
 
 ### General
 
-| Method | Route          |              Action              |             Description              |
-| :----: | :------------- | :------------------------------: | :----------------------------------: |
-|  GET   | `/db/_all_dbs` | Get all databases managed by ROC | returns an `Array` of database names |
+| Method | Route          |              Action              |               Description                |
+| :----: | :------------- | :------------------------------: | :--------------------------------------: |
+|  GET   | `/db/_all_dbs` | Get all databases managed by ROC |   returns an `Array` of database names   |
+|  GET   | `/db/_version` |      Get the version of ROC      | returns a string with the version of ROC |
 
 ### Entry
 

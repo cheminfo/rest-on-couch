@@ -8,7 +8,7 @@ const Couch = require('../../index');
 const CouchError = require('../../util/CouchError');
 const debug = require('../../util/debug')('middleware:couch');
 const getConfiguredDbs = require('../../util/getConfiguredDbs');
-
+const { version } = require('../../../package.json');
 const auth = require('./auth');
 const respondOk = require('./respondOk');
 const { onGetError, composeWithError } = require('./util');
@@ -56,6 +56,10 @@ exports.tokenLookup = async (ctx, next) => {
 
 exports.getAllDbs = async (ctx) => {
   ctx.body = await getConfiguredDbs();
+};
+
+exports.getVersion = (ctx) => {
+  ctx.body = version;
 };
 
 exports.headDocument = composeWithError(async (ctx) => {

@@ -4,6 +4,7 @@ const request = require('./setup/setup').getAgent();
 const noRights = require('./data/noRights');
 const data = require('./data/data');
 const authenticateAs = require('./utils/authenticate');
+const { version } = require('../package.json');
 
 describe('basic rest-api as anonymous (noRights)', () => {
   beforeEach(noRights);
@@ -55,6 +56,14 @@ describe('basic rest-api as anonymous (noRights)', () => {
       });
   });
 
+  test('_version', () => {
+    return request
+      .get('/db/_version')
+      .expect(200)
+      .then((data) => {
+        expect(data.body).toStrictlyEqual(version);
+      });
+  });
   test('forbidden datbase names', () => {
     return request
       .get('/db/_a$aa/entry/aaa')
