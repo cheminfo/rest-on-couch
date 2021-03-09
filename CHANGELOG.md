@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.4.0](https://www.github.com/cheminfo/rest-on-couch/compare/v8.3.3...v8.4.0) (2021-03-09)
+
+
+### Features
+
+* adding api endpoint for ROC version ([#259](https://www.github.com/cheminfo/rest-on-couch/issues/259)) ([e8c5ec0](https://www.github.com/cheminfo/rest-on-couch/commit/e8c5ec011590ae41b735213d1328232a7d3765e8))
+
 ### [8.3.3](https://www.github.com/cheminfo/rest-on-couch/compare/v8.3.2...v8.3.3) (2021-03-05)
 
 
