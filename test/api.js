@@ -4,6 +4,7 @@ const request = require('./setup/setup').getAgent();
 const noRights = require('./data/noRights');
 const data = require('./data/data');
 const authenticateAs = require('./utils/authenticate');
+
 const { version } = require('../package.json');
 
 describe('basic rest-api as anonymous (noRights)', () => {
