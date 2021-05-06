@@ -9,6 +9,7 @@ const CouchError = require('../../util/CouchError');
 const debug = require('../../util/debug')('middleware:couch');
 const getConfiguredDbs = require('../../util/getConfiguredDbs');
 const { version } = require('../../../package.json');
+
 const auth = require('./auth');
 const respondOk = require('./respondOk');
 const { onGetError, composeWithError } = require('./util');
