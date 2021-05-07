@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.4.1](https://www.github.com/cheminfo/rest-on-couch/compare/v8.4.0...v8.4.1) (2021-05-07)
+
+
+### Bug Fixes
+
+* emit the right value in importsByDate view ([ec70c0e](https://www.github.com/cheminfo/rest-on-couch/commit/ec70c0efac7482e3f634563d7c6415dd317ae7e6))
+
 ## [8.4.0](https://www.github.com/cheminfo/rest-on-couch/compare/v8.3.3...v8.4.0) (2021-03-09)
 
 
