@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.5.1](https://www.github.com/cheminfo/rest-on-couch/compare/v8.5.0...v8.5.1) (2021-06-23)
+
+
+### Bug Fixes
+
+* update koa dependencies ([#274](https://www.github.com/cheminfo/rest-on-couch/issues/274)) ([0aa541a](https://www.github.com/cheminfo/rest-on-couch/commit/0aa541a90cb343856ab10a985bdb5378c09fa9cd))
+
 ## [8.5.0](https://www.github.com/cheminfo/rest-on-couch/compare/v8.4.1...v8.5.0) (2021-06-23)
 
 
