@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.5.0](https://www.github.com/cheminfo/rest-on-couch/compare/v8.4.1...v8.5.0) (2021-06-23)
+
+
+### Features
+
+* introduce Docker image on ghcr.io ([#271](https://www.github.com/cheminfo/rest-on-couch/issues/271)) ([35576b7](https://www.github.com/cheminfo/rest-on-couch/commit/35576b729ad394d1107fe631c1687ee242516425))
+
 ### [8.4.1](https://www.github.com/cheminfo/rest-on-couch/compare/v8.4.0...v8.4.1) (2021-05-07)
 
 
