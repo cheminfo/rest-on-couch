@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.5.2](https://www.github.com/cheminfo/rest-on-couch/compare/v8.5.1...v8.5.2) (2021-06-23)
+
+
+### Bug Fixes
+
+* **publish:** do not reference env context in the wrong place ([#276](https://www.github.com/cheminfo/rest-on-couch/issues/276)) ([85a2e7a](https://www.github.com/cheminfo/rest-on-couch/commit/85a2e7a10eca63e98d931bf6e292312db6e05227))
+
 ### [8.5.1](https://www.github.com/cheminfo/rest-on-couch/compare/v8.5.0...v8.5.1) (2021-06-23)
 
 
