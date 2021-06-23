@@ -51,12 +51,8 @@
     "url": "https://github.com/cheminfo/rest-on-couch/issues"
   },
   "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
-  "prettier": {
-    "arrowParens": "always",
-    "semi": true,
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "all"
+  "volta": {
+    "node": "14.17.1"
   },
   "dependencies": {
     "@koa/router": "^10.0.0",
@@ -76,9 +72,9 @@
     "koa-compose": "^4.1.0",
     "koa-compress": "^5.0.1",
     "koa-hbs": "^1.0.0",
-    "koa-passport": "^4.1.3",
+    "koa-passport": "^4.1.4",
     "koa-response-time": "^2.1.0",
-    "koa-session": "^6.1.0",
+    "koa-session": "^6.2.0",
     "koa-static": "^5.0.0",
     "ldapjs": "^1.0.2",
     "lodash": "^4.17.21",
