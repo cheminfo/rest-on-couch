@@ -53,7 +53,7 @@ app.use(
   }),
 );
 
-app.use(koaStatic(path.resolve(__dirname, '../../public')));
+app.use(koaStatic(path.resolve(__dirname, '../../dist')));
 
 const allowedOrigins = config.allowedOrigins;
 debug('allowed cors origins: %o', allowedOrigins);

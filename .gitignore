@@ -34,3 +34,4 @@ build/Release
 /public/bundle.js*
 /.eslintcache
 log.txt
+/dist

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { globalRightTypes } from '../../constants';
+import { globalRightTypes } from '../constants';
 
 import GroupDataEditor from './GroupDataEditor';
 
