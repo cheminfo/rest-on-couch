@@ -51,4 +51,4 @@ jobs:
         env:
           REST_ON_COUCH_USERNAME: admin
           REST_ON_COUCH_PASSWORD: admin
-        run: npm test
+        run: npm run test-coverage
