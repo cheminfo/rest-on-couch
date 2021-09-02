@@ -1,7 +1,7 @@
 const location = window.location;
 
 let API_ROOT;
-if (process.env.NODE_ENV === 'production') {
+if (import.meta.env.prod) {
   API_ROOT = location.origin + location.pathname;
 } else {
   API_ROOT = location.origin.replace(/:\d+/, `:${3000}`) + location.pathname;
