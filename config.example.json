@@ -40,7 +40,5 @@
     },
     "couchdb": {}
   },
-  "authServers": [
-    "http://www.cheminfo.org/clp"
-  ]
+  "authServers": ["http://www.cheminfo.org/clp"]
 }

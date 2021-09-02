@@ -195,7 +195,7 @@ docker ps # check that the container is running
 
 Alternatively: `docker-compose up --file docker-compose.dev.yml -d`
 
-Go to http://localhost:5984/_utils/#setup
+Go to http://localhost:5984/\_utils/#setup
 
 - Single node
 - username: admin, password: admin
