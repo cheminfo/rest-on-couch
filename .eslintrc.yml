@@ -5,3 +5,5 @@ rules:
   callback-return: off
   require-atomic-updates: off # https://github.com/eslint/eslint/issues/11899
   no-var: off
+  func-names: off
+  prefer-named-capture-group: off

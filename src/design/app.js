@@ -3,8 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const constants = require('../constants');
 const getConfig = require('../config/config').getConfig;
+const constants = require('../constants');
 
 const filters = require('./filters');
 const updates = require('./updates');

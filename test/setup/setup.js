@@ -3,7 +3,6 @@
 require('make-promises-safe');
 const path = require('path');
 
-// eslint-disable-next-line no-process-env
 process.env.REST_ON_COUCH_HOME_DIR = path.join(
   __dirname,
   '../homeDirectories/main',

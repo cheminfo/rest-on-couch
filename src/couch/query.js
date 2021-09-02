@@ -73,7 +73,6 @@ const methods = {
       const startkey = [group].concat(userStartKey);
       const endkey = [group].concat(userEndKey);
       endkey.push({});
-      // eslint-disable-next-line no-await-in-loop
       const result = await this._db.queryView(view, {
         include_docs: Boolean(options.include_docs),
         startkey,
@@ -122,13 +121,11 @@ const methods = {
     var limit = options.limit || 1;
     var cumRows = [];
     while (cumRows.length < limit) {
-      // eslint-disable-next-line no-await-in-loop
       let rows = await this._db.queryView(view, options);
       // No more results
       if (!rows.length) break;
 
       let owners = rows.map((r) => r.doc.$owners);
-      // eslint-disable-next-line no-await-in-loop
       let hasRights = await validateMethods.validateRights(
         this,
         owners,

@@ -27,9 +27,10 @@
   "scripts": {
     "build": "webpack --mode production",
     "debug": "cross-env REST_ON_COUCH_HOME_DIR=test/homedir DEBUG=couch:* node --inspect bin/rest-on-couch-server.js",
-    "eslint": "eslint src bin test --cache",
+    "eslint": "eslint . --cache",
     "eslint-fix": "npm run eslint -- --fix",
-    "prettier": "prettier-eslint bin/*.js src/**/*.js test/**/*.js --write",
+    "prettier": "prettier . --check",
+    "prettier-write": "prettier . --write",
     "start:dev": "webpack-dev-server --mode development --content-base ./public --progress",
     "start:prod": "NODE_ENV=production npm run build && node bin/rest-on-couch-server.js",
     "start:devserver": "cross-env REST_ON_COUCH_HOME_DIR=test/homedir DEBUG=couch:* nodemon --ignore ./src/client bin/rest-on-couch-server.js",

@@ -1,8 +1,8 @@
 'use strict';
 
+const getConfig = require('../config/config').getConfig;
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');
-const getConfig = require('../config/config').getConfig;
 
 const log = require('./log');
 
@@ -105,7 +105,6 @@ extendCouch('user');
 extendCouch('imports');
 
 function extendCouch(name) {
-  // eslint-disable-next-line import/no-dynamic-require
   const methods = require(`./${name}`).methods;
   for (const method in methods) {
     Couch.prototype[method] = methods[method];

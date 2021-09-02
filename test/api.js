@@ -1,11 +1,11 @@
 'use strict';
 
-const request = require('./setup/setup').getAgent();
-const noRights = require('./data/noRights');
-const data = require('./data/data');
-const authenticateAs = require('./utils/authenticate');
-
 const { version } = require('../package.json');
+
+const data = require('./data/data');
+const noRights = require('./data/noRights');
+const request = require('./setup/setup').getAgent();
+const authenticateAs = require('./utils/authenticate');
 
 describe('basic rest-api as anonymous (noRights)', () => {
   beforeEach(noRights);

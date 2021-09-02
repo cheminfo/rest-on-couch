@@ -173,7 +173,7 @@ export function removeDefaultGroup(user, group) {
 function editDefaultGroup(user, group, action) {
   const defaultGroupsUrl = `db/${dbManager.currentDb}/rights/defaultGroups`;
   const url = `${defaultGroupsUrl}/${user}/${group}`;
-  return async function (dispatch) {
+  return async function editGroup(dispatch) {
     if (action === 'add') {
       await apiFetchJSON(url, { method: 'PUT' });
     } else if (action === 'remove') {
@@ -195,7 +195,7 @@ export function removeGlobalRight(right, user) {
 function editGlobalRight(right, user, action) {
   const globalRightsUrl = `db/${dbManager.currentDb}/rights/doc`;
   const url = `${globalRightsUrl}/${right}/${user}`;
-  return async function (dispatch) {
+  return async function editRight(dispatch) {
     if (action === 'add') {
       await apiFetchJSON(url, { method: 'PUT' });
     } else if (action === 'remove') {

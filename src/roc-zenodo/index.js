@@ -118,7 +118,6 @@ class RocZenodo {
       metadata: Object.assign(newVersionMeta, meta.metadata),
     });
     for (const file of newVersion.data.files) {
-      // eslint-disable-next-line no-await-in-loop
       await this.zenodo.files.delete({
         deposition: newVersion.data,
         filename: file.filename,

@@ -8,6 +8,5 @@ module.exports = function (message) {
   if (message) {
     process.stderr.write(`rest-on-couch: ${message}\n`);
   }
-  // eslint-disable-next-line no-process-exit
   process.exit(1);
 };

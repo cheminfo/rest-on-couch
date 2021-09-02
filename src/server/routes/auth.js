@@ -1,19 +1,19 @@
 'use strict';
 
-const passport = require('koa-passport');
 const router = require('@koa/router')({
   prefix: '/auth',
 });
+const passport = require('koa-passport');
 
 router.use(async (ctx, next) => {
   ctx.session.continue = ctx.query.continue || ctx.session.continue;
   await next();
 });
 
-const auth = require('../middleware/auth');
 const config = require('../../config/config').globalConfig;
 const debug = require('../../util/debug')('auth');
 const die = require('../../util/die');
+const auth = require('../middleware/auth');
 const util = require('../middleware/util');
 
 const authPlugins = ['couchdb', 'google', 'facebook', 'github', 'ldap'];
@@ -45,7 +45,6 @@ if (config.auth) {
     );
     try {
       debug('loading auth plugin: %s', authPlugin);
-      // eslint-disable-next-line import/no-dynamic-require
       require(`../auth/${authPlugin}/index.js`).init(
         passport,
         router,

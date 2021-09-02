@@ -15,7 +15,6 @@ function getHomeDir() {
 
 function getHomeConfig(homeDir) {
   const result = {};
-  // eslint-disable-next-line no-process-env
   if (homeDir) {
     homeDir = path.resolve(homeDir);
   } else {
@@ -29,7 +28,6 @@ function getHomeConfig(homeDir) {
   debug('get home dir config from %s', homeDir);
   result.homeDir = homeDir;
   try {
-    // eslint-disable-next-line import/no-dynamic-require
     let config = require(path.join(homeDir, 'config'));
     debug('loaded main config file');
     return config;

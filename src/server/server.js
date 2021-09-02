@@ -13,8 +13,8 @@ const session = require('koa-session');
 const koaStatic = require('koa-static');
 
 const config = require('../config/config').globalConfig;
-const debug = require('../util/debug')('server');
 const initCouch = require('../initCouch');
+const debug = require('../util/debug')('server');
 
 const api = require('./routes/api');
 const auth = require('./routes/auth');

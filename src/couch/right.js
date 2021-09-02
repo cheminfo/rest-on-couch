@@ -166,7 +166,6 @@ const methods = {
       }
 
       for (const group of defaultGroups) {
-        // eslint-disable-next-line no-await-in-loop
         const groupObject = await nano.getGroup(this._db, group);
         if (groupObject && groupObject.rights) {
           groupObject.rights.forEach((group) => defaultGroups.add(group));
