@@ -11,7 +11,7 @@ const rightImportance = {
 
 const DisplayRightList = (props) => {
   if (!props.rights) return null;
-  const rights = props.rights.slice().sort(function (a, b) {
+  const rights = props.rights.slice().sort((a, b) => {
     return (rightImportance[a] || 0) - (rightImportance[b] || 0);
   });
 

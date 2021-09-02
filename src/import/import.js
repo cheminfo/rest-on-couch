@@ -1,7 +1,7 @@
 'use strict';
 
-const debug = require('../util/debug')('import');
 const { getImportConfig } = require('../config/config');
+const debug = require('../util/debug')('import');
 
 const BaseImport = require('./ImportContext');
 const ImportResult = require('./ImportResult');

@@ -21,14 +21,14 @@ describe('basic initialization tests', () => {
   test('should throw if no database given', () => {
     return expect(
       Promise.resolve().then(() => {
-        new Couch(); // eslint-disable-line no-new
+        new Couch();
       }),
     ).rejects.toThrow('database option is mandatory');
   });
 
   test('should throw on invalid db name', () => {
     expect(function () {
-      new Couch({ database: '_test' }); // eslint-disable-line no-new
+      new Couch({ database: '_test' });
     }).toThrowError(/invalid database name/);
 
     expect(function () {

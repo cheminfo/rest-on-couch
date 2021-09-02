@@ -103,7 +103,6 @@ async function getUserEmailFromToken(ctx) {
   if (!token) return 'anonymous';
 
   for (let i = 0; i < config.authServers.length; i++) {
-    // eslint-disable-next-line no-await-in-loop
     const res = await got(
       `${config.authServers[i].replace(/\/$/, '')}/_session`,
       {

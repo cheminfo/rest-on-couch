@@ -16,7 +16,6 @@ function loadCliConfig(source) {
   }
   source = path.resolve(source);
   try {
-    // eslint-disable-next-line import/no-dynamic-require
     return require(source);
   } catch (e) {
     return die(`could not load custom config from ${source}`);

@@ -84,7 +84,6 @@ module.exports = async function saveResult(importBase, result) {
       attachment.contents.byteOffset,
       attachment.contents.byteLength,
     );
-    // eslint-disable-next-line no-await-in-loop
     await couch.addFileToJpath(
       result.id,
       result.owner,

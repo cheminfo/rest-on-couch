@@ -2,10 +2,10 @@
 
 const _ = require('lodash');
 
-const ldapSearch = require('../util/LDAP').search;
-const CouchError = require('../util/CouchError');
-const debug = require('../util/debug')('main:group');
 const constants = require('../constants');
+const CouchError = require('../util/CouchError');
+const ldapSearch = require('../util/LDAP').search;
+const debug = require('../util/debug')('main:group');
 
 const nanoMethods = require('./nano');
 const util = require('./util');
@@ -293,7 +293,6 @@ const methods = {
 
     groups = groups.filter((group) => group.DN);
     for (let i = 0; i < groups.length; i++) {
-      // eslint-disable-next-line no-await-in-loop
       await syncOneLdapGroup(this, groups[i]);
     }
   },

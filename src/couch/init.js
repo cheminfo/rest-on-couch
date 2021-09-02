@@ -102,14 +102,12 @@ async function checkDesignDoc(couch) {
   // Create the new design doc that would be stored upstream for comparison
   for (let designName of designNames) {
     const newDesignDoc = getNewDesignDoc(designName);
-    // eslint-disable-next-line no-await-in-loop
     const oldDesignDoc = await db.getDocument(`_design/${designName}`);
     if (designDocNeedsUpdate(newDesignDoc, oldDesignDoc)) {
       debug.trace(
         'design doc %s needs update, saving new revision',
         designName,
       );
-      // eslint-disable-next-line no-await-in-loop
       await createDesignDoc(
         db,
         (oldDesignDoc && oldDesignDoc._rev) || null,

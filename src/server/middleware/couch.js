@@ -2,13 +2,13 @@
 
 const assert = require('assert');
 
+const { version } = require('../../../package.json');
 const getConfig = require('../../config/config').getConfig;
 const views = require('../../design/views');
 const Couch = require('../../index');
 const CouchError = require('../../util/CouchError');
 const debug = require('../../util/debug')('middleware:couch');
 const getConfiguredDbs = require('../../util/getConfiguredDbs');
-const { version } = require('../../../package.json');
 
 const auth = require('./auth');
 const respondOk = require('./respondOk');

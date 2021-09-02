@@ -5,7 +5,6 @@ const okOrcid = require('../util/orcid');
 function getZenodoDeposition(entry, self) {
   const result = {
     metadata: {
-      // eslint-disable-next-line camelcase
       upload_type: 'dataset',
       title: validateString('title', entry.title),
       description: validateString('description', entry.description),

@@ -3,8 +3,8 @@
 const delay = require('delay');
 
 const config = require('../../config/config').globalConfig;
-const debug = require('../../util/debug')('zenodo');
 const { RocZenodo } = require('../../roc-zenodo');
+const debug = require('../../util/debug')('zenodo');
 
 const { decorateError } = require('./decorateError');
 const { composeWithError } = require('./util');
@@ -163,7 +163,6 @@ async function publish(
   let entryCount = 0;
 
   try {
-    /* eslint-disable no-await-in-loop */
     for (const entry of entries) {
       const { _id: id, $content: content, $kind: kind, meta } = entry;
 
