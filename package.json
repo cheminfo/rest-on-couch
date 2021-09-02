@@ -114,6 +114,7 @@
     "redux-promise-middleware": "^6.1.2",
     "redux-thunk": "^2.3.0",
     "rimraf": "^3.0.2",
+    "select2": "^4.0.13",
     "supertest": "^6.1.6",
     "vite": "^2.5.3"
   }
