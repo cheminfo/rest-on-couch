@@ -45,10 +45,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Setup test database
         run: bash setupDatabase.sh
-      - name: npm install and test
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
         env:
           REST_ON_COUCH_USERNAME: admin
           REST_ON_COUCH_PASSWORD: admin
-        run: |
-          npm ci
-          npm test
+        run: npm test
