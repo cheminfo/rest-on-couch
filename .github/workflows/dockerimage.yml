@@ -1,6 +1,16 @@
 name: Docker Image CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'GitHub ref to checkout'
+        required: true
+        default: main
+      tag:
+        description: 'Docker tag to push (do NOT use "latest" or version numbers)'
+        required: true
+        default: 'HEAD'
   push:
     tags:
       - v*
@@ -22,21 +32,30 @@ jobs:
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
 
-      - name: Push image
+      - name: Push image (manual)
+        if: github.event_name == 'workflow_dispatch'
         run: |
           IMAGE_ID="${REGISTRY}/${IMAGE_NAME}"
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-
+          TAG=${{ github.event.inputs.tag }}
+          echo IMAGE_ID=$IMAGE_ID
+          echo TAG=$TAG
+          docker tag $IMAGE_NAME $IMAGE_ID:$TAG
+          docker push $IMAGE_ID:$TAG
+      - name: Push image (release)
+        if: github.event_name != 'workflow_dispatch'
+        run: |
+          IMAGE_ID="${REGISTRY}/${IMAGE_NAME}"
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           # Strip "v" prefix from tag name
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
           VERSION_START=${VERSION%%.*}
-
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
-
           # Push latest
           docker tag $IMAGE_NAME $IMAGE_ID:latest
           docker push $IMAGE_ID:latest
