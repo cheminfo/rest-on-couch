@@ -22,7 +22,7 @@ exports.import = async function importFile(
   const baseImport = new BaseImport(filePath, database);
   const result = new ImportResult();
 
-  const { couch, filename } = baseImport;
+  const { couch, filename, fileDir } = baseImport;
 
   try {
     await config(baseImport, result);
@@ -31,6 +31,7 @@ exports.import = async function importFile(
       .logImport({
         name: importName,
         filename,
+        fileDir,
         status: 'ERROR',
         error: {
           message: e.message || '',
@@ -61,6 +62,7 @@ exports.import = async function importFile(
     .logImport({
       name: importName,
       filename,
+      fileDir,
       status: 'SUCCESS',
       result: {
         uuid,
