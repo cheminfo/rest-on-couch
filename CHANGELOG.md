@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.0.0](https://www.github.com/cheminfo/rest-on-couch/compare/v8.5.2...v9.0.0) (2021-09-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove support for Node.js 10 and add support for Node.js 16
+
+### Features
+
+* add file directory to import logs ([#283](https://www.github.com/cheminfo/rest-on-couch/issues/283)) ([4eefe01](https://www.github.com/cheminfo/rest-on-couch/commit/4eefe01509a1c065d5518044aa4083f41449384c))
+* remove support for Node.js 10 and add support for Node.js 16 ([6baf2ab](https://www.github.com/cheminfo/rest-on-couch/commit/6baf2ab5187370b7e7ff04ba3846e72a8446ec6a))
+
 ### [8.5.2](https://www.github.com/cheminfo/rest-on-couch/compare/v8.5.1...v8.5.2) (2021-06-23)
 
 
