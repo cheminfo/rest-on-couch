@@ -60,9 +60,9 @@ const methods = {
     return this.getDocByRights(uuid, user, 'owner', 'entry', options);
   },
 
-  async deleteEntry(uuid, user) {
+  async deleteEntry(uuid, user, options) {
     debug('deleteEntry (%s, %s)', uuid, user);
-    const entry = await this.getEntryWithRights(uuid, user, 'delete');
+    const entry = await this.getEntryWithRights(uuid, user, 'delete', options);
     entry._deleted = true;
     return nanoMethods.saveEntry(this._db, entry, user);
   },
@@ -250,7 +250,7 @@ const methods = {
       if (options.isUpdate) {
         throw new CouchError('entry should have an _id', 'bad argument');
       }
-      const res = await createNew(this, entry, user);
+      const res = await createNew(this, entry, user, options);
       action = 'created';
       if (options.groups) {
         await this.addOwnersToDoc(res.id, user, options.groups, 'entry');
@@ -270,7 +270,7 @@ function onNotFound(ctx, entry, user, options) {
         throw new CouchError('Document does not exist', 'not found');
       }
 
-      const res = await createNew(ctx, entry, user);
+      const res = await createNew(ctx, entry, user, options);
       if (options.groups) {
         await ctx.addOwnersToDoc(res.id, user, options.groups, 'entry');
       }
@@ -281,8 +281,11 @@ function onNotFound(ctx, entry, user, options) {
   };
 }
 
-async function createNew(ctx, entry, user) {
+async function createNew(ctx, entry, user, options) {
   debug.trace('create new');
+  user = validateMethods.userFromTokenAndRights(user, options.token, [
+    'create',
+  ]);
   const ok = await validateMethods.checkGlobalRight(ctx, user, 'create');
   if (ok) {
     debug.trace('has right, create new');
