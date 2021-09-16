@@ -49,6 +49,21 @@ describe('User REST-api (token)', () => {
         });
     });
   });
+
+  test('Should be able to create and delete document with user token', async () => {
+    const newEntry = await request
+      .post('/db/test/entry?token=myUserToken')
+      .send({
+        $id: 'XXX',
+        $content: { value: 42 },
+      });
+    expect(newEntry.statusCode).toBe(201);
+    const id = newEntry.body.id;
+    const doc = await request.get(`/db/test/entry/${id}?token=myUserToken`);
+    expect(doc.statusCode).toBe(200);
+    expect(doc.body.$content).toStrictEqual({ value: 42 });
+    await request.delete(`/db/test/entry/${id}?token=myUserToken`).expect(200);
+  });
 });
 
 describe('User REST-api (data, a@a.com', () => {

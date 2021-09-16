@@ -26,6 +26,17 @@ describe('basic rest-api as anonymous (noRights)', () => {
     return request.get('/db/test/entry/B?token=notexist').expect(401);
   });
 
+  test('not allowed to delete an entry', () => {
+    return request.delete('/db/test/entry/B?token=mytoken').expect(401);
+  });
+
+  test('not allowed to create an entry', () => {
+    return request
+      .post('/db/test/entry?token=mytoken')
+      .send({ $id: 'XXX', $content: { value: 42 } })
+      .expect(401);
+  });
+
   test('not allowed to create a token', () => {
     return request.post('/db/test/entry/A/_token').expect(401);
   });

@@ -107,7 +107,11 @@ exports.updateEntry = composeWithError(async (ctx) => {
 });
 
 exports.deleteEntry = composeWithError(async (ctx) => {
-  await ctx.state.couch.deleteEntry(ctx.params.uuid, ctx.state.userEmail);
+  await ctx.state.couch.deleteEntry(
+    ctx.params.uuid,
+    ctx.state.userEmail,
+    ctx.query,
+  );
   respondOk(ctx);
 });
 
@@ -115,6 +119,9 @@ exports.newOrUpdateEntry = composeWithError(async (ctx) => {
   const options = {};
   if (ctx.request.body.$owners) {
     options.groups = ctx.request.body.$owners;
+  }
+  if (ctx.query.token) {
+    options.token = ctx.query.token;
   }
   const result = await ctx.state.couch.insertEntry(
     ctx.request.body,

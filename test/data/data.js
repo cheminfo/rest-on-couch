@@ -128,7 +128,7 @@ function populate(db) {
       $owner: 'b@b.com',
       $id: 'myUserToken',
       $creationDate: 0,
-      rights: ['read', 'write', 'addAttachment'],
+      rights: ['create', 'delete', 'read', 'write', 'addAttachment'],
     }),
   );
 
