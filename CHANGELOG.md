@@ -1,5 +1,12 @@
 # Changelog
 
+### [9.0.1](https://www.github.com/cheminfo/rest-on-couch/compare/v9.0.0...v9.0.1) (2021-09-23)
+
+
+### Bug Fixes
+
+* allow tokens to create and delete entries ([9e24609](https://www.github.com/cheminfo/rest-on-couch/commit/9e24609226090665deaa04175d52ae49fec20159))
+
 ## [9.0.0](https://www.github.com/cheminfo/rest-on-couch/compare/v8.5.2...v9.0.0) (2021-09-06)
 
 
