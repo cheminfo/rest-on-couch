@@ -52,12 +52,11 @@ const methods = {
     return this.getEntryWithRights(uuid, user, 'read', options);
   },
 
-  // this function can only return an entry for its primary owner
   async getEntryById(id, user, options) {
     await this.open();
     debug('getEntryById (%s, %s)', id, user);
-    const uuid = await this.getDocUuidFromId(id, user, 'entry');
-    return this.getDocByRights(uuid, user, 'owner', 'entry', options);
+    const doc = await getUniqueEntryByIdOrFail(this, user, id);
+    return this.getDocByRights(doc._id, user, 'owner', 'entry', options);
   },
 
   async deleteEntry(uuid, user, options) {
@@ -72,9 +71,9 @@ const methods = {
     options = options || {};
     debug('createEntry (id: %s, user: %s, kind: %s)', id, user, options.kind);
     await this.open();
-    const result = await getUniqueEntryById(this, user, id);
+    const doc = await getUniqueEntryById(this, user, id);
 
-    if (result === undefined) {
+    if (doc === undefined) {
       const hasRight = await validateMethods.checkRightAnyGroup(
         this,
         user,
@@ -113,10 +112,10 @@ const methods = {
     // Return something similar to insertDocument
     return {
       ok: true,
-      id: result.doc._id,
-      rev: result.doc._rev,
-      $modificationDate: result.doc.$modificationDate,
-      $creationDate: result.doc.$creationDate,
+      id: doc._id,
+      rev: doc._rev,
+      $modificationDate: doc.$modificationDate,
+      $creationDate: doc.$creationDate,
     };
   },
 
@@ -339,21 +338,44 @@ async function updateEntry(ctx, oldDoc, newDoc, user, options) {
 async function getUniqueEntryById(ctx, user, id) {
   let result;
   if (ctx[kEntryUnicity] === 'byOwner') {
-    result = await ctx._db.queryView('entryByOwnerAndId', {
-      key: [user, id],
-      reduce: false,
-      include_docs: true,
-    });
+    result = await ctx._db.queryView(
+      'entryByOwnerAndId',
+      {
+        key: [user, id],
+        reduce: false,
+        include_docs: true,
+      },
+      {
+        onlyDoc: true,
+      },
+    );
   } else if (ctx[kEntryUnicity] === 'global') {
-    result = await ctx._db.queryView('entryById', {
-      key: id,
-      reduce: false,
-      include_docs: true,
-    });
+    result = await ctx._db.queryView(
+      'entryById',
+      {
+        key: id,
+        reduce: false,
+        include_docs: true,
+      },
+      {
+        onlyDoc: true,
+      },
+    );
   } else {
     throw new Error(`wrong entryUnicity value: ${ctx[kEntryUnicity]}`);
   }
+  if (result.length > 1) {
+    throw new CouchError('entry is not unique');
+  }
   return result[0];
+}
+
+async function getUniqueEntryByIdOrFail(ctx, user, id) {
+  const doc = await getUniqueEntryById(ctx, user, id);
+  if (!doc) {
+    throw new CouchError('document not found', 'not found');
+  }
+  return doc;
 }
 
 module.exports = {

@@ -62,27 +62,11 @@ async function saveWithFields(db, object, user) {
 
 function getUuidFromId(db, id, user, type) {
   switch (type) {
-    case 'entry':
-      return getUuidFromIdEntry(db, id, user);
     case 'group':
       return getUuidFromIdGroup(db, id);
     default:
       throw new CouchError(`invalid type: ${type}`);
   }
-}
-
-async function getUuidFromIdEntry(db, id, user) {
-  const owners = await db.queryView('ownerByTypeAndId', {
-    key: ['entry', id],
-  });
-  if (owners.length === 0) {
-    throw new CouchError('document not found', 'not found');
-  }
-  const hisEntry = owners.find((own) => own.value === user);
-  if (!hisEntry) {
-    throw new CouchError('document not found', 'not found');
-  }
-  return hisEntry.id;
 }
 
 async function getUuidFromIdGroup(db, id) {
