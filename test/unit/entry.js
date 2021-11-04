@@ -55,29 +55,39 @@ describe('entry creation and editions', () => {
   beforeEach(data);
 
   test('create a new entry', () => {
-    return couch.createEntry('myid', 'a@a.com', {}).then((entryInfo) => {
-      expect(entryInfo).toHaveProperty('id');
-      expect(entryInfo).toHaveProperty('rev');
-      return couch.getEntryById('myid', 'a@a.com').then((entry) => {
-        expect(entry).toHaveProperty('$content');
+    return couch
+      .ensureExistsOrCreateEntry('myid', 'a@a.com', {})
+      .then((entryInfo) => {
+        expect(entryInfo).toHaveProperty('id');
+        expect(entryInfo).toHaveProperty('rev');
+        return couch.getEntryById('myid', 'a@a.com').then((entry) => {
+          expect(entry).toHaveProperty('$content');
+        });
       });
-    });
   });
 
   test('create two entries with same id but different users', () => {
-    return couch.createEntry('myid', 'a@a.com').then((entryInfo) => {
-      return couch.createEntry('myid', 'b@b.com').then((entryInfo2) => {
-        expect(entryInfo.id).not.toBe(entryInfo2.id);
+    return couch
+      .ensureExistsOrCreateEntry('myid', 'a@a.com')
+      .then((entryInfo) => {
+        return couch
+          .ensureExistsOrCreateEntry('myid', 'b@b.com')
+          .then((entryInfo2) => {
+            expect(entryInfo.id).not.toBe(entryInfo2.id);
+          });
       });
-    });
   });
 
   test('create an entry for which the owner and id already exists', () => {
-    return couch.createEntry('myid', 'a@a.com').then((entryInfo) => {
-      return couch.createEntry('myid', 'a@a.com').then((entryInfo2) => {
-        expect(entryInfo.id).toBe(entryInfo2.id);
+    return couch
+      .ensureExistsOrCreateEntry('myid', 'a@a.com')
+      .then((entryInfo) => {
+        return couch
+          .ensureExistsOrCreateEntry('myid', 'a@a.com')
+          .then((entryInfo2) => {
+            expect(entryInfo.id).toBe(entryInfo2.id);
+          });
       });
-    });
   });
 
   test('anonymous cannot insert a new entry', () => {

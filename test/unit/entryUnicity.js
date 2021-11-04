@@ -4,9 +4,9 @@ const entryUnicity = require('../data/entryUnicity');
 
 describe('global entry unicity', () => {
   beforeEach(entryUnicity);
-  test('createEntry should fail', () => {
+  test('ensureExistsOrCreateEntry should fail', () => {
     return expect(
-      couch.createEntry('A', 'a@a.com', { throwIfExists: true }),
+      couch.ensureExistsOrCreateEntry('A', 'a@a.com', { throwIfExists: true }),
     ).rejects.toThrow(/entry already exists/);
   });
 
