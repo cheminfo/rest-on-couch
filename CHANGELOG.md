@@ -1,5 +1,21 @@
 # Changelog
 
+## [10.0.0](https://www.github.com/cheminfo/rest-on-couch/compare/v9.0.1...v10.0.0) (2021-11-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* the exposed couch method createEntry was renamed to ensureExistsOrCreateEntry
+
+### Bug Fixes
+
+* make sure getEntryById also works when entryUnicity config is global ([f313173](https://www.github.com/cheminfo/rest-on-couch/commit/f313173083ea171a21e5bae9f866536abbdc00bc))
+
+
+### Code Refactoring
+
+* rename createEntry to ensureExistsOrCreateEntry ([dff85a7](https://www.github.com/cheminfo/rest-on-couch/commit/dff85a791cb6100788efac2978c2c7cf52230828))
+
 ### [9.0.1](https://www.github.com/cheminfo/rest-on-couch/compare/v9.0.0...v9.0.1) (2021-09-23)
 
 
