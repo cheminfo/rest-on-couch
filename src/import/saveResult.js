@@ -9,10 +9,14 @@ module.exports = async function saveResult(importBase, result) {
   if (result.isSkipped) return;
 
   // Create the new document if it does not exist
-  let document = await couch.createEntry(result.id, result.owner, {
-    kind: result.kind,
-    owners: result.groups,
-  });
+  let document = await couch.ensureExistsOrCreateEntry(
+    result.id,
+    result.owner,
+    {
+      kind: result.kind,
+      owners: result.groups,
+    },
+  );
 
   // In case the document already existed, we need update the  list of owners
   if (result.groups.length) {

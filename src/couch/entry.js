@@ -67,9 +67,14 @@ const methods = {
   },
 
   // Create entry if does not exist
-  async createEntry(id, user, options) {
+  async ensureExistsOrCreateEntry(id, user, options) {
     options = options || {};
-    debug('createEntry (id: %s, user: %s, kind: %s)', id, user, options.kind);
+    debug(
+      'ensureExistsOrCreateEntry (id: %s, user: %s, kind: %s)',
+      id,
+      user,
+      options.kind,
+    );
     await this.open();
     const doc = await getUniqueEntryById(this, user, id);
 
@@ -247,7 +252,10 @@ const methods = {
     } else {
       debug.trace('entry has no _id nor $id');
       if (options.isUpdate) {
-        throw new CouchError('entry should have an _id', 'bad argument');
+        throw new CouchError(
+          'entry should have an _id for update or a $id for creation',
+          'bad argument',
+        );
       }
       const res = await createNew(this, entry, user, options);
       action = 'created';
