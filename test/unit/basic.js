@@ -4,7 +4,7 @@ const assert = require('assert');
 
 const Couch = require('../..');
 const constants = require('../../src/constants');
-const entryUnicity = require('../data/entryUnicity');
+const entryUnicity = require('../data/byOwnerEntryUnicity');
 const { resetDatabaseWithoutCouch } = require('../utils/utils');
 
 process.on('unhandledRejection', function (err) {
