@@ -48,15 +48,18 @@ function saveGroup(db, group, user) {
 
 async function saveWithFields(db, object, user) {
   const now = Date.now();
+  let isNew = false;
   object.$lastModification = user;
   object.$modificationDate = now;
   if (object.$creationDate === undefined) {
     object.$creationDate = now;
+    isNew = true;
   }
 
   const result = await db.insertDocument(object);
   result.$modificationDate = object.$modificationDate;
   result.$creationDate = object.$creationDate;
+  result.isNew = isNew;
   return result;
 }
 

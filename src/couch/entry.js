@@ -77,7 +77,6 @@ const methods = {
     );
     await this.open();
     const doc = await getUniqueEntryById(this, user, id);
-
     if (doc === undefined) {
       const hasRight = await validateMethods.checkRightAnyGroup(
         this,
@@ -117,6 +116,7 @@ const methods = {
     // Return something similar to insertDocument
     return {
       ok: true,
+      isNew: false,
       id: doc._id,
       rev: doc._rev,
       $modificationDate: doc.$modificationDate,
