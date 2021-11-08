@@ -22,6 +22,5 @@ module.exports = {
         return doc.$type === 'log';
       }
     }
-  },
-  entryUnicity: 'global'
+  }
 };

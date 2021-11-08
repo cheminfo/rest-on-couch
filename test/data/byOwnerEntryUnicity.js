@@ -10,8 +10,14 @@ function populate(db) {
   prom.push(
     insertDocument(db, {
       $type: 'entry',
+      $owners: ['a@a.com', 'groupA', 'groupB'],
+      $id: 'X',
+      $content: {},
+    }),
+    insertDocument(db, {
+      $type: 'entry',
       $owners: ['b@b.com', 'groupA', 'groupB'],
-      $id: 'A',
+      $id: 'Y',
       $content: {},
     }),
   );
@@ -20,8 +26,8 @@ function populate(db) {
 }
 
 module.exports = async function () {
-  global.couch = await resetDatabase('test3', {
-    database: 'test3',
+  global.couch = await resetDatabase('test-by-owner-unicity', {
+    database: 'test-by-owner-unicity',
     rights: {
       create: ['anyuser'],
     },
