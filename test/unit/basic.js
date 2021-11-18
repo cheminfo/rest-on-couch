@@ -63,7 +63,7 @@ describe('basic initialization with custom design docs', () => {
 
   test('should query a custom design document', () => {
     return couch.queryEntriesByUser('a@a.com', 'testCustom').then((data) => {
-      expect(data).toHaveLength(0);
+      expect(data).toHaveLength(1);
     });
   });
 });
