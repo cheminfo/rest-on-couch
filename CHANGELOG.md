@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.1.0](https://www.github.com/cheminfo/rest-on-couch/compare/v10.0.0...v10.1.0) (2021-11-18)
+
+
+### Features
+
+* return boolean to indicate if a new entry was created in insertEntry and ensureExistsOrCreateEntry ([9b07ba8](https://www.github.com/cheminfo/rest-on-couch/commit/9b07ba8e6f6853d45fa2cc359495e1a058df60b9))
+
+
+### Bug Fixes
+
+* run coverage with v8 provider ([41d360c](https://www.github.com/cheminfo/rest-on-couch/commit/41d360c029663f4eb607fac09f9b36f49f0ebbb7))
+
 ## [10.0.0](https://www.github.com/cheminfo/rest-on-couch/compare/v9.0.1...v10.0.0) (2021-11-04)
 
 
