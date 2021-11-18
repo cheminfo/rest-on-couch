@@ -7,7 +7,7 @@ describe('Query default data', () => {
   beforeEach(data);
   test('Should query by user id', () => {
     return couch.queryViewByUser('a@a.com', 'entryById').then((rows) => {
-      expect(rows.length).toBe(5);
+      expect(rows.length).toBe(6);
     });
   });
 
@@ -49,6 +49,7 @@ describe('Query view with owner (global right)', () => {
           'B',
           'C',
           'anonymousEntry',
+          'documentOfA',
           'entryWithAttachment',
         ]);
       });
@@ -162,7 +163,7 @@ describe('Query view with reduce', () => {
       .queryViewByUser('a@a.com', 'testReduce', { reduce: true })
       .then((rows) => {
         // counts the entries
-        expect(rows[0].value).toBe(5);
+        expect(rows[0].value).toBe(6);
       });
   });
   test('should fail because emits owners', () => {
