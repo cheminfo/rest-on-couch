@@ -1,7 +1,7 @@
 'use strict';
 
-const data = require('./data/data');
-const noRights = require('./data/noRights');
+const data = require('../data/data');
+const noRights = require('../data/noRights');
 
 describe('Query default data', () => {
   beforeEach(data);
