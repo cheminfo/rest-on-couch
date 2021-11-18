@@ -175,7 +175,7 @@ describe('Query view with reduce', () => {
   test('Should fail because no reduce', () => {
     return expect(
       couch.queryViewByUser('a@a.com', 'globalRight', { reduce: true }),
-    ).rejects.toThrow(/invalid for map-only views/);
+    ).rejects.toThrow(/Bad Request/);
   });
 });
 
