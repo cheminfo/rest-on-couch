@@ -29,15 +29,6 @@ function populate(db) {
     }),
   );
 
-  prom.push(
-    insertDocument(db, {
-      $type: 'entry',
-      $owners: ['a@a.com'],
-      $id: 'documentOfA',
-      $content: {},
-    }),
-  );
-
   // Add users
   prom.push(
     insertDocument(db, {
@@ -48,6 +39,15 @@ function populate(db) {
   );
 
   // Add entries
+  prom.push(
+    insertDocument(db, {
+      $type: 'entry',
+      $owners: ['a@a.com'],
+      $id: 'documentOfA',
+      $content: {},
+    }),
+  );
+
   prom.push(
     insertDocument(db, {
       $type: 'entry',
@@ -97,6 +97,7 @@ function populate(db) {
     }),
   );
 
+  // Add tokens
   prom.push(
     insertDocument(db, {
       $type: 'token',
