@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       couchdb:
-        image: couchdb:latest
+        image: couchdb:2.3
         env:
           COUCHDB_USER: admin
           COUCHDB_PASSWORD: admin
