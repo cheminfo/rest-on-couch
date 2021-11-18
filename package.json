@@ -20,9 +20,8 @@
     "setupFiles": [
       "./test/setup/setup.js"
     ],
-    "testPathIgnorePatterns": [
-      "/node_modules/"
-    ]
+    "coverageProvider": "v8",
+    "testTimeout": 20000
   },
   "scripts": {
     "build": "vite build",
