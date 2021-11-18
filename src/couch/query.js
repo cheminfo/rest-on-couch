@@ -1,7 +1,5 @@
 'use strict';
 
-const _ = require('lodash');
-
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:query');
 const ensureStringArray = require('../util/ensureStringArray');
@@ -26,13 +24,24 @@ const methods = {
       user,
       right,
     );
+
     if (hasGlobalRight) {
       // When there is a global right, we cannot use queries because the first element of the
       // key will match all documents
+      const docIds = new Map();
+      const data = [];
       const result = await this._db.queryView(view, {
         reduce: false,
       });
-      return _.uniqBy(result, 'id');
+      for (let r of result) {
+        const owner = docIds.get(r.id);
+        // A document is never added twice for a different owner
+        if (owner === undefined || docIds.get(r.id) === r.key[0]) {
+          data.push(r);
+          docIds.set(r.id, r.key[0]);
+        }
+      }
+      return data;
     }
 
     var userGroups = await this.getGroupsByRight(user, right);
@@ -55,7 +64,8 @@ const methods = {
       userGroups = [user];
     }
 
-    const data = new Map();
+    const docIds = new Set();
+    const data = [];
     const userStartKey =
       options.key !== undefined
         ? options.key
@@ -79,13 +89,20 @@ const methods = {
         endkey,
         reduce: false,
       });
+
       for (const el of result) {
-        if (!data.has(el.id)) {
-          data.set(el.id, el);
+        if (!docIds.has(el.id)) {
+          // When the same document emits multiple times in a couchdb view, each
+          // emitted value will be added here
+          // But only once per owner to prevent from producing the same result multiple times
+          data.push(el);
         }
       }
+      for (const el of result) {
+        docIds.add(el.id);
+      }
     }
-    return Array.from(data.values());
+    return data;
   },
 
   /*
