@@ -3,7 +3,6 @@
 [![NPM version][npm-image]][npm-url]
 [![build status][ci-image]][ci-url]
 [![npm download][download-image]][download-url]
-[![Known Vulnerabilities][snyk-image]][snyk-url]
 
 Interface to CouchDB that allows the control of permissions on the documents.
 
@@ -214,5 +213,3 @@ A specific userguide is available [here](import.md).
 [ci-url]: https://github.com/mljs/matrix/actions?query=workflow%3A%22Node.js+CI%22
 [download-image]: https://img.shields.io/npm/dm/rest-on-couch.svg
 [download-url]: https://www.npmjs.com/package/rest-on-couch
-[snyk-image]: https://snyk.io/test/github/cheminfo/rest-on-couch/badge.svg
-[snyk-url]: https://snyk.io/test/github/cheminfo/rest-on-couch
