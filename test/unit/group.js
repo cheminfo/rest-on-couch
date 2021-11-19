@@ -79,18 +79,84 @@ describe('group methods', () => {
 
   test('getGroups should return users groups when owner without global readGroup right', () => {
     return couch.getGroups('a@a.com').then(function (docs) {
-      expect(docs).toHaveLength(2);
+      expect(docs).toHaveLength(3);
       expect(docs[0].users[0]).toBe('a@a.com');
     });
   });
 
-  test('getGroupsInfo should return name and description all the groups', () => {
+  test('getGroupsInfo should return all data when group owner', () => {
     return couch.getGroupsInfo('a@a.com').then(function (groups) {
-      expect(groups.length).toEqual(2);
-      expect(groups[0]).toMatchObject({
-        name: 'groupA',
-        description: 'groupA description',
-      });
+      expect(groups).toHaveLength(3);
+      // a@a.com sees users and rights because it is the owner of all groups
+      expect(groups).toMatchObject([
+        {
+          name: 'groupA',
+          description: 'groupA description',
+          users: ['a@a.com'],
+          rights: ['create', 'write', 'delete', 'read'],
+        },
+        {
+          name: 'groupB',
+          users: ['a@a.com'],
+          rights: ['create'],
+        },
+        {
+          name: 'unusedGroup',
+          description: 'unusedGroup is not used in entries',
+          users: ['c@c.com'],
+          rights: ['create', 'write', 'delete', 'read'],
+        },
+      ]);
+    });
+  });
+
+  test('getGroupsInfo should return all data when user has readGroup right', () => {
+    return couch.getGroupsInfo('b@b.com').then(function (groups) {
+      expect(groups).toHaveLength(3);
+      // Sees everything because has global readGroup right
+      expect(groups).toMatchObject([
+        {
+          name: 'groupA',
+          description: 'groupA description',
+          users: ['a@a.com'],
+          rights: ['create', 'write', 'delete', 'read'],
+        },
+        {
+          name: 'groupB',
+          users: ['a@a.com'],
+          rights: ['create'],
+        },
+        {
+          name: 'unusedGroup',
+          description: 'unusedGroup is not used in entries',
+          users: ['c@c.com'],
+          rights: ['create', 'write', 'delete', 'read'],
+        },
+      ]);
+    });
+  });
+
+  test('getGroupsInfo should return limited data except if member', () => {
+    return couch.getGroupsInfo('c@c.com').then(function (groups) {
+      expect(groups).toHaveLength(3);
+      // Sees everything because has global readGroup right
+      expect(groups).toStrictEqual([
+        {
+          name: 'groupA',
+          description: 'groupA description',
+        },
+        {
+          name: 'groupB',
+          description: undefined,
+        },
+        // Sees everything because is a member
+        {
+          name: 'unusedGroup',
+          description: 'unusedGroup is not used in entries',
+          users: ['c@c.com'],
+          rights: ['create', 'write', 'delete', 'read'],
+        },
+      ]);
     });
   });
 
@@ -102,7 +168,7 @@ describe('group methods', () => {
 
   test('getGroups should return groups when owner not owner but has global readGroup right', () => {
     return couch.getGroups('b@b.com').then(function (docs) {
-      expect(docs).toHaveLength(2);
+      expect(docs).toHaveLength(3);
       expect(docs[0].users[0]).toBe('a@a.com');
     });
   });
