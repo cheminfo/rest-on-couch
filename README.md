@@ -2,6 +2,7 @@
 
 [![NPM version][npm-image]][npm-url]
 [![build status][ci-image]][ci-url]
+[![codecov](codecov-image)](codecov-url)
 [![npm download][download-image]][download-url]
 
 Interface to CouchDB that allows the control of permissions on the documents.
@@ -211,5 +212,7 @@ A specific userguide is available [here](import.md).
 [npm-url]: https://www.npmjs.com/package/rest-on-couch
 [ci-image]: https://github.com/mljs/matrix/workflows/Node.js%20CI/badge.svg?branch=master
 [ci-url]: https://github.com/mljs/matrix/actions?query=workflow%3A%22Node.js+CI%22
+[codecov-image]: https://codecov.io/gh/cheminfo/rest-on-couch/branch/master/graph/badge.svg?token=Uw2cOqZUg0
+[codecov-url]: https://codecov.io/gh/cheminfo/rest-on-couch
 [download-image]: https://img.shields.io/npm/dm/rest-on-couch.svg
 [download-url]: https://www.npmjs.com/package/rest-on-couch
