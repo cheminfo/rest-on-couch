@@ -2,7 +2,7 @@
 
 [![NPM version][npm-image]][npm-url]
 [![build status][ci-image]][ci-url]
-[![codecov](codecov-image)](codecov-url)
+[![codecov][codecov-image]][codecov-url]
 [![npm download][download-image]][download-url]
 
 Interface to CouchDB that allows the control of permissions on the documents.
