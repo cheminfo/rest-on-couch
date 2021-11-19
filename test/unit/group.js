@@ -88,7 +88,7 @@ describe('group methods', () => {
     return couch.getGroupsInfo('a@a.com').then(function (groups) {
       expect(groups).toHaveLength(3);
       // a@a.com sees users and rights because it is the owner of all groups
-      expect(groups).toMatchObject([
+      expect(groups).toStrictEqual([
         {
           name: 'groupA',
           description: 'groupA description',
@@ -97,6 +97,7 @@ describe('group methods', () => {
         },
         {
           name: 'groupB',
+          description: undefined,
           users: ['a@a.com'],
           rights: ['create'],
         },
@@ -114,7 +115,7 @@ describe('group methods', () => {
     return couch.getGroupsInfo('b@b.com').then(function (groups) {
       expect(groups).toHaveLength(3);
       // Sees everything because has global readGroup right
-      expect(groups).toMatchObject([
+      expect(groups).toStrictEqual([
         {
           name: 'groupA',
           description: 'groupA description',
@@ -123,6 +124,7 @@ describe('group methods', () => {
         },
         {
           name: 'groupB',
+          description: undefined,
           users: ['a@a.com'],
           rights: ['create'],
         },
