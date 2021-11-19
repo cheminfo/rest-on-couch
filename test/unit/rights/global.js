@@ -35,14 +35,16 @@ describe('Edit global rights', () => {
   });
 
   test('Should not grant read before editing global right', () => {
-    return expect(couch.getEntry('B', 'a@a.com')).rejects.toThrow(/no access/);
+    return expect(couch.getEntry('onlyB', 'a@a.com')).rejects.toThrow(
+      /no access/,
+    );
   });
 
   test('Should add global read right and grant access', () => {
     return expect(
       couch
         .addGlobalRight('admin@a.com', 'read', 'a@a.com')
-        .then(() => couch.getEntry('B', 'a@a.com')),
+        .then(() => couch.getEntry('onlyB', 'a@a.com')),
     ).resolves.toBeDefined();
   });
 
@@ -50,7 +52,7 @@ describe('Edit global rights', () => {
     return expect(
       couch
         .removeGlobalRight('admin@a.com', 'read', 'a@a.com')
-        .then(() => couch.getEntry('B', 'a@a.com')),
+        .then(() => couch.getEntry('onlyB', 'a@a.com')),
     ).rejects.toThrow(/no access/);
   });
 });

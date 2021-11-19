@@ -179,6 +179,50 @@ describe('Query view with reduce', () => {
   });
 });
 
+describe('Query with multiple emitWithOwner and global rights', () => {
+  beforeEach(data);
+  test('Should return all emited values', () => {
+    return couch.queryEntriesByRight('a@a.com', 'multiEmit').then((rows) => {
+      expect(rows).toHaveLength(12);
+    });
+  });
+
+  test('Should ignore the specified key when user has global right', () => {
+    return couch
+      .queryEntriesByRight('a@a.com', 'multiEmit', 'read', { key: 'A' })
+      .then((rows) => {
+        expect(rows).toHaveLength(12);
+      });
+  });
+});
+
+describe('Query with multiple emitWithOwner', () => {
+  beforeEach(noRights);
+  test('Should return all emited values (a@a.com)', () => {
+    return couch.queryEntriesByRight('a@a.com', 'multiEmit').then((rows) => {
+      expect(rows).toHaveLength(10);
+      expect(rows.find((row) => row.id === 'onlyA')).toBeDefined();
+      expect(rows.find((row) => row.id === 'onlyB')).toBe(undefined);
+    });
+  });
+
+  test('Should return all emited values (b@b.com)', () => {
+    return couch.queryEntriesByRight('b@b.com', 'multiEmit').then((rows) => {
+      expect(rows).toHaveLength(10);
+      expect(rows.find((row) => row.id === 'onlyB')).toBeDefined();
+      expect(rows.find((row) => row.id === 'onlyA')).toBe(undefined);
+    });
+  });
+
+  test('Should return all emited values for specified key', () => {
+    return couch
+      .queryEntriesByRight('a@a.com', 'multiEmit', 'read', { key: 'A' })
+      .then((rows) => {
+        expect(rows).toHaveLength(2);
+      });
+  });
+});
+
 function sortByValue(a, b) {
   if (a.value < b.value) return -1;
   else if (a.value > b.value) return 1;

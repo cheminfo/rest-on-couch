@@ -9,8 +9,8 @@ describe('token methods', () => {
   test('user should be able to create and get tokens', async () => {
     const tokens = await Promise.all([
       couch.createEntryToken('b@b.com', 'A'),
-      couch.createEntryToken('b@b.com', 'B'),
-      couch.createEntryToken('b@b.com', 'B', ['read', 'write']),
+      couch.createEntryToken('b@b.com', 'onlyB'),
+      couch.createEntryToken('b@b.com', 'onlyB', ['read', 'write']),
     ]);
     expect(tokens[0].$id).not.toBe(tokens[1].$id);
     expect(tokens[0].$id).not.toBe(tokens[2].$id);
@@ -27,7 +27,7 @@ describe('token methods', () => {
     expect(writeToken.$kind).toBe('entry');
     expect(writeToken.$id.length).toBe(32);
     expect(writeToken.$owner).toBe('b@b.com');
-    expect(writeToken.uuid).toBe('B');
+    expect(writeToken.uuid).toBe('onlyB');
     expect(writeToken.rights).toEqual(['read', 'write']);
 
     const gotToken = await couch.getToken(token.$id);
