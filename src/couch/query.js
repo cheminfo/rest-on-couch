@@ -33,7 +33,7 @@ const methods = {
       const result = await this._db.queryView(view, {
         reduce: false,
       });
-      for (let r of result) {
+      for (const r of result) {
         const owner = docIds.get(r.id);
         // A document is never added twice for a different owner
         if (owner === undefined || docIds.get(r.id) === r.key[0]) {
