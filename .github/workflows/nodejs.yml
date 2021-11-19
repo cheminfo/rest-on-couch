@@ -52,3 +52,5 @@ jobs:
           REST_ON_COUCH_USERNAME: admin
           REST_ON_COUCH_PASSWORD: admin
         run: npm run test-coverage
+      - name: Upload coverage
+        uses: codecov/codecov-action@v2
