@@ -175,10 +175,28 @@ const methods = {
       { onlyDoc: true },
     );
 
-    return groups.map((group) => ({
-      name: group.name,
-      description: group.description,
-    }));
+    const hasReadGroupRight = await validate.checkGlobalRight(
+      this,
+      user,
+      'readGroup',
+    );
+
+    return groups.map((group) => {
+      const additionalProperties =
+        hasReadGroupRight ||
+        group.users.includes(user) ||
+        group.$owners.includes(user)
+          ? {
+              users: group.users,
+              rights: group.rights,
+            }
+          : {};
+      return {
+        name: group.name,
+        description: group.description,
+        ...additionalProperties,
+      };
+    });
   },
 
   /**

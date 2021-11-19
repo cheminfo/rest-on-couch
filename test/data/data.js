@@ -29,6 +29,17 @@ function populate(db) {
     }),
   );
 
+  prom.push(
+    insertDocument(db, {
+      $type: 'group',
+      $owners: ['a@a.com'],
+      name: 'unusedGroup',
+      description: 'unusedGroup is not used in entries',
+      users: ['c@c.com'],
+      rights: ['create', 'write', 'delete', 'read'],
+    }),
+  );
+
   // Add users
   prom.push(
     insertDocument(db, {
