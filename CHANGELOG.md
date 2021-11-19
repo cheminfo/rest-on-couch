@@ -1,5 +1,24 @@
 # Changelog
 
+## [11.0.0](https://www.github.com/cheminfo/rest-on-couch/compare/v10.0.0...v11.0.0) (2021-11-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* correct _query api endpoint when couchdb view emits multiple values per document
+
+### Features
+
+* return boolean to indicate if a new entry was created in insertEntry and ensureExistsOrCreateEntry ([9b07ba8](https://www.github.com/cheminfo/rest-on-couch/commit/9b07ba8e6f6853d45fa2cc359495e1a058df60b9))
+* return users and rights in group info ([#306](https://www.github.com/cheminfo/rest-on-couch/issues/306)) ([cd71e5a](https://www.github.com/cheminfo/rest-on-couch/commit/cd71e5a83d013f6358c83db629a105a4714b59a3))
+
+
+### Bug Fixes
+
+* correct _query api endpoint when couchdb view emits multiple values per document ([24ab671](https://www.github.com/cheminfo/rest-on-couch/commit/24ab671056d1e83931db355313fbfc7054915e41))
+* correct test ([798f8d6](https://www.github.com/cheminfo/rest-on-couch/commit/798f8d623bf7955271e2b2361691995a16aec02b))
+* run coverage with v8 provider ([41d360c](https://www.github.com/cheminfo/rest-on-couch/commit/41d360c029663f4eb607fac09f9b36f49f0ebbb7))
+
 ## [10.0.0](https://www.github.com/cheminfo/rest-on-couch/compare/v9.0.1...v10.0.0) (2021-11-04)
 
 
