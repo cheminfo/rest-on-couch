@@ -30,6 +30,16 @@ module.exports = {
           return sum(values);
         },
       },
+      multiEmit: {
+        map: function(doc) {
+          if (doc.$type !== 'entry') {
+            return;
+          }
+          emitWithOwner(doc.$id, 1);
+          emitWithOwner(doc.$id, 2);
+        },
+        withOwner: true,
+      }
     },
   },
   auth: {

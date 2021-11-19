@@ -6,6 +6,7 @@ const insertDocument = require('./insertDocument');
 
 function populate(db) {
   const prom = [];
+  // Default groups
   prom.push(
     (async () => {
       const doc = await db.getDocument('defaultGroups');
@@ -19,6 +20,7 @@ function populate(db) {
     })(),
   );
 
+  // Groups
   prom.push(
     insertDocument(db, {
       $type: 'group',
@@ -59,6 +61,7 @@ function populate(db) {
     }),
   );
 
+  // Entries
   prom.push(
     insertDocument(db, {
       $type: 'entry',
@@ -72,7 +75,7 @@ function populate(db) {
     insertDocument(db, {
       $type: 'entry',
       $owners: ['b@b.com'],
-      $id: 'B',
+      $id: 'onlyB',
       $content: {},
     }),
   );
@@ -110,6 +113,7 @@ function populate(db) {
     }),
   );
 
+  // Tokens
   prom.push(
     insertDocument(db, {
       $type: 'token',
