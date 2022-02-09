@@ -1,5 +1,12 @@
 # Changelog
 
+### [11.0.1](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.0...v11.0.1) (2022-02-09)
+
+
+### Bug Fixes
+
+* fail early when creating document with group but no owner right in token ([71826ba](https://www.github.com/cheminfo/rest-on-couch/commit/71826ba8a2bfc101964e0ab6ef943d848596410a))
+
 ## [11.0.0](https://www.github.com/cheminfo/rest-on-couch/compare/v10.0.0...v11.0.0) (2021-11-19)
 
 
