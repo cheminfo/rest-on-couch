@@ -214,6 +214,7 @@ function areRightsInToken(rights, token) {
   if (rights.length > token.rights.length) {
     return false;
   }
+
   const tokenRights = new Set(token.rights);
   for (const right of rights) {
     if (!tokenRights.has(right)) {

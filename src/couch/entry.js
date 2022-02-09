@@ -259,9 +259,6 @@ const methods = {
       }
       const res = await createNew(this, entry, user, options);
       action = 'created';
-      if (options.groups) {
-        await this.addOwnersToDoc(res.id, user, options.groups, 'entry');
-      }
       result = res;
     }
 
@@ -278,9 +275,6 @@ function onNotFound(ctx, entry, user, options) {
       }
 
       const res = await createNew(ctx, entry, user, options);
-      if (options.groups) {
-        await ctx.addOwnersToDoc(res.id, user, options.groups, 'entry');
-      }
       return res;
     } else {
       throw error;
@@ -290,9 +284,9 @@ function onNotFound(ctx, entry, user, options) {
 
 async function createNew(ctx, entry, user, options) {
   debug.trace('create new');
-  user = validateMethods.userFromTokenAndRights(user, options.token, [
-    'create',
-  ]);
+  const hasGroups = options.groups ? options.groups.length > 0 : false;
+  const rights = hasGroups ? ['create', 'owner'] : ['create'];
+  user = validateMethods.userFromTokenAndRights(user, options.token, rights);
   const ok = await validateMethods.checkGlobalRight(ctx, user, 'create');
   if (ok) {
     debug.trace('has right, create new');
@@ -300,13 +294,15 @@ async function createNew(ctx, entry, user, options) {
       $type: 'entry',
       $id: entry.$id,
       $kind: entry.$kind,
-      $owners: [user],
+      $owners: [user].concat(options.groups || []),
       $content: entry.$content,
       _attachments: entry._attachments,
     };
     return nanoMethods.saveEntry(ctx._db, newEntry, user);
   } else {
-    let msg = `${user} not allowed to create`;
+    let msg = `${user} not allowed to create${
+      hasGroups ? ' with groups (must be owner)' : ''
+    }`;
     debug.trace(msg);
     throw new CouchError(msg, 'unauthorized');
   }
