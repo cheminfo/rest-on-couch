@@ -1,5 +1,6 @@
 'use strict';
 
+const constants = require('../data/constants');
 const data = require('../data/noRights');
 const testUtils = require('../utils/testUtils');
 
@@ -80,13 +81,26 @@ describe('token methods', () => {
     });
   });
 
-  test('token should give read access to non public data', async () => {
+  test('user token should give read access to non public data', async () => {
     const token = await couch.createUserToken('b@b.com');
     await expect(couch.getEntryById('A', 'a@a.com')).rejects.toThrow(
       'document not found',
     );
     const entry = await couch.getEntry('A', 'a@a.com', { token });
     expect(entry).toBeDefined();
+  });
+
+  test('user token should not allow to create document if user cannot create', async () => {
+    const token = await couch.createUserToken('b@b.com', [
+      'read',
+      'write',
+      'create',
+    ]);
+    await expect(
+      couch.insertEntry(constants.newEntry, 'anonymous', {
+        token,
+      }),
+    ).rejects.toThrow('b@b.com not allowed to create');
   });
 
   test('token should give only the right for which it was created', async () => {
