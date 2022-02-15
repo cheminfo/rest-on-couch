@@ -268,13 +268,24 @@ describe('entry creation and editions', () => {
     ).rejects.toThrow(/cannot remove primary owner/);
   });
 
-  test('concurrent creation of the same entry should fail for one of them', () => {
-    return expect(
-      Promise.all([
-        couch.insertEntry(constants.newEntry, 'a@a.com'),
-        couch.insertEntry(constants.newEntry, 'a@a.com'),
-      ]),
-    ).rejects.toThrow(/entry already exists/);
+  test('concurrent creation of the same entry should fail for one of them', async () => {
+    const values = await Promise.allSettled([
+      couch.insertEntry(constants.newEntry, 'a@a.com'),
+      couch.insertEntry(constants.newEntry, 'a@a.com'),
+      couch.insertEntry(constants.newEntry, 'a@a.com'),
+    ]);
+    expect(
+      values.reduce(
+        (prev, current) => prev + (current.status === 'fulfilled' ? 1 : 0),
+        0,
+      ),
+    ).toBe(1);
+    expect(
+      values.reduce(
+        (prev, current) => prev + (current.status === 'rejected' ? 1 : 0),
+        0,
+      ),
+    ).toBe(2);
   });
 });
 
