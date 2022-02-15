@@ -267,6 +267,15 @@ describe('entry creation and editions', () => {
       couch.removeOwnersFromDoc('A', 'b@b.com', 'b@b.com', 'entry'),
     ).rejects.toThrow(/cannot remove primary owner/);
   });
+
+  test('concurrent creation of the same entry should fail for one of them', () => {
+    return expect(
+      Promise.all([
+        couch.insertEntry(constants.newEntry, 'a@a.com'),
+        couch.insertEntry(constants.newEntry, 'a@a.com'),
+      ]),
+    ).rejects.toThrow(/entry already exists/);
+  });
 });
 
 describe('entry rights', () => {
