@@ -223,7 +223,7 @@ const methods = {
       throw new CouchError('entry should not have _id', 'bad argument');
     }
 
-    const notFound = onNotFound(this, entry, user, options);
+    const createIfNotFound = onNotFound(this, entry, user, options);
 
     let result;
     let action = 'updated';
@@ -234,21 +234,18 @@ const methods = {
         });
         result = await updateEntry(this, doc, entry, user, options);
       } catch (e) {
-        if (e.reason === 'not found') {
-          result = await notFound(e);
-          action = 'created';
-        } else {
-          throw e;
-        }
+        await createIfNotFound(e);
       }
     } else if (entry.$id) {
       debug.trace('entry has no _id but has $id: %o', entry.$id);
-      if (await getUniqueEntryById(this, user, entry.$id)) {
-        throw new CouchError('entry already exists', 'conflict');
-      } else {
-        result = await notFound({ reason: 'not found' });
-        action = 'created';
+      if (options.isUpdate) {
+        throw new CouchError(
+          'Document must have an _id to be updated',
+          'not found',
+        );
       }
+      result = await createNew(this, entry, user, options);
+      action = 'created';
     } else {
       debug.trace('entry has no _id nor $id');
       if (options.isUpdate) {
@@ -257,6 +254,7 @@ const methods = {
           'bad argument',
         );
       }
+
       const res = await createNew(this, entry, user, options);
       action = 'created';
       result = res;
@@ -282,8 +280,15 @@ function onNotFound(ctx, entry, user, options) {
   };
 }
 
-async function createNew(ctx, entry, user, options) {
+const createNew = lockify(_createNew, (ctx, entry) => {
+  return JSON.stringify(entry.$id);
+});
+
+async function _createNew(ctx, entry, user, options) {
   debug.trace('create new');
+  if (await getUniqueEntryById(ctx, user, entry.$id)) {
+    throw new CouchError('entry already exists', 'conflict');
+  }
   const hasGroups = options.groups ? options.groups.length > 0 : false;
   const rights = hasGroups ? ['create', 'owner'] : ['create'];
   user = validateMethods.userFromTokenAndRights(user, options.token, rights);
@@ -385,3 +390,53 @@ async function getUniqueEntryByIdOrFail(ctx, user, id) {
 module.exports = {
   methods,
 };
+
+function lockify(fun, getKey) {
+  // contains ref to ongoing promises
+  const lockMap = new Map();
+
+  // Counts ongoing promises
+  const lockMapCount = new Map();
+
+  function decrement(mapKey) {
+    if (lockMapCount.has(mapKey)) {
+      const newCount = lockMapCount.get(mapKey) - 1;
+      if (newCount === 0) {
+        lockMapCount.delete(mapKey);
+        lockMap.delete(mapKey);
+      } else {
+        lockMapCount.set(mapKey, newCount);
+      }
+    }
+  }
+
+  function increment(mapKey, promise) {
+    lockMap.set(mapKey, promise);
+    const newCount = lockMapCount.has(mapKey)
+      ? lockMapCount.get(mapKey) + 1
+      : 1;
+    if (newCount > 2) {
+      debug(`potential issue with deadlocked promise on key ${mapKey}`);
+    }
+    lockMapCount.set(mapKey, newCount);
+  }
+
+  return (...params) => {
+    const keyStr = getKey(...params);
+
+    let lock = lockMap.has(keyStr) ? lockMap.get(keyStr) : Promise.resolve();
+    const result = lock
+      .then(() => fun(...params))
+      .finally(() => {
+        decrement(keyStr);
+      });
+
+    lock = result.catch(() => {
+      // Ignore error at the lock level. It must be handled by the user of the lockified function.
+    });
+
+    increment(keyStr, lock);
+
+    return result;
+  };
+}

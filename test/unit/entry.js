@@ -120,7 +120,7 @@ describe('entry creation and editions', () => {
     ).rejects.toThrow(/does not exist/);
   });
 
-  test('update entry without _id should reject', () => {
+  test('update entry without _id nor $id should reject', () => {
     return expect(
       couch.insertEntry(
         {
@@ -130,6 +130,19 @@ describe('entry creation and editions', () => {
         { isUpdate: true },
       ),
     ).rejects.toThrow(/should have an _id/);
+  });
+
+  test('update entry without _id should reject', () => {
+    return expect(
+      couch.insertEntry(
+        {
+          $id: 'doc',
+          $content: {},
+        },
+        'z@z.com',
+        { isUpdate: true },
+      ),
+    ).rejects.toThrow(/Document must have an _id to be updated/);
   });
 
   test('create new entry that has an _id is not possible', () => {
@@ -266,6 +279,23 @@ describe('entry creation and editions', () => {
     return expect(
       couch.removeOwnersFromDoc('A', 'b@b.com', 'b@b.com', 'entry'),
     ).rejects.toThrow(/cannot remove primary owner/);
+  });
+
+  test('concurrent creation of the same entry should fail for one of them', async () => {
+    const values = await Promise.allSettled([
+      couch.insertEntry(constants.newEntry, 'a@a.com'),
+      couch.insertEntry(constants.newEntry, 'a@a.com'),
+      couch.insertEntry(constants.newEntry, 'a@a.com'),
+    ]);
+    const fulfilled = values.filter(({ status }) => status === 'fulfilled');
+    const rejected = values.filter(({ status }) => status === 'rejected');
+
+    expect(fulfilled).toHaveLength(1);
+    expect(rejected).toHaveLength(2);
+    expect(rejected.map(({ reason }) => reason.message)).toStrictEqual([
+      'entry already exists',
+      'entry already exists',
+    ]);
   });
 });
 
