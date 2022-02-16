@@ -120,7 +120,7 @@ describe('entry creation and editions', () => {
     ).rejects.toThrow(/does not exist/);
   });
 
-  test('update entry without _id should reject', () => {
+  test('update entry without _id nor $id should reject', () => {
     return expect(
       couch.insertEntry(
         {
@@ -130,6 +130,19 @@ describe('entry creation and editions', () => {
         { isUpdate: true },
       ),
     ).rejects.toThrow(/should have an _id/);
+  });
+
+  test('update entry without _id should reject', () => {
+    return expect(
+      couch.insertEntry(
+        {
+          $id: 'doc',
+          $content: {},
+        },
+        'z@z.com',
+        { isUpdate: true },
+      ),
+    ).rejects.toThrow(/Document must have an _id to be updated/);
   });
 
   test('create new entry that has an _id is not possible', () => {

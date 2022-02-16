@@ -239,7 +239,10 @@ const methods = {
     } else if (entry.$id) {
       debug.trace('entry has no _id but has $id: %o', entry.$id);
       if (options.isUpdate) {
-        throw new CouchError('Document does not exist', 'not found');
+        throw new CouchError(
+          'Document must have an _id to be updated',
+          'not found',
+        );
       }
       result = await createNew(this, entry, user, options);
       action = 'created';
