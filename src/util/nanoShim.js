@@ -36,7 +36,7 @@ class NanoShim {
         cookie,
       },
       timeout: {
-        response: 60000,
+        request: 60000,
       },
       agent: {
         http: agent,
