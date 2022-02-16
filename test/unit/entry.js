@@ -274,18 +274,15 @@ describe('entry creation and editions', () => {
       couch.insertEntry(constants.newEntry, 'a@a.com'),
       couch.insertEntry(constants.newEntry, 'a@a.com'),
     ]);
-    expect(
-      values.reduce(
-        (prev, current) => prev + (current.status === 'fulfilled' ? 1 : 0),
-        0,
-      ),
-    ).toBe(1);
-    expect(
-      values.reduce(
-        (prev, current) => prev + (current.status === 'rejected' ? 1 : 0),
-        0,
-      ),
-    ).toBe(2);
+    const fulfilled = values.filter(({ status }) => status === 'fulfilled');
+    const rejected = values.filter(({ status }) => status === 'rejected');
+
+    expect(fulfilled).toHaveLength(1);
+    expect(rejected).toHaveLength(2);
+    expect(rejected.map(({ reason }) => reason.message)).toStrictEqual([
+      'entry already exists',
+      'entry already exists',
+    ]);
   });
 });
 
