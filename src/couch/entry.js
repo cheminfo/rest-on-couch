@@ -419,17 +419,18 @@ function lockify(fun, getKey) {
     const keyStr = getKey(...params);
 
     let lock = lockMap.has(keyStr) ? lockMap.get(keyStr) : Promise.resolve();
-    const result = lock.then(() => fun(...params));
+    const result = lock
+      .then(() => fun(...params))
+      .finally(() => {
+        decrement(keyStr);
+      });
 
     lock = result.catch(() => {
-      decrement(keyStr);
+      // Ignore error at the lock level. It must be handled by the user of the lockified function.
     });
 
     increment(keyStr, lock);
 
-    return result.then((value) => {
-      decrement(keyStr);
-      return value;
-    });
+    return result;
   };
 }
