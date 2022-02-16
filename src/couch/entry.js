@@ -412,6 +412,9 @@ function lockify(fun, getKey) {
     const newCount = lockMapCount.has(mapKey)
       ? lockMapCount.get(mapKey) + 1
       : 1;
+    if (newCount > 2) {
+      debug(`potential issue with deadlocked promise on key ${mapKey}`);
+    }
     lockMapCount.set(mapKey, newCount);
   }
 
