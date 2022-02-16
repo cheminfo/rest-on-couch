@@ -1,5 +1,12 @@
 # Changelog
 
+### [11.0.2](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.1...v11.0.2) (2022-02-16)
+
+
+### Bug Fixes
+
+* don't create entries concurrently for a given $id ([#318](https://www.github.com/cheminfo/rest-on-couch/issues/318)) ([679652c](https://www.github.com/cheminfo/rest-on-couch/commit/679652cf7740193bbf0d7f1837ccbf419ff8547a))
+
 ### [11.0.1](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.0...v11.0.1) (2022-02-09)
 
 
