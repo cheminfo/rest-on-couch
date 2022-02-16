@@ -277,7 +277,9 @@ function onNotFound(ctx, entry, user, options) {
   };
 }
 
-const createNew = lockify(_createNew);
+const createNew = lockify(_createNew, (ctx, entry) => {
+  return JSON.stringify(entry.$id);
+});
 
 async function _createNew(ctx, entry, user, options) {
   debug.trace('create new');
@@ -386,13 +388,48 @@ module.exports = {
   methods,
 };
 
-function lockify(fun) {
-  let lock = Promise.resolve();
+function lockify(fun, getKey) {
+  // contains ref to ongoing promises
+  const lockMap = new Map();
+
+  // Counts ongoing promises
+  const lockMapCount = new Map();
+
+  function decrement(mapKey) {
+    if (lockMapCount.has(mapKey)) {
+      const newCount = lockMapCount.get(mapKey) - 1;
+      if (newCount === 0) {
+        lockMapCount.delete(mapKey);
+        lockMap.delete(mapKey);
+      } else {
+        lockMapCount.set(mapKey, newCount);
+      }
+    }
+  }
+
+  function increment(mapKey, promise) {
+    lockMap.set(mapKey, promise);
+    const newCount = lockMapCount.has(mapKey)
+      ? lockMapCount.get(mapKey) + 1
+      : 1;
+    lockMapCount.set(mapKey, newCount);
+  }
 
   return (...params) => {
-    const result = lock.then(() => fun(...params));
-    lock = result.catch(() => {});
+    const keyStr = getKey(...params);
 
-    return result;
+    let lock = lockMap.has(keyStr) ? lockMap.get(keyStr) : Promise.resolve();
+    const result = lock.then(() => fun(...params));
+
+    lock = result.catch(() => {
+      decrement(keyStr);
+    });
+
+    increment(keyStr, lock);
+
+    return result.then((value) => {
+      decrement(keyStr);
+      return value;
+    });
   };
 }
