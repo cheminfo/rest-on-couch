@@ -1,5 +1,12 @@
 # Changelog
 
+### [11.0.3](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.2...v11.0.3) (2022-02-17)
+
+
+### Bug Fixes
+
+* dedupe primary owner with additional list of owners ([8a54ac8](https://www.github.com/cheminfo/rest-on-couch/commit/8a54ac8fa3ffef82619b66239a8fa94f159b3f8c))
+
 ### [11.0.2](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.1...v11.0.2) (2022-02-16)
 
 
