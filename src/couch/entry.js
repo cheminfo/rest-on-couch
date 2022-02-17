@@ -293,13 +293,17 @@ async function _createNew(ctx, entry, user, options) {
   const rights = hasGroups ? ['create', 'owner'] : ['create'];
   user = validateMethods.userFromTokenAndRights(user, options.token, rights);
   const ok = await validateMethods.checkGlobalRight(ctx, user, 'create');
+  const userSet = new Set(options.groups || []);
+
+  // user is special because it needs to be the first owner
+  userSet.delete(user);
   if (ok) {
     debug.trace('has right, create new');
     const newEntry = {
       $type: 'entry',
       $id: entry.$id,
       $kind: entry.$kind,
-      $owners: [user].concat(options.groups || []),
+      $owners: [user].concat(Array.from(userSet)),
       $content: entry.$content,
       _attachments: entry._attachments,
     };
