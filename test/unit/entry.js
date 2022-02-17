@@ -186,6 +186,34 @@ describe('entry creation and editions', () => {
       });
   });
 
+  test('should dedupe owners when new entry is created', () => {
+    return couch
+      .insertEntry(constants.newEntry, 'z@z.com', {
+        groups: ['groupF', 'groupF'],
+      })
+      .then(() => couch.getEntryById(constants.newEntry.$id, 'z@z.com'))
+      .then((entry) => {
+        expect(entry.$owners).toHaveLength(2);
+        expect(
+          entry.$owners.reduce(
+            (prev, current) => prev + (current === 'groupF' ? 1 : 0),
+            0,
+          ),
+        ).toBe(1);
+      });
+  });
+
+  test('should dedupe primary owner when new entry is created', () => {
+    return couch
+      .insertEntry(constants.newEntry, 'z@z.com', {
+        groups: ['z@z.com'],
+      })
+      .then(() => couch.getEntryById(constants.newEntry.$id, 'z@z.com'))
+      .then((entry) => {
+        expect(entry.$owners).toHaveLength(1);
+      });
+  });
+
   test('should throw a conflict error', () => {
     return couch.getEntryById('A', 'b@b.com').then((doc) => {
       return couch.insertEntry(doc, 'b@b.com').then(() => {
@@ -215,12 +243,36 @@ describe('entry creation and editions', () => {
     });
   });
 
-  test('should add group to entry', () => {
+  test('should add owner to entry', () => {
     return couch
       .addOwnersToDoc('A', 'b@b.com', 'groupD', 'entry')
       .then(() => couch.getEntry('A', 'b@b.com'))
       .then((doc) => {
         expect(doc.$owners.indexOf('groupD')).toBeGreaterThan(0);
+      });
+  });
+
+  test('should add multiple owners to entry', () => {
+    return couch
+      .addOwnersToDoc('A', 'b@b.com', ['groupD', 'groupE'], 'entry')
+      .then(() => couch.getEntry('A', 'b@b.com'))
+      .then((doc) => {
+        expect(doc.$owners.indexOf('groupD')).toBeGreaterThan(0);
+        expect(doc.$owners.indexOf('groupE')).toBeGreaterThan(0);
+      });
+  });
+
+  test('should dedupe added owners', () => {
+    return couch
+      .addOwnersToDoc('A', 'b@b.com', ['groupD', 'groupD'], 'entry')
+      .then(() => couch.getEntry('A', 'b@b.com'))
+      .then((doc) => {
+        expect(
+          doc.$owners.reduce(
+            (prev, current) => prev + (current === 'groupD' ? 1 : 0),
+            0,
+          ),
+        ).toBe(1);
       });
   });
 
