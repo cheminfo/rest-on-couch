@@ -1,5 +1,12 @@
 # Changelog
 
+### [11.0.4](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.3...v11.0.4) (2022-03-01)
+
+
+### Bug Fixes
+
+* apply same entry unicity restriction when identified with token ([33476ba](https://www.github.com/cheminfo/rest-on-couch/commit/33476bab66654f73738f5d0990f79a6d8403a0e8))
+
 ### [11.0.3](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.2...v11.0.3) (2022-02-17)
 
 
