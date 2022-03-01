@@ -32,6 +32,19 @@ describe('byOwner entry unicity', () => {
     ).rejects.toThrow(/entry already exists/);
   });
 
+  test('insertEntry should also fail if user is authenticated with a token', async () => {
+    const token = await couch.createUserToken('b@b.com', [
+      'read',
+      'write',
+      'create',
+    ]);
+    return expect(
+      couch.insertEntry({ $id: 'Y', $content: {} }, 'anonymous', {
+        token,
+      }),
+    ).rejects.toThrow(/entry already exists/);
+  });
+
   test('ensureExistsOrCreateEntry should create a new entry for user a@a.com because primary owner is different', async () => {
     const info = await couch.ensureExistsOrCreateEntry('Y', 'a@a.com');
     expect(info.isNew).toBe(true);
