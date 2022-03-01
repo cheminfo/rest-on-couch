@@ -286,12 +286,13 @@ const createNew = lockify(_createNew, (ctx, entry) => {
 
 async function _createNew(ctx, entry, user, options) {
   debug.trace('create new');
-  if (await getUniqueEntryById(ctx, user, entry.$id)) {
-    throw new CouchError('entry already exists', 'conflict');
-  }
+
   const hasGroups = options.groups ? options.groups.length > 0 : false;
   const rights = hasGroups ? ['create', 'owner'] : ['create'];
   user = validateMethods.userFromTokenAndRights(user, options.token, rights);
+  if (await getUniqueEntryById(ctx, user, entry.$id)) {
+    throw new CouchError('entry already exists', 'conflict');
+  }
   const ok = await validateMethods.checkGlobalRight(ctx, user, 'create');
   const userSet = new Set(options.groups || []);
 
