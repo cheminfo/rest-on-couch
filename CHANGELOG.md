@@ -1,5 +1,12 @@
 # Changelog
 
+### [11.0.5](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.4...v11.0.5) (2022-03-09)
+
+
+### Bug Fixes
+
+* convert max age to number ([156f64d](https://www.github.com/cheminfo/rest-on-couch/commit/156f64d33e249c0ca0f203f471ddf9b70a8c57e6))
+
 ### [11.0.4](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.3...v11.0.4) (2022-03-01)
 
 
