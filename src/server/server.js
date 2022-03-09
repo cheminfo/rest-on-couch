@@ -72,12 +72,15 @@ app.use(
   }),
 );
 
+const sessionMaxAge = Number.isNaN(Number(config.sessionMaxAge))
+  ? config.sessionMaxAge
+  : Number(config.sessionMaxAge);
 app.keys = config.keys;
 app.use(
   session(
     {
       key: config.sessionKey,
-      maxAge: config.sessionMaxAge,
+      maxAge: sessionMaxAge,
       path: config.sessionPath,
       domain: config.sessionDomain,
       secure: config.sessionSecure,
