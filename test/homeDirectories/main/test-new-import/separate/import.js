@@ -26,7 +26,7 @@ module.exports = async function separateImport(ctx, result) {
   result.addAttachment({
     jpath: ['other2', 'jpath'],
     reference: 'ref2',
-    // 'test2'
+    // no metadata
     contents: Uint8Array.of(116, 101, 115, 116, 50),
     field: 'testField',
     filename: 'test2.txt',

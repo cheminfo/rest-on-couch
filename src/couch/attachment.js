@@ -70,6 +70,7 @@ const methods = {
     if (typeof json !== 'object') {
       throw new CouchError('json must be an object');
     }
+    json.$modificationDate = Date.now();
     if (typeof file !== 'object' || file === null) {
       throw new CouchError('file must be an object');
     }
