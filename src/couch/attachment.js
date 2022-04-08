@@ -102,22 +102,18 @@ const methods = {
       throw new CouchError('jpath must point to an array');
     }
 
+    if (!file.reference) {
+      throw new Error('file must have a reference');
+    }
     debug.trace('set metadata');
-    if (file.reference) {
-      let found = current.find((el) => el.reference === file.reference);
-      if (found) {
-        Object.assign(found, json);
-        json = found;
-      } else {
-        json.reference = file.reference;
-        current.push(Object.assign(json, { $creationDate: Date.now() }));
-      }
+
+    let found = current.find((el) => el.reference === file.reference);
+    if (found) {
+      Object.assign(found, json);
+      json = found;
     } else {
-      current.push(
-        Object.assign(json, {
-          $creationDate: Date.now(),
-        }),
-      );
+      json.reference = file.reference;
+      current.push(Object.assign(json, { $creationDate: Date.now() }));
     }
 
     if (noFile) {
