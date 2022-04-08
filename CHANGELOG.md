@@ -1,5 +1,14 @@
 # Changelog
 
+## [11.1.0](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.5...v11.1.0) (2022-04-08)
+
+
+### Features
+
+* add automatic $creationDate to imports' metadata ([cbd1cea](https://www.github.com/cheminfo/rest-on-couch/commit/cbd1cea27e2ec68670b6c39a2c03e6cf68ae7dbb))
+* add automatic $modificationDate to imports metadata ([3cf504f](https://www.github.com/cheminfo/rest-on-couch/commit/3cf504fff4b94c8f82189ca0203219b4c8bc1ab1))
+* remove support for addFileToJpath without a file reference ([cdf1dfa](https://www.github.com/cheminfo/rest-on-couch/commit/cdf1dfa709daaba2372f33ca1f3249b2343f2840))
+
 ### [11.0.5](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.4...v11.0.5) (2022-03-09)
 
 
