@@ -12,7 +12,7 @@ var importCouch;
 // We just have to pick an existing file
 const textFile1 = path.resolve(
   __dirname,
-  '../../homeDirectories/main/test-new-import/simple/to_process/test.txt',
+  '../../homeDirectories/main/test-new-import/full/to_process/test.txt',
 );
 
 const textFile2 = path.resolve(
@@ -25,7 +25,7 @@ describe('import', () => {
     importCouch = await testUtils.resetDatabase(databaseName);
   });
   test('full import', async () => {
-    await importFile(databaseName, 'simple', textFile1);
+    await importFile(databaseName, 'full', textFile1);
     const data = await importCouch.getEntryById('test.txt', 'a@a.com');
     expect(data).toBeDefined();
     expect(data.$content).toBeDefined();
@@ -86,7 +86,7 @@ describe('import', () => {
     );
     expect(importLogs).toHaveLength(1);
     expect(importLogs[0]).toMatchObject({
-      name: 'simple',
+      name: 'full',
       filename: 'test.txt',
       status: 'SUCCESS',
     });

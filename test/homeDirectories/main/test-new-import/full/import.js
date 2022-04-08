@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = async function nmrImport(ctx, result) {
+module.exports = async function fullImport(ctx, result) {
   result.kind = 'sample';
   result.id = ctx.filename;
   result.owner = 'a@a.com';

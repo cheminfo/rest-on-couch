@@ -10,7 +10,7 @@ describe('ImportContext', () => {
   test('should instanciate a new import context', async () => {
     const file = path.join(
       __dirname,
-      '../../homeDirectories/main/test-new-import/simple/to_process/test.txt',
+      '../../homeDirectories/main/test-new-import/full/to_process/test.txt',
     );
     const fileContents = await fs.readFileSync(file, 'utf-8');
     const databaseName = 'test-new-import';
@@ -18,7 +18,7 @@ describe('ImportContext', () => {
     expect(ctx.filename).toBe('test.txt');
     expect(ctx.fileExt).toBe('.txt');
     expect(ctx.fileDir).toMatch(
-      path.normalize('homeDirectories/main/test-new-import/simple/to_process'),
+      path.normalize('homeDirectories/main/test-new-import/full/to_process'),
     );
     expect(ctx.couch).toBeDefined();
 
