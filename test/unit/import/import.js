@@ -176,6 +176,12 @@ describe('import', () => {
     expect(metadata2.reference).toBe('ref2');
   });
 
+  test('without reference', () => {
+    expect(() =>
+      importFile(databaseName, 'noReference', textFile1),
+    ).rejects.toThrow(/reference must be of type String/);
+  });
+
   test('error when the import function throws', async () => {
     await expect(importFile(databaseName, 'error', textFile1)).rejects.toThrow(
       /this import is wrong/,

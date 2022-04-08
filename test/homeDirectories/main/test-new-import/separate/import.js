@@ -33,7 +33,7 @@ module.exports = async function separateImport(ctx, result) {
     content_type: 'text/plain'
   });
   result.metadata = {
-    hasMetadata: true
+    hasMetadata2: true
   };
   result.addGroup('group1');
   result.addGroups(['group2', 'group3']);
