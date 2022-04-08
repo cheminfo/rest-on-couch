@@ -1,5 +1,12 @@
 # Changelog
 
+### [11.1.1](https://www.github.com/cheminfo/rest-on-couch/compare/v11.1.0...v11.1.1) (2022-04-08)
+
+
+### Bug Fixes
+
+* update dependencies ([a22b597](https://www.github.com/cheminfo/rest-on-couch/commit/a22b597af8ee5da8d99c3a78150ee89ffbc6dea1))
+
 ## [11.1.0](https://www.github.com/cheminfo/rest-on-couch/compare/v11.0.5...v11.1.0) (2022-04-08)
 
 
