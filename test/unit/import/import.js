@@ -36,10 +36,11 @@ describe('import', () => {
     expect(data.$owners).toEqual(['a@a.com', 'group1', 'group2', 'group3']);
 
     // Main metadata
-    let metadata = data.$content.jpath.in.document[0];
+    const metadata = data.$content.jpath.in.document[0];
     expect(metadata).toBeDefined();
-    // Automatic field was added
+    // Automatic fields were added
     expect(typeof metadata.$modificationDate).toBe('number');
+    expect(typeof metadata.$creationDate).toBe('number');
     // metadata has been added
     expect(metadata.hasMetadata).toBe(true);
     // a reference to the attachment has been added
@@ -48,18 +49,22 @@ describe('import', () => {
     expect(metadata.reference).toBe('test.txt');
 
     // Additional metadata
-    metadata = data.$content.other.jpath[0];
-    expect(metadata).toBeDefined();
+    const otherMetadata = data.$content.other.jpath[0];
+    expect(otherMetadata).toBeDefined();
     // Automatic field was added
-    expect(typeof metadata.$modificationDate).toBe('number');
+    expect(typeof otherMetadata.$modificationDate).toBe('number');
+    expect(typeof otherMetadata.$creationDate).toBe('number');
+
     // Mandatory field
-    expect(metadata.reference).toBe('testRef');
+    expect(otherMetadata.reference).toBe('testRef');
     // Custom field
-    expect(metadata.hasMetadata).toBe(true);
+    expect(otherMetadata.hasMetadata).toBe(true);
     // Field of additional attachment
-    expect(metadata.testField.filename).toBe('other/jpath/testFilename.txt');
+    expect(otherMetadata.testField.filename).toBe(
+      'other/jpath/testFilename.txt',
+    );
     // Primary attachment has no file
-    expect(metadata.field).not.toBeDefined();
+    expect(otherMetadata.field).not.toBeDefined();
 
     // check attachments
     const mainAttachment = data._attachments['jpath/in/document/test.txt'];
@@ -129,10 +134,11 @@ describe('import', () => {
     expect(data.$owners).toEqual(['a@a.com', 'group1', 'group2', 'group3']);
 
     // Additional metadata
-    var metadata = data.$content.other.jpath[0];
+    const metadata = data.$content.other.jpath[0];
     expect(metadata).toBeDefined();
     // Automatic field
     expect(typeof metadata.$modificationDate).toBe('number');
+    expect(typeof metadata.$creationDate).toBe('number');
     // Custom metadata
     expect(metadata.hasMetadata).toBe(true);
     // Mandotory reference
@@ -165,6 +171,7 @@ describe('import', () => {
     const metadata2 = data.$content.other2.jpath[0];
     // Automatic field
     expect(typeof metadata2.$modificationDate).toBe('number');
+    expect(typeof metadata2.$creationDate).toBe('number');
     // Mandatory field
     expect(metadata2.reference).toBe('ref2');
   });
