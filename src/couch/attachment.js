@@ -110,10 +110,14 @@ const methods = {
         json = found;
       } else {
         json.reference = file.reference;
-        current.push(json);
+        current.push(Object.assign(json, { $creationDate: Date.now() }));
       }
     } else {
-      current.push(json);
+      current.push(
+        Object.assign(json, {
+          $creationDate: Date.now(),
+        }),
+      );
     }
 
     if (noFile) {
