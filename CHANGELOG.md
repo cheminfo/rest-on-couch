@@ -1,5 +1,12 @@
 # Changelog
 
+### [11.1.2](https://www.github.com/cheminfo/rest-on-couch/compare/v11.1.1...v11.1.2) (2022-04-12)
+
+
+### Bug Fixes
+
+* restore koa-hbs to v1 ([cacfc48](https://www.github.com/cheminfo/rest-on-couch/commit/cacfc487c69a93d2114d82d5a6a2741effc8e911))
+
 ### [11.1.1](https://www.github.com/cheminfo/rest-on-couch/compare/v11.1.0...v11.1.1) (2022-04-08)
 
 
