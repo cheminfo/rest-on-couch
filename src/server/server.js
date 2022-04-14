@@ -5,7 +5,6 @@ const path = require('path');
 
 const cors = require('kcors');
 const Koa = require('koa');
-const compress = require('koa-compress');
 const hbs = require('koa-hbs');
 const passport = require('koa-passport');
 const responseTime = require('koa-response-time');
@@ -28,7 +27,6 @@ app.use(async function (ctx, next) {
   await next();
 });
 
-app.use(compress());
 app.use(responseTime());
 
 // trust X-Forwarded- headers
