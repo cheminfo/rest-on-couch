@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.2.0](https://www.github.com/cheminfo/rest-on-couch/compare/v11.1.2...v11.2.0) (2022-04-14)
+
+
+### Features
+
+* remove compression middleware ([f52d134](https://www.github.com/cheminfo/rest-on-couch/commit/f52d134162510b071ffb88754f0050e161b77d6f))
+
 ### [11.1.2](https://www.github.com/cheminfo/rest-on-couch/compare/v11.1.1...v11.1.2) (2022-04-12)
 
 
