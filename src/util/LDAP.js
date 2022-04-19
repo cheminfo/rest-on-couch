@@ -17,6 +17,7 @@ const defaultLdapOptions = {
 function search(ldapOptions, searchOptions) {
   searchOptions = Object.assign({}, defaultSearchOptions, searchOptions);
   ldapOptions = Object.assign({}, defaultLdapOptions, ldapOptions);
+
   return new Promise((resolve, reject) => {
     // ldap options should include bind options
     // if client could know when it is ready

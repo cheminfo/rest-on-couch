@@ -2,6 +2,7 @@ dn: cn=developer,dc=zakodium,dc=com
 changetype: add
 objectclass: inetOrgPerson
 cn: developer
+uid: developer
 givenname: developer
 sn: Developer
 displayname: Developer User
@@ -12,6 +13,7 @@ dn: cn=maintainer,dc=zakodium,dc=com
 changetype: add
 objectclass: inetOrgPerson
 cn: maintainer
+uid: maintainer
 givenname: maintainer
 sn: Maintainer
 displayname: Maintainer User
@@ -22,6 +24,7 @@ dn: cn=admin,dc=zakodium,dc=com
 changetype: add
 objectclass: inetOrgPerson
 cn: admin
+uid: admin
 givenname: admin
 sn: Admin
 displayname: Admin User
