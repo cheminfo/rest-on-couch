@@ -7,3 +7,13 @@ services:
       COUCHDB_PASSWORD: admin
     ports:
       - 127.0.0.1:5984:5984
+  ldap:
+    build: ./ldap
+    environment:
+      - LDAP_ORGANISATION=zakodium
+      - LDAP_DOMAIN=zakodium.com
+      - 'LDAP_BASE_DN=dc=zakodium,dc=com'
+      - LDAP_ADMIN_PASSWORD=admin
+    ports:
+      - 389:389
+      - 636:636
