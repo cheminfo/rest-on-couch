@@ -1,9 +1,6 @@
 'use strict';
 
-/* eslint-disable no-undef */
-
-const couchdbHost = process.env.COUCHDB_HOST || 'localhost';
-const couchdbPort = process.env.COUCHDB_PORT || '5984';
+const {couchdbHost, couchdbPort, ldapAuthConfig} = require('../constants');
 
 module.exports = {
   url: `http://${couchdbHost}:${couchdbPort}`,
@@ -47,6 +44,7 @@ module.exports = {
       title: 'CouchDB authentication',
       showLogin: true,
     },
+    ldap: ldapAuthConfig,
   },
   getUserInfo(email) {
     return Promise.resolve({

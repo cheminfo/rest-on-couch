@@ -7,7 +7,7 @@ givenname: developer
 sn: Developer
 displayname: Developer User
 mail: developer@zakodium.com
-userpassword: 123
+userpassword: developer
 
 dn: cn=maintainer,dc=zakodium,dc=com
 changetype: add
@@ -18,7 +18,7 @@ givenname: maintainer
 sn: Maintainer
 displayname: Maintainer User
 mail: maintainer@zakodium.com
-userpassword: 123
+userpassword: maintainer
 
 dn: cn=admin,dc=zakodium,dc=com
 changetype: add
@@ -29,7 +29,7 @@ givenname: admin
 sn: Admin
 displayname: Admin User
 mail: admin@zakodium.com
-userpassword: 123
+userpassword: admin
 
 dn: ou=Groups,dc=zakodium,dc=com
 changetype: add

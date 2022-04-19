@@ -38,11 +38,12 @@
 
 ### User
 
-| Method | Route                         |         Action          |                         Description                          |
-| :----: | :---------------------------- | :---------------------: | :----------------------------------------------------------: |
-|  GET   | `/db/:dbname/user/_me`        |  Get user preferences   |           Returns logged user's preferences entry            |
-|  POST  | `/db/:dbname/user/_me`        | Update user preferences | Creates a merge of current preferences with sent preferences |
-|  GET   | `/db/:dbname/user/_me/groups` |  Get group membership   | Name and rights of groups the logged in user is a member of  |
+| Method | Route                         |         Action          |                             Description                             |
+| :----: | :---------------------------- | :---------------------: | :-----------------------------------------------------------------: |
+|  GET   | `/db/:dbname/user/_me`        |  Get user preferences   |               Returns logged user's preferences entry               |
+|  POST  | `/db/:dbname/user/_me`        | Update user preferences |    Creates a merge of current preferences with sent preferences     |
+|  GET   | `/db/:dbname/user/_me/groups` |  Get group membership   |     Name and rights of groups the logged in user is a member of     |
+|  GET   | `/:dbname/userInfo/_me`       | Get private information | Custom request (e.g. LDAP) to retrieve private personal information |
 
 ### Queries
 
