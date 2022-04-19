@@ -33,6 +33,10 @@ jobs:
           COUCHDB_PASSWORD: admin
         ports:
           - 5984:5984
+      ldap:
+        image: ghcr.io/cheminfo/ldap-with-users:latest
+        ports:
+          - 389:389
     strategy:
       fail-fast: false
       matrix:
