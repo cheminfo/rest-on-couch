@@ -8,6 +8,6 @@ services:
     ports:
       - 127.0.0.1:5984:5984
   ldap:
-    build: ./ldap
+    image: ghcr.io/zakodium/ldap-with-users:1
     ports:
       - 389:389

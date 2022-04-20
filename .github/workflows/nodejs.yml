@@ -34,7 +34,7 @@ jobs:
         ports:
           - 5984:5984
       ldap:
-        image: ghcr.io/cheminfo/ldap-with-users:latest
+        image: ghcr.io/zakodium/ldap-with-users:1
         ports:
           - 389:389
     strategy:

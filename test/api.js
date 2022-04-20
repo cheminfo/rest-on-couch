@@ -5,7 +5,7 @@ const { version } = require('../package.json');
 const data = require('./data/data');
 const noRights = require('./data/noRights');
 const request = require('./setup/setup').getAgent();
-const authenticateAs = require('./utils/authenticate');
+const authenticateAs = require('./utils/authenticateCouchDB');
 
 describe('basic rest-api as anonymous (noRights)', () => {
   beforeEach(noRights);

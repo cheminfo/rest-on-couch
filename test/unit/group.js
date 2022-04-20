@@ -187,7 +187,7 @@ describe('group methods', () => {
   });
 });
 
-describe.only('ldap group methods', () => {
+describe('ldap group methods', () => {
   beforeEach(data);
   test('create an LDAP group', async () => {
     const newGroup = await couch.createGroup(
