@@ -2,7 +2,8 @@
 
 const data = require('../../data/data');
 const request = require('../../setup/setup').getAgent();
-const authenticateAs = require('../../utils/authenticate');
+const authenticateCouchDB = require('../../utils/authenticateCouchDB');
+const authenticateLDAP = require('../../utils/authenticateLDAP');
 
 describe('User REST-api (data, anonymous)', () => {
   beforeEach(data);
@@ -66,9 +67,9 @@ describe('User REST-api (token)', () => {
   });
 });
 
-describe('User REST-api (data, a@a.com', () => {
+describe('User REST-api , a@a.com', () => {
   beforeEach(() => {
-    return data().then(() => authenticateAs(request, 'a@a.com', '123'));
+    return data().then(() => authenticateCouchDB(request, 'a@a.com', '123'));
   });
 
   test('Should get user details', () => {
@@ -90,6 +91,32 @@ describe('User REST-api (data, a@a.com', () => {
         expect(res.body.rev).toMatch(/^2/);
         return couch.getUser('a@a.com').then((user) => {
           expect(user.val).toBe('x');
+        });
+      });
+  });
+});
+
+describe('LDAP user, developer@zakodium.com', () => {
+  beforeEach(() => {
+    return data().then(() =>
+      authenticateLDAP(request, 'developer', 'developer'),
+    );
+  });
+
+  test('Should get ldap user details', () => {
+    // Ldap users don't store user data
+    return request.get('/db/test/user/_me').expect(404);
+  });
+
+  test('Should get ldap user info', () => {
+    return request
+      .get('/db/test/userInfo/_me')
+      .expect(200)
+      .then((res) => {
+        expect(res.body).toBeDefined();
+        expect(res.body).toStrictEqual({
+          value: 42,
+          email: 'developer@zakodium.com',
         });
       });
   });

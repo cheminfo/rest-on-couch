@@ -1,7 +1,6 @@
 'use strict';
 
-const couchdbHost = process.env.COUCHDB_HOST || 'localhost';
-const couchdbPort = process.env.COUCHDB_PORT || '5984';
+const {couchdbHost, couchdbPort, ldapAuthConfig} = require('../constants')
 
 module.exports = {
   url: `http://${couchdbHost}:${couchdbPort}`,
@@ -10,11 +9,18 @@ module.exports = {
     couchdb: {
       showLogin: true,
     },
+    ldap: ldapAuthConfig,
   },
   username: 'admin',
   password: 'admin',
   // Already administrator from global configuration
-  superAdministrators: ['admin@a.com', 'a@a.com'],
+  superAdministrators: ['admin@a.com', 'a@a.com', 'admin@zakodium.com'],
   sessionSigned: true,
   allowedOrigins: ['http://localhost:8080'],
+  getUserInfo: function (user) {
+    return {
+      uid: user.uid,
+      displayName: user.displayName,
+    };
+  },
 };

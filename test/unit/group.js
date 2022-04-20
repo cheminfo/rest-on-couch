@@ -187,6 +187,51 @@ describe('group methods', () => {
   });
 });
 
+describe('ldap group methods', () => {
+  beforeEach(data);
+  test('create an LDAP group', async () => {
+    const newGroup = await couch.createGroup(
+      'groupLdap',
+      'a@a.com',
+      [],
+      'ldap',
+    );
+    expect(newGroup).toBeDefined();
+    expect(newGroup.isNew).toBe(true);
+    const group = await couch.getGroup('groupLdap', 'a@a.com');
+    expect(group).toBeDefined();
+    expect(group.groupType).toEqual('ldap');
+    expect(group.filter).not.toBeDefined();
+    expect(group.DN).not.toBeDefined();
+    expect(group._id).toBe(newGroup.id);
+  });
+
+  test('set ldap group properties and sync group', async () => {
+    const newGroup = await couch.createGroup(
+      'groupLdap',
+      'a@a.com',
+      [],
+      'ldap',
+    );
+    const filter =
+      '(&(objectClass=inetOrgPerson)(memberOf=cn=Maintainers,ou=Groups,dc=zakodium,dc=com))';
+    const DN = 'dc=zakodium,dc=com';
+    await couch.setLdapGroupProperties(newGroup.id, 'a@a.com', {
+      filter,
+      DN,
+    });
+
+    const updatedGroup = await couch.getGroup('groupLdap', 'a@a.com');
+    expect(updatedGroup).toBeDefined();
+    expect(updatedGroup.filter).toEqual(filter);
+    expect(updatedGroup.DN).toEqual(DN);
+
+    await couch.syncLdapGroup(newGroup.id, 'a@a.com');
+    const groupWithUsers = await couch.getGroup('groupLdap', 'a@a.com');
+    expect(groupWithUsers.users).toHaveLength(2);
+  });
+});
+
 describe('group methods (no default rights)', () => {
   beforeEach(noRights);
 

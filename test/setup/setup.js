@@ -1,7 +1,13 @@
 'use strict';
 
+const dotenv = require('dotenv');
+
 require('make-promises-safe');
 const path = require('path');
+
+dotenv.config({
+  path: './.env.test',
+});
 
 process.env.REST_ON_COUCH_HOME_DIR = path.join(
   __dirname,

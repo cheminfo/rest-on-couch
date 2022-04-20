@@ -2,7 +2,7 @@
 
 const data = require('../../data/data');
 const request = require('../../setup/setup').getAgent();
-const authenticateAs = require('../../utils/authenticate');
+const authenticateAs = require('../../utils/authenticateCouchDB');
 
 describe('rest api - manage owners', () => {
   const id = 'A';
