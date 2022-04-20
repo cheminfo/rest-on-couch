@@ -9,7 +9,7 @@ const ldapAuthConfig = {
     searchBase: 'dc=zakodium,dc=com',
     searchFilter: 'uid={{username}}',
     bindDN: process.env.REST_ON_COUCH_LDAP_BIND_D_N,
-    bindCredentials: process.env.REST_ON_COUCH_LDAP_BIND_CREDENTIALS,
+    bindCredentials: process.env.REST_ON_COUCH_LDAP_BIND_PASSWORD,
   },
   getUserInfo: function (user) {
     return {
