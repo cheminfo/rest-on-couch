@@ -198,16 +198,6 @@ Go to http://localhost:5984/\_utils/#setup
 - Execute the bash script `/setupDatabase.sh`
 - Execute the tests: `npm t`
 
-## Setup for github actions
-
-To update the image for ldap which github actions is using, run:
-
-```bash
-docker login ghcr.io # use your username and a token with packages write access
-docker build ldap -t ghcr.io/cheminfo/ldap-with-users:latest
-docker push ghcr.io/cheminfo/ldap-with-users:latest
-```
-
 ## Automatic importation
 
 `rest-on-couch` is able to watch folders and to automatically import data in the database.
