@@ -75,7 +75,7 @@
     "koa-response-time": "^2.1.0",
     "koa-session": "^6.2.0",
     "koa-static": "^5.0.0",
-    "ldapjs": "^1.0.2",
+    "ldapjs": "^2.3.2",
     "lodash": "^4.17.21",
     "minimist": "^1.2.6",
     "object-hash": "^3.0.0",
