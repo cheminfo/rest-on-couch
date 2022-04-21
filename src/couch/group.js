@@ -306,9 +306,6 @@ const methods = {
     debug.trace('sync LDAP group (%s, %s)', uuid, user);
     await this.open();
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
-    if (group.groupType !== 'ldap') {
-      throw new CouchError('Cannot sync ldap group', 'bad argument');
-    }
     return syncOneGroup(this, group, user, false);
   },
 
