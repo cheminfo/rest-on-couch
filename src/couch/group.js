@@ -153,9 +153,29 @@ const methods = {
   },
 
   /**
+   * Return info about a specific group
+   *
+   */
+  async getGroupInfo(groupName, user, ldapInfo) {
+    debug('getGroupInfo (%s, %s, %s)', groupName, user, ldapInfo);
+    await this.open();
+    const group = await nanoMethods.getGroup(this._db, groupName);
+    if (!group) {
+      debug.trace('group does not exist');
+      throw new CouchError('group does not exist', 'not found');
+    }
+
+    const hasReadGroupRight = await validate.checkGlobalRight(
+      this,
+      user,
+      'readGroup',
+    );
+
+    return getGroupInfoResult(this, group, user, hasReadGroupRight, ldapInfo);
+  },
+
+  /**
    * Return info about every group
-   * Only contains the group's name and description
-   * Does not return the list of user's or type of group
    * @param {*} user
    */
   async getGroupsInfo(user, ldapInfo) {
@@ -183,28 +203,14 @@ const methods = {
 
     const result = [];
     for (let group of groups) {
-      const additionalProperties =
-        hasReadGroupRight ||
-        group.users.includes(user) ||
-        group.$owners.includes(user)
-          ? {
-              users: group.users,
-              rights: group.rights,
-            }
-          : {};
-      if (ldapInfo) {
-        if (isLdapGroup(group)) {
-          const { info } = await syncOneLdapGroup(this, group, user);
-          additionalProperties.ldapInfo = info;
-        } else {
-          additionalProperties.ldapInfo = [];
-        }
-      }
-      result.push({
-        name: group.name,
-        description: group.description,
-        ...additionalProperties,
-      });
+      const groupInfo = await getGroupInfoResult(
+        this,
+        group,
+        user,
+        hasReadGroupRight,
+        ldapInfo,
+      );
+      result.push(groupInfo);
     }
 
     return result;
@@ -429,4 +435,35 @@ function isLdapGroup(group) {
     return true;
   }
   return false;
+}
+
+async function getGroupInfoResult(
+  ctx,
+  group,
+  user,
+  hasReadGroupRight,
+  ldapInfo,
+) {
+  const additionalProperties =
+    hasReadGroupRight ||
+    group.users.includes(user) ||
+    group.$owners.includes(user)
+      ? {
+          users: group.users,
+          rights: group.rights,
+        }
+      : {};
+  if (ldapInfo) {
+    if (isLdapGroup(group)) {
+      const { info } = await syncOneLdapGroup(ctx, group, user);
+      additionalProperties.ldapInfo = info;
+    } else {
+      additionalProperties.ldapInfo = [];
+    }
+  }
+  return {
+    name: group.name,
+    description: group.description,
+    ...additionalProperties,
+  };
 }
