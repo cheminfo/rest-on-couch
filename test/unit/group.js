@@ -277,7 +277,7 @@ describe('ldap group methods', () => {
     groups = await couch.getGroupsInfo('a@a.com', true);
     info = groups.find((g) => g.name === 'groupLdap');
 
-    expect(info).toStrictEqual({
+    const expectedResult = {
       name: 'groupLdap',
       description: undefined,
       users: ['developer@zakodium.com', 'maintainer@zakodium.com'],
@@ -286,7 +286,11 @@ describe('ldap group methods', () => {
         { displayName: 'Developer User', email: 'developer@zakodium.com' },
         { displayName: 'Maintainer User', email: 'maintainer@zakodium.com' },
       ],
-    });
+    };
+    expect(info).toStrictEqual(expectedResult);
+
+    info = await couch.getGroupInfo('groupLdap', 'a@a.com', true);
+    expect(info).toStrictEqual(expectedResult);
   });
 });
 
