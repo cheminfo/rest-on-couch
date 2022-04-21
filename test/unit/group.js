@@ -224,6 +224,11 @@ describe('group methods', () => {
 
 describe('ldap group methods', () => {
   beforeEach(data);
+  const ldapGroupProperties = {
+    filter:
+      '(&(objectClass=inetOrgPerson)(memberOf=cn=Maintainers,ou=Groups,dc=zakodium,dc=com))',
+    DN: 'dc=zakodium,dc=com',
+  };
   test('create an LDAP group', async () => {
     const newGroup = await couch.createGroup('groupLdap', 'a@a.com', []);
     expect(newGroup).toBeDefined();
@@ -238,13 +243,7 @@ describe('ldap group methods', () => {
 
   test('set ldap group properties and sync group', async () => {
     const newGroup = await couch.createGroup('groupLdap', 'a@a.com', []);
-    const filter =
-      '(&(objectClass=inetOrgPerson)(memberOf=cn=Maintainers,ou=Groups,dc=zakodium,dc=com))';
-    const DN = 'dc=zakodium,dc=com';
-    await couch.setGroupProperties(newGroup.id, 'a@a.com', {
-      filter,
-      DN,
-    });
+    await couch.setGroupProperties(newGroup.id, 'a@a.com', ldapGroupProperties);
 
     let updatedGroup = await couch.getGroup('groupLdap', 'a@a.com');
     expect(updatedGroup.users).toHaveLength(2);
@@ -254,6 +253,40 @@ describe('ldap group methods', () => {
     updatedGroup = await couch.getGroup('groupLdap', 'a@a.com');
     expect(updatedGroup.users).toHaveLength(3);
     expect(updatedGroup.customUsers).toHaveLength(1);
+
+    // resync
+    await couch.syncGroup(newGroup.id, 'a@a.com');
+    updatedGroup = await couch.getGroup('groupLdap', 'a@a.com');
+    expect(updatedGroup.users).toHaveLength(3);
+    expect(updatedGroup.customUsers).toHaveLength(1);
+  });
+
+  test('getGroupsInfo with ldap group', async () => {
+    const newGroup = await couch.createGroup('groupLdap', 'a@a.com', []);
+    await couch.setGroupProperties(newGroup.id, 'a@a.com', ldapGroupProperties);
+
+    let groups = await couch.getGroupsInfo('a@a.com');
+    let info = groups.find((g) => g.name === 'groupLdap');
+    expect(info).toStrictEqual({
+      name: 'groupLdap',
+      description: undefined,
+      users: ['developer@zakodium.com', 'maintainer@zakodium.com'],
+      rights: [],
+    });
+
+    groups = await couch.getGroupsInfo('a@a.com', true);
+    info = groups.find((g) => g.name === 'groupLdap');
+
+    expect(info).toStrictEqual({
+      name: 'groupLdap',
+      description: undefined,
+      users: ['developer@zakodium.com', 'maintainer@zakodium.com'],
+      rights: [],
+      ldapInfo: [
+        { displayName: 'Developer User', email: 'developer@zakodium.com' },
+        { displayName: 'Maintainer User', email: 'maintainer@zakodium.com' },
+      ],
+    });
   });
 });
 

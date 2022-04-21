@@ -158,8 +158,8 @@ const methods = {
    * Does not return the list of user's or type of group
    * @param {*} user
    */
-  async getGroupsInfo(user) {
-    debug.trace('getGroupsInfo (%s)', user);
+  async getGroupsInfo(user, ldapInfo) {
+    debug.trace('getGroupsInfo (%s, %s)', user, ldapInfo);
 
     if (user === 'anonymous') {
       throw new CouchError(
@@ -181,7 +181,8 @@ const methods = {
       'readGroup',
     );
 
-    return groups.map((group) => {
+    const result = [];
+    for (let group of groups) {
       const additionalProperties =
         hasReadGroupRight ||
         group.users.includes(user) ||
@@ -191,12 +192,22 @@ const methods = {
               rights: group.rights,
             }
           : {};
-      return {
+      if (ldapInfo) {
+        if (isLdapGroup(group)) {
+          const { info } = await syncOneLdapGroup(this, group, user);
+          additionalProperties.ldapInfo = info;
+        } else {
+          additionalProperties.ldapInfo = [];
+        }
+      }
+      result.push({
         name: group.name,
         description: group.description,
         ...additionalProperties,
-      };
-    });
+      });
+    }
+
+    return result;
   },
 
   /**
@@ -333,7 +344,8 @@ function resetToCustomUsers(ctx, group, user) {
 async function syncOneGroup(ctx, group, user, safe) {
   if (isLdapGroup(group)) {
     try {
-      return syncOneLdapGroup(ctx, group, user);
+      const { result } = await syncOneLdapGroup(ctx, group, user);
+      return result;
     } catch (e) {
       debug(e.message);
       if (safe) {
@@ -363,10 +375,21 @@ async function syncOneLdapGroup(ctx, group, user) {
   );
 
   let emails = [];
+  let info = [];
   entries.forEach((entry) => {
     let user = entry.object;
     // Custom email extraction
     if (user) {
+      if (ctx._getPublicUserInfo) {
+        try {
+          const userInfo = ctx._getPublicUserInfo(user);
+          if (userInfo !== null) {
+            info.push(ctx._getPublicUserInfo(user));
+          }
+        } catch {
+          // Do not add anything to info
+        }
+      }
       emails.push(
         ...util.ensureUsersArray(couchOptions.ldapGetUserEmail(user)),
       );
@@ -375,14 +398,16 @@ async function syncOneLdapGroup(ctx, group, user) {
     }
   });
 
+  let result;
   // Check if changed to avoid many revisions
   const newUsers = _.union(emails, group.customUsers);
   if (arraysAreEqual(newUsers, group.users)) {
-    return getUnchangedGroupResult(group);
+    result = getUnchangedGroupResult(group);
   } else {
     group.users = newUsers;
-    return nanoMethods.save(ctx._db, group, user);
+    result = await nanoMethods.save(ctx._db, group, user);
   }
+  return { result, info };
 }
 
 function arraysAreEqual(arr1, arr2) {
