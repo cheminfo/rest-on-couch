@@ -23,4 +23,10 @@ module.exports = {
       displayName: user.displayName,
     };
   },
+  getPublicUserInfo(user) {
+    return {
+      displayName: user.displayName,
+      email: user.mail,
+    }
+  }
 };

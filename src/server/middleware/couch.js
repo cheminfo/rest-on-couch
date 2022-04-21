@@ -311,7 +311,10 @@ exports.getGroups = composeWithError(async (ctx) => {
 });
 
 exports.getGroupsInfo = composeWithError(async (ctx) => {
-  ctx.body = await ctx.state.couch.getGroupsInfo(ctx.state.userEmail);
+  ctx.body = await ctx.state.couch.getGroupsInfo(
+    ctx.state.userEmail,
+    ctx.query.ldapInfo,
+  );
 });
 
 exports.getGroupUsers = composeWithError(async (ctx) => {

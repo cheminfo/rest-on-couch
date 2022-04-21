@@ -37,6 +37,9 @@ module.exports = {
   ldapGetUserEmail(user) {
     return user.mail;
   },
+  getUserPublicInfo() {
+    return null;
+  },
   entryUnicity: 'byOwner', // can be byOwner or global
 
   // Options related to audit logs

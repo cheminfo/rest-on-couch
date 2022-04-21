@@ -52,4 +52,10 @@ module.exports = {
       value: 42,
     });
   },
+  getPublicUserInfo(user) {
+    return {
+      displayName: user.displayName,
+      email: user.mail,
+    }
+  }
 };
