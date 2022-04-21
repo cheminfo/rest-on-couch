@@ -22,7 +22,6 @@ function populate(db) {
     }),
     insertDocument(db, {
       $type: 'group',
-      groupType: 'default',
       $owners: ['b@b.com'],
       name: 'group1',
       users: ['a@a.com'],

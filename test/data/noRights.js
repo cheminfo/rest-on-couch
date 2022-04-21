@@ -27,6 +27,7 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'groupA',
       users: ['a@a.com'],
+      customUsers: ['a@a.com'],
       rights: ['create', 'write', 'delete', 'read'],
     }),
   );
@@ -37,6 +38,7 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'groupB',
       users: ['b@b.com', 'c@c.com'],
+      customUsers: ['b@b.com', 'c@c.com'],
       rights: ['create'],
     }),
   );
@@ -47,6 +49,7 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'defaultAnonymousRead',
       users: [],
+      customUsers: [],
       rights: ['read'],
     }),
   );
@@ -57,6 +60,7 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'defaultAnyuserRead',
       users: [],
+      customUsers: [],
       rights: ['read'],
     }),
   );

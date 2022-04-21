@@ -89,9 +89,8 @@ async function doUpdateGroup(groupName, type, value, method) {
 }
 
 export const CREATE_GROUP = 'CREATE_GROUP';
-export function createGroup(groupName, type) {
-  type = type || 'default';
-  const groupUrl = `db/${dbManager.currentDb}/group/${groupName}?type=${type}`;
+export function createGroup(groupName) {
+  const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
   return {
     type: CREATE_GROUP,
     payload: doCreateGroup(groupUrl),
@@ -126,40 +125,12 @@ export function setGroupProperties(groupName, properties) {
   };
 }
 
-export function setLdapGroupProperties(groupName, properties) {
-  const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
-  const setPropUrl = `${groupUrl}/ldap/properties`;
-  return {
-    type: UPDATE_GROUP,
-    meta: { groupName },
-    payload: doUpdateGroupProperties(groupUrl, setPropUrl, properties),
-  };
-}
-
 async function doUpdateGroupProperties(groupUrl, setPropUrl, properties) {
   await apiFetchJSON(setPropUrl, {
     method: 'PUT',
     body: JSON.stringify(properties),
   });
   return apiFetchJSON(groupUrl);
-}
-
-export function syncLdapGroup(groupName) {
-  return {
-    type: UPDATE_GROUP,
-    meta: { groupName },
-    payload: doLdapSync(groupName),
-  };
-}
-
-async function doLdapSync(groupName) {
-  const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
-  const syncUrl = `${groupUrl}/ldap/sync`;
-  let res = await apiFetchJSON(syncUrl);
-  if (!res.error) {
-    res = await apiFetchJSON(groupUrl);
-  }
-  return res;
 }
 
 export function addDefaultGroup(user, group) {

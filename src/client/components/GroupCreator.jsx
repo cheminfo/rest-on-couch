@@ -35,14 +35,7 @@ class GroupCreator extends Component {
               onClick={() => {
                 createGroup(this.state.value);
               }}
-              value="Create normal group"
-            />
-            &nbsp;
-            <input
-              type="button"
-              className="btn btn-secondary btn-fill"
-              onClick={() => createGroup(this.state.value, 'ldap')}
-              value="Create LDAP group"
+              value="Create group"
             />
           </form>
           {error ? (

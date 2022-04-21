@@ -147,18 +147,7 @@ router.delete(
   couch.removeOwner('group'),
 );
 
-// LDAP groups
-router.put(
-  '/:dbname/group/:name/ldap/properties',
-  getUuidFromGroupName,
-  parseJson1mb,
-  couch.setLdapGroupProperties,
-);
-router.get(
-  '/:dbname/group/:name/ldap/sync',
-  getUuidFromGroupName,
-  couch.syncLdapGroup,
-);
+router.get('/:dbname/group/:name/sync', getUuidFromGroupName, couch.syncGroup);
 
 // Global rights
 router.get('/:dbname/rights', couch.getGlobalRights);
