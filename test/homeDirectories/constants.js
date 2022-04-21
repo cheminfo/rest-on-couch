@@ -1,6 +1,6 @@
 'use strict';
 
-const couchdbHost = process.env.COUCHDB_HOST || 'localhost';
+const couchdbHost = process.env.COUCHDB_HOST || '127.0.0.1';
 const couchdbPort = process.env.COUCHDB_PORT || '5984';
 
 const ldapAuthConfig = {

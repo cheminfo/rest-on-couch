@@ -2,7 +2,7 @@
 
 module.exports = {
   // Main options
-  url: 'http://localhost:5984',
+  url: 'http://127.0.0.1:5984',
   logLevel: 'FATAL',
   authRenewal: 570,
   ldapGroupsRenewal: 300,
