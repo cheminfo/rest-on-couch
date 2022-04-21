@@ -1,5 +1,32 @@
 # Changelog
 
+## [12.0.0](https://www.github.com/cheminfo/rest-on-couch/compare/v11.2.0...v12.0.0) (2022-04-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* set ldap group properties api removed (unified in set group properties api). Replaced sync ldap group api with sync group api. Group edits now resync ldap automatically.
+* upgrade Node.js to v16 (#343)
+* remove support for Node.js 12 (#342)
+
+### Features
+
+* add custom additional public information from ldap in getGroupsInfo ([095c404](https://www.github.com/cheminfo/rest-on-couch/commit/095c404a0c278d9966c1395998339e9daf522177))
+* add getGroupInfo api ([d2c2e6d](https://www.github.com/cheminfo/rest-on-couch/commit/d2c2e6d9f01710bccde7c24dd00b38013ffd07a0))
+* merge ldap and regular groups together ([79a32f8](https://www.github.com/cheminfo/rest-on-couch/commit/79a32f82d53f502a83ff14513252ad6878c9b4f4))
+* show limited number of users in admin UI ([79a32f8](https://www.github.com/cheminfo/rest-on-couch/commit/79a32f82d53f502a83ff14513252ad6878c9b4f4))
+* upgrade Node.js to v16 ([#343](https://www.github.com/cheminfo/rest-on-couch/issues/343)) ([484f29c](https://www.github.com/cheminfo/rest-on-couch/commit/484f29c998373c3555cfb8aae3667f1438d41947))
+
+
+### Bug Fixes
+
+* remove groupType check ([4e497df](https://www.github.com/cheminfo/rest-on-couch/commit/4e497df52ae94582ed241983fdb83c888bf163cc))
+
+
+### Miscellaneous Chores
+
+* remove support for Node.js 12 ([#342](https://www.github.com/cheminfo/rest-on-couch/issues/342)) ([0898b10](https://www.github.com/cheminfo/rest-on-couch/commit/0898b1040f0c5ea50a270980eb2024d370a79a68))
+
 ## [11.2.0](https://www.github.com/cheminfo/rest-on-couch/compare/v11.1.2...v11.2.0) (2022-04-14)
 
 
