@@ -261,7 +261,7 @@ describe('ldap group methods', () => {
     expect(updatedGroup.customUsers).toHaveLength(1);
   });
 
-  test('getGroupsInfo with ldap group', async () => {
+  test('getGroupsInfo and getGroupInfo with ldap group', async () => {
     const newGroup = await couch.createGroup('groupLdap', 'a@a.com', []);
     await couch.setGroupProperties(newGroup.id, 'a@a.com', ldapGroupProperties);
 
@@ -291,6 +291,12 @@ describe('ldap group methods', () => {
 
     info = await couch.getGroupInfo('groupLdap', 'a@a.com', true);
     expect(info).toStrictEqual(expectedResult);
+  });
+
+  test('getGroupInfo with inexistant group', () => {
+    return expect(() =>
+      couch.getGroupInfo('notexisting', 'a@a.com'),
+    ).rejects.toThrow(/group does not exist/);
   });
 });
 
