@@ -41,7 +41,9 @@ describe('group methods', () => {
       })
       .then(function (group) {
         expect(group.users).toHaveLength(2);
+        expect(group.customUsers).toHaveLength(2);
         expect(group.users[1]).toBe('test123@example.com');
+        expect(group.customUsers[1]).toBe('test123@example.com');
       });
   });
 
@@ -59,7 +61,37 @@ describe('group methods', () => {
         expect(group.users).toHaveLength(3);
         expect(group.users[1]).toBe('test123@example.com');
         expect(group.users[2]).toBe('dup@example.com');
+        expect(group.customUsers[1]).toBe('test123@example.com');
+        expect(group.customUsers[2]).toBe('dup@example.com');
       });
+  });
+
+  test('should add user which already exists', async () => {
+    const group = await couch.getGroup('groupA', 'a@a.com');
+
+    const updateData = await couch.addUsersToGroup('groupA', 'a@a.com', [
+      'a@a.com',
+    ]);
+    expect(updateData).toBeDefined();
+    expect(updateData.id).toEqual(group._id);
+    expect(updateData.rev).toEqual(group._rev);
+    expect(updateData.$modificationDate).toEqual(group.$modificationDate);
+    expect(updateData.$creationDate).toEqual(group.$creationDate);
+    expect(updateData.isNew).toBe(false);
+  });
+
+  test('should remove user which does not exist', async () => {
+    const group = await couch.getGroup('groupA', 'a@a.com');
+
+    const updateData = await couch.removeUsersFromGroup('groupA', 'a@a.com', [
+      'b@b.com',
+    ]);
+    expect(updateData).toBeDefined();
+    expect(updateData.id).toEqual(group._id);
+    expect(updateData.rev).toEqual(group._rev);
+    expect(updateData.$modificationDate).toEqual(group.$modificationDate);
+    expect(updateData.$creationDate).toEqual(group.$creationDate);
+    expect(updateData.isNew).toBe(false);
   });
 
   test('should remove users from group', () => {
@@ -74,6 +106,8 @@ describe('group methods', () => {
       .then(function (group) {
         expect(group.users).toHaveLength(1);
         expect(group.users[0]).toBe('test123@example.com');
+        expect(group.customUsers).toHaveLength(1);
+        expect(group.customUsers[0]).toBe('test123@example.com');
       });
   });
 
@@ -81,6 +115,7 @@ describe('group methods', () => {
     return couch.getGroups('a@a.com').then(function (docs) {
       expect(docs).toHaveLength(3);
       expect(docs[0].users[0]).toBe('a@a.com');
+      expect(docs[0].customUsers[0]).toBe('a@a.com');
     });
   });
 
@@ -190,45 +225,35 @@ describe('group methods', () => {
 describe('ldap group methods', () => {
   beforeEach(data);
   test('create an LDAP group', async () => {
-    const newGroup = await couch.createGroup(
-      'groupLdap',
-      'a@a.com',
-      [],
-      'ldap',
-    );
+    const newGroup = await couch.createGroup('groupLdap', 'a@a.com', []);
     expect(newGroup).toBeDefined();
     expect(newGroup.isNew).toBe(true);
     const group = await couch.getGroup('groupLdap', 'a@a.com');
     expect(group).toBeDefined();
-    expect(group.groupType).toEqual('ldap');
     expect(group.filter).not.toBeDefined();
     expect(group.DN).not.toBeDefined();
     expect(group._id).toBe(newGroup.id);
+    expect(group.users).toStrictEqual([]);
   });
 
   test('set ldap group properties and sync group', async () => {
-    const newGroup = await couch.createGroup(
-      'groupLdap',
-      'a@a.com',
-      [],
-      'ldap',
-    );
+    const newGroup = await couch.createGroup('groupLdap', 'a@a.com', []);
     const filter =
       '(&(objectClass=inetOrgPerson)(memberOf=cn=Maintainers,ou=Groups,dc=zakodium,dc=com))';
     const DN = 'dc=zakodium,dc=com';
-    await couch.setLdapGroupProperties(newGroup.id, 'a@a.com', {
+    await couch.setGroupProperties(newGroup.id, 'a@a.com', {
       filter,
       DN,
     });
 
-    const updatedGroup = await couch.getGroup('groupLdap', 'a@a.com');
-    expect(updatedGroup).toBeDefined();
-    expect(updatedGroup.filter).toEqual(filter);
-    expect(updatedGroup.DN).toEqual(DN);
+    let updatedGroup = await couch.getGroup('groupLdap', 'a@a.com');
+    expect(updatedGroup.users).toHaveLength(2);
+    expect(updatedGroup.customUsers).toHaveLength(0);
 
-    await couch.syncLdapGroup(newGroup.id, 'a@a.com');
-    const groupWithUsers = await couch.getGroup('groupLdap', 'a@a.com');
-    expect(groupWithUsers.users).toHaveLength(2);
+    await couch.addUsersToGroup(newGroup.id, 'a@a.com', ['b@b.com']);
+    updatedGroup = await couch.getGroup('groupLdap', 'a@a.com');
+    expect(updatedGroup.users).toHaveLength(3);
+    expect(updatedGroup.customUsers).toHaveLength(1);
   });
 });
 

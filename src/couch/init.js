@@ -70,7 +70,7 @@ async function startLDAPSync(db) {
 
 async function tryLDAPSync(db) {
   try {
-    await db.syncLDAPGroups();
+    await db.syncGroups();
   } catch (e) {
     debug.error('LDAP sync failed initialization', e);
   }

@@ -15,6 +15,7 @@ function populate(db) {
       name: 'groupA',
       description: 'groupA description',
       users: ['a@a.com'],
+      customUsers: ['a@a.com'],
       rights: ['create', 'write', 'delete', 'read'],
     }),
   );
@@ -25,6 +26,7 @@ function populate(db) {
       $owners: ['a@a.com'],
       name: 'groupB',
       users: ['a@a.com'],
+      customUsers: ['a@a.com'],
       rights: ['create'],
     }),
   );
@@ -36,6 +38,7 @@ function populate(db) {
       name: 'unusedGroup',
       description: 'unusedGroup is not used in entries',
       users: ['c@c.com'],
+      customUsers: ['c@c.com'],
       rights: ['create', 'write', 'delete', 'read'],
     }),
   );

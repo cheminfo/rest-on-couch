@@ -80,7 +80,7 @@ const methods = {
     return this._db.destroyDocument(doc._id);
   },
 
-  async createGroup(groupName, user, rights, groupType) {
+  async createGroup(groupName, user, rights) {
     debug('createGroup (%s, %s)', groupName, user);
     if (!Array.isArray(rights)) rights = [];
 
@@ -104,10 +104,10 @@ const methods = {
       this._db,
       {
         $type: 'group',
-        groupType: groupType || 'default',
         $owners: [user],
         name: groupName,
         users: [],
+        customUsers: [],
         rights: rights,
       },
       user,
@@ -221,12 +221,15 @@ const methods = {
   },
 
   async addUsersToGroup(uuid, user, usernames) {
-    debug('addUserToGroup (%s, %s, %o)', uuid, user, usernames);
+    debug('addUsersToGroup (%s, %s, %o)', uuid, user, usernames);
     await this.open();
     usernames = util.ensureUsersArray(usernames);
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
-    group.users = _.union(group.users, usernames);
-    return nanoMethods.save(this._db, group, user);
+    group.customUsers = _.union(group.customUsers, usernames);
+    if (arraysAreEqual(group.users, group.customUsers)) {
+      return getUnchangedGroupResult(group);
+    }
+    return syncOneGroup(this, group, user, false);
   },
 
   async removeUsersFromGroup(uuid, user, usernames) {
@@ -234,8 +237,11 @@ const methods = {
     await this.open();
     usernames = util.ensureUsersArray(usernames);
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
-    _.pullAll(group.users, usernames);
-    return nanoMethods.save(this._db, group, user);
+    _.pullAll(group.customUsers, usernames);
+    if (arraysAreEqual(group.users, group.customUsers)) {
+      return getUnchangedGroupResult(group);
+    }
+    return syncOneGroup(this, group, user, false);
   },
 
   async addRightsToGroup(uuid, user, rights) {
@@ -260,47 +266,40 @@ const methods = {
     debug('setGroupProperties (%s, %s, %o)', uuid, user, properties);
     await this.open();
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
+    let resync = false;
     if (properties.description) {
       group.description = properties.description;
     }
-    return nanoMethods.save(this._db, group, user);
-  },
-
-  async setLdapGroupProperties(uuid, user, properties = {}) {
-    debug('setLdapGroupProperties (%s, %s, %o)', uuid, user, properties);
-    await this.open();
-    const group = await this.getDocByRights(uuid, user, 'write', 'group');
-    if (group.groupType !== 'ldap') {
-      throw new CouchError(
-        'Cannot set ldap group properties on non-ldap group',
-        'bad argument',
-      );
-    }
     if (properties.filter) {
+      resync = true;
       group.filter = properties.filter;
     }
     if (properties.DN) {
+      resync = true;
       group.DN = properties.DN;
     }
-    return nanoMethods.save(this._db, group, user);
+    if (resync) {
+      return syncOneGroup(this, group, user, false);
+    } else {
+      return nanoMethods.save(this._db, group, user);
+    }
   },
 
-  async syncLdapGroup(uuid, user) {
+  async syncGroup(uuid, user) {
     debug.trace('sync LDAP group (%s, %s)', uuid, user);
     await this.open();
     const group = await this.getDocByRights(uuid, user, 'write', 'group');
     if (group.groupType !== 'ldap') {
       throw new CouchError('Cannot sync ldap group', 'bad argument');
     }
-    await syncOneLdapGroup(this, group);
+    return syncOneGroup(this, group, user, false);
   },
 
-  async syncLDAPGroups(groups) {
-    debug('sync LDAP groups in database %s', this._db.dbName);
+  async syncGroups() {
+    debug('sync users in groups %s', this._db.dbName);
     await this.open();
     // Find all the ldap groups
-    debug.trace('sync all ldap groups');
-    groups = await this._db.queryView(
+    const groups = await this._db.queryView(
       'documentByType',
       {
         key: 'group',
@@ -309,14 +308,46 @@ const methods = {
       { onlyDoc: true },
     );
 
-    groups = groups.filter((group) => group.DN);
     for (let i = 0; i < groups.length; i++) {
-      await syncOneLdapGroup(this, groups[i]);
+      await syncOneGroup(this, groups[i], 'ldap', true);
     }
   },
 };
 
-async function syncOneLdapGroup(ctx, group) {
+function getUnchangedGroupResult(group) {
+  return {
+    ok: true,
+    isNew: false,
+    id: group._id,
+    rev: group._rev,
+    $modificationDate: group.$modificationDate,
+    $creationDate: group.$creationDate,
+  };
+}
+
+function resetToCustomUsers(ctx, group, user) {
+  group.users = group.customUsers;
+  return nanoMethods.save(ctx._db, group, user);
+}
+
+async function syncOneGroup(ctx, group, user, safe) {
+  if (isLdapGroup(group)) {
+    try {
+      return syncOneLdapGroup(ctx, group, user);
+    } catch (e) {
+      debug(e.message);
+      if (safe) {
+        throw e;
+      } else {
+        return resetToCustomUsers(ctx, group, user);
+      }
+    }
+  } else {
+    return resetToCustomUsers(ctx, group, user);
+  }
+}
+
+async function syncOneLdapGroup(ctx, group, user) {
   debug.trace('sync ldap group %s', group._id);
   const couchOptions = ctx._couchOptions;
   const entries = await ldapSearch(
@@ -345,11 +376,13 @@ async function syncOneLdapGroup(ctx, group) {
   });
 
   // Check if changed to avoid many revisions
-  if (!arraysAreEqual(emails, group.users)) {
-    group.users = emails;
-    await nanoMethods.save(ctx._db, group, 'ldap');
+  const newUsers = _.union(emails, group.customUsers);
+  if (arraysAreEqual(newUsers, group.users)) {
+    return getUnchangedGroupResult(group);
+  } else {
+    group.users = newUsers;
+    return nanoMethods.save(ctx._db, group, user);
   }
-  debug('ldap sync success');
 }
 
 function arraysAreEqual(arr1, arr2) {
@@ -365,3 +398,10 @@ function arraysAreEqual(arr1, arr2) {
 module.exports = {
   methods,
 };
+
+function isLdapGroup(group) {
+  if (group.DN && group.filter) {
+    return true;
+  }
+  return false;
+}

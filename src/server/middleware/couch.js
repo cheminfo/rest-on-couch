@@ -302,12 +302,7 @@ exports.getGroup = composeWithError(async (ctx) => {
 });
 
 exports.createGroup = composeWithError(async (ctx) => {
-  await ctx.state.couch.createGroup(
-    ctx.params.name,
-    ctx.state.userEmail,
-    null,
-    ctx.query.type,
-  );
+  await ctx.state.couch.createGroup(ctx.params.name, ctx.state.userEmail, null);
   respondOk(ctx);
 });
 
@@ -403,16 +398,8 @@ exports.setGroupProperties = composeWithError(async (ctx) => {
   );
 });
 
-exports.setLdapGroupProperties = composeWithError(async (ctx) => {
-  ctx.body = await ctx.state.couch.setLdapGroupProperties(
-    ctx.params.uuid,
-    ctx.state.userEmail,
-    ctx.request.body,
-  );
-});
-
-exports.syncLdapGroup = composeWithError(async (ctx) => {
-  await ctx.state.couch.syncLdapGroup(ctx.params.uuid, ctx.state.userEmail);
+exports.syncGroup = composeWithError(async (ctx) => {
+  await ctx.state.couch.syncGroup(ctx.params.uuid, ctx.state.userEmail);
   respondOk(ctx);
 });
 
