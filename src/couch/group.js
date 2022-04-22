@@ -59,7 +59,7 @@ const methods = {
     return this.editDefaultGroup(group, type, 'remove');
   },
 
-  async deleteGroup(groupName, user) {
+  async deleteGroup(groupName, user, options = {}) {
     debug('deleteGroup (%s, %s)', groupName, user);
     await this.open();
 
@@ -68,6 +68,7 @@ const methods = {
       debug.trace('group does not exist');
       throw new CouchError('group does not exist', 'not found');
     }
+    user = validate.userFromTokenAndRights(user, options.token, ['owner']);
     if (!validate.isOwner(doc.$owners, user)) {
       debug.trace('not allowed to delete group');
       throw new CouchError(
@@ -80,19 +81,25 @@ const methods = {
     return this._db.destroyDocument(doc._id);
   },
 
-  async createGroup(groupName, user, rights) {
+  async createGroup(groupName, user, rights, options = {}) {
     debug('createGroup (%s, %s)', groupName, user);
     if (!Array.isArray(rights)) rights = [];
 
     await this.open();
 
+    user = validate.userFromTokenAndRights(user, options.token, [
+      'createGroup',
+    ]);
     const hasRight = await validate.checkRightAnyGroup(
       this,
       user,
       'createGroup',
     );
     if (!hasRight) {
-      throw new CouchError(`user ${user} does not have createGroup right`);
+      throw new CouchError(
+        `user ${user} does not have createGroup right`,
+        'forbidden',
+      );
     }
 
     const group = await nanoMethods.getGroup(this._db, groupName);
@@ -114,7 +121,7 @@ const methods = {
     );
   },
 
-  async getGroup(groupName, user) {
+  async getGroup(groupName, user, options = {}) {
     debug('getGroup (%s, %s)', groupName, user);
     await this.open();
     const doc = await nanoMethods.getGroup(this._db, groupName);
@@ -122,6 +129,7 @@ const methods = {
       debug.trace('group does not exist');
       throw new CouchError('group does not exist', 'not found');
     }
+    user = validate.userFromTokenAndRights(user, options.token, ['owner']);
     if (!this.isSuperAdmin(user) && !validate.isOwner(doc.$owners, user)) {
       debug.trace('not allowed to get group');
       throw new CouchError(
@@ -137,9 +145,10 @@ const methods = {
    * @param {string} user
    * @return {Array}
    */
-  async getGroups(user) {
+  async getGroups(user, options = {}) {
     debug.trace('getGroups (%s)', user);
     await this.open();
+    user = validate.userFromTokenAndRights(user, options.token, ['readGroup']);
     const ok = await validate.checkGlobalRight(this, user, 'readGroup');
     if (ok) {
       return this._db.queryView(
@@ -156,8 +165,8 @@ const methods = {
    * Return info about a specific group
    *
    */
-  async getGroupInfo(groupName, user, ldapInfo) {
-    debug('getGroupInfo (%s, %s, %s)', groupName, user, ldapInfo);
+  async getGroupInfo(groupName, user, options = {}) {
+    debug('getGroupInfo (%s, %s, %s)', groupName, user, options.ldapInfo);
     await this.open();
     const group = await nanoMethods.getGroup(this._db, groupName);
     if (!group) {
@@ -165,21 +174,28 @@ const methods = {
       throw new CouchError('group does not exist', 'not found');
     }
 
-    const hasReadGroupRight = await validate.checkGlobalRight(
-      this,
-      user,
-      'readGroup',
-    );
+    user = validate.userFromTokenAndRights(user, options.token, ['readGroup']);
 
-    return getGroupInfoResult(this, group, user, hasReadGroupRight, ldapInfo);
+    // Can read group if owner, even if it does not have the global readGroup right
+    const hasReadGroupRight = validate.isOwner(group.$owners, user)
+      ? true
+      : await validate.checkGlobalRight(this, user, 'readGroup');
+
+    return getGroupInfoResult(
+      this,
+      group,
+      user,
+      hasReadGroupRight,
+      options.ldapInfo,
+    );
   },
 
   /**
    * Return info about every group
    * @param {*} user
    */
-  async getGroupsInfo(user, ldapInfo) {
-    debug.trace('getGroupsInfo (%s, %s)', user, ldapInfo);
+  async getGroupsInfo(user, options = {}) {
+    debug.trace('getGroupsInfo (%s)', user);
 
     if (user === 'anonymous') {
       throw new CouchError(
@@ -195,6 +211,7 @@ const methods = {
       { onlyDoc: true },
     );
 
+    user = validate.userFromTokenAndRights(user, options.token, ['readGroup']);
     const hasReadGroupRight = await validate.checkGlobalRight(
       this,
       user,
@@ -208,7 +225,7 @@ const methods = {
         group,
         user,
         hasReadGroupRight,
-        ldapInfo,
+        options.ldapInfo,
       );
       result.push(groupInfo);
     }
@@ -237,11 +254,17 @@ const methods = {
     return _.union(defaultGroups, userGroups);
   },
 
-  async addUsersToGroup(uuid, user, usernames) {
+  async addUsersToGroup(uuid, user, usernames, options = {}) {
     debug('addUsersToGroup (%s, %s, %o)', uuid, user, usernames);
     await this.open();
     usernames = util.ensureUsersArray(usernames);
-    const group = await this.getDocByRights(uuid, user, 'write', 'group');
+    const group = await this.getDocByRights(
+      uuid,
+      user,
+      'write',
+      'group',
+      options,
+    );
     group.customUsers = _.union(group.customUsers, usernames);
     if (arraysAreEqual(group.users, group.customUsers)) {
       return getUnchangedGroupResult(group);
@@ -249,11 +272,17 @@ const methods = {
     return syncOneGroup(this, group, user, false);
   },
 
-  async removeUsersFromGroup(uuid, user, usernames) {
+  async removeUsersFromGroup(uuid, user, usernames, options = {}) {
     debug('removeUsersFromGroup (%s, %s, %o)', uuid, user, usernames);
     await this.open();
     usernames = util.ensureUsersArray(usernames);
-    const group = await this.getDocByRights(uuid, user, 'write', 'group');
+    const group = await this.getDocByRights(
+      uuid,
+      user,
+      'write',
+      'group',
+      options,
+    );
     _.pullAll(group.customUsers, usernames);
     if (arraysAreEqual(group.users, group.customUsers)) {
       return getUnchangedGroupResult(group);
@@ -261,28 +290,46 @@ const methods = {
     return syncOneGroup(this, group, user, false);
   },
 
-  async addRightsToGroup(uuid, user, rights) {
+  async addRightsToGroup(uuid, user, rights, options = {}) {
     debug('addRightsToGroup (%s, %s, %o)', uuid, user, rights);
     await this.open();
     rights = util.ensureRightsArray(rights);
-    const group = await this.getDocByRights(uuid, user, 'write', 'group');
+    const group = await this.getDocByRights(
+      uuid,
+      user,
+      'write',
+      'group',
+      options,
+    );
     group.rights = _.union(group.rights, rights);
     return nanoMethods.save(this._db, group, user);
   },
 
-  async removeRightsFromGroup(uuid, user, rights) {
+  async removeRightsFromGroup(uuid, user, rights, options = {}) {
     debug('removeRightsFromGroup (%s, %s, %o)', uuid, user, rights);
     await this.open();
     rights = util.ensureRightsArray(rights);
-    const group = await this.getDocByRights(uuid, user, 'write', 'group');
+    const group = await this.getDocByRights(
+      uuid,
+      user,
+      'write',
+      'group',
+      options,
+    );
     _.pullAll(group.rights, rights);
     return nanoMethods.save(this._db, group, user);
   },
 
-  async setGroupProperties(uuid, user, properties = {}) {
+  async setGroupProperties(uuid, user, properties = {}, options = {}) {
     debug('setGroupProperties (%s, %s, %o)', uuid, user, properties);
     await this.open();
-    const group = await this.getDocByRights(uuid, user, 'write', 'group');
+    const group = await this.getDocByRights(
+      uuid,
+      user,
+      'write',
+      'group',
+      options,
+    );
     let resync = false;
     if (properties.description) {
       group.description = properties.description;
@@ -302,10 +349,16 @@ const methods = {
     }
   },
 
-  async syncGroup(uuid, user) {
+  async syncGroup(uuid, user, options = {}) {
     debug.trace('sync LDAP group (%s, %s)', uuid, user);
     await this.open();
-    const group = await this.getDocByRights(uuid, user, 'write', 'group');
+    const group = await this.getDocByRights(
+      uuid,
+      user,
+      'write',
+      'group',
+      options,
+    );
     return syncOneGroup(this, group, user, false);
   },
 
