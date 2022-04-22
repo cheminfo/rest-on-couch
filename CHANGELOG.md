@@ -1,5 +1,12 @@
 # Changelog
 
+### [12.1.1](https://www.github.com/cheminfo/rest-on-couch/compare/v12.1.0...v12.1.1) (2022-04-22)
+
+
+### Bug Fixes
+
+* check token right before forbidding getGroupsInfo ([cb828c1](https://www.github.com/cheminfo/rest-on-couch/commit/cb828c1dbec26da63d792542b3f400caa6ac236d))
+
 ## [12.1.0](https://www.github.com/cheminfo/rest-on-couch/compare/v12.0.0...v12.1.0) (2022-04-22)
 
 
