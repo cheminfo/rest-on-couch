@@ -1,5 +1,12 @@
 # Changelog
 
+## [12.1.0](https://www.github.com/cheminfo/rest-on-couch/compare/v12.0.0...v12.1.0) (2022-04-22)
+
+
+### Features
+
+* allow token in group endpoints ([8981326](https://www.github.com/cheminfo/rest-on-couch/commit/8981326a65df3d384542971063a8a1c7f6bddea2))
+
 ## [12.0.0](https://www.github.com/cheminfo/rest-on-couch/compare/v11.2.0...v12.0.0) (2022-04-21)
 
 
