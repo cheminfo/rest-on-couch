@@ -196,13 +196,15 @@ const methods = {
    */
   async getGroupsInfo(user, options = {}) {
     debug.trace('getGroupsInfo (%s)', user);
+    user = validate.userFromTokenAndRights(user, options.token, ['readGroup']);
 
     if (user === 'anonymous') {
       throw new CouchError(
         'user must be authenticated to get groups info',
-        'unauthorized',
+        'forbidden',
       );
     }
+
     await this.open();
 
     const groups = await this._db.queryView(
@@ -211,7 +213,6 @@ const methods = {
       { onlyDoc: true },
     );
 
-    user = validate.userFromTokenAndRights(user, options.token, ['readGroup']);
     const hasReadGroupRight = await validate.checkGlobalRight(
       this,
       user,
