@@ -187,7 +187,7 @@ function zenodoAttachments(content) {
 ## Setup environment with Docker (for running tests)
 
 ```bash
-docker-compose --file docker-compose.dev.yml up -d
+docker-compose up -d
 ```
 
 Go to http://localhost:5984/\_utils/#setup
