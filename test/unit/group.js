@@ -274,7 +274,7 @@ describe('ldap group methods', () => {
       rights: [],
     });
 
-    groups = await couch.getGroupsInfo('a@a.com', true);
+    groups = await couch.getGroupsInfo('a@a.com', { ldapInfo: true });
     info = groups.find((g) => g.name === 'groupLdap');
 
     const expectedResult = {
@@ -289,7 +289,7 @@ describe('ldap group methods', () => {
     };
     expect(info).toStrictEqual(expectedResult);
 
-    info = await couch.getGroupInfo('groupLdap', 'a@a.com', true);
+    info = await couch.getGroupInfo('groupLdap', 'a@a.com', { ldapInfo: true });
     expect(info).toStrictEqual(expectedResult);
   });
 

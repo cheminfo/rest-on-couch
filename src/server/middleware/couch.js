@@ -265,6 +265,7 @@ exports.getOwners = function (type) {
       ctx.state.userEmail,
       'read',
       type,
+      ctx.query,
     );
     ctx.body = doc.$owners;
   });
@@ -298,30 +299,36 @@ exports.getGroup = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getGroup(
     ctx.params.name,
     ctx.state.userEmail,
+    ctx.query,
   );
 });
 
 exports.createGroup = composeWithError(async (ctx) => {
-  await ctx.state.couch.createGroup(ctx.params.name, ctx.state.userEmail, null);
+  await ctx.state.couch.createGroup(
+    ctx.params.name,
+    ctx.state.userEmail,
+    null,
+    ctx.query,
+  );
   respondOk(ctx);
 });
 
 exports.getGroups = composeWithError(async (ctx) => {
-  ctx.body = await ctx.state.couch.getGroups(ctx.state.userEmail);
+  ctx.body = await ctx.state.couch.getGroups(ctx.state.userEmail, ctx.query);
 });
 
 exports.getGroupInfo = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getGroupInfo(
     ctx.params.name,
     ctx.state.userEmail,
-    ctx.query.ldapInfo,
+    ctx.query,
   );
 });
 
 exports.getGroupsInfo = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getGroupsInfo(
     ctx.state.userEmail,
-    ctx.query.ldapInfo,
+    ctx.query,
   );
 });
 
@@ -331,6 +338,7 @@ exports.getGroupUsers = composeWithError(async (ctx) => {
     ctx.state.userEmail,
     'read',
     'group',
+    ctx.query,
   );
   ctx.body = group.users;
 });
@@ -344,6 +352,7 @@ exports.addUserToGroup = composeWithError(async (ctx) => {
     ctx.params.uuid,
     ctx.state.userEmail,
     ctx.params.username,
+    ctx.query,
   );
   respondOk(ctx);
 });
@@ -353,6 +362,7 @@ exports.removeUserFromGroup = composeWithError(async (ctx) => {
     ctx.params.uuid,
     ctx.state.userEmail,
     ctx.params.username,
+    ctx.query,
   );
   respondOk(ctx);
 });
@@ -363,6 +373,7 @@ exports.getGroupRights = composeWithError(async (ctx) => {
     ctx.state.userEmail,
     'read',
     'group',
+    ctx.query,
   );
   ctx.body = group.rights;
 });
@@ -372,6 +383,7 @@ exports.addRightToGroup = composeWithError(async (ctx) => {
     ctx.params.uuid,
     ctx.state.userEmail,
     ctx.params.right,
+    ctx.query,
   );
   respondOk(ctx);
 });
@@ -381,6 +393,7 @@ exports.removeRightFromGroup = composeWithError(async (ctx) => {
     ctx.params.uuid,
     ctx.state.userEmail,
     ctx.params.right,
+    ctx.query,
   );
   respondOk(ctx);
 });
@@ -397,7 +410,11 @@ exports.getRights = composeWithError(async (ctx) => {
 });
 
 exports.deleteGroup = composeWithError(async (ctx) => {
-  await ctx.state.couch.deleteGroup(ctx.params.name, ctx.state.userEmail);
+  await ctx.state.couch.deleteGroup(
+    ctx.params.name,
+    ctx.state.userEmail,
+    ctx.query,
+  );
   respondOk(ctx);
 });
 
@@ -406,11 +423,16 @@ exports.setGroupProperties = composeWithError(async (ctx) => {
     ctx.params.uuid,
     ctx.state.userEmail,
     ctx.request.body,
+    ctx.query,
   );
 });
 
 exports.syncGroup = composeWithError(async (ctx) => {
-  await ctx.state.couch.syncGroup(ctx.params.uuid, ctx.state.userEmail);
+  await ctx.state.couch.syncGroup(
+    ctx.params.uuid,
+    ctx.state.userEmail,
+    ctx.query,
+  );
   respondOk(ctx);
 });
 
