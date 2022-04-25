@@ -1,5 +1,9 @@
 root: true
 extends: cheminfo
+parserOptions:
+  sourceType: script
+env:
+  node: true
 rules:
   camelcase: [error, { properties: never }]
   callback-return: off
