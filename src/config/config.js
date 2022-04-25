@@ -9,6 +9,7 @@ const envConfig = require('./env');
 const { getHomeConfig } = require('./home');
 
 const configStore = {};
+
 // TODO: would be preferable if returned data was immutable to prevent side effects
 function getConfig(database, customConfig) {
   debug.trace('getConfig - db: %s', database);

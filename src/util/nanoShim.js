@@ -285,6 +285,7 @@ const specialKeys = [
   'start_key',
   'end_key',
 ];
+
 function prepareSearchParams(searchParams) {
   if (!searchParams) return {};
   searchParams = Object.assign({}, searchParams);
@@ -300,6 +301,7 @@ function prepareSearchParams(searchParams) {
 }
 
 const paramsToEncode = ['counts', 'drilldown', 'group_sort', 'ranges', 'sort'];
+
 function prepareSearchParamsForView(searchParams) {
   paramsToEncode.forEach(function (param) {
     if (param in searchParams) {
