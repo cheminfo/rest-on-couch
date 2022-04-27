@@ -1,5 +1,12 @@
 # Changelog
 
+## [12.2.0](https://github.com/cheminfo/rest-on-couch/compare/v12.1.1...v12.2.0) (2022-04-27)
+
+
+### Features
+
+* add a convenience callback to do ldapSearch in getUserInfo config ([9e41fd6](https://github.com/cheminfo/rest-on-couch/commit/9e41fd68e767fcb74e206758f9521614fbee0be8))
+
 ### [12.1.1](https://www.github.com/cheminfo/rest-on-couch/compare/v12.1.0...v12.1.1) (2022-04-22)
 
 
