@@ -1,6 +1,7 @@
 'use strict';
 
 const CouchError = require('../util/CouchError');
+const { search } = require('../util/LDAP');
 const debug = require('../util/debug')('main:user');
 const simpleMerge = require('../util/simpleMerge');
 
@@ -36,7 +37,46 @@ const methods = {
 
   getUserInfo(user) {
     debug('getUserInfo (%s)', user);
-    return this._getUserInfo(user);
+    // Callback which allows to do a custom ldap search to get user data
+    // If it exists, it uses the auth ldap config for default values
+    const ldapServer = this._config.auth.ldap?.server;
+
+    function ldapSearch(ldapOptions, searchOptions) {
+      debug('getUserInfo ldapSearch callback');
+      const defaultLdapOptions = ldapServer
+        ? {
+            url: ldapServer.url,
+            bindDN: ldapServer.bindDN,
+            bindPassword: ldapServer.bindCredentials,
+          }
+        : {};
+
+      const defaultSearchOptions = ldapServer
+        ? {
+            DN: ldapServer.searchBase,
+          }
+        : {};
+      if (searchOptions === undefined) {
+        searchOptions = ldapOptions;
+        ldapOptions = {};
+      }
+      const finalLdapOptions = Object.assign(
+        {},
+        defaultLdapOptions,
+        ldapOptions,
+      );
+      const finalSearchOptions = Object.assign(
+        {},
+        defaultSearchOptions,
+        searchOptions,
+      );
+      return search(finalLdapOptions, finalSearchOptions);
+    }
+
+    if (!this._config.getUserInfo) {
+      throw new CouchError('getUserInfo is not configured', 'bad request');
+    }
+    return this._config.getUserInfo(user, ldapSearch);
   },
 
   async getUserGroups(user) {

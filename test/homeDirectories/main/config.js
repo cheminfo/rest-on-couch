@@ -46,11 +46,23 @@ module.exports = {
     },
     ldap: ldapAuthConfig,
   },
-  getUserInfo(email) {
-    return Promise.resolve({
-      email,
-      value: 42,
-    });
+  async getUserInfo(email, searchLdap) {
+    if(email.endsWith('zakodium.com')) {
+      const uid = email.slice(0, email.indexOf('@'));
+      const data = await searchLdap({
+        filter: `uid=${uid}`,
+        attributes: ['mail', 'displayName'],
+      });
+      return {
+        email: data[0].object.mail,
+        displayName: data[0].object.displayName,
+      }
+    } else {
+      return {
+        email,
+        value: 42,
+      };
+    }
   },
   getPublicUserInfo(user) {
     return {

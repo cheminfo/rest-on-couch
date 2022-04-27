@@ -437,11 +437,11 @@ async function syncOneLdapGroup(ctx, group, user) {
     let user = entry.object;
     // Custom email extraction
     if (user) {
-      if (ctx._getPublicUserInfo) {
+      if (ctx._config.getPublicUserInfo) {
         try {
-          const userInfo = ctx._getPublicUserInfo(user);
+          const userInfo = ctx._config.getPublicUserInfo(user);
           if (userInfo !== null) {
-            info.push(ctx._getPublicUserInfo(user));
+            info.push(ctx._config.getPublicUserInfo(user));
           }
         } catch {
           // Do not add anything to info
