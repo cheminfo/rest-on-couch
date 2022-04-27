@@ -115,7 +115,7 @@ describe('LDAP user, developer@zakodium.com', () => {
       .then((res) => {
         expect(res.body).toBeDefined();
         expect(res.body).toStrictEqual({
-          value: 42,
+          displayName: 'Developer User',
           email: 'developer@zakodium.com',
         });
       });

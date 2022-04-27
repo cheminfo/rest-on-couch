@@ -50,6 +50,7 @@ class Couch {
     };
 
     this._logLevel = log.getLevel(config.logLevel);
+    this._config = config;
 
     this._customDesign = config.customDesign || {};
     this._viewsWithOwner = new Set();
@@ -60,9 +61,6 @@ class Couch {
         }
       }
     }
-
-    this._getUserInfo = config.getUserInfo;
-    this._getPublicUserInfo = config.getPublicUserInfo;
 
     this._defaultEntry = config.defaultEntry || getDefaultEntry;
     this._rights = Object.assign({}, basicRights, config.rights);
