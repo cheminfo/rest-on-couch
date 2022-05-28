@@ -3,14 +3,14 @@
 const debug = require('../util/debug')('config');
 
 const cliConfig = require('./cli');
-const dbConfig = require('./db')();
+const { getDbConfigOrDie } = require('./db');
 const defaultConfig = require('./default');
 const envConfig = require('./env');
 const { getHomeConfig } = require('./home');
 
 const configStore = {};
+const dbConfig = getDbConfigOrDie();
 
-// TODO: would be preferable if returned data was immutable to prevent side effects
 function getConfig(database, customConfig) {
   debug.trace('getConfig - db: %s', database);
   if (!configStore[database]) {

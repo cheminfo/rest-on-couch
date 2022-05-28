@@ -175,6 +175,36 @@ class NanoDbShim {
     return this.client.delete(docId, { searchParams: { rev } });
   }
 
+  async createIndex(index) {
+    debug.trace('createIndex %s', index.name);
+    const { body } = await this.client.post('_index', {
+      json: index,
+    });
+    if (body.result === 'created') {
+      debug.trace('index %s created / updated', index.name);
+    } else {
+      debug.trace('index %s has not changed', index.name);
+    }
+  }
+
+  async deleteIndex(designDoc, name) {
+    debug.trace('deleteIndex (%s, %s)', designDoc, name);
+    await this.client.delete(`_index/${designDoc}/json/${name}`);
+  }
+
+  async getDesignDocs() {
+    debug.trace('getDesignDocs');
+    const searchParams = new URLSearchParams();
+    searchParams.set('include_docs', true);
+    const { body } = await this.client.get('_design_docs', {
+      searchParams,
+    });
+    // console.log(body.rows);
+    const designDocs = body.rows.map((row) => row.doc);
+    // console.log(designDocs);
+    return designDocs;
+  }
+
   async queryView(view, searchParams, options = {}) {
     searchParams = prepareSearchParams(searchParams);
     prepareSearchParamsForView(searchParams);
