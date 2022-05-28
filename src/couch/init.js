@@ -90,17 +90,24 @@ async function checkDesignDoc(couch) {
   debug.trace('check design documents for database %s', dbName);
   var custom = couch._customDesign;
   custom.views = custom.views || {};
+  custom.indexes = custom.indexes || {};
   const designNames = new Set();
   designNames.add(constants.DESIGN_DOC_NAME);
-  let viewNames = Object.keys(custom.views);
+  const viewNames = Object.keys(custom.views);
+  const indexNames = Object.keys(custom.indexes);
   for (let key of viewNames) {
     if (custom.views[key].designDoc) {
       designNames.add(custom.views[key].designDoc);
     }
   }
 
-  // Create the new design doc that would be stored upstream for comparison
+  const indexDesignNames = new Set();
+  for (let key of indexNames) {
+    indexDesignNames.add(custom.indexes[key].ddoc);
+  }
+
   for (let designName of designNames) {
+    // Create the new design doc that would be stored upstream for comparison
     const newDesignDoc = getNewDesignDoc(designName);
     const oldDesignDoc = await db.getDocument(`_design/${designName}`);
     if (designDocNeedsUpdate(newDesignDoc, oldDesignDoc)) {
@@ -113,6 +120,31 @@ async function checkDesignDoc(couch) {
         (oldDesignDoc && oldDesignDoc._rev) || null,
         newDesignDoc,
       );
+    }
+  }
+
+  // Create new indexes
+  for (let indexName of Object.keys(custom.indexes)) {
+    const index = custom.indexes[indexName];
+    index.name = indexName;
+    await db.createIndex(index);
+  }
+
+  // Delete orphan indexes
+  const allDesignDocs = await db.getDesignDocs();
+  for (let designDoc of allDesignDocs) {
+    if (designDoc.language === 'query') {
+      // if design doc is not referenced, delete the whole design document
+      if (!indexDesignNames.has(designDoc._id.replace(/^_design\//, ''))) {
+        debug.warn('destroy design doc', designDoc._id);
+        await db.destroyDocument(designDoc._id, designDoc._rev);
+      } else {
+        for (let key of Object.keys(designDoc.views)) {
+          if (!custom.indexes[key]) {
+            await db.deleteIndex(designDoc._id, key);
+          }
+        }
+      }
     }
   }
 

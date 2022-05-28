@@ -58,7 +58,14 @@ describe('basic initialization with custom design docs', () => {
       assert.ok(custom.views.testCustom);
     });
 
-    return Promise.all([app, customApp, custom]);
+    const customIndex = couch._db
+      .getDocument('_design/modDateIndex')
+      .then((custom) => {
+        assert.notEqual(custom, null);
+        assert.ok(custom.views.modDate);
+      });
+
+    return Promise.all([app, customApp, custom, customIndex]);
   });
 
   test('should query a custom design document', () => {
