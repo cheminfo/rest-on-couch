@@ -178,6 +178,17 @@ async function checkRightAnyGroup(ctx, user, right) {
   return result.length > 0;
 }
 
+async function getDefaultGroupsByRight(db, user, right, onlyValue) {
+  const defaultGroups = await getDefaultGroups(db, user, false);
+  const matchingGroups = defaultGroups.filter((group) =>
+    group.rights.includes(right),
+  );
+  if (onlyValue) {
+    return matchingGroups.map((group) => group.name);
+  }
+  return matchingGroups;
+}
+
 async function getDefaultGroups(db, user, listOnly) {
   debug.trace('getDefaultGroups');
   const defaultGroups = await db.getDocument(constants.DEFAULT_GROUPS_DOC_ID);
@@ -231,5 +242,6 @@ module.exports = {
   checkGlobalRight,
   checkRightAnyGroup,
   getDefaultGroups,
+  getDefaultGroupsByRight,
   userFromTokenAndRights,
 };
