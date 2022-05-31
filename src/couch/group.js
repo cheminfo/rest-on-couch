@@ -244,7 +244,13 @@ const methods = {
     debug.trace('getGroupsByRight (%s, %s)', user, right);
     await this.open();
     // Search in default groups
-    const defaultGroups = await validate.getDefaultGroups(this._db, user, true);
+
+    const defaultGroups = await validate.getDefaultGroupsByRight(
+      this._db,
+      user,
+      right,
+      true,
+    );
     // Search inside groups
     const userGroups = await this._db.queryView(
       'groupByUserAndRight',
