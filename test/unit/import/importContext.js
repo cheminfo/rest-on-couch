@@ -1,8 +1,7 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
-
-const fs = require('fs-extra');
 
 const ImportContext = require('../../../src/import/ImportContext');
 
@@ -21,8 +20,11 @@ describe('ImportContext', () => {
       path.normalize('homeDirectories/main/test-new-import/full/to_process'),
     );
     expect(ctx.couch).toBeDefined();
+    await ctx.couch.open();
+    const fileContentsUtf8 = await ctx.getContents('utf-8');
+    expect(fileContentsUtf8).toBe(fileContents);
 
-    expect(await ctx.getContents('utf-8')).toBe(fileContents);
-    expect(await ctx.getContents()).toEqual(Buffer.from(fileContents, 'utf-8'));
+    const dataBuffer = await ctx.getContents();
+    expect(dataBuffer).toEqual(Buffer.from(fileContents, 'utf-8'));
   });
 });
