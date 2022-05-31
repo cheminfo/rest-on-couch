@@ -34,7 +34,7 @@ function getHomeConfig(homeDir) {
   } catch (e) {
     if (e.code === 'MODULE_NOT_FOUND') {
       debug('no main config found');
-      return null;
+      return {};
     }
     throw e;
   }

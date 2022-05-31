@@ -9,7 +9,7 @@ const _ = require('lodash');
 const constants = require('../constants');
 const die = require('../util/die');
 
-const { getHomeDir } = require('./home');
+const { getHomeDir, getHomeConfig } = require('./home');
 
 function getDbConfigOrDie(homeDir) {
   if (!homeDir) {
@@ -29,82 +29,158 @@ function getDbConfigOrDie(homeDir) {
   return null;
 }
 
+function extendConfig(
+  finalConfig,
+  config,
+  viewDesignDocNames,
+  indexDesignDocNames,
+) {
+  const { customDesign = {}, ...otherConfig } = config;
+
+  // Other props include filters, lists and other useful things in design docs
+  const { views, indexes, ...otherProps } = customDesign;
+
+  if (!finalConfig.customDesign) {
+    finalConfig.customDesign = {};
+  }
+  if (!finalConfig.customDesign.views) {
+    finalConfig.customDesign.views = {};
+  }
+
+  if (!finalConfig.customDesign.indexes) {
+    finalConfig.customDesign.indexes = {};
+  }
+
+  const otherKeys = Object.keys(otherProps);
+  for (let key of otherKeys) {
+    if (finalConfig.customDesign[key]) {
+      throw new Error(`${key} cannot be overriden`);
+    }
+    finalConfig.customDesign[key] = otherProps[key];
+  }
+
+  if (views) {
+    addCustomViewMap(finalConfig.customDesign.views, viewDesignDocNames, views);
+  }
+  if (indexes) {
+    addCustomIndexMap(
+      finalConfig.customDesign.indexes,
+      indexDesignDocNames,
+      indexes,
+    );
+  }
+  Object.assign(finalConfig, otherConfig);
+}
+
 function getDbConfig(homeDir) {
   const dbConfig = {};
-  const databases = fs.readdirSync(homeDir);
+  const homeConfig = getHomeConfig(homeDir);
+  const databases = fs.readdirSync(homeDir).filter((file) => {
+    return fs.statSync(path.join(homeDir, file)).isDirectory();
+  });
   for (const database of databases) {
     if (shouldIgnore(database)) continue;
+    const configDraft = {};
     const databasePath = path.join(homeDir, database);
+    const indexDesignDocNames = {};
+    const viewDesignDocNames = {};
     const databaseConfigPath = path.join(databasePath, 'config.js');
-    if (fs.statSync(databasePath).isDirectory()) {
-      let databaseConfig = {};
-      if (fs.existsSync(databaseConfigPath)) {
-        databaseConfig = require(databaseConfigPath);
-        databaseConfig.designDocNames = [];
-        databaseConfig.customDesign = databaseConfig.customDesign || {};
-        databaseConfig.customDesign.views =
-          databaseConfig.customDesign.views || {};
-        databaseConfig.customDesign.indexes =
-          databaseConfig.customDesign.indexes || {};
-        const views = databaseConfig.customDesign.views;
-        const indexes = databaseConfig.customDesign.indexes;
 
-        const indexDesignDocNames = {};
-        const viewDesignDocNames = {};
-        // Add views from views folder
-        addCustomViews(views, viewDesignDocNames, databasePath);
+    // Extend parent config
+    extendConfig(
+      configDraft,
+      homeConfig,
+      viewDesignDocNames,
+      indexDesignDocNames,
+    );
 
-        // Add indexes from indexes folder
-        addCustomIndexes(indexes, indexDesignDocNames, databasePath);
-
-        const sharedDesignDocNames = _.intersection(
-          Object.values(indexDesignDocNames),
-          Object.values(viewDesignDocNames),
-        );
-        const allKeys = [
-          ...Object.keys(indexDesignDocNames),
-          ...Object.keys(viewDesignDocNames),
-        ];
-        const uniqueKeys = new Set(allKeys);
-        if (sharedDesignDocNames.length > 0) {
-          throw new Error(
-            `query indexes and javascript views cannot share design documents: ${sharedDesignDocNames.join(
-              ', ',
-            )}`,
-          );
-        }
-
-        if (uniqueKeys.size !== allKeys.length) {
-          const sharedKeys = [];
-          for (let key of uniqueKeys) {
-            if (indexDesignDocNames[key] && viewDesignDocNames[key]) {
-              sharedKeys.push(key);
-            }
-          }
-          throw new Error(
-            `query indexes and javascript views cannot share names: ${sharedKeys.join(
-              ', ',
-            )}`,
-          );
-        }
-
-        databaseConfig.designDocNames = Object.assign(
-          {},
-          viewDesignDocNames,
-          indexDesignDocNames,
-        );
-      }
-      if (!databaseConfig.import) {
-        databaseConfig.import = {};
-      }
-
-      databaseConfig.designDocNames = databaseConfig.designDocNames || {};
-      readImportConfig(databasePath, databaseConfig);
-      databaseConfig.database = database;
-      dbConfig[database] = databaseConfig;
+    if (fs.existsSync(databaseConfigPath)) {
+      const dbConfig = require(databaseConfigPath);
+      extendConfig(
+        configDraft,
+        dbConfig,
+        viewDesignDocNames,
+        indexDesignDocNames,
+      );
     }
+
+    const views = configDraft.customDesign.views;
+    const indexes = configDraft.customDesign.indexes;
+
+    // Add views from views folder
+    addCustomViews(views, viewDesignDocNames, databasePath);
+
+    // Add indexes from indexes folder
+    addCustomIndexes(indexes, indexDesignDocNames, databasePath);
+
+    checkDocNames(viewDesignDocNames, indexDesignDocNames);
+
+    configDraft.designDocNames = Object.assign(
+      {},
+      viewDesignDocNames,
+      indexDesignDocNames,
+    );
+
+    if (!configDraft.import) {
+      configDraft.import = {};
+    }
+
+    readImportConfig(databasePath, configDraft);
+    configDraft.database = database;
+    dbConfig[database] = configDraft;
   }
   return dbConfig;
+}
+
+function checkDocNames(viewDesignDocNames, indexDesignDocNames) {
+  const sharedDesignDocNames = _.intersection(
+    Object.values(indexDesignDocNames),
+    Object.values(viewDesignDocNames),
+  );
+  const allKeys = [
+    ...Object.keys(indexDesignDocNames),
+    ...Object.keys(viewDesignDocNames),
+  ];
+  const uniqueKeys = new Set(allKeys);
+  if (sharedDesignDocNames.length > 0) {
+    throw new Error(
+      `query indexes and javascript views cannot share design documents: ${sharedDesignDocNames.join(
+        ', ',
+      )}`,
+    );
+  }
+
+  if (uniqueKeys.size !== allKeys.length) {
+    const sharedKeys = [];
+    for (let key of uniqueKeys) {
+      if (indexDesignDocNames[key] && viewDesignDocNames[key]) {
+        sharedKeys.push(key);
+      }
+    }
+    throw new Error(
+      `query indexes and javascript views cannot share names: ${sharedKeys.join(
+        ', ',
+      )}`,
+    );
+  }
+}
+
+function addCustomViewMap(customMap, designDocNames, newCustomMap) {
+  const currentKeys = Object.keys(customMap);
+  const newKeys = Object.keys(newCustomMap);
+  const intersectionKeys = _.intersection(currentKeys, newKeys);
+  if (intersectionKeys.length !== 0) {
+    throw new Error(`a view is defined more than once: ${intersectionKeys}`);
+  }
+  for (const key in newCustomMap) {
+    if (hasOwn(key, newCustomMap)) {
+      if (!newCustomMap[key].designDoc) {
+        newCustomMap[key].designDoc = constants.CUSTOM_DESIGN_DOC_NAME;
+      }
+      designDocNames[key] = newCustomMap[key].designDoc;
+    }
+  }
+  Object.assign(customMap, newCustomMap);
 }
 
 function addCustomViews(customMap, designDocNames, databasePath) {
@@ -118,23 +194,27 @@ function addCustomViews(customMap, designDocNames, databasePath) {
   }
 
   for (let customView of customViews) {
-    const d = require(path.join(databasePath, viewsFolder, customView));
-    const currentKeys = Object.keys(customMap);
-    const newKeys = Object.keys(d);
-    const intersectionKeys = _.intersection(currentKeys, newKeys);
-    if (intersectionKeys.length !== 0) {
-      throw new Error(`a view is defined more than once: ${intersectionKeys}`);
-    }
-    Object.assign(customMap, d);
+    const viewMap = require(path.join(databasePath, viewsFolder, customView));
+    addCustomViewMap(customMap, designDocNames, viewMap);
   }
-  for (const key in customMap) {
-    if (hasOwn(key, customMap)) {
-      if (!customMap[key].designDoc) {
-        customMap[key].designDoc = constants.CUSTOM_DESIGN_DOC_NAME;
+}
+
+function addCustomIndexMap(customMap, designDocNames, newCustomMap) {
+  const currentKeys = Object.keys(customMap);
+  const newKeys = Object.keys(newCustomMap);
+  const intersectionKeys = _.intersection(currentKeys, newKeys);
+  if (intersectionKeys.length !== 0) {
+    throw new Error(`an index is defined more than once: ${intersectionKeys}`);
+  }
+  for (const key in newCustomMap) {
+    if (hasOwn(key, newCustomMap)) {
+      if (!newCustomMap[key].ddoc) {
+        throw new Error('index must have ddoc');
       }
-      designDocNames[key] = customMap[key].designDoc;
+      designDocNames[key] = newCustomMap[key].ddoc;
     }
   }
+  Object.assign(customMap, newCustomMap);
 }
 
 function addCustomIndexes(customMap, designDocNames, databasePath) {
@@ -147,28 +227,16 @@ function addCustomIndexes(customMap, designDocNames, databasePath) {
   }
 
   for (let customIndex of customIndexes) {
-    const d = require(path.join(databasePath, indexesFolder, customIndex));
-    const currentKeys = Object.keys(customMap);
-    const newKeys = Object.keys(d);
-    const intersectionKeys = _.intersection(currentKeys, newKeys);
-    if (intersectionKeys.length !== 0) {
-      throw new Error(
-        `an index is defined more than once: ${intersectionKeys}`,
-      );
-    }
-    Object.assign(customMap, d);
-  }
-  for (const key in customMap) {
-    if (hasOwn(key, customMap)) {
-      if (!customMap[key].ddoc) {
-        throw new Error('index must have ddoc');
-      }
-      designDocNames[key] = customMap[key].ddoc;
-    }
+    const indexMap = require(path.join(
+      databasePath,
+      indexesFolder,
+      customIndex,
+    ));
+    addCustomIndexMap(customMap, designDocNames, indexMap);
   }
 }
 
-function readImportConfig(databasePath, databaseConfig) {
+function readImportConfig(databasePath, configDraft) {
   const imports = fs.readdirSync(databasePath);
   for (const importDir of imports) {
     if (shouldIgnore(importDir)) continue;
@@ -181,12 +249,12 @@ function readImportConfig(databasePath, databaseConfig) {
       }
       if (typeof importConfig === 'function') {
         // New import
-        databaseConfig.import[importDir] = importConfig;
+        configDraft.import[importDir] = importConfig;
       } else {
         // Legacy import
-        databaseConfig.import[importDir] = Object.assign(
+        configDraft.import[importDir] = Object.assign(
           {},
-          databaseConfig.import[importDir],
+          configDraft.import[importDir],
           importConfig,
         );
       }

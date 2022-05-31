@@ -6,23 +6,26 @@ const cliConfig = require('./cli');
 const { getDbConfigOrDie } = require('./db');
 const defaultConfig = require('./default');
 const envConfig = require('./env');
-const { getHomeConfig } = require('./home');
+const { getHomeDir, getHomeConfig } = require('./home');
 
 const configStore = {};
-const dbConfig = getDbConfigOrDie();
+const homeDir = getHomeDir();
+const dbConfig = getDbConfigOrDie(homeDir);
 
 function getConfig(database, customConfig) {
   debug.trace('getConfig - db: %s', database);
+  const homeConfig = getHomeConfig();
   if (!configStore[database]) {
     configStore[database] = Object.assign(
       {},
       defaultConfig,
-      getHomeConfig(),
+      homeConfig,
       dbConfig[database],
       envConfig,
       cliConfig,
     );
   }
+
   if (!customConfig) {
     return configStore[database];
   } else {
