@@ -54,7 +54,7 @@ function extendConfig(
   const otherKeys = Object.keys(otherProps);
   for (let key of otherKeys) {
     if (finalConfig.customDesign[key]) {
-      throw new Error(`${key} cannot be overriden`);
+      throw new Error(`customDesign.${key} cannot be overriden`);
     }
     finalConfig.customDesign[key] = otherProps[key];
   }
