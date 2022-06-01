@@ -2,7 +2,6 @@
 
 module.exports = {
   customDesign: {
-    version: 8,
     views: {
       lib: {
         test: ['lib.js']

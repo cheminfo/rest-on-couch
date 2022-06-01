@@ -54,3 +54,11 @@ test('loading configuration that has duplicate names', () => {
     /query indexes and javascript views cannot share names: test/,
   );
 });
+
+test('loading configuration with unallowed override of the filters prop', () => {
+  expect(function load() {
+    return getDbConfig(
+      path.join(__dirname, '../../homeDirectories/failUnallowedOverride'),
+    );
+  }).toThrowError(/^customDesign\.updates cannot be overriden$/);
+});
