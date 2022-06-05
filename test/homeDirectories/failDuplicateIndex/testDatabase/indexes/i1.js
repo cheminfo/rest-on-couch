@@ -3,13 +3,9 @@
 module.exports = {
   indexTest: {
     index: {
-       fields: [
-        'foo'
-       ]
+      fields: ['foo'],
     },
     type: 'json',
     ddoc: 'foo',
- }
+  },
 };
-
-

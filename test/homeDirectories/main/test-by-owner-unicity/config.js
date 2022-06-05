@@ -4,7 +4,7 @@ module.exports = {
   customDesign: {
     views: {
       lib: {
-        test: ['lib.js']
+        test: ['lib.js'],
       },
       test: {
         map: function (doc) {
@@ -12,14 +12,14 @@ module.exports = {
           if (doc.$type === 'entry') {
             emit(doc._id, libTest.fortyTwo());
           }
-        }
-      }
+        },
+      },
     },
     updates: {},
     filters: {
       abc: function (doc) {
         return doc.$type === 'log';
-      }
-    }
-  }
+      },
+    },
+  },
 };

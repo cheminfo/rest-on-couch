@@ -8,5 +8,5 @@ module.exports = async function noReferenceImport(ctx, result) {
   result.field = 'field';
   result.metadata = {
     noRefMetadata: true,
-  }
+  };
 };

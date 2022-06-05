@@ -6,7 +6,7 @@
 // };
 
 module.exports = {
-    fortyTwo: function() {
-        return 'forty two';
-    }
+  fortyTwo: function () {
+    return 'forty two';
+  },
 };

@@ -3,13 +3,9 @@
 module.exports = {
   modDate: {
     index: {
-       fields: [
-        'foo'
-       ]
+      fields: ['foo'],
     },
     type: 'json',
     ddoc: 'foo',
- }
+  },
 };
-
-

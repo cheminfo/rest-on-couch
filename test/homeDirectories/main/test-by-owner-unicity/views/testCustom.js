@@ -7,6 +7,6 @@ module.exports = {
         emit(doc._id);
       }
     },
-    designDoc: 'custom'
-  }
+    designDoc: 'custom',
+  },
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-const {couchdbHost, couchdbPort, ldapAuthConfig} = require('../constants');
+const { couchdbHost, couchdbPort, ldapAuthConfig } = require('../constants');
 
 module.exports = {
   url: `http://${couchdbHost}:${couchdbPort}`,
@@ -12,23 +12,23 @@ module.exports = {
   customDesign: {
     views: {
       entryIdByRight: {
-        map: function(doc) {
+        map: function (doc) {
           emitWithOwner(['x', 'y', 'z'], doc.$id);
         },
         withOwner: true,
       },
       testReduce: {
-        map: function(doc) {
+        map: function (doc) {
           if (doc.$type === 'entry') {
             emit(doc._id, 1); // eslint-disable-line no-undef
           }
         },
-        reduce: function(keys, values) {
+        reduce: function (keys, values) {
           return sum(values);
         },
       },
       multiEmit: {
-        map: function(doc) {
+        map: function (doc) {
           if (doc.$type !== 'entry') {
             return;
           }
@@ -36,7 +36,7 @@ module.exports = {
           emitWithOwner(doc.$id, 2);
         },
         withOwner: true,
-      }
+      },
     },
   },
   auth: {
@@ -47,7 +47,7 @@ module.exports = {
     ldap: ldapAuthConfig,
   },
   async getUserInfo(email, searchLdap) {
-    if(email.endsWith('zakodium.com')) {
+    if (email.endsWith('zakodium.com')) {
       const uid = email.slice(0, email.indexOf('@'));
       const data = await searchLdap({
         filter: `uid=${uid}`,
@@ -56,7 +56,7 @@ module.exports = {
       return {
         email: data[0].object.mail,
         displayName: data[0].object.displayName,
-      }
+      };
     } else {
       return {
         email,
@@ -68,6 +68,6 @@ module.exports = {
     return {
       displayName: user.displayName,
       email: user.mail,
-    }
-  }
+    };
+  },
 };

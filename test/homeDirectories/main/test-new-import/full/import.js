@@ -11,7 +11,7 @@ module.exports = async function fullImport(ctx, result) {
     result.content_type = 'text/plain';
   }
   result.content = {
-    sideEffect: true
+    sideEffect: true,
   };
   result.addAttachment({
     jpath: ['other', 'jpath'],
@@ -20,10 +20,10 @@ module.exports = async function fullImport(ctx, result) {
     contents: Buffer.from('other attachment content', 'utf-8'),
     field: 'testField',
     filename: 'testFilename.txt',
-    content_type: 'text/plain'
+    content_type: 'text/plain',
   });
   result.metadata = {
-    hasMetadata: true
+    hasMetadata: true,
   };
   result.addGroup('group1');
   result.addGroups(['group2', 'group3']);

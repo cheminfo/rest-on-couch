@@ -1,6 +1,6 @@
 'use strict';
 
-const {couchdbHost, couchdbPort, ldapAuthConfig} = require('../constants')
+const { couchdbHost, couchdbPort, ldapAuthConfig } = require('../constants');
 
 module.exports = {
   url: `http://${couchdbHost}:${couchdbPort}`,
@@ -27,6 +27,6 @@ module.exports = {
     return {
       displayName: user.displayName,
       email: user.mail,
-    }
-  }
+    };
+  },
 };
