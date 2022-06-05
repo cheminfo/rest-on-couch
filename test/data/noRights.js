@@ -71,7 +71,9 @@ function populate(db) {
       $type: 'entry',
       $owners: ['b@b.com', 'groupA', 'groupB'],
       $id: 'A',
-      $content: {},
+      $content: {
+        x: 1,
+      },
     }),
   );
 
@@ -80,7 +82,9 @@ function populate(db) {
       $type: 'entry',
       $owners: ['b@b.com'],
       $id: 'onlyB',
-      $content: {},
+      $content: {
+        x: 2,
+      },
     }),
   );
 
@@ -89,7 +93,9 @@ function populate(db) {
       $type: 'entry',
       $owners: ['a@a.com'],
       $id: 'onlyA',
-      $content: {},
+      $content: {
+        x: 3,
+      },
     }),
   );
 
@@ -98,6 +104,9 @@ function populate(db) {
       $type: 'entry',
       $owners: ['x@x.com', 'defaultAnonymousRead'],
       $id: 'entryWithDefaultAnonymousRead',
+      $content: {
+        x: 4,
+      },
     }),
   );
 
@@ -106,6 +115,9 @@ function populate(db) {
       $type: 'entry',
       $owners: ['x@x.com', 'defaultAnyuserRead'],
       $id: 'entryWithDefaultAnyuserRead',
+      $content: {
+        x: 5,
+      },
     }),
   );
 
@@ -114,6 +126,9 @@ function populate(db) {
       $type: 'entry',
       $owners: ['x@x.com', 'defaultAnonymousRead', 'defaultAnyuserRead'],
       $id: 'entryWithDefaultMultiRead',
+      $content: {
+        x: 6,
+      },
     }),
   );
 
