@@ -10,8 +10,14 @@ function populate(db) {
   prom.push(
     insertDocument(db, {
       $type: 'entry',
-      $owners: ['b@b.com', 'groupA', 'groupB'],
+      $owners: ['a@a.com', 'groupA', 'groupB'],
       $id: 'A',
+      $content: {},
+    }),
+    insertDocument(db, {
+      $type: 'entry',
+      $owners: ['b@b.com'],
+      $id: 'B',
       $content: {},
     }),
   );

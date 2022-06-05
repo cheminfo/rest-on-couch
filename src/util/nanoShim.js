@@ -177,6 +177,12 @@ class NanoDbShim {
 
   async createIndex(index) {
     debug.trace('createIndex %s', index.name);
+    index.index.partial_filter_selector = {
+      ...index.index.partial_filter_selector,
+      '\\$type': {
+        $eq: 'entry',
+      },
+    };
     const { body } = await this.client.post('_index', {
       json: index,
     });
@@ -199,10 +205,28 @@ class NanoDbShim {
     const { body } = await this.client.get('_design_docs', {
       searchParams,
     });
-    // console.log(body.rows);
     const designDocs = body.rows.map((row) => row.doc);
-    // console.log(designDocs);
     return designDocs;
+  }
+
+  async queryMango(query) {
+    const indexName = query.use_index;
+    if (indexName) {
+      var config = getConfig(this.dbName);
+      const designDoc = config.designDocNames?.[indexName];
+      if (!designDoc) {
+        throw new CouchError(
+          `index ${indexName} does not exist`,
+          'bad request',
+        );
+      }
+      query.use_index = `${designDoc}/${indexName}`;
+    }
+
+    const { body } = await this.client.post('_find', {
+      json: query,
+    });
+    return body;
   }
 
   async queryView(view, searchParams, options = {}) {

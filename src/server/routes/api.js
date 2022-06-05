@@ -69,6 +69,9 @@ router.get('/:dbname/_view/:view', couch.queryEntriesByUser);
 // Get result from a view with owner
 router.get('/:dbname/_query/:view', couch.queryEntriesByRight);
 
+// Get mango query result
+router.post('/:dbname/_find', parseJson1mb, couch.findEntriesByRight);
+
 // Queries
 router.post(
   '/:dbname/_query/byKindAndId/:kind',

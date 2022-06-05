@@ -98,6 +98,7 @@ extendCouch('group');
 extendCouch('init');
 extendCouch('log');
 extendCouch('query');
+extendCouch('find');
 extendCouch('right');
 extendCouch('token');
 extendCouch('user');
