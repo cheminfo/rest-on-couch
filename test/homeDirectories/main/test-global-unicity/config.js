@@ -4,10 +4,10 @@ module.exports = {
   customDesign: {
     version: 8,
     views: {
-      lib: {}
+      lib: {},
     },
     updates: {},
-    filters: {}
+    filters: {},
   },
-  entryUnicity: 'global'
+  entryUnicity: 'global',
 };

@@ -12,7 +12,7 @@ module.exports = async function separateImport(ctx, result) {
     result.content_type = 'text/plain';
   }
   result.content = {
-    sideEffect: true
+    sideEffect: true,
   };
   result.addAttachment({
     jpath: ['other', 'jpath'],
@@ -21,7 +21,7 @@ module.exports = async function separateImport(ctx, result) {
     contents: await ctx.getContents(),
     field: 'testField',
     filename: ctx.filename,
-    content_type: 'text/plain'
+    content_type: 'text/plain',
   });
   result.addAttachment({
     jpath: ['other2', 'jpath'],
@@ -30,10 +30,10 @@ module.exports = async function separateImport(ctx, result) {
     contents: Uint8Array.of(116, 101, 115, 116, 50),
     field: 'testField',
     filename: 'test2.txt',
-    content_type: 'text/plain'
+    content_type: 'text/plain',
   });
   result.metadata = {
-    hasMetadata2: true
+    hasMetadata2: true,
   };
   result.addGroup('group1');
   result.addGroups(['group2', 'group3']);

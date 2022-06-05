@@ -6,5 +6,5 @@ module.exports = {
       emit(doc._id);
     },
     designDoc: 'foo',
-  }
+  },
 };

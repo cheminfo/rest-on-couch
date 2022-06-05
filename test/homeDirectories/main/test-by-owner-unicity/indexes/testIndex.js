@@ -3,20 +3,18 @@
 module.exports = {
   modDate: {
     index: {
-       fields: [
+      fields: [
         {
-         '\\$modificationDate': 'asc'
-        }
-       ],
-       partial_filter_selector: {
+          '\\$modificationDate': 'asc',
+        },
+      ],
+      partial_filter_selector: {
         '\\$kind': {
-         $eq: 'sample'
-        }
-       }
+          $eq: 'sample',
+        },
+      },
     },
     type: 'json',
     ddoc: 'modDateIndex',
- }
+  },
 };
-
-

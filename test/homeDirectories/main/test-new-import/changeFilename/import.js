@@ -12,6 +12,6 @@ module.exports = async function importFunction(ctx, result) {
     result.content_type = 'text/plain';
   }
   result.metadata = {
-    hasMetadata: true
+    hasMetadata: true,
   };
 };

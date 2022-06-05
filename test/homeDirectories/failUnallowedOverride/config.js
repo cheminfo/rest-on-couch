@@ -1,9 +1,9 @@
 'use strict';
 
 module.exports = {
-    customDesign: {
-        updates: {
-            updateFun: function() {}
-        }
-    }
-}
+  customDesign: {
+    updates: {
+      updateFun: function () {},
+    },
+  },
+};
