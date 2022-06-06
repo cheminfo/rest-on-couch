@@ -225,6 +225,17 @@ exports.entriesByKindAndId = composeWithError(async (ctx) => {
   );
 });
 
+exports.findEntriesByRight = composeWithError(async (ctx) => {
+  const { token } = ctx.query;
+  const { right = 'read', ...options } = ctx.request.body;
+  options.token = token;
+  ctx.body = await ctx.state.couch.findEntriesByRight(
+    ctx.state.userEmail,
+    right,
+    options,
+  );
+});
+
 exports.entriesByOwnerAndId = composeWithError(async (ctx) => {
   for (let i = 0; i < couchNeedsParse.length; i++) {
     let queryParam = ctx.query[couchNeedsParse[i]];

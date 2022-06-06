@@ -47,12 +47,13 @@
 
 ### Queries
 
-| Method | Route                                    |             Action              |                          Description                           |
-| :----: | :--------------------------------------- | :-----------------------------: | :------------------------------------------------------------: |
-|  GET   | `/db/:dbname/_view/:view`                |       Query a custom view       |                 Returns an array of documents                  |
-|  GET   | `/db/:dbname/_query/:view`               | Query a custom view with owners |               Returns an array of mapped results               |
-|  POST  | `/db/:dbname/_query/byKindAndId/:kind`   |      Search by kind and id      | key, startkey and endkey can be set in the body of the request |
-|  POST  | `/db/:dbname/_query/byOwnerAndId/:email` |    Search by kind and owner     | key, startkey and endkey can be set in the body of the request |
+| Method | Route                                    |               Action               |                          Description                           |
+| :----: | :--------------------------------------- | :--------------------------------: | :------------------------------------------------------------: |
+|  GET   | `/db/:dbname/_view/:view`                |        Query a custom view         |                 Returns an array of documents                  |
+|  GET   | `/db/:dbname/_query/:view`               |  Query a custom view with owners   |               Returns an array of mapped results               |
+|  POST  | `/db/:dbname/_query/byKindAndId/:kind`   |       Search by kind and id        | key, startkey and endkey can be set in the body of the request |
+|  POST  | `/db/:dbname/_query/byOwnerAndId/:email` |      Search by kind and owner      | key, startkey and endkey can be set in the body of the request |
+|  POST  | `/db/:dbname/_find`                      | Search by right with mango queries |        query property in body contains the mango query         |
 
 ### Groups
 
