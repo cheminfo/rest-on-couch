@@ -5,7 +5,7 @@ const noRights = require('../data/noRights');
 
 describe('no rights mango queries', () => {
   beforeEach(noRights);
-  test('should get all entries with read access', async () => {
+  test('users should get all entries with read access', async () => {
     const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
       query: {
         selector: {},
@@ -19,6 +19,19 @@ describe('no rights mango queries', () => {
       },
     });
     expect(data2.docs).toHaveLength(5);
+  });
+
+  test('anonymous should get all entries with the defaultAnonymousRead group', async () => {
+    const anonymousData = await couch.findEntriesByRight('anonymous', 'read', {
+      query: {},
+    });
+
+    expect(anonymousData.docs).toHaveLength(2);
+    expect(
+      anonymousData.docs.every((doc) =>
+        doc.$owners.includes('defaultAnonymousRead'),
+      ),
+    ).toBe(true);
   });
 
   test('should get owned entries', async () => {
