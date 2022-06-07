@@ -2,6 +2,8 @@
 
 const debug = require('debug')('main:find');
 
+const { getUserGroups } = require('../util/groups');
+
 const validateMethods = require('./validate');
 
 const methods = {
@@ -27,8 +29,13 @@ const methods = {
     if (hasGlobalRight) {
       query.selector['\\$owners'] = undefined;
     } else {
-      const userGroups = await this.getGroupsByRight(user, right);
-      userGroups.push(user);
+      const userGroups = await getUserGroups(
+        this,
+        user,
+        right,
+        options.groups,
+        options.mine,
+      );
       query.selector['\\$owners'] = {
         $in: userGroups,
       };
