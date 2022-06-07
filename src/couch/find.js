@@ -2,6 +2,7 @@
 
 const debug = require('debug')('main:find');
 
+const CouchError = require('../util/CouchError');
 const { getUserGroups } = require('../util/groups');
 
 const validateMethods = require('./validate');
@@ -12,6 +13,11 @@ const methods = {
     await this.open();
     options = options || {};
     const query = options.query || {};
+
+    // Check options
+    if (query.sort && !query.use_index) {
+      throw new CouchError('query with sort must use index', 'bad argument');
+    }
 
     right = right || 'read';
 
