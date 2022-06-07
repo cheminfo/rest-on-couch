@@ -3,6 +3,7 @@
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:query');
 const ensureStringArray = require('../util/ensureStringArray');
+const { getUserGroups } = require('../util/groups');
 
 const validateMethods = require('./validate');
 
@@ -44,25 +45,13 @@ const methods = {
       return data;
     }
 
-    var userGroups = await this.getGroupsByRight(user, right);
-    userGroups.push(user);
-    if (options.groups) {
-      var groupsToUse = [];
-      if (!Array.isArray(options.groups)) {
-        options.groups = [options.groups];
-      }
-      for (var i = 0; i < userGroups.length; i++) {
-        if (options.groups.indexOf(userGroups[i]) >= 0) {
-          groupsToUse.push(userGroups[i]);
-        }
-      }
-      userGroups = groupsToUse;
-      if (userGroups.indexOf(user) === -1 && options.mine) {
-        userGroups.push(user);
-      }
-    } else if (options.mine) {
-      userGroups = [user];
-    }
+    const userGroups = await getUserGroups(
+      this,
+      user,
+      right,
+      options.groups,
+      options.mine,
+    );
 
     const docIds = new Set();
     const data = [];

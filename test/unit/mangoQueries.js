@@ -77,6 +77,30 @@ describe('no rights mango queries', () => {
     );
   });
 
+  test('filter with mine=true', async () => {
+    const data = await couch.findEntriesByRight('a@a.com', 'read', {
+      query: {
+        fields: ['\\$content.x'],
+      },
+      mine: true,
+    });
+
+    expect(data.docs).toHaveLength(1);
+    expect(data.docs).toStrictEqual([{ $content: { x: 3 } }]);
+  });
+
+  test('filter with groups', async () => {
+    const data = await couch.findEntriesByRight('a@a.com', 'read', {
+      groups: ['groupA'],
+      query: {
+        fields: ['\\$content.x'],
+      },
+    });
+
+    expect(data.docs).toHaveLength(1);
+    expect(data.docs).toStrictEqual([{ $content: { x: 1 } }]);
+  });
+
   test('use an index', async () => {
     const data = await couch.findEntriesByRight('a@a.com', 'read', {
       query: {
