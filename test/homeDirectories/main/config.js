@@ -47,7 +47,7 @@ module.exports = {
     ldap: ldapAuthConfig,
   },
   async getUserInfo(email, searchLdap) {
-    if (email.endsWith('zakodium.com')) {
+    if (email.endsWith('@zakodium.com')) {
       const uid = email.slice(0, email.indexOf('@'));
       const data = await searchLdap({
         filter: `uid=${uid}`,
