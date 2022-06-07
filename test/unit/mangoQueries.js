@@ -189,6 +189,23 @@ test('use sort without index is forbidden', async () => {
   ).rejects.toThrow(/query with sort must use index/);
 });
 
+test('bookmark', async () => {
+  const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
+    query: { limit: 1 },
+  });
+
+  expect(data1.docs).toHaveLength(1);
+  const data2 = await couch.findEntriesByRight('a@a.com', 'read', {
+    query: {
+      limit: 1,
+      bookmark: data1.bookmark,
+    },
+  });
+
+  expect(data2.docs).toHaveLength(1);
+  expect(data2.docs[0]._id).not.toBe(data1.docs[0]._id);
+});
+
 describe('anyuser mango queries', () => {
   beforeEach(anyuser);
   test('should get all entries with any user (global right)', async () => {
