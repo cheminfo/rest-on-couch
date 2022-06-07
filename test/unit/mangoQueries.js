@@ -179,6 +179,16 @@ describe('no rights mango queries', () => {
   });
 });
 
+test('use sort without index is forbidden', async () => {
+  return expect(() =>
+    couch.findEntriesByRight('a@a.com', 'read', {
+      query: {
+        sort: [{ '\\$content.x': 'desc' }],
+      },
+    }),
+  ).rejects.toThrow(/query with sort must use index/);
+});
+
 describe('anyuser mango queries', () => {
   beforeEach(anyuser);
   test('should get all entries with any user (global right)', async () => {
