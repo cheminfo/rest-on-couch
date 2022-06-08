@@ -1,5 +1,27 @@
 # Changelog
 
+## [13.0.0](https://github.com/cheminfo/rest-on-couch/compare/v12.2.0...v13.0.0) (2022-06-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* requires couchdb v2.2 or higher
+
+### Features
+
+* add _find to http API ([fd43522](https://github.com/cheminfo/rest-on-couch/commit/fd4352255faa6db3bee960f4532cdc36716fd1d4))
+* add findEntriesByRight to couch internal api ([5f1331b](https://github.com/cheminfo/rest-on-couch/commit/5f1331b19006c5cf952172bf9eabd4ea891a537d))
+* filter mango queries (find) for mine and by groups ([8ef41d5](https://github.com/cheminfo/rest-on-couch/commit/8ef41d56eed68196a35d9d04f934e6248d3de0a3))
+* gracefully handle sigterm signal ([91d5191](https://github.com/cheminfo/rest-on-couch/commit/91d5191b2aae13f0219ade274f26a218514e311c))
+* load query indexes in couchdb ([9d500cc](https://github.com/cheminfo/rest-on-couch/commit/9d500cc5dcbda61fd70f891e05db986a9eed938a))
+
+
+### Bug Fixes
+
+* fail early if sort is used without index ([cc3f4a2](https://github.com/cheminfo/rest-on-couch/commit/cc3f4a2cc73728b5bf0aff5f6dcf3ca59f05f563))
+* make sure getGroupsByRight does not return default groups which do not have sufficient rights ([bd35c49](https://github.com/cheminfo/rest-on-couch/commit/bd35c49d4f8405b3ea3d3a20b341012a6fcc331b))
+* merge home and db configs together ([b20b94f](https://github.com/cheminfo/rest-on-couch/commit/b20b94fed945cb2ab992186200a98a0c152c7d60))
+
 ## [12.2.0](https://github.com/cheminfo/rest-on-couch/compare/v12.1.1...v12.2.0) (2022-04-27)
 
 
