@@ -130,9 +130,17 @@ module.exports.start = function () {
   _started = new Promise(function (resolve, reject) {
     initCouch().then(
       () => {
-        http.createServer(app.callback()).listen(config.port, function () {
-          debug.warn('running on localhost: %d', config.port);
-          resolve(app);
+        const server = http
+          .createServer(app.callback())
+          .listen(config.port, function () {
+            debug.warn('running on localhost: %d', config.port);
+            resolve(app);
+          });
+        process.on('SIGTERM', () => {
+          debug('Received SIGTERM signal');
+          server.close(() => {
+            debug('server closed');
+          });
         });
       },
       (e) => {
