@@ -210,9 +210,9 @@ A specific userguide is available [here](import.md).
 
 [npm-image]: https://img.shields.io/npm/v/rest-on-couch.svg
 [npm-url]: https://www.npmjs.com/package/rest-on-couch
-[ci-image]: https://github.com/mljs/matrix/workflows/Node.js%20CI/badge.svg?branch=master
+[ci-image]: https://github.com/mljs/matrix/workflows/Node.js%20CI/badge.svg?branch=main
 [ci-url]: https://github.com/mljs/matrix/actions?query=workflow%3A%22Node.js+CI%22
-[codecov-image]: https://codecov.io/gh/cheminfo/rest-on-couch/branch/master/graph/badge.svg?token=Uw2cOqZUg0
+[codecov-image]: https://codecov.io/gh/cheminfo/rest-on-couch/branch/main/graph/badge.svg?token=Uw2cOqZUg0
 [codecov-url]: https://codecov.io/gh/cheminfo/rest-on-couch
 [download-image]: https://img.shields.io/npm/dm/rest-on-couch.svg
 [download-url]: https://www.npmjs.com/package/rest-on-couch
