@@ -1,5 +1,12 @@
 # Changelog
 
+## [13.1.0](https://github.com/cheminfo/rest-on-couch/compare/v13.0.0...v13.1.0) (2022-06-14)
+
+
+### Features
+
+* allow to use streams in the find api ([0cd188b](https://github.com/cheminfo/rest-on-couch/commit/0cd188bbc42a075470f1c5fc95476efb435791b5))
+
 ## [13.0.0](https://github.com/cheminfo/rest-on-couch/compare/v12.2.0...v13.0.0) (2022-06-08)
 
 
