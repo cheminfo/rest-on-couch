@@ -209,19 +209,15 @@ class NanoDbShim {
     return designDocs;
   }
 
+  queryMangoStream(query) {
+    configureIndex(this, query);
+    return this.client.stream.post('_find', {
+      json: query,
+    });
+  }
+
   async queryMango(query) {
-    const indexName = query.use_index;
-    if (indexName) {
-      var config = getConfig(this.dbName);
-      const designDoc = config.designDocNames?.[indexName];
-      if (!designDoc) {
-        throw new CouchError(
-          `index ${indexName} does not exist`,
-          'bad request',
-        );
-      }
-      query.use_index = `${designDoc}/${indexName}`;
-    }
+    configureIndex(this, query);
 
     const { body } = await this.client.post('_find', {
       json: query,
@@ -398,6 +394,18 @@ async function getNano(url, username, password) {
   }
   const cookie = headers['set-cookie'][0].split(';')[0];
   return new NanoShim(url, cookie);
+}
+
+function configureIndex(ctx, query) {
+  const indexName = query.use_index;
+  if (indexName) {
+    var config = getConfig(ctx.dbName);
+    const designDoc = config.designDocNames?.[indexName];
+    if (!designDoc) {
+      throw new CouchError(`index ${indexName} does not exist`, 'bad request');
+    }
+    query.use_index = `${designDoc}/${indexName}`;
+  }
 }
 
 module.exports = getNano;
