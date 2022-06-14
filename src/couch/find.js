@@ -47,7 +47,11 @@ const methods = {
       };
     }
 
-    return this._db.queryMango(query);
+    if (options.stream) {
+      return this._db.queryMangoStream(query);
+    } else {
+      return this._db.queryMango(query);
+    }
   },
 };
 

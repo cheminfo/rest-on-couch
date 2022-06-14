@@ -229,6 +229,11 @@ exports.findEntriesByRight = composeWithError(async (ctx) => {
   const { token } = ctx.query;
   const { right = 'read', ...options } = ctx.request.body;
   options.token = token;
+  const config = getConfig(ctx.params.dbname);
+  if (config.useStreams) {
+    debug('using streams');
+    options.stream = true;
+  }
   ctx.body = await ctx.state.couch.findEntriesByRight(
     ctx.state.userEmail,
     right,
