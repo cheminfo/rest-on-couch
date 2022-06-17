@@ -1,5 +1,13 @@
 # Changelog
 
+## [13.1.1](https://github.com/cheminfo/rest-on-couch/compare/v13.1.0...v13.1.1) (2022-06-17)
+
+
+### Bug Fixes
+
+* add doc validation to ensure $id is not undefined ([2b71925](https://github.com/cheminfo/rest-on-couch/commit/2b71925145411b3b780107bf548742dc1f904621))
+* allow multiple entries with $id of null to be created ([49087dc](https://github.com/cheminfo/rest-on-couch/commit/49087dc0cfd2527f1d51155a878e012a90b4b645))
+
 ## [13.1.0](https://github.com/cheminfo/rest-on-couch/compare/v13.0.0...v13.1.0) (2022-06-14)
 
 
