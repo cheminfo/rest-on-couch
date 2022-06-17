@@ -55,6 +55,12 @@ const methods = {
   async getEntryById(id, user, options) {
     await this.open();
     debug('getEntryById (%s, %s)', id, user);
+    if (id == null) {
+      throw new CouchError(
+        'id must be defined in getEntryById',
+        'bad argument',
+      );
+    }
     const doc = await getUniqueEntryByIdOrFail(this, user, id);
     return this.getDocByRights(doc._id, user, 'owner', 'entry', options);
   },
@@ -291,9 +297,11 @@ async function _createNew(ctx, entry, user, options) {
   const rights = hasGroups ? ['create', 'owner'] : ['create'];
   user = validateMethods.userFromTokenAndRights(user, options.token, rights);
 
-  // Exceptionally, if the $id is null, no unicity is enforced
+  // At this point, $id could be null or undefined
+  // Exceptionally in that case, no unicity is enforced
   // We keep this behavior for backward compatibility
-  if (entry.$id !== null) {
+  // If $id is undefined, it is going to be replaced with null when the entry is saved
+  if (entry.$id != null) {
     if (await getUniqueEntryById(ctx, user, entry.$id)) {
       throw new CouchError('entry already exists', 'conflict');
     }

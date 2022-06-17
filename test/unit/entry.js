@@ -360,10 +360,18 @@ describe('entry creation and editions', () => {
       'a@a.com',
     );
 
+    const entry3 = await couch.insertEntry({ $content: 'C' }, 'a@a.com');
+
     expect(entry1.action).toBe('created');
     expect(entry2.action).toBe('created');
-    expect(entry1.info.isNew).toBe(true);
-    expect(entry2.info.isNew).toBe(true);
+    expect(entry3.action).toBe('created');
+
+    expect(() => couch.getEntryById(null, 'a@a.com')).rejects.toThrow(
+      /id must be defined in getEntryById/,
+    );
+    expect(() => couch.getEntryById(undefined, 'a@a.com')).rejects.toThrow(
+      /id must be defined in getEntryById/,
+    );
   });
 
   test('$id is null by default', async () => {
