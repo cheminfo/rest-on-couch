@@ -349,6 +349,22 @@ describe('entry creation and editions', () => {
       'entry already exists',
     ]);
   });
+
+  test('multiple entries with an $id of null can be created by the same user', async () => {
+    const entry1 = await couch.insertEntry(
+      { $id: null, $content: 'A' },
+      'a@a.com',
+    );
+    const entry2 = await couch.insertEntry(
+      { $id: null, $content: 'B' },
+      'a@a.com',
+    );
+
+    expect(entry1.action).toBe('created');
+    expect(entry2.action).toBe('created');
+    expect(entry1.info.isNew).toBe(true);
+    expect(entry2.info.isNew).toBe(true);
+  });
 });
 
 describe('entry rights', () => {

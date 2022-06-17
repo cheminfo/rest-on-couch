@@ -290,9 +290,15 @@ async function _createNew(ctx, entry, user, options) {
   const hasGroups = options.groups ? options.groups.length > 0 : false;
   const rights = hasGroups ? ['create', 'owner'] : ['create'];
   user = validateMethods.userFromTokenAndRights(user, options.token, rights);
-  if (await getUniqueEntryById(ctx, user, entry.$id)) {
-    throw new CouchError('entry already exists', 'conflict');
+
+  // Exceptionally, if the $id is null, no unicity is enforced
+  // We keep this behavior for backward compatibility
+  if (entry.$id !== null) {
+    if (await getUniqueEntryById(ctx, user, entry.$id)) {
+      throw new CouchError('entry already exists', 'conflict');
+    }
   }
+
   const ok = await validateMethods.checkGlobalRight(ctx, user, 'create');
   const userSet = new Set(options.groups || []);
 
