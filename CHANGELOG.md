@@ -1,5 +1,13 @@
 # Changelog
 
+## [13.1.2](https://github.com/cheminfo/rest-on-couch/compare/v13.1.1...v13.1.2) (2022-06-17)
+
+
+### Bug Fixes
+
+* check $id is defined in getEntryById ([54fae39](https://github.com/cheminfo/rest-on-couch/commit/54fae397f395a13788230878181da079e9bb468e))
+* handle $id value of undefined when creating entry ([54fae39](https://github.com/cheminfo/rest-on-couch/commit/54fae397f395a13788230878181da079e9bb468e))
+
 ## [13.1.1](https://github.com/cheminfo/rest-on-couch/compare/v13.1.0...v13.1.1) (2022-06-17)
 
 
