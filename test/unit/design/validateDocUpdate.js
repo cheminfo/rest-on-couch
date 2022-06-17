@@ -17,6 +17,11 @@ describe('validate_doc_update', () => {
   describe('$type: entry', () => {
     test('id', () => {
       assert(
+        addOwners(addDate({ $type: 'entry' })),
+        null,
+        '$id must be defined',
+      );
+      assert(
         addOwners(addDate({ $type: 'entry', $id: 'abc' })),
         addOwners(addDate({ $type: 'entry', $id: 'xyz' })),
         'Cannot change the ID',

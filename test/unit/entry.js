@@ -365,6 +365,15 @@ describe('entry creation and editions', () => {
     expect(entry1.info.isNew).toBe(true);
     expect(entry2.info.isNew).toBe(true);
   });
+
+  test('$id is null by default', async () => {
+    const entry = await couch.insertEntry({ $content: 'A' }, 'a@a.com');
+    expect(entry.action).toEqual('created');
+
+    const dbEntry = await couch.getEntry(entry.info.id, 'a@a.com');
+    expect(dbEntry.$id).toBe(null);
+    expect(dbEntry.$content).toBe('A');
+  });
 });
 
 describe('entry rights', () => {

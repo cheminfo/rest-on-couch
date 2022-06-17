@@ -113,6 +113,9 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     validateDates(newDoc, oldDoc);
   } else if (newDoc.$type === 'entry') {
     validateOwners(newDoc);
+    if (newDoc.$id === undefined) {
+      throw { forbidden: '$id must be defined' };
+    }
     validateDates(newDoc, oldDoc);
     if (oldDoc) {
       if (Array.isArray(newDoc.$id) && Array.isArray(oldDoc.$id)) {
