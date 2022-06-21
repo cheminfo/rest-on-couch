@@ -91,10 +91,11 @@ const methods = {
       let newCurrent = current[jpath[i]];
       if (!newCurrent) {
         if (i < jpath.length - 1) {
-          newCurrent = current[jpath[i]] = {};
+          current[jpath[i]] = {};
         } else {
-          newCurrent = current[jpath[i]] = [];
+          current[jpath[i]] = [];
         }
+        newCurrent = current[jpath[i]];
       }
       current = newCurrent;
     }
@@ -124,7 +125,7 @@ const methods = {
       json[file.field] = {
         filename: file.name,
       };
-      const fileCopy = { ...file};
+      const fileCopy = { ...file };
       if (typeof fileCopy.data === 'string') {
         fileCopy.data = Buffer.from(fileCopy.data, 'base64');
       }

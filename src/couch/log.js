@@ -18,12 +18,12 @@ for (var i in levels) {
   exports[i] = levels[i];
 }
 
-const isValidLevel = (exports.isValidLevel = function (level) {
+exports.isValidLevel = function (level) {
   return !!levels[level];
-});
+};
 
 function checkLevel(level) {
-  if (!isValidLevel(level)) {
+  if (!exports.isValidLevel(level)) {
     throw new Error(`log level ${level} does not exist`);
   }
 }

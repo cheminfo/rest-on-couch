@@ -1,11 +1,11 @@
 'use strict';
 
-const Debug = require('debug');
+const debugPkg = require('debug');
 
-const error = Debug('couch:error');
-const warn = Debug('couch:warn');
-const debug = Debug('couch:debug');
-const trace = Debug('couch:trace');
+const error = debugPkg('couch:error');
+const warn = debugPkg('couch:warn');
+const debug = debugPkg('couch:debug');
+const trace = debugPkg('couch:trace');
 
 module.exports = function (prefix) {
   const func = (message, ...args) => debug(`(${prefix}) ${message}`, ...args);
