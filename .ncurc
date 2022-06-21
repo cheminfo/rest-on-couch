@@ -1,5 +1,11 @@
 {
   "reject": [
-    "ldapjs"
+    "got",
+    "koa-hbs",
+    "react",
+    "react-dom",
+    "react-router-dom",
+    "react-redux",
+    "select2"
   ]
 }
