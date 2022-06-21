@@ -14,8 +14,9 @@ curl -X POST -H "Content-Type: application/json" http://admin:admin@${COUCHDB_HO
 curl -X PUT "http://admin:admin@${COUCHDB_HOST}:${COUCHDB_PORT}/_users/org.couchdb.user:a@a.com" -H "Content-Type: application/json" -d '{"password": "123", "type": "user", "name": "a@a.com", "roles":[]}'
 curl -X PUT "http://admin:admin@${COUCHDB_HOST}:${COUCHDB_PORT}/_users/org.couchdb.user:b@b.com" -H "Content-Type: application/json" -d '{"password": "123", "type": "user", "name": "b@b.com", "roles":[]}'
 curl -X PUT "http://admin:admin@${COUCHDB_HOST}:${COUCHDB_PORT}/_users/org.couchdb.user:admin@a.com" -H "Content-Type: application/json" -d '{"password": "123", "type": "user", "name": "admin@a.com", "roles":[]}'
+curl -X PUT "http://admin:admin@${COUCHDB_HOST}:${COUCHDB_PORT}/_users/org.couchdb.user:rest-on-couch" -H "Content-Type: application/json" -d '{"password": "roc-123", "type": "user", "name": "rest-on-couch", "roles":[]}'
 
 curl -X PUT "http://admin:admin@${COUCHDB_HOST}:${COUCHDB_PORT}/test"
-curl -X PUT "http://admin:admin@${COUCHDB_HOST}:${COUCHDB_PORT}/test/_security" \
-          -H 'Content-Type: application/json' \
-          -d '{ "admins": { "names": ["admin"], "roles": [] }, "members": { "names": ["admin"], "roles": [] } }'
+# curl -X PUT "http://admin:admin@${COUCHDB_HOST}:${COUCHDB_PORT}/test/_security" \
+#           -H 'Content-Type: application/json' \
+#           -d '{ "admins": { "names": ["rest-on-couch"], "roles": [] }, "members": { "names": ["rest-on-couch"], "roles": [] } }'

@@ -4,9 +4,9 @@ const got = require('got');
 const passport = require('koa-passport');
 
 const config = require('../../config/config').globalConfig;
-const connect = require('../../connect');
 const debug = require('../../util/debug')('auth');
 const isEmail = require('../../util/isEmail');
+const getNano = require('../../util/nanoShim');
 
 const { decorateError } = require('./decorateError');
 const respondOk = require('./respondOk');
@@ -213,7 +213,7 @@ exports.changePassword = async (ctx) => {
 };
 
 async function getCouchdbUser(email) {
-  const nano = await connect.open();
+  const nano = await getAdminNano();
   const db = nano.useDb('_users');
   return db.getDocument(`org.couchdb.user:${email}`);
 }
@@ -224,7 +224,15 @@ function userDatabaseDenied(ctx) {
 }
 
 async function updateCouchdbUser(user) {
-  const nano = await connect.open();
+  // Creating / updating users is reserved for admins
+  const nano = await getAdminNano();
   const db = nano.useDb('_users');
   return db.insertDocument(user);
+}
+
+function getAdminNano() {
+  if (!config.adminPassword) {
+    throw new Error('Admin password is not set');
+  }
+  return getNano(config.url, 'admin', config.adminPassword);
 }

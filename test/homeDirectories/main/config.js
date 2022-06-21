@@ -4,8 +4,9 @@ const { couchdbHost, couchdbPort, ldapAuthConfig } = require('../constants');
 
 module.exports = {
   url: `http://${couchdbHost}:${couchdbPort}`,
-  username: 'admin',
-  password: 'admin',
+  username: 'rest-on-couch',
+  password: 'roc-123',
+  adminPassword: 'admin',
   administrators: ['admin@a.com'],
   allowedOrigins: ['http://localhost:8080'],
   sessionSigned: false,
