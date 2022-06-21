@@ -1,7 +1,7 @@
 'use strict';
 
-const getNano = require('../../../src/util/nanoShim');
 const config = require('../../../src/config/config').globalConfig;
+const getNano = require('../../../src/util/nanoShim');
 const request = require('../../setup/setup').getAgent();
 const authenticateCouchDB = require('../../utils/authenticateCouchDB');
 
