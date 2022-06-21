@@ -38,11 +38,11 @@ if (config.auth) {
       debug('plugin %s not configured', authPlugin);
       return;
     }
-    authPluginConfig[authPlugin] = Object.assign(
-      {},
-      defaultAuthPluginConfig[authPlugin],
-      pluginConfig,
-    );
+    authPluginConfig[authPlugin] = {
+
+      ...defaultAuthPluginConfig[authPlugin],
+      ...pluginConfig,
+    };
     try {
       debug('loading auth plugin: %s', authPlugin);
       require(`../auth/${authPlugin}/index.js`).init(

@@ -86,7 +86,7 @@ class RocZenodo {
   async uploadFile(deposition, options) {
     // deposition is the object returned by createEntry
     const zFiles = this.zenodo.files;
-    const result = await zFiles.upload(Object.assign({ deposition }, options));
+    const result = await zFiles.upload({deposition, ...options});
     return result.data;
   }
 

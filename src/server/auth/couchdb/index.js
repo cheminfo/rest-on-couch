@@ -35,7 +35,7 @@ exports.init = function (passport, router) {
                 responseType: 'json',
                 json: {
                   name: username,
-                  password: password,
+                  password,
                 },
                 throwHttpErrors: false,
               })

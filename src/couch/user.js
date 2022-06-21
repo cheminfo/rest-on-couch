@@ -60,16 +60,16 @@ const methods = {
         searchOptions = ldapOptions;
         ldapOptions = {};
       }
-      const finalLdapOptions = Object.assign(
-        {},
-        defaultLdapOptions,
-        ldapOptions,
-      );
-      const finalSearchOptions = Object.assign(
-        {},
-        defaultSearchOptions,
-        searchOptions,
-      );
+      const finalLdapOptions = {
+
+        ...defaultLdapOptions,
+        ...ldapOptions,
+      };
+      const finalSearchOptions = {
+
+        ...defaultSearchOptions,
+        ...searchOptions,
+      };
       return search(finalLdapOptions, finalSearchOptions);
     }
 

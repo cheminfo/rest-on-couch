@@ -76,7 +76,7 @@ const methods = {
   async getDocsAsOwner(user, type, options) {
     debug.trace('getDocsAsOwner');
     await this.open();
-    options = Object.assign({}, options);
+    options = { ...options};
     if (this.isSuperAdmin(user)) {
       return this._db.queryView(
         'documentByType',
