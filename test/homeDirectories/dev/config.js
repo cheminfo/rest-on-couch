@@ -11,8 +11,9 @@ module.exports = {
     },
     ldap: ldapAuthConfig,
   },
-  username: 'admin',
-  password: 'admin',
+  username: 'rest-on-couch',
+  password: 'roc-123',
+  adminPassword: 'admin',
   // Already administrator from global configuration
   superAdministrators: ['admin@a.com', 'a@a.com', 'admin@zakodium.com'],
   sessionSigned: true,

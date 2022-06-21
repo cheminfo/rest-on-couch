@@ -1,7 +1,8 @@
 'use strict';
 
 const Couch = require('../..');
-const connect = require('../../src/connect');
+const globalConfig = require('../../src/config/config').globalConfig;
+const getNano = require('../../src/util/nanoShim');
 
 module.exports = {
   resetDatabase,
@@ -19,7 +20,11 @@ async function resetDatabase(
 }
 
 async function resetDatabaseWithoutCouch(databaseName) {
-  const nano = await connect.open();
+  const nano = await getNano(
+    globalConfig.url,
+    'admin',
+    globalConfig.adminPassword,
+  );
   try {
     await destroy(nano, databaseName);
   } catch (e) {
@@ -42,11 +47,11 @@ async function create(nano, db) {
     doc: '_security',
     body: {
       admins: {
-        names: ['admin'],
+        names: ['rest-on-couch'],
         roles: [],
       },
       members: {
-        names: ['admin'],
+        names: ['rest-on-couch'],
         roles: [],
       },
     },

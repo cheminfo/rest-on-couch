@@ -99,7 +99,7 @@ class NanoShim {
     const searchParams = prepareSearchParams(options.searchParams);
     let url = '';
     if (db) url += cleanDbName(db);
-    if (doc) url += `/${cleanDocId(doc)}`;
+    if (doc) url += `/${doc}`;
     return this.client(url, {
       method,
       searchParams,
@@ -143,7 +143,6 @@ class NanoDbShim {
   }
 
   async getDocument(docId, searchParams) {
-    docId = cleanDocId(docId);
     searchParams = prepareSearchParams(searchParams);
     debug.trace('getDocument', docId);
     try {
@@ -156,16 +155,15 @@ class NanoDbShim {
         (err.response.body.reason === 'missing' ||
           err.response.body.reason === 'deleted')
       ) {
-        debug.trace('document missing');
+        debug.trace(`document missing ${docId}`);
         return null;
       }
-      debug.warn('getDocument failed');
+      debug.error('getDocument failed', err.message);
       throw err;
     }
   }
 
   async destroyDocument(docId, rev) {
-    docId = cleanDocId(docId);
     debug.trace('destroy document');
     if (!rev) {
       const doc = await this.getDocument(docId);
@@ -249,7 +247,6 @@ class NanoDbShim {
 
   async updateWithHandler(update, docId, requestBody) {
     debug.trace('update with handler', docId, requestBody);
-    docId = cleanDocId(docId);
     const viewPath = `_design/${DESIGN_DOC_NAME}/_update/${update}/${docId}`;
     const { body } = await this.client.post(viewPath, { json: requestBody });
     return body;
@@ -257,7 +254,6 @@ class NanoDbShim {
 
   async getAttachment(docId, attName, asStream, searchParams) {
     debug.trace('get attachment', docId, attName);
-    docId = cleanDocId(docId);
     attName = encodeURIComponent(attName);
     searchParams = prepareSearchParams(searchParams);
     const attachmentPath = `${docId}/${attName}`;
@@ -282,7 +278,6 @@ class NanoDbShim {
     debug.trace('attach files');
     doc = Object.assign({ _attachments: {} }, doc);
     searchParams = prepareSearchParams(searchParams);
-    const docId = cleanDocId(doc._id);
     const boundary = getBoundary();
     const prefixedBoundary = Buffer.from(`--${boundary}`, 'utf8');
     const multipart = [];
@@ -304,7 +299,7 @@ class NanoDbShim {
     );
     multipart.push(ENDBOUNDARY);
 
-    return this.client.put(docId, {
+    return this.client.put(doc._id, {
       searchParams,
       body: Buffer.concat(multipart),
       headers: {
@@ -317,14 +312,6 @@ class NanoDbShim {
 
 function cleanDbName(dbName) {
   return encodeURIComponent(dbName);
-}
-
-function cleanDocId(docId) {
-  if (!/^_design/.test(docId)) {
-    return encodeURIComponent(docId);
-  } else {
-    return docId;
-  }
 }
 
 const specialKeys = [
