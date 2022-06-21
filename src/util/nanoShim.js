@@ -276,7 +276,7 @@ class NanoDbShim {
   // multipart body created based on http://docs.couchdb.org/en/stable/api/document/common.html
   attachFiles(doc, attachments, searchParams) {
     debug.trace('attach files');
-    doc = Object.assign({ _attachments: {} }, doc);
+    doc = {_attachments: {}, ...doc};
     searchParams = prepareSearchParams(searchParams);
     const boundary = getBoundary();
     const prefixedBoundary = Buffer.from(`--${boundary}`, 'utf8');
@@ -325,7 +325,7 @@ const specialKeys = [
 
 function prepareSearchParams(searchParams) {
   if (!searchParams) return {};
-  searchParams = Object.assign({}, searchParams);
+  searchParams = { ...searchParams};
   if (searchParams.token) {
     delete searchParams.token;
   }

@@ -157,7 +157,7 @@ async function checkDesignDoc(couch) {
   function getNewDesignDoc(designName) {
     var designDoc;
     if (designName === constants.DESIGN_DOC_NAME) {
-      designDoc = Object.assign({}, custom);
+      designDoc = { ...custom};
     } else {
       designDoc = {};
     }
@@ -183,7 +183,7 @@ async function checkDesignDoc(couch) {
 
 function createDesignDoc(db, revID, designDoc) {
   debug.trace('create design doc');
-  const hashDoc = Object.assign({}, designDoc);
+  const hashDoc = { ...designDoc};
   delete hashDoc._rev;
   delete hashDoc.hash;
   const hash = objHash(hashDoc);

@@ -607,14 +607,12 @@ function processQuery(ctx) {
   } else if ((match = q.match(/^(.+)\.\.(.+)$/))) {
     query.startkey = match[1];
     query.endkey = match[2];
-  } else {
-    if (type === 'string') {
+  } else if (type === 'string') {
       query.startkey = q;
       query.endkey = `${q}\ufff0`;
     } else {
       query.key = q;
     }
-  }
 
   try {
     if (type) {

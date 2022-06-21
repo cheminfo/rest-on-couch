@@ -115,11 +115,11 @@ function getDbConfig(homeDir) {
 
     checkDocNames(viewDesignDocNames, indexDesignDocNames);
 
-    configDraft.designDocNames = Object.assign(
-      {},
-      viewDesignDocNames,
-      indexDesignDocNames,
-    );
+    configDraft.designDocNames = {
+
+      ...viewDesignDocNames,
+      ...indexDesignDocNames,
+    };
 
     if (!configDraft.import) {
       configDraft.import = {};
@@ -252,11 +252,11 @@ function readImportConfig(databasePath, configDraft) {
         configDraft.import[importDir] = importConfig;
       } else {
         // Legacy import
-        configDraft.import[importDir] = Object.assign(
-          {},
-          configDraft.import[importDir],
-          importConfig,
-        );
+        configDraft.import[importDir] = {
+
+          ...configDraft.import[importDir],
+          ...importConfig,
+        };
       }
     }
   }

@@ -10,17 +10,15 @@ if (import.meta.env.prod) {
 export { API_ROOT };
 
 export function apiFetch(path, options) {
-  options = Object.assign(
-    {
-      mode: 'cors',
+  options = {
+    mode: 'cors',
       credentials: 'include',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-    },
-    options,
-  );
+    ...options,
+  };
   return fetch(`${API_ROOT}${path}`, options);
 }
 

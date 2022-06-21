@@ -16,20 +16,20 @@ function getConfig(database, customConfig) {
   debug.trace('getConfig - db: %s', database);
   const homeConfig = getHomeConfig();
   if (!configStore[database]) {
-    configStore[database] = Object.assign(
-      {},
-      defaultConfig,
-      homeConfig,
-      dbConfig[database],
-      envConfig,
-      cliConfig,
-    );
+    configStore[database] = {
+
+      ...defaultConfig,
+      ...homeConfig,
+      ...dbConfig[database],
+      ...envConfig,
+      ...cliConfig,
+    };
   }
 
   if (!customConfig) {
     return configStore[database];
   } else {
-    return Object.assign({}, configStore[database], customConfig);
+    return { ...configStore[database], ...customConfig};
   }
 }
 

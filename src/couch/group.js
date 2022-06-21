@@ -115,7 +115,7 @@ const methods = {
         name: groupName,
         users: [],
         customUsers: [],
-        rights: rights,
+        rights,
       },
       user,
     );

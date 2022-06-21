@@ -124,7 +124,7 @@ const methods = {
       json[file.field] = {
         filename: file.name,
       };
-      const fileCopy = Object.assign({}, file);
+      const fileCopy = { ...file};
       if (typeof fileCopy.data === 'string') {
         fileCopy.data = Buffer.from(fileCopy.data, 'base64');
       }
