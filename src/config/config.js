@@ -17,7 +17,6 @@ function getConfig(database, customConfig) {
   const homeConfig = getHomeConfig();
   if (!configStore[database]) {
     configStore[database] = {
-
       ...defaultConfig,
       ...homeConfig,
       ...dbConfig[database],
@@ -29,7 +28,7 @@ function getConfig(database, customConfig) {
   if (!customConfig) {
     return configStore[database];
   } else {
-    return { ...configStore[database], ...customConfig};
+    return { ...configStore[database], ...customConfig };
   }
 }
 

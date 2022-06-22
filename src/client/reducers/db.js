@@ -38,19 +38,19 @@ const dbReducer = (state = initialState, action) => {
       return newState;
     }
     case `${GET_DB_LIST}_FULFILLED`:
-      return { ...state, dbList: action.payload};
+      return { ...state, dbList: action.payload };
     case SET_USER_RIGHTS:
-      return { ...state, userRights: action.payload};
+      return { ...state, userRights: action.payload };
     case SET_USER_GROUPS:
-      return { ...state, userGroups: action.payload.sort(sortByName),};
+      return { ...state, userGroups: action.payload.sort(sortByName) };
     case `${CREATE_GROUP}_FULFILLED`: {
       if (action.payload.error) {
-        const errors = { ...state.errors, createGroup: action.payload.error,};
-        return { ...state, errors};
+        const errors = { ...state.errors, createGroup: action.payload.error };
+        return { ...state, errors };
       }
       const newGroupList = state.userGroups.slice();
       newGroupList.unshift(action.payload);
-      return { ...state, userGroups: newGroupList};
+      return { ...state, userGroups: newGroupList };
     }
     case `${REMOVE_GROUP}_FULFILLED`: {
       if (action.payload.error) {
@@ -59,7 +59,7 @@ const dbReducer = (state = initialState, action) => {
       const newGroupList = state.userGroups.filter(
         (group) => group.name !== action.meta.groupName,
       );
-      return { ...state, userGroups: newGroupList};
+      return { ...state, userGroups: newGroupList };
     }
     case `${UPDATE_GROUP}_FULFILLED`: {
       if (action.payload.error) {
@@ -74,17 +74,17 @@ const dbReducer = (state = initialState, action) => {
         newGroupList[index].success =
           action.meta.success || 'Group sucessfully updated';
         newGroupList[index].error = null;
-        return { ...state, userGroups: newGroupList,};
+        return { ...state, userGroups: newGroupList };
       }
     }
     case `${SET_DEFAULT_GROUPS}`: {
-      return { ...state, defaultGroups: action.payload};
+      return { ...state, defaultGroups: action.payload };
     }
     case `${SET_GLOBAL_RIGHTS}`: {
-      return { ...state, globalRights: action.payload};
+      return { ...state, globalRights: action.payload };
     }
     case `${SET_MEMBERSHIPS}`: {
-      return { ...state, memberships: action.payload};
+      return { ...state, memberships: action.payload };
     }
     default:
       return state;
@@ -104,9 +104,12 @@ function getGroupIndex(userGroups, action) {
 function getNewStateOnGroupError(state, action) {
   const index = getGroupIndex(state.userGroups, action);
   const newGroupList = state.userGroups.slice();
-  newGroupList[index] = { ...newGroupList[index], error: action.payload.error,
-    success: null,};
-  return { ...state, userGroups: newGroupList,};
+  newGroupList[index] = {
+    ...newGroupList[index],
+    error: action.payload.error,
+    success: null,
+  };
+  return { ...state, userGroups: newGroupList };
 }
 
 export default dbReducer;

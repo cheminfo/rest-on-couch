@@ -8,7 +8,7 @@ const auth = require('../../middleware/auth');
 const util = require('../../middleware/util');
 
 exports.init = function (passport, router, config) {
-  const strategyConfig = {passReqToCallback: true, ...config};
+  const strategyConfig = { passReqToCallback: true, ...config };
   passport.use(
     new LdapStrategy(strategyConfig, function (req, user, done) {
       const data = {
