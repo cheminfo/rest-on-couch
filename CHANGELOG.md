@@ -1,5 +1,16 @@
 # Changelog
 
+## [14.0.0](https://github.com/cheminfo/rest-on-couch/compare/v13.1.2...v14.0.0) (2022-06-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* the adminPassword config must be passed in order to use the couchdb user apis
+
+### Bug Fixes
+
+* make sure couchdb users can be edited from api with couchdb 3 ([8519cf4](https://github.com/cheminfo/rest-on-couch/commit/8519cf4940eb339e8212ceb4ae0b955087adfa80))
+
 ## [13.1.2](https://github.com/cheminfo/rest-on-couch/compare/v13.1.1...v13.1.2) (2022-06-17)
 
 
