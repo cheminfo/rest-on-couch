@@ -46,7 +46,7 @@ exports.ensureAdmin = async (ctx, next) => {
   if (exports.isAdmin(ctx)) {
     await next();
   } else {
-    decorateError(ctx, 401, 'restricted to administrators');
+    decorateError(ctx, 403, 'restricted to administrators');
   }
 };
 

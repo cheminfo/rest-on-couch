@@ -12,7 +12,7 @@ beforeAll(async () => {
   await db.destroyDocument('org.couchdb.user:test@user.com');
 });
 
-describe('couchdb users as super admin', () => {
+describe('administrators can configure couchdb users', () => {
   beforeEach(async () => {
     await authenticateCouchDB(request, 'admin@a.com', '123');
   });
@@ -26,6 +26,27 @@ describe('couchdb users as super admin', () => {
       .expect(201)
       .then((res) => {
         expect(res.body).toEqual({ ok: true });
+      });
+  });
+});
+
+describe('non-administrators cannot configure couchdb users', () => {
+  beforeEach(async () => {
+    await authenticateCouchDB(request, 'a@a.com', '123');
+  });
+  test('cannot create a new user', async () => {
+    await request
+      .post('/auth/couchdb/user')
+      .send({
+        email: 'test@user.com',
+        password: 'abc',
+      })
+      .expect(403)
+      .then((res) => {
+        expect(res.body).toEqual({
+          code: 'forbidden',
+          error: 'restricted to administrators',
+        });
       });
   });
 });
