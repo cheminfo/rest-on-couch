@@ -18,27 +18,36 @@ const initialState = {
 const loginReducer = (state = initialState, action) => {
   switch (action.type) {
     case `${CHECK_LOGIN}_FULFILLED`: {
-      return { ...state, ...onLogin(action.payload)};
+      return { ...state, ...onLogin(action.payload) };
     }
     case `${LOGOUT}_FULFILLED`:
-      return { ...state, errors: {},
+      return {
+        ...state,
+        errors: {},
         username: null,
         provider: null,
-        admin: null,};
+        admin: null,
+      };
     case `${GET_LOGIN_PROVIDERS}_FULFILLED`:
-      return { ...state, loginProviders: action.payload};
+      return { ...state, loginProviders: action.payload };
     case `${CHANGE_COUCHDB_PASSWORD}_FULFILLED`:
-      return { ...state, errors: { changePassword: action.payload.error || '' },
+      return {
+        ...state,
+        errors: { changePassword: action.payload.error || '' },
         success: {
           changePassword: action.payload.error
             ? ''
             : 'Successfully changed password',
-        },};
+        },
+      };
     case `${CREATE_COUCHDB_USER}_FULFILLED`:
-      return { ...state, errors: { createUser: action.payload.error || '' },
+      return {
+        ...state,
+        errors: { createUser: action.payload.error || '' },
         success: {
           createUser: action.payload.error ? '' : 'Successfully created user',
-        },};
+        },
+      };
     default:
       return state;
   }

@@ -39,7 +39,6 @@ if (config.auth) {
       return;
     }
     authPluginConfig[authPlugin] = {
-
       ...defaultAuthPluginConfig[authPlugin],
       ...pluginConfig,
     };

@@ -12,11 +12,11 @@ export { API_ROOT };
 export function apiFetch(path, options) {
   options = {
     mode: 'cors',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
     ...options,
   };
   return fetch(`${API_ROOT}${path}`, options);

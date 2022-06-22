@@ -106,7 +106,7 @@ const methods = {
 
   async queryViewByUser(user, view, options, rights = 'read') {
     debug('queryViewByUser (%s, %s)', user, view);
-    options = { ...options};
+    options = { ...options };
     rights = ensureStringArray(rights, 'rights');
     user = validateMethods.userFromTokenAndRights(user, options.token, rights);
 

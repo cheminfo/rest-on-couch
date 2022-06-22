@@ -25,7 +25,7 @@ async function setupAuditActions(nano) {
   const oldDesignDoc = await db.getDocument('_design/audit');
   if (!oldDesignDoc || oldDesignDoc.version !== auditDesignDoc.version) {
     debug('updating audit design doc');
-    const newDesignDoc = { ...auditDesignDoc};
+    const newDesignDoc = { ...auditDesignDoc };
     if (oldDesignDoc) {
       newDesignDoc._rev = oldDesignDoc._rev;
     }

@@ -61,12 +61,10 @@ const methods = {
         ldapOptions = {};
       }
       const finalLdapOptions = {
-
         ...defaultLdapOptions,
         ...ldapOptions,
       };
       const finalSearchOptions = {
-
         ...defaultSearchOptions,
         ...searchOptions,
       };

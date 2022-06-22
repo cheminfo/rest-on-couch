@@ -116,7 +116,6 @@ function getDbConfig(homeDir) {
     checkDocNames(viewDesignDocNames, indexDesignDocNames);
 
     configDraft.designDocNames = {
-
       ...viewDesignDocNames,
       ...indexDesignDocNames,
     };
@@ -253,7 +252,6 @@ function readImportConfig(databasePath, configDraft) {
       } else {
         // Legacy import
         configDraft.import[importDir] = {
-
           ...configDraft.import[importDir],
           ...importConfig,
         };

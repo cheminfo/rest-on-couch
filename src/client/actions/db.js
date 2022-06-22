@@ -60,7 +60,7 @@ export function removeValueFromGroup(groupName, type, value, options) {
 function updateGroup(groupName, type, value, method, options) {
   return {
     type: UPDATE_GROUP,
-    meta: { ...options, groupName},
+    meta: { ...options, groupName },
     payload: doUpdateGroup(groupName, type, value, method),
   };
 }
