@@ -1,5 +1,12 @@
 # Changelog
 
+## [14.0.1](https://github.com/cheminfo/rest-on-couch/compare/v14.0.0...v14.0.1) (2022-06-23)
+
+
+### Bug Fixes
+
+* handle sigterm in rest-on-couch-import process ([c6bda9a](https://github.com/cheminfo/rest-on-couch/commit/c6bda9ab635614a50aff74974724d700adb2aaea))
+
 ## [14.0.0](https://github.com/cheminfo/rest-on-couch/compare/v13.1.2...v14.0.0) (2022-06-22)
 
 
