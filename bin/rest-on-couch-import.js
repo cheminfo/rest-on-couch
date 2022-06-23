@@ -5,7 +5,6 @@
 const path = require('path');
 
 const program = require('commander');
-const delay = require('delay');
 const fs = require('fs-extra');
 const klaw = require('klaw');
 
@@ -46,12 +45,20 @@ if (options.sort !== 'asc' && options.sort !== 'desc') {
 }
 const sortWalk = options.sort === 'asc' ? 'shift' : 'pop';
 
+const delay = getSigtermDelay();
+
 async function doContinuous(waitTime) {
   while (true) {
     debug('starting full import');
     await importAll();
     debug('now waiting %d seconds', waitTime / 1000);
-    await delay(waitTime);
+    try {
+      await delay(waitTime);
+    } catch (e) {
+      // Error is caught when the process received a SIGTERM
+      debug('delay interrupted, %s', e.message);
+      break;
+    }
   }
 }
 
@@ -365,3 +372,36 @@ function shouldIgnore(name) {
     connect.close();
     die(err.stack || err);
   });
+
+// Call only once
+function getSigtermDelay() {
+  let rejectDelay = null;
+  let receivedSigterm = false;
+
+  function delay(ms) {
+    return new Promise((resolve, reject) => {
+      if (receivedSigterm) {
+        reject(new Error('sigterm before delay'));
+        return;
+      }
+      const timeout = setTimeout(() => {
+        rejectDelay = null;
+        resolve();
+      }, ms);
+      rejectDelay = () => {
+        clearTimeout(timeout);
+        rejectDelay = null;
+        reject(new Error('sigterm during delay'));
+      };
+    });
+  }
+
+  process.on('SIGTERM', () => {
+    receivedSigterm = true;
+    if (rejectDelay) {
+      rejectDelay();
+    }
+  });
+
+  return delay;
+}
