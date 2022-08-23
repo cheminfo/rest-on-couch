@@ -31,6 +31,13 @@ module.exports = function (newDoc, oldDoc, userCtx) {
         throw { forbidden: 'Owners must be valid emails or names' };
       }
     }
+    const obj = {};
+    for (var i = 0; i < doc.$owners.length; i++) {
+      if (obj[doc.$owners[i]]) {
+        throw { forbidden: 'Owners cannot have duplicates' };
+      }
+      obj[doc.$owners[i]] = true;
+    }
   }
 
   function validateName(name) {
