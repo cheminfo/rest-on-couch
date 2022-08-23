@@ -71,4 +71,15 @@ module.exports = {
       email: user.mail,
     };
   },
+  beforeCreateHook(document, groups) {
+    const owner = document.$owners[0];
+    const groupsToAdd = groups.filter(
+      (group) =>
+        !document.$owners.some((owner) => owner === group.name) &&
+        group.users.some((user) => user === owner),
+    );
+    for (let group of groupsToAdd) {
+      document.$owners.push(group.name);
+    }
+  },
 };
