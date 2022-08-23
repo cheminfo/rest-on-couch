@@ -35,8 +35,8 @@ function populate(db) {
     insertDocument(db, {
       $type: 'group',
       $owners: ['a@a.com'],
-      name: 'unusedGroup',
-      description: 'unusedGroup is not used in entries',
+      name: 'groupC',
+      description: 'groupC is not used in entries',
       users: ['c@c.com'],
       customUsers: ['c@c.com'],
       rights: ['create', 'write', 'delete', 'read'],

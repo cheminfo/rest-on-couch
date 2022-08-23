@@ -137,8 +137,8 @@ describe('group methods', () => {
           rights: ['create'],
         },
         {
-          name: 'unusedGroup',
-          description: 'unusedGroup is not used in entries',
+          name: 'groupC',
+          description: 'groupC is not used in entries',
           users: ['c@c.com'],
           rights: ['create', 'write', 'delete', 'read'],
         },
@@ -164,8 +164,8 @@ describe('group methods', () => {
           rights: ['create'],
         },
         {
-          name: 'unusedGroup',
-          description: 'unusedGroup is not used in entries',
+          name: 'groupC',
+          description: 'groupC is not used in entries',
           users: ['c@c.com'],
           rights: ['create', 'write', 'delete', 'read'],
         },
@@ -188,8 +188,8 @@ describe('group methods', () => {
         },
         // Sees everything because is a member
         {
-          name: 'unusedGroup',
-          description: 'unusedGroup is not used in entries',
+          name: 'groupC',
+          description: 'groupC is not used in entries',
           users: ['c@c.com'],
           rights: ['create', 'write', 'delete', 'read'],
         },
