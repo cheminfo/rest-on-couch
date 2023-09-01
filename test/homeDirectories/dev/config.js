@@ -17,7 +17,7 @@ module.exports = {
   // Already administrator from global configuration
   superAdministrators: ['admin@a.com', 'a@a.com', 'admin@zakodium.com'],
   sessionSigned: true,
-  allowedOrigins: ['http://localhost:8080'],
+  allowedOrigins: ['http://127.0.0.1:8080'],
   getUserInfo: function (user) {
     return {
       uid: user.uid,
