@@ -52,7 +52,7 @@
   },
   "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
   "volta": {
-    "node": "16.14.2"
+    "node": "18.17.1"
   },
   "overrides": {
     "react": "$react",
