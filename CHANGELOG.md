@@ -1,5 +1,22 @@
 # Changelog
 
+## [15.0.0](https://github.com/cheminfo/rest-on-couch/compare/v14.0.1...v15.0.0) (2023-09-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* deprecate node 16
+
+### Features
+
+* add a beforeCreateHook config ([a6640ae](https://github.com/cheminfo/rest-on-couch/commit/a6640ae837a9cc5edc1e9ce551e52cfd3dc0c2e3))
+* check there are no duplicates in doc validation function ([23374a9](https://github.com/cheminfo/rest-on-couch/commit/23374a944c7bfb7c9235526e30317e5c41a074cc))
+
+
+### Miscellaneous Chores
+
+* deprecate node 16 ([6dffce0](https://github.com/cheminfo/rest-on-couch/commit/6dffce097312c4897b60c1fadf4e68bba2e0bfa8))
+
 ## [14.0.1](https://github.com/cheminfo/rest-on-couch/compare/v14.0.0...v14.0.1) (2022-06-23)
 
 
