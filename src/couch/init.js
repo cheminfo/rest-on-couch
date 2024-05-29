@@ -8,6 +8,9 @@ const getDesignDoc = require('../design/app');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:init');
 
+const nanoMethods = require('./nano');
+const util = require('./util');
+
 const methods = {
   async open() {
     const _nano = await connect.open();
@@ -40,20 +43,29 @@ const methods = {
     // Must be done before the other checks because they can add documents to the db
     await checkSecurity(this._db, this._couchOptions.username);
 
-    const updateDocs = Promise.all([
+    const updateDocsSettled = await Promise.allSettled([
       checkDesignDoc(this),
       checkRightsDoc(this._db, this._rights),
       checkDefaultGroupsDoc(this._db),
     ]);
 
-    updateDocs.catch((e) => {
-      if (e.message.includes('Document update conflict')) {
-        // Conflict in case of multiple roc instances checking the design doc at the same time.
-        this._initPromise = null;
-      }
-    });
+    if (
+      updateDocsSettled.some((settled) =>
+        settled.reason?.message?.includes?.('Document update conflict'),
+      )
+    ) {
+      // Conflict in case of multiple roc instances checking the design doc at the same time.
+      this._initPromise = null;
+    }
 
-    await updateDocs;
+    const migrationsSettled = await Promise.allSettled([
+      migrateGroups(this._db),
+    ]);
+    for (let migration of migrationsSettled) {
+      if (migration.status === 'rejected') {
+        debug.error('migration error', migration.reason);
+      }
+    }
 
     if (this._couchOptions.ldapSync) {
       startLDAPSync(this);
@@ -221,6 +233,33 @@ async function checkDefaultGroupsDoc(db) {
     });
   }
   return true;
+}
+
+async function migrateGroups(db) {
+  debug.trace('migrate groups');
+  const groups = await db.queryView(
+    'documentByType',
+    {
+      key: 'group',
+      include_docs: true,
+    },
+    { onlyDoc: true },
+  );
+  for (let group of groups) {
+    if (!group.groupType) {
+      // already migrated
+      continue;
+    }
+    // The property no longer serves any purpose since rest-on-couch v12
+    // The group type is inferred from the DN and filter properties
+    delete group.groupType;
+    if (!util.isLdapGroup(group)) {
+      // All in users are custom users
+      group.customUsers = group.users;
+    }
+    await nanoMethods.save(db, group, 'ldap');
+    debug('migrated group %s', group.name);
+  }
 }
 
 module.exports = {

@@ -405,7 +405,7 @@ function resetToCustomUsers(ctx, group, user) {
 }
 
 async function syncOneGroup(ctx, group, user, safe) {
-  if (isLdapGroup(group)) {
+  if (util.isLdapGroup(group)) {
     try {
       const { result } = await syncOneLdapGroup(ctx, group, user);
       return result;
@@ -487,13 +487,6 @@ module.exports = {
   methods,
 };
 
-function isLdapGroup(group) {
-  if (group.DN && group.filter) {
-    return true;
-  }
-  return false;
-}
-
 async function getGroupInfoResult(
   ctx,
   group,
@@ -511,7 +504,7 @@ async function getGroupInfoResult(
         }
       : {};
   if (ldapInfo) {
-    if (isLdapGroup(group)) {
+    if (util.isLdapGroup(group)) {
       const { info } = await syncOneLdapGroup(ctx, group, user);
       additionalProperties.ldapInfo = info;
     } else {
