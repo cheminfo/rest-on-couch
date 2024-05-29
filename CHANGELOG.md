@@ -1,5 +1,12 @@
 # Changelog
 
+## [15.0.1](https://github.com/cheminfo/rest-on-couch/compare/v15.0.0...v15.0.1) (2024-05-29)
+
+
+### Bug Fixes
+
+* implement group migration ([b2c2366](https://github.com/cheminfo/rest-on-couch/commit/b2c2366ae9f426499ed43668b1e16bdd92a3600e))
+
 ## [15.0.0](https://github.com/cheminfo/rest-on-couch/compare/v14.0.1...v15.0.0) (2023-09-01)
 
 
