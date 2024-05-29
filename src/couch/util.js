@@ -73,6 +73,10 @@ function ensureRightsArray(rights) {
   return rights;
 }
 
+function isLdapGroup(group) {
+  return !!(group.DN && group.filter);
+}
+
 module.exports = {
   isSpecialUser,
   isValidGroupName,
@@ -82,6 +86,7 @@ module.exports = {
   isValidGlobalRightType,
   isAllowedFirstLevelKey,
   isManagedDocumentType,
+  isLdapGroup,
   ensureOwnersArray,
   ensureUsersArray,
   ensureRightsArray,
