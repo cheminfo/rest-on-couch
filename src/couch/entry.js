@@ -486,6 +486,7 @@ const allowedMethods = [
   'find',
   'filter',
   'every',
+  'includes',
   'some',
   'reduce',
   'forEach',
