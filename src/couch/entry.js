@@ -86,14 +86,6 @@ const methods = {
     await this.open();
     const doc = await getUniqueEntryById(this, user, id);
     if (doc === undefined) {
-      const hasRight = await validateMethods.checkRightAnyGroup(
-        this,
-        user,
-        'create',
-      );
-      if (!hasRight) {
-        throw new CouchError('user is missing create right', 'unauthorized');
-      }
       let newEntry;
       const defaultEntry = this._defaultEntry;
       if (typeof defaultEntry === 'function') {
@@ -110,12 +102,12 @@ const methods = {
       const entry = await Promise.resolve(newEntry);
       const toInsert = {
         $id: id,
-        $type: 'entry',
-        $owners: [user].concat(owners),
         $content: entry,
         $kind: options.kind,
       };
-      return nanoMethods.saveEntry(this._db, toInsert, user);
+      return createNew(this, toInsert, user, {
+        groups: owners,
+      });
     }
     debug.trace('entry already exists');
     if (options.throwIfExists) {
@@ -299,6 +291,14 @@ async function _createNew(ctx, entry, user, options) {
   const rights = hasGroups ? ['create', 'owner'] : ['create'];
   user = validateMethods.userFromTokenAndRights(user, options.token, rights);
 
+  if (!(await validateMethods.checkGlobalRight(ctx, user, 'create'))) {
+    let msg = `${user} not allowed to create${
+      hasGroups ? ' with groups (must be owner)' : ''
+    }`;
+    debug.trace(msg);
+    throw new CouchError(msg, 'unauthorized');
+  }
+
   // At this point, $id could be null or undefined
   // Exceptionally in that case, no unicity is enforced
   // We keep this behavior for backward compatibility
@@ -309,43 +309,34 @@ async function _createNew(ctx, entry, user, options) {
     }
   }
 
-  const ok = await validateMethods.checkGlobalRight(ctx, user, 'create');
   const userSet = new Set(options.groups || []);
 
   // user is special because it needs to be the first owner
   userSet.delete(user);
-  if (ok) {
-    debug.trace('has right, create new');
-    const newEntry = {
-      $type: 'entry',
-      $id: entry.$id,
-      $kind: entry.$kind,
-      $owners: [user].concat(Array.from(userSet)),
-      $content: entry.$content,
-      _attachments: entry._attachments,
-    };
-    if (config.beforeCreateHook) {
-      const allGroups = await ctx._db.queryView(
-        'documentByType',
-        { key: 'group', include_docs: true },
-        { onlyDoc: true },
-      );
-      try {
-        const proxy = new Proxy(newEntry, alterEntryProxyHandler);
-        await config.beforeCreateHook(proxy, allGroups);
-      } catch (e) {
-        e.message = `failed during call to beforeCreateHook: ${e.message}`;
-        throw e;
-      }
+  debug.trace('has right, create new');
+  const newEntry = {
+    $type: 'entry',
+    $id: entry.$id,
+    $kind: entry.$kind,
+    $owners: [user].concat(Array.from(userSet)),
+    $content: entry.$content,
+    _attachments: entry._attachments,
+  };
+  if (config.beforeCreateHook) {
+    const allGroups = await ctx._db.queryView(
+      'documentByType',
+      { key: 'group', include_docs: true },
+      { onlyDoc: true },
+    );
+    try {
+      const proxy = new Proxy(newEntry, alterEntryProxyHandler);
+      await config.beforeCreateHook(proxy, allGroups);
+    } catch (e) {
+      e.message = `failed during call to beforeCreateHook: ${e.message}`;
+      throw e;
     }
-    return nanoMethods.saveEntry(ctx._db, newEntry, user);
-  } else {
-    let msg = `${user} not allowed to create${
-      hasGroups ? ' with groups (must be owner)' : ''
-    }`;
-    debug.trace(msg);
-    throw new CouchError(msg, 'unauthorized');
   }
+  return nanoMethods.saveEntry(ctx._db, newEntry, user);
 }
 
 async function updateEntry(ctx, oldDoc, newDoc, user, options) {
