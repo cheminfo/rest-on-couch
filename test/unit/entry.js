@@ -203,7 +203,7 @@ describe('entry creation and editions', () => {
       });
   });
 
-  test('should modify entry with beforeCreateHook (a@a.com)', () => {
+  test('insertEntry should modify entry with beforeCreateHook (a@a.com)', () => {
     return couch
       .insertEntry(
         {
@@ -219,7 +219,7 @@ describe('entry creation and editions', () => {
       });
   });
 
-  test('should modify entry with beforeCreateHook (c@c.com)', () => {
+  test('insertEntry should modify entry with beforeCreateHook (c@c.com)', () => {
     return couch
       .insertEntry(
         {
@@ -232,6 +232,18 @@ describe('entry creation and editions', () => {
       .then((entry) => {
         // The groups were added by the hook
         expect(entry.$owners).toEqual(['c@c.com', 'groupC']);
+      });
+  });
+
+  test('ensureExistsOrCreateEntry should modify entry with beforeCreateHook (a@a.com)', () => {
+    return couch
+      .ensureExistsOrCreateEntry('beforeCreate3', 'a@a.com', {
+        throwIfExists: true,
+      })
+      .then(() => couch.getEntryById('beforeCreate3', 'a@a.com'))
+      .then((entry) => {
+        // The groups were added by the hook
+        expect(entry.$owners).toEqual(['a@a.com', 'groupA', 'groupB']);
       });
   });
 
