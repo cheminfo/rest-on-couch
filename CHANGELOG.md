@@ -1,5 +1,13 @@
 # Changelog
 
+## [15.0.2](https://github.com/cheminfo/rest-on-couch/compare/v15.0.1...v15.0.2) (2024-05-30)
+
+
+### Bug Fixes
+
+* allow to call includes on $owners in beforeCreateHook ([4398ac2](https://github.com/cheminfo/rest-on-couch/commit/4398ac216d574c0620caa547d30fc9356c65a5b9))
+* entries created via importation must have same constraints and features as entries created via API ([ad5c000](https://github.com/cheminfo/rest-on-couch/commit/ad5c000ecb65841e4dc9ce8d3eea0bac1c1d5dd6))
+
 ## [15.0.1](https://github.com/cheminfo/rest-on-couch/compare/v15.0.0...v15.0.1) (2024-05-29)
 
 
