@@ -6,8 +6,3 @@ reject:
   # Other
   - koa-hbs
   - ldapjs
-  - react
-  - react-dom
-  - react-router-dom
-  - react-redux
-  - select2

@@ -54,6 +54,7 @@ class ChangePasswordImpl extends React.Component {
                   name="oldPassword"
                   type="password"
                   className="form-control"
+                  autoComplete="current-password"
                   value={this.state.oldPassword}
                   onChange={this.handleChange}
                   onKeyPress={this.handleKeyPress}
@@ -66,6 +67,7 @@ class ChangePasswordImpl extends React.Component {
                 <input
                   name="newPassword"
                   type="password"
+                  autoComplete="new-password"
                   className="form-control"
                   value={this.state.newPassword}
                   onChange={this.handleChange}

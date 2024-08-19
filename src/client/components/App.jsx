@@ -1,22 +1,21 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import { dbManager } from '../store';
 
-import Allowed from './Allowed';
 import ChangePassword from './ChangePassword';
 import CreateUser from './CreateUser';
-import DatabaseAdministration from './DatabaseAdministration';
 import DatabaseSelector from './DatabaseSelector';
-import GroupMemberships from './GroupMemberships';
-import Groups from './Groups';
 import Home from './Home';
-import Login from './Login';
 import LoginButton from './LoginButton';
 import NoMatch from './NoMatch';
 import Sidebar from './Sidebar';
+import GroupMembershipsPage from './pages/GroupMembershipsPage';
+import GroupsPage from './pages/GroupsPage';
+import { LoginPage } from './pages/LoginPage';
+import ManageDatabasePage from './pages/ManageDatabasePage';
 
 function AppImpl(props) {
   const { rocOnline } = props;
@@ -39,7 +38,10 @@ function AppImpl(props) {
               <div className="container-fluid">
                 <div className="collapse navbar-collapse">
                   {rocOnline && (
-                    <ul className="nav navbar-nav navbar-right">
+                    <ul
+                      style={{ display: 'flex', alignItems: 'center', gap: 2 }}
+                      className="nav navbar-nav navbar-right"
+                    >
                       <li>
                         <DatabaseSelector
                           dbName={props.dbName}
@@ -59,11 +61,11 @@ function AppImpl(props) {
             <div className="content">
               <div className="container-fluid">
                 {rocOnline ? (
-                  <Switch>
+                  <Routes>
                     <Route
                       path="/"
                       exact
-                      render={() => (
+                      element={
                         <Home
                           dbName={props.dbName}
                           dbList={props.dbList}
@@ -72,66 +74,40 @@ function AppImpl(props) {
                           provider={props.loginProvider}
                           isAdmin={props.isAdmin}
                         />
-                      )}
+                      }
                     />
                     <Route
                       path="/groups"
                       exact
-                      render={() => {
-                        if (!props.hasDb) {
-                          return <Redirect to="/" />;
-                        }
-                        return (
-                          <Allowed
-                            allowed={
-                              props.userRights.includes('createGroup') ||
-                              props.isGroupOwner
-                            }
-                          >
-                            <Groups />
-                          </Allowed>
-                        );
-                      }}
+                      element={
+                        <GroupsPage
+                          hasDb={props.hasDb}
+                          userRights={props.userRights}
+                          isGroupOwner={props.isGroupOwner}
+                        />
+                      }
                     />
                     <Route path="/create_user" component={CreateUser} />
                     <Route
                       path="/manage_database"
-                      render={() => {
-                        if (!props.hasDb) {
-                          return <Redirect to="/" />;
-                        }
-                        return (
-                          <Allowed allowed={props.userRights.includes('admin')}>
-                            <DatabaseAdministration
-                              isAdmin={props.userRights.includes('admin')}
-                            />
-                            ;
-                          </Allowed>
-                        );
-                      }}
+                      element={
+                        <ManageDatabasePage userRights={props.userRights} />
+                      }
                     />
                     <Route
                       path="/login"
-                      render={() => {
-                        if (props.loggedIn) {
-                          return <Redirect to="/" />;
-                        } else {
-                          return <Login />;
-                        }
-                      }}
+                      element={<LoginPage loggedIn={props.loggedIn} />}
                     />
-                    <Route path="/change_password" component={ChangePassword} />
+                    <Route
+                      path="/change_password"
+                      element={<ChangePassword />}
+                    />
                     <Route
                       path="/group_memberships"
-                      render={() => {
-                        if (!props.hasDb) {
-                          return <Redirect to="/" />;
-                        }
-                        return <GroupMemberships />;
-                      }}
+                      element={<GroupMembershipsPage hasDb={props.hasDb} />}
                     />
                     <Route component={NoMatch} />
-                  </Switch>
+                  </Routes>
                 ) : rocOnline === false ? (
                   <div>Could not connect to the database...</div>
                 ) : null}
@@ -148,17 +124,20 @@ AppImpl.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
 };
 
-const App = connect((state) => ({
-  rocOnline: state.main.rocOnline,
-  loggedUser: state.login.username,
-  loggedIn: !!state.login.username,
-  loginProvider: state.login.provider,
-  isAdmin: state.login.admin,
-  userRights: state.db.userRights,
-  isGroupOwner: state.db.userGroups.length !== 0,
-  dbList: state.db.dbList,
-  dbName: state.dbName,
-  hasDb: !!state.dbName,
-}))(AppImpl);
+const App = connect((state) => {
+  const dbName = state.db.dbList.includes(state.dbName) ? state.dbName : '';
+  return {
+    rocOnline: state.main.rocOnline,
+    loggedUser: state.login.username,
+    loggedIn: !!state.login.username,
+    loginProvider: state.login.provider,
+    isAdmin: state.login.admin,
+    userRights: state.db.userRights,
+    isGroupOwner: state.db.userGroups.length !== 0,
+    dbList: state.db.dbList,
+    dbName,
+    hasDb: !!dbName,
+  };
+})(AppImpl);
 
 export default App;

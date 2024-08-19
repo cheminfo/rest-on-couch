@@ -1,12 +1,12 @@
 import {
   setDbName,
-  setUserRights,
-  setUserGroups,
   setDefaultGroups,
   setGlobalRights,
   setMemberships,
+  setUserGroups,
+  setUserRights,
 } from './actions/db';
-import { apiFetchJSON } from './api';
+import { apiFetchJSONOptional } from './api';
 
 export default class DbManager {
   constructor(store) {
@@ -31,7 +31,7 @@ export default class DbManager {
     if (this.currentDb) {
       const rights = await this.syncRights();
       this.syncGroups();
-      if (rights.includes('admin')) {
+      if (rights?.includes('admin')) {
         this.syncDefaultGroups();
         this.syncGlobalRights();
       } else {
@@ -43,33 +43,45 @@ export default class DbManager {
   }
 
   async syncRights() {
-    const rights = await apiFetchJSON(`db/${this.currentDb}/rights`);
-    this.store.dispatch(setUserRights(rights));
+    const rights = await apiFetchJSONOptional(`db/${this.currentDb}/rights`);
+    if (rights) {
+      this.store.dispatch(setUserRights(rights));
+    }
     return rights;
   }
 
   async syncGroups() {
-    const groups = await apiFetchJSON(`db/${this.currentDb}/groups`);
-    this.store.dispatch(setUserGroups(groups));
+    const groups = await apiFetchJSONOptional(`db/${this.currentDb}/groups`);
+    if (groups) {
+      this.store.dispatch(setUserGroups(groups));
+    }
   }
 
   async syncMemberships() {
-    const memberships = await apiFetchJSON(
+    const memberships = await apiFetchJSONOptional(
       `db/${this.currentDb}/user/_me/groups`,
     );
-    this.store.dispatch(setMemberships(memberships));
+    if (memberships) {
+      this.store.dispatch(setMemberships(memberships));
+    }
   }
 
   async syncDefaultGroups() {
-    const defaultGroups = await apiFetchJSON(
+    const defaultGroups = await apiFetchJSONOptional(
       `db/${this.currentDb}/rights/defaultGroups`,
     );
-    this.store.dispatch(setDefaultGroups(defaultGroups));
+    if (defaultGroups) {
+      this.store.dispatch(setDefaultGroups(defaultGroups));
+    }
   }
 
   async syncGlobalRights() {
-    const globalRights = await apiFetchJSON(`db/${this.currentDb}/rights/doc`);
-    this.store.dispatch(setGlobalRights(globalRights));
+    const globalRights = await apiFetchJSONOptional(
+      `db/${this.currentDb}/rights/doc`,
+    );
+    if (globalRights) {
+      this.store.dispatch(setGlobalRights(globalRights));
+    }
   }
 
   resetDefaultGroups() {

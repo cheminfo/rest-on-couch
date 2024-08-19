@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { dbManager } from '../store';
-
-import DisplayGroupList from './DisplayGroupList';
+import { dbManager } from '../../store';
+import DisplayGroupList from '../DisplayGroupList';
 
 class GroupMembershipsImpl extends Component {
   componentDidMount() {
@@ -27,6 +26,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const GroupMemberships = connect(mapStateToProps)(GroupMembershipsImpl);
+const GroupMembershipsPage = connect(mapStateToProps)(GroupMembershipsImpl);
 
-export default GroupMemberships;
+export default GroupMembershipsPage;
