@@ -225,7 +225,6 @@ async function publish(
       entryCount++;
     }
 
-
     await rocZenodo.uploadFile(deposition, {
       filename: '_toc.json',
       contentType: 'application/octet-stream',

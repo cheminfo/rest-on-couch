@@ -226,11 +226,9 @@ function addCustomIndexes(customMap, designDocNames, databasePath) {
   }
 
   for (let customIndex of customIndexes) {
-    const indexMap = require(path.join(
-      databasePath,
-      indexesFolder,
-      customIndex,
-    ));
+    const indexMap = require(
+      path.join(databasePath, indexesFolder, customIndex),
+    );
     addCustomIndexMap(customMap, designDocNames, indexMap);
   }
 }

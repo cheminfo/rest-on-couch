@@ -59,14 +59,14 @@ const methods = {
       options.key !== undefined
         ? options.key
         : options.startkey !== undefined
-        ? options.startkey
-        : [];
+          ? options.startkey
+          : [];
     const userEndKey =
       options.key !== undefined
         ? options.key
         : options.endkey !== undefined
-        ? options.endkey
-        : [];
+          ? options.endkey
+          : [];
 
     for (const group of userGroups) {
       const startkey = [group].concat(userStartKey);
