@@ -5,6 +5,7 @@ reject:
 
   # Other
   - koa-hbs
+  - ldapjs
   - react
   - react-dom
   - react-router-dom
