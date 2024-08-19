@@ -54,10 +54,6 @@
   "volta": {
     "node": "20.16.0"
   },
-  "overrides": {
-    "react": "$react",
-    "react-dom": "$react-dom"
-  },
   "dependencies": {
     "@koa/router": "^13.0.0",
     "commander": "^9.3.0",
