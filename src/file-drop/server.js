@@ -5,7 +5,7 @@
 const http = require('http');
 const path = require('path');
 
-const router = require('@koa/router')();
+const Router = require('@koa/router');
 const fs = require('fs-extra');
 const Koa = require('koa');
 
@@ -13,6 +13,7 @@ const config = require('../config/config').globalConfig;
 const debug = require('../util/debug')('server');
 const tryMove = require('../util/tryMove');
 
+const router = new Router();
 let _started = false;
 
 const app = new Koa();
