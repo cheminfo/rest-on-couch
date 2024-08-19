@@ -1,0 +1,12 @@
+reject:
+  # ESM only packages
+  - delay
+  - got
+
+  # Other
+  - koa-hbs
+  - react
+  - react-dom
+  - react-router-dom
+  - react-redux
+  - select2

@@ -1,8 +1,8 @@
-import { createStore, applyMiddleware } from 'redux';
-import { persistStore, persistCombineReducers } from 'redux-persist';
+import { applyMiddleware, createStore } from 'redux';
+import { persistCombineReducers, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import promiseMiddleware from 'redux-promise-middleware';
-import thunkMiddleware from 'redux-thunk';
+import { thunk as thunkMiddleware } from 'redux-thunk';
 
 import { setDbName } from './actions/db';
 import { getRocStatus } from './actions/main';
