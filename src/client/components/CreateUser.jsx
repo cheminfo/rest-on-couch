@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { createCouchDBUser } from '../actions/login';
 
-class CreateUser extends React.Component {
+class CreateUserImpl extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -100,4 +100,8 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { createCouchDBUser })(CreateUser);
+const CreateUser = connect(mapStateToProps, { createCouchDBUser })(
+  CreateUserImpl,
+);
+
+export default CreateUser;

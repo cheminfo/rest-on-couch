@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-class GroupCreator extends Component {
+class GroupCreatorImpl extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -49,7 +49,7 @@ class GroupCreator extends Component {
   }
 }
 
-GroupCreator.propTypes = {
+GroupCreatorImpl.propTypes = {
   createGroup: PropTypes.func.isRequired,
 };
 
@@ -59,4 +59,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(GroupCreator);
+const GroupCreator = connect(mapStateToProps)(GroupCreatorImpl);
+
+export default GroupCreator;

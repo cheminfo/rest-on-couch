@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { HashRouter, Route, Redirect, Switch } from 'react-router-dom';
+import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import { dbManager } from '../store';
 
@@ -18,7 +18,7 @@ import LoginButton from './LoginButton';
 import NoMatch from './NoMatch';
 import Sidebar from './Sidebar';
 
-const App = (props) => {
+function AppImpl(props) {
   const { rocOnline } = props;
   const handleDbSelected = (event) => dbManager.switchDb(event.target.value);
   return (
@@ -142,13 +142,13 @@ const App = (props) => {
       </div>
     </HashRouter>
   );
-};
+}
 
-App.propTypes = {
+AppImpl.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
 };
 
-export default connect((state) => ({
+const App = connect((state) => ({
   rocOnline: state.main.rocOnline,
   loggedUser: state.login.username,
   loggedIn: !!state.login.username,
@@ -159,4 +159,6 @@ export default connect((state) => ({
   dbList: state.db.dbList,
   dbName: state.dbName,
   hasDb: !!state.dbName,
-}))(App);
+}))(AppImpl);
+
+export default App;

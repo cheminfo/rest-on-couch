@@ -224,7 +224,7 @@ async function publish(
       }
       entryCount++;
     }
-    /* eslint-enable */
+
 
     await rocZenodo.uploadFile(deposition, {
       filename: '_toc.json',

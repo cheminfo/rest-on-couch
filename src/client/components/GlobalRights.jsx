@@ -5,7 +5,7 @@ import { addGlobalRight, removeGlobalRight } from '../actions/db';
 
 import GlobalRightsEditor from './GlobalRightsEditor';
 
-function GlobalRights(props) {
+function GlobalRightsImpl(props) {
   if (!props.globalRights) return null;
   return (
     <div>
@@ -25,6 +25,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { addGlobalRight, removeGlobalRight })(
-  GlobalRights,
-);
+const GlobalRights = connect(mapStateToProps, {
+  addGlobalRight,
+  removeGlobalRight,
+})(GlobalRightsImpl);
+
+export default GlobalRights;

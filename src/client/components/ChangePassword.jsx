@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { changeCouchDBPassword } from '../actions/login';
 
-class ChangePassword extends React.Component {
+class ChangePasswordImpl extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -107,6 +107,8 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { changeCouchDBPassword })(
-  ChangePassword,
+const ChangePassword = connect(mapStateToProps, { changeCouchDBPassword })(
+  ChangePasswordImpl,
 );
+
+export default ChangePassword;

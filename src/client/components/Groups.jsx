@@ -4,16 +4,16 @@ import { connect } from 'react-redux';
 
 import {
   addValueToGroup,
-  removeValueFromGroup,
   createGroup,
   removeGroup,
+  removeValueFromGroup,
   setGroupProperties,
 } from '../actions/db';
 
 import GroupCreator from './GroupCreator';
 import GroupEditor from './GroupEditor';
 
-const Groups = (props) => {
+const GroupsImpl = (props) => {
   const groups = props.userGroups.map((group) => (
     <div className="card" key={group.name}>
       <GroupEditor
@@ -35,14 +35,14 @@ const Groups = (props) => {
   );
 };
 
-Groups.propTypes = {
+GroupsImpl.propTypes = {
   userGroups: PropTypes.array.isRequired,
   addValueToGroup: PropTypes.func.isRequired,
   removeValueFromGroup: PropTypes.func.isRequired,
   removeGroup: PropTypes.func.isRequired,
 };
 
-export default connect(
+const Groups = connect(
   (state) => ({
     userGroups: state.db.userGroups,
     hasCreateGroupRight: state.db.userRights.includes('createGroup'),
@@ -54,4 +54,6 @@ export default connect(
     removeGroup,
     setGroupProperties,
   },
-)(Groups);
+)(GroupsImpl);
+
+export default Groups;

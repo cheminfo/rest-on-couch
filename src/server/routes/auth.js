@@ -1,11 +1,11 @@
 'use strict';
 
 const Router = require('@koa/router');
+const passport = require('koa-passport');
 
 const router = new Router({
   prefix: '/auth',
 });
-const passport = require('koa-passport');
 
 router.use(async (ctx, next) => {
   ctx.session.continue = ctx.query.continue || ctx.session.continue;

@@ -1,5 +1,6 @@
 'use strict';
 
+const config = require('../config/config').globalConfig;
 const kEntryUnicity = require('../constants').kEntryUnicity;
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:entry');
@@ -8,8 +9,6 @@ const ensureStringArray = require('../util/ensureStringArray');
 const nanoMethods = require('./nano');
 const util = require('./util');
 const validateMethods = require('./validate');
-
-const config = require('../config/config').globalConfig;
 
 const methods = {
   async getEntryWithRights(uuid, user, rights, options = {}) {

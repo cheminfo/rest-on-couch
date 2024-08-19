@@ -5,7 +5,7 @@ import { dbManager } from '../store';
 
 import DisplayGroupList from './DisplayGroupList';
 
-class GroupMemberships extends Component {
+class GroupMembershipsImpl extends Component {
   componentDidMount() {
     // Because if the user changed groups, then memberships need to be updated
     // Easier to do here than each time groups are updated
@@ -27,4 +27,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(GroupMemberships);
+const GroupMemberships = connect(mapStateToProps)(GroupMembershipsImpl);
+
+export default GroupMemberships;
