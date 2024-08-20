@@ -21,7 +21,7 @@ const initialState = {
   errors: {},
 };
 
-const dbReducer = (state = initialState, action) => {
+const dbReducer = (state = initialState, action = {}) => {
   switch (action.type) {
     case CLEAR_GROUP_ERROR: {
       const index = getGroupIndex(state.userGroups, action);

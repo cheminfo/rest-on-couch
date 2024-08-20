@@ -253,6 +253,7 @@ function getFilesToProcess(directory, maxElements) {
         if (item.stats.isFile()) {
           items.push(item.path);
           if (maxElements > 0 && items.length >= maxElements) {
+            // eslint-disable-next-line no-invalid-this
             this.pause();
             resolve(items);
           }
@@ -260,6 +261,7 @@ function getFilesToProcess(directory, maxElements) {
       })
       .on('end', () => resolve(items))
       .on('error', function (err) {
+        // eslint-disable-next-line no-invalid-this
         this.close();
         reject(err);
       });

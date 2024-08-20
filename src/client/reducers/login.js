@@ -1,9 +1,9 @@
 import {
-  CHECK_LOGIN,
-  LOGOUT,
-  GET_LOGIN_PROVIDERS,
   CHANGE_COUCHDB_PASSWORD,
+  CHECK_LOGIN,
   CREATE_COUCHDB_USER,
+  GET_LOGIN_PROVIDERS,
+  LOGOUT,
 } from '../actions/login';
 
 const initialState = {
@@ -15,7 +15,7 @@ const initialState = {
   success: {},
 };
 
-const loginReducer = (state = initialState, action) => {
+const loginReducer = (state = initialState, action = {}) => {
   switch (action.type) {
     case `${CHECK_LOGIN}_FULFILLED`: {
       return { ...state, ...onLogin(action.payload) };

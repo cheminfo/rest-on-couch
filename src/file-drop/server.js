@@ -92,7 +92,9 @@ if (config.debugrest) {
     try {
       yield next;
     } catch (err) {
+      // eslint-disable-next-line no-invalid-this
       this.status = err.status || 500;
+      // eslint-disable-next-line no-invalid-this
       this.body = `${err.message}\n${err.stack}`;
       printError(err);
     }

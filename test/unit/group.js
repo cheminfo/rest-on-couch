@@ -36,7 +36,7 @@ describe('group methods', () => {
   test('should add one user to group', () => {
     return couch
       .addUsersToGroup('groupA', 'a@a.com', 'test123@example.com')
-      .then(function () {
+      .then(() => {
         return couch.getDocByRights('groupA', 'a@a.com', 'read', 'group');
       })
       .then(function (group) {
@@ -54,7 +54,7 @@ describe('group methods', () => {
         'dup@example.com',
         'dup@example.com',
       ])
-      .then(function () {
+      .then(() => {
         return couch.getDocByRights('groupA', 'a@a.com', 'read', 'group');
       })
       .then(function (group) {
@@ -97,10 +97,10 @@ describe('group methods', () => {
   test('should remove users from group', () => {
     return couch
       .addUsersToGroup('groupA', 'a@a.com', ['test123@example.com'])
-      .then(function () {
+      .then(() => {
         return couch.removeUsersFromGroup('groupA', 'a@a.com', 'a@a.com');
       })
-      .then(function () {
+      .then(() => {
         return couch.getDocByRights('groupA', 'a@a.com', 'read', 'group');
       })
       .then(function (group) {
@@ -211,7 +211,7 @@ describe('group methods', () => {
   });
 
   test('getGroups should not return groups when not owner and without the global readGroup right', () => {
-    return couch.getGroups('c@c.com').then(function (docs) {
+    return couch.getGroups('c@c.com').then((docs) => {
       expect(docs).toHaveLength(0);
     });
   });

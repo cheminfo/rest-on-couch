@@ -8,13 +8,19 @@ const config = require('../config/config');
 
 const debug = require('./debug')('util:getConfiguredDbs');
 
-let configuredDbs;
+let configuredDbsPromise;
 
-async function getConfiguredDbs() {
-  if (configuredDbs) return configuredDbs;
+function getConfiguredDbs() {
+  if (configuredDbsPromise) return configuredDbsPromise;
   debug.trace('get list of databases that have a configuration file');
-  const result = [];
   const homeDir = config.globalConfig.homeDir;
+
+  configuredDbsPromise = readConfiguredDbs(homeDir);
+  return configuredDbsPromise;
+}
+
+async function readConfiguredDbs(homeDir) {
+  const result = [];
   const files = await fs.readdir(homeDir);
   for (const file of files) {
     const stat = await fs.stat(path.join(homeDir, file));
@@ -25,8 +31,7 @@ async function getConfiguredDbs() {
       }
     }
   }
-  configuredDbs = result;
-  return configuredDbs;
+  return result;
 }
 
 module.exports = getConfiguredDbs;

@@ -119,7 +119,7 @@ function assert(newDoc, oldDoc, message) {
 }
 
 function assertNot(newDoc, oldDoc) {
-  expect(function () {
+  expect(() => {
     validateDocUpdate(newDoc, oldDoc, { name: 'admin' });
   }).not.toThrow();
 }
