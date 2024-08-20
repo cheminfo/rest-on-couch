@@ -48,7 +48,7 @@ const GitHubStrategy = require('passport-github').Strategy;
 
 const { auditLogin } = require('../../../audit/actions');
 
-exports.init = function (passport, router, config) {
+exports.init = function initGithub(passport, router, config) {
   passport.use(
     new GitHubStrategy(
       {
@@ -57,9 +57,9 @@ exports.init = function (passport, router, config) {
         callbackURL: config.publicAddress + config.callbackURL,
         passReqToCallback: true,
       },
-      function (req, accessToken, refreshToken, profile, done) {
+      (req, accessToken, refreshToken, profile, done) => {
         // Get the user's email
-        (async function () {
+        (async function handleUserIIFE() {
           const answer = (
             await got(
               `https://api.github.com/user/emails?access_token=${accessToken}`,
@@ -72,7 +72,7 @@ exports.init = function (passport, router, config) {
               },
             )
           ).body;
-          const email = answer.filter(function (val) {
+          const email = answer.filter((val) => {
             return val.primary === true;
           });
           if (email.length === 0 && answer[0] && answer[0].email) {

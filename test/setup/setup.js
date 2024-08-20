@@ -19,10 +19,10 @@ process.env.REST_ON_COUCH_HOME_DIR = path.join(
 const fileDropServer = require('../../src/file-drop/server');
 const server = require('../../src/server/server');
 
-exports.getAgent = function () {
+exports.getAgent = function getAgent() {
   return supertest.agent(server.app.callback());
 };
 
-exports.getFileDropAgent = function () {
+exports.getFileDropAgent = function getFileDropAgent() {
   return supertest.agent(fileDropServer.app.callback());
 };

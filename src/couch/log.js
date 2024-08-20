@@ -18,7 +18,7 @@ for (var i in levels) {
   exports[i] = levels[i];
 }
 
-exports.isValidLevel = function (level) {
+exports.isValidLevel = function isValidLevel(level) {
   return !!levels[level];
 };
 
@@ -28,12 +28,12 @@ function checkLevel(level) {
   }
 }
 
-exports.getLevel = function (level) {
+exports.getLevel = function getLevel(level) {
   checkLevel(level);
   return levels[level];
 };
 
-exports.log = async function (db, currentLevel, message, level) {
+exports.log = async function log(db, currentLevel, message, level) {
   if (typeof currentLevel !== 'number') {
     throw new TypeError('current log level must be a number');
   }
@@ -53,7 +53,7 @@ exports.log = async function (db, currentLevel, message, level) {
 };
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
-exports.getLogs = function (db, epoch) {
+exports.getLogs = function getLogs(db, epoch) {
   if (epoch === undefined) epoch = Date.now() - ONE_DAY;
   return db.queryView(
     'logsByEpoch',
@@ -62,7 +62,7 @@ exports.getLogs = function (db, epoch) {
   );
 };
 
-exports.format = function (log) {
+exports.format = function format(log) {
   const name = levelNames[log.level];
   const date = new Date(log.epoch);
   return `[${date.toISOString()}] [${name}]${' '.repeat(

@@ -7,7 +7,7 @@ const constants = require('../../src/constants');
 const entryUnicity = require('../data/byOwnerEntryUnicity');
 const { resetDatabaseWithoutCouch } = require('../utils/utils');
 
-process.on('unhandledRejection', function (err) {
+process.on('unhandledRejection', function handleUnhandledRejection(err) {
   throw err;
 });
 

@@ -88,7 +88,7 @@ app.on('error', printError);
 // Unhandled errors
 if (config.debugrest) {
   // In debug mode, show unhandled errors to the user
-  app.use(function* (next) {
+  app.use(function* debugMiddleware(next) {
     try {
       yield next;
     } catch (err) {
@@ -108,10 +108,10 @@ function printError(err) {
   debug.error('unexpected error:', err.stack || err);
 }
 
-module.exports.start = function () {
+module.exports.start = function start() {
   if (_started) return _started;
-  _started = new Promise(function (resolve) {
-    http.createServer(app.callback()).listen(config.fileDropPort, function () {
+  _started = new Promise((resolve) => {
+    http.createServer(app.callback()).listen(config.fileDropPort, () => {
       debug.warn('file-drop running on localhost:%s', config.fileDropPort);
       resolve(app);
     });

@@ -19,7 +19,6 @@ export default config(
       'callback-return': 'off',
       'no-await-in-loop': 'off',
       'no-var': 'off',
-      'func-names': 'off',
       'prefer-named-capture-group': 'off',
     },
   },

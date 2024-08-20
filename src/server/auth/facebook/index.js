@@ -35,7 +35,7 @@ const FacebookStrategy = require('passport-facebook');
 
 const { auditLogin } = require('../../../audit/actions');
 
-exports.init = function (passport, router, config) {
+exports.init = function initFacebook(passport, router, config) {
   passport.use(
     new FacebookStrategy(
       {
@@ -45,7 +45,7 @@ exports.init = function (passport, router, config) {
         enableProof: false,
         passReqToCallback: true,
       },
-      function (req, accessToken, refreshToken, profile, done) {
+      (req, accessToken, refreshToken, profile, done) => {
         const email = profile._json.email;
         auditLogin(email, true, 'facebook', req.ctx);
         done(null, {

@@ -9,11 +9,11 @@ const debug = require('../../util/debug')('middleware:util');
 
 const { decorateError, responseHasBody } = require('./decorateError');
 
-exports.parseBody = function (options) {
+exports.parseBody = function parseBody(options) {
   return bodyParser(options);
 };
 
-exports.parseRawBody = function (options) {
+exports.parseRawBody = function parseRawBody(options) {
   return async (ctx, next) => {
     ctx.request.body = await rawBody(ctx.req, options);
     await next();

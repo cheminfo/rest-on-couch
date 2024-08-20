@@ -7,10 +7,10 @@ const { auditLogin } = require('../../../audit/actions');
 const auth = require('../../middleware/auth');
 const util = require('../../middleware/util');
 
-exports.init = function (passport, router, config) {
+exports.init = function ldapInit(passport, router, config) {
   const strategyConfig = { passReqToCallback: true, ...config };
   passport.use(
-    new LdapStrategy(strategyConfig, function (req, user, done) {
+    new LdapStrategy(strategyConfig, (req, user, done) => {
       const data = {
         provider: 'ldap',
         email: user.mail,

@@ -3,7 +3,7 @@
 const validateDocUpdate = require('../../../src/design/validateDocUpdate');
 
 // TODO workaround for CentOS 6.
-global.isArray = function (obj) {
+global.isArray = function isArray(obj) {
   return Array.isArray(obj);
 };
 
