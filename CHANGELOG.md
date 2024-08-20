@@ -1,5 +1,16 @@
 # Changelog
 
+## [16.0.0](https://github.com/cheminfo/rest-on-couch/compare/v15.0.2...v16.0.0) (2024-08-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* update deps and upgrade Node.js to v20 ([#394](https://github.com/cheminfo/rest-on-couch/issues/394))
+
+### Miscellaneous Chores
+
+* update deps and upgrade Node.js to v20 ([#394](https://github.com/cheminfo/rest-on-couch/issues/394)) ([dd2b4bd](https://github.com/cheminfo/rest-on-couch/commit/dd2b4bd12d42b876845c0f7dc31b478786629d44))
+
 ## [15.0.2](https://github.com/cheminfo/rest-on-couch/compare/v15.0.1...v15.0.2) (2024-05-30)
 
 
