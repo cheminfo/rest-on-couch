@@ -22,7 +22,7 @@ const app = new Koa();
 
 let _started;
 
-app.use(async function (ctx, next) {
+app.use(async (ctx, next) => {
   debug.trace('Method: %s; Path: %s', ctx.method, ctx.path);
   await next();
 });
@@ -37,7 +37,7 @@ let proxyPrefix = config.proxyPrefix;
 debug('proxy prefix: %s', proxyPrefix);
 if (proxyPrefix !== '') {
   const _redirect = app.context.redirect;
-  app.context.redirect = function (url, alt) {
+  app.context.redirect = function redirect(url, alt) {
     if (typeof url === 'string' && url.startsWith('/')) {
       url = proxyPrefix + url;
     }
@@ -125,14 +125,14 @@ app.use(auth.routes());
 // ROC API
 app.use(api.routes());
 
-module.exports.start = function () {
+module.exports.start = function start() {
   if (_started) return _started;
-  _started = new Promise(function (resolve, reject) {
+  _started = new Promise((resolve, reject) => {
     initCouch().then(
       () => {
         const server = http
           .createServer(app.callback())
-          .listen(config.port, function () {
+          .listen(config.port, () => {
             debug.warn('running on localhost: %d', config.port);
             resolve(app);
           });

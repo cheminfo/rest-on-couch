@@ -29,7 +29,7 @@ const Couch = require('../..');
 
 const couch = Couch.get(options.db);
 
-(async function () {
+(async function openIIFE() {
   await couch.open();
   const db = couch._db;
   for (const kind of kinds) {
@@ -44,6 +44,6 @@ const couch = Couch.get(options.db);
   }
 })()
   .catch(console.error)
-  .then(function () {
+  .then(function close() {
     couch.close();
   });

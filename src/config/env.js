@@ -9,7 +9,7 @@ for (const name in process.env) {
     const realName = name
       .substring(prefix.length)
       .toLowerCase()
-      .replace(/_(?<part>[a-z])/g, function (value) {
+      .replace(/_(?<part>[a-z])/g, (value) => {
         return value[1].toUpperCase();
       });
 

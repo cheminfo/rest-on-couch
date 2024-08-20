@@ -329,7 +329,7 @@ function prepareSearchParams(searchParams) {
   if (searchParams.token) {
     delete searchParams.token;
   }
-  specialKeys.forEach(function (key) {
+  specialKeys.forEach((key) => {
     if (key in searchParams) {
       searchParams[key] = JSON.stringify(searchParams[key]);
     }
@@ -340,7 +340,7 @@ function prepareSearchParams(searchParams) {
 const paramsToEncode = ['counts', 'drilldown', 'group_sort', 'ranges', 'sort'];
 
 function prepareSearchParamsForView(searchParams) {
-  paramsToEncode.forEach(function (param) {
+  paramsToEncode.forEach((param) => {
     if (param in searchParams) {
       if (typeof searchParams[param] !== 'string') {
         searchParams[param] = JSON.stringify(searchParams[param]);

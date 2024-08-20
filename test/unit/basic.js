@@ -7,7 +7,7 @@ const constants = require('../../src/constants');
 const entryUnicity = require('../data/byOwnerEntryUnicity');
 const { resetDatabaseWithoutCouch } = require('../utils/utils');
 
-process.on('unhandledRejection', function (err) {
+process.on('unhandledRejection', function handleUnhandledRejection(err) {
   throw err;
 });
 
@@ -19,19 +19,17 @@ describe('basic initialization tests', () => {
   });
 
   test('should throw if no database given', () => {
-    return expect(
-      Promise.resolve().then(() => {
-        new Couch();
-      }),
-    ).rejects.toThrow('database option is mandatory');
+    return expect(Promise.resolve().then(() => new Couch())).rejects.toThrow(
+      'database option is mandatory',
+    );
   });
 
   test('should throw on invalid db name', () => {
-    expect(function () {
-      new Couch({ database: '_test' });
-    }).toThrowError(/invalid database name/);
+    expect(() => new Couch({ database: '_test' })).toThrowError(
+      /invalid database name/,
+    );
 
-    expect(function () {
+    expect(() => {
       Couch.get(1);
     }).toThrowError(/database name must be a string/);
   });

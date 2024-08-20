@@ -36,10 +36,10 @@ describe('group methods', () => {
   test('should add one user to group', () => {
     return couch
       .addUsersToGroup('groupA', 'a@a.com', 'test123@example.com')
-      .then(function () {
+      .then(() => {
         return couch.getDocByRights('groupA', 'a@a.com', 'read', 'group');
       })
-      .then(function (group) {
+      .then((group) => {
         expect(group.users).toHaveLength(2);
         expect(group.customUsers).toHaveLength(2);
         expect(group.users[1]).toBe('test123@example.com');
@@ -54,10 +54,10 @@ describe('group methods', () => {
         'dup@example.com',
         'dup@example.com',
       ])
-      .then(function () {
+      .then(() => {
         return couch.getDocByRights('groupA', 'a@a.com', 'read', 'group');
       })
-      .then(function (group) {
+      .then((group) => {
         expect(group.users).toHaveLength(3);
         expect(group.users[1]).toBe('test123@example.com');
         expect(group.users[2]).toBe('dup@example.com');
@@ -97,13 +97,13 @@ describe('group methods', () => {
   test('should remove users from group', () => {
     return couch
       .addUsersToGroup('groupA', 'a@a.com', ['test123@example.com'])
-      .then(function () {
+      .then(() => {
         return couch.removeUsersFromGroup('groupA', 'a@a.com', 'a@a.com');
       })
-      .then(function () {
+      .then(() => {
         return couch.getDocByRights('groupA', 'a@a.com', 'read', 'group');
       })
-      .then(function (group) {
+      .then((group) => {
         expect(group.users).toHaveLength(1);
         expect(group.users[0]).toBe('test123@example.com');
         expect(group.customUsers).toHaveLength(1);
@@ -112,7 +112,7 @@ describe('group methods', () => {
   });
 
   test('getGroups should return users groups when owner without global readGroup right', () => {
-    return couch.getGroups('a@a.com').then(function (docs) {
+    return couch.getGroups('a@a.com').then((docs) => {
       expect(docs).toHaveLength(3);
       expect(docs[0].users[0]).toBe('a@a.com');
       expect(docs[0].customUsers[0]).toBe('a@a.com');
@@ -120,7 +120,7 @@ describe('group methods', () => {
   });
 
   test('getGroupsInfo should return all data when group owner', () => {
-    return couch.getGroupsInfo('a@a.com').then(function (groups) {
+    return couch.getGroupsInfo('a@a.com').then((groups) => {
       expect(groups).toHaveLength(3);
       // a@a.com sees users and rights because it is the owner of all groups
       expect(groups).toStrictEqual([
@@ -147,7 +147,7 @@ describe('group methods', () => {
   });
 
   test('getGroupsInfo should return all data when user has readGroup right', () => {
-    return couch.getGroupsInfo('b@b.com').then(function (groups) {
+    return couch.getGroupsInfo('b@b.com').then((groups) => {
       expect(groups).toHaveLength(3);
       // Sees everything because has global readGroup right
       expect(groups).toStrictEqual([
@@ -174,7 +174,7 @@ describe('group methods', () => {
   });
 
   test('getGroupsInfo should return limited data except if member', () => {
-    return couch.getGroupsInfo('c@c.com').then(function (groups) {
+    return couch.getGroupsInfo('c@c.com').then((groups) => {
       expect(groups).toHaveLength(3);
       // Sees everything because has global readGroup right
       expect(groups).toStrictEqual([
@@ -204,19 +204,19 @@ describe('group methods', () => {
   });
 
   test('getGroups should return groups when owner not owner but has global readGroup right', () => {
-    return couch.getGroups('b@b.com').then(function (docs) {
+    return couch.getGroups('b@b.com').then((docs) => {
       expect(docs).toHaveLength(3);
       expect(docs[0].users[0]).toBe('a@a.com');
     });
   });
 
   test('getGroups should not return groups when not owner and without the global readGroup right', () => {
-    return couch.getGroups('c@c.com').then(function (docs) {
+    return couch.getGroups('c@c.com').then((docs) => {
       expect(docs).toHaveLength(0);
     });
   });
 
-  test('should get list of groups user is member of', async function () {
+  test('should get list of groups user is member of', async () => {
     const users = await couch.getUserGroups('a@a.com');
     expect(users.map((g) => g.name).sort()).toEqual(['groupA', 'groupB']);
   });
@@ -309,7 +309,7 @@ describe('group methods (no default rights)', () => {
     );
   });
 
-  test('should get list of groups user is member of, including default groups', async function () {
+  test('should get list of groups user is member of, including default groups', async () => {
     let groups = await couch.getUserGroups('a@a.com');
     groups.sort((a, b) => a.name.localeCompare(b.name));
     expect(groups).toEqual([

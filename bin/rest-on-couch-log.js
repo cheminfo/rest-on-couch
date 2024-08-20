@@ -27,21 +27,21 @@ const couch = new Couch(options.database);
 
 if (options.insert) {
   couch.log(options.insert, options.level).then(
-    function (done) {
+    (done) => {
       if (done) {
         debug('log inserted successfully');
       } else {
         debug.warn('log ignored by current level');
       }
     },
-    function (e) {
-      debug.error(e);
+    (error) => {
+      debug.error(error);
     },
   );
 } else {
   couch
     .getLogs(parseInt(options.epoch, 10))
-    .then(function (logs) {
+    .then((logs) => {
       for (var i = 0; i < logs.length; i++) {
         write(logs[i]);
       }
@@ -51,14 +51,14 @@ if (options.insert) {
           include_docs: true,
           filter: `${constants.DESIGN_DOC_NAME}/logs`,
         });
-        feed.on('change', function (change) {
+        feed.on('change', (change) => {
           write(change.doc);
         });
         feed.follow();
       }
     })
-    .catch(function (e) {
-      debug.error(e);
+    .catch((error) => {
+      debug.error(error);
     });
 }
 

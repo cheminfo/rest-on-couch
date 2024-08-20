@@ -1,8 +1,8 @@
 'use strict';
 
 // do not forget to update the same regex in design/validateDocUpdate
-const isEmail = /^.+@.+$/;
+const isEmailRegExp = /^.+@.+$/;
 
-module.exports = function (str) {
-  return isEmail.test(str);
+module.exports = function isEmail(str) {
+  return isEmailRegExp.test(str);
 };

@@ -274,7 +274,7 @@ exports.getUserInfo = composeWithError(async (ctx) => {
   ctx.body = await ctx.state.couch.getUserInfo(ctx.state.userEmail);
 });
 
-exports.getOwners = function (type) {
+exports.getOwners = function getOwners(type) {
   return composeWithError(async (ctx) => {
     const doc = await ctx.state.couch.getDocByRights(
       ctx.params.uuid,
@@ -287,7 +287,7 @@ exports.getOwners = function (type) {
   });
 };
 
-exports.addOwner = function (type) {
+exports.addOwner = function addOwner(type) {
   return composeWithError(async (ctx) => {
     await ctx.state.couch.addOwnersToDoc(
       ctx.params.uuid,
@@ -299,7 +299,7 @@ exports.addOwner = function (type) {
   });
 };
 
-exports.removeOwner = function (type) {
+exports.removeOwner = function removeOwner(type) {
   return composeWithError(async (ctx) => {
     await ctx.state.couch.removeOwnersFromDoc(
       ctx.params.uuid,

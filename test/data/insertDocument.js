@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (db, entry) {
+module.exports = function insertDocument(db, entry) {
   processEntry(entry);
   return db.insertDocument(entry);
 };

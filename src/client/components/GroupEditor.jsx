@@ -7,7 +7,7 @@ import { clearGroupError, clearGroupSuccess } from '../actions/db';
 import EditableTextField from './EditableTextField';
 import GroupDataEditor from './GroupDataEditor';
 
-function GroupEditor({
+function GroupEditorImpl({
   group,
   addValueToGroup,
   removeValueFromGroup,
@@ -154,13 +154,15 @@ function GroupEditor({
   );
 }
 
-GroupEditor.propTypes = {
+GroupEditorImpl.propTypes = {
   group: PropTypes.object.isRequired,
   addValueToGroup: PropTypes.func.isRequired,
   removeGroup: PropTypes.func.isRequired,
   removeValueFromGroup: PropTypes.func.isRequired,
 };
 
-export default connect(null, { clearGroupError, clearGroupSuccess })(
-  GroupEditor,
+const GroupEditor = connect(null, { clearGroupError, clearGroupSuccess })(
+  GroupEditorImpl,
 );
+
+export default GroupEditor;

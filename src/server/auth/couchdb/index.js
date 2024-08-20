@@ -9,7 +9,7 @@ const isEmail = require('../../../util/isEmail');
 const auth = require('../../middleware/auth');
 const util = require('../../middleware/util');
 
-exports.init = function (passport, router) {
+exports.init = function initCouchdb(passport, router) {
   router.post(
     '/couchdb/user',
     util.parseBody({ jsonLimit: '1kb' }),
@@ -24,8 +24,8 @@ exports.init = function (passport, router) {
         passwordField: 'password',
         passReqToCallback: true,
       },
-      function (req, username, password, done) {
-        (async function () {
+      (req, username, password, done) => {
+        (async function handleUserIIFE() {
           if (!isEmail(username)) {
             return done(null, false, 'username must be an email');
           }

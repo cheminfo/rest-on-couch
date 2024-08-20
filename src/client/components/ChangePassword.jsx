@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { changeCouchDBPassword } from '../actions/login';
 
-class ChangePassword extends React.Component {
+class ChangePasswordImpl extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -54,6 +54,7 @@ class ChangePassword extends React.Component {
                   name="oldPassword"
                   type="password"
                   className="form-control"
+                  autoComplete="current-password"
                   value={this.state.oldPassword}
                   onChange={this.handleChange}
                   onKeyPress={this.handleKeyPress}
@@ -66,6 +67,7 @@ class ChangePassword extends React.Component {
                 <input
                   name="newPassword"
                   type="password"
+                  autoComplete="new-password"
                   className="form-control"
                   value={this.state.newPassword}
                   onChange={this.handleChange}
@@ -107,6 +109,8 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { changeCouchDBPassword })(
-  ChangePassword,
+const ChangePassword = connect(mapStateToProps, { changeCouchDBPassword })(
+  ChangePasswordImpl,
 );
+
+export default ChangePassword;

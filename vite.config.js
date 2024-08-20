@@ -6,4 +6,7 @@ const { defineConfig } = require('vite');
 module.exports = defineConfig({
   plugins: [reactRefresh()],
   base: './',
+  server: {
+    host: '127.0.0.1',
+  },
 });

@@ -307,7 +307,7 @@ describe('basic rest-api as a@a.com', () => {
     return request
       .get('/db/test/group/groupA')
       .expect(200)
-      .then(function (response) {
+      .then((response) => {
         expect(response.body).toHaveProperty('name');
         expect(response.body).toHaveProperty('users');
         expect(response.body).toHaveProperty('rights');
@@ -318,7 +318,7 @@ describe('basic rest-api as a@a.com', () => {
     return request
       .get('/db/test/groups')
       .expect(200)
-      .then(function (response) {
+      .then((response) => {
         expect(response.body).toHaveLength(2);
         expect(response.body[0]).toBeDefined();
       });

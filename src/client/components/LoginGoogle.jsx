@@ -6,17 +6,17 @@ import { checkLogin } from '../actions/login';
 import { API_ROOT } from '../api';
 import { dbManager } from '../store';
 
-const LoginGoogle = ({ doGoogleLogin }) => (
+const LoginGoogleImpl = ({ doGoogleLogin }) => (
   <a href="#" onClick={doGoogleLogin}>
     <img src="/assets/img/logo/google_signin.png" />
   </a>
 );
 
-LoginGoogle.propTypes = {
+LoginGoogleImpl.propTypes = {
   doGoogleLogin: PropTypes.func.isRequired,
 };
 
-export default connect(null, (dispatch) => ({
+const LoginGoogle = connect(null, (dispatch) => ({
   doGoogleLogin: () => {
     const height = 600;
     const width = 450;
@@ -39,4 +39,6 @@ export default connect(null, (dispatch) => ({
       }
     }
   },
-}))(LoginGoogle);
+}))(LoginGoogleImpl);
+
+export default LoginGoogle;

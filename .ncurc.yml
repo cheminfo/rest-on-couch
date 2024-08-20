@@ -1,0 +1,8 @@
+reject:
+  # ESM only packages
+  - delay
+  - got
+
+  # Other
+  - koa-hbs
+  - ldapjs

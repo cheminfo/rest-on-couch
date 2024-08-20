@@ -25,7 +25,7 @@ function populate(db) {
   return Promise.all(prom);
 }
 
-module.exports = async function () {
+module.exports = async function populateAnyUser() {
   global.couch = await resetDatabase('test', {
     database: 'test',
     rights: {

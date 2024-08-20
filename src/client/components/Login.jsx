@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { loginLDAP, loginCouchDB } from '../actions/login';
+import { loginCouchDB, loginLDAP } from '../actions/login';
 
 import LoginGeneric from './LoginGeneric';
 import LoginGoogle from './LoginGoogle';
 
-const Login = (props) => (
+const LoginImpl = (props) => (
   <div>
     {props.loginProviders.length === 0 ? 'No login provider available' : ''}
     {props.loginProviders.includes('google') ? (
@@ -52,13 +52,13 @@ const Login = (props) => (
   </div>
 );
 
-Login.propTypes = {
+LoginImpl.propTypes = {
   errors: PropTypes.object.isRequired,
   loginLDAP: PropTypes.func,
   loginProviders: PropTypes.array.isRequired,
 };
 
-export default connect(
+const Login = connect(
   (state) => ({
     errors: state.login.errors,
     loginProviders: state.login.loginProviders
@@ -69,4 +69,6 @@ export default connect(
     loginLDAP: loginLDAP(dispatch),
     loginCouchDB: loginCouchDB(dispatch),
   }),
-)(Login);
+)(LoginImpl);
+
+export default Login;

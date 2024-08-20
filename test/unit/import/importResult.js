@@ -224,7 +224,7 @@ describe('ImportResult', () => {
   test('Cannot skip metadata without skipping attachment', () => {
     const result = new ImportResult();
     result.skipMetadata();
-    expect(function () {
+    expect(() => {
       result.getUpdateType();
     }).toThrowError('Cannot skip metadata without skipping attachment');
   });
@@ -234,7 +234,7 @@ function checkWithoutPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
 
   delete importResult[prop];
-  expect(function () {
+  expect(() => {
     importResult.check();
   }).toThrowError(message);
 }
@@ -242,7 +242,7 @@ function checkWithoutPropShouldThrow(prop, message, importType) {
 function checkWithoutAttachmentPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
   delete importResult.attachments[0][prop];
-  expect(function () {
+  expect(() => {
     importResult.check();
   }).toThrowError(message);
 }
@@ -255,7 +255,7 @@ function checkWithWrongTypeAttachmentPropShouldThrow(
 ) {
   const importResult = getValidResult(importType);
   importResult.attachments[0][prop] = value;
-  expect(function () {
+  expect(() => {
     importResult.check();
   }).toThrowError(message);
 }

@@ -5,7 +5,7 @@ import { addDefaultGroup, removeDefaultGroup } from '../actions/db';
 
 import DefaultGroupsEditor from './DefaultGroupsEditor';
 
-function DefaultGroups(props) {
+function DefaultGroupsImpl(props) {
   if (!props.defaultGroups) return null;
   return (
     <div>
@@ -25,7 +25,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, {
+const DefaultGroups = connect(mapStateToProps, {
   addDefaultGroup,
   removeDefaultGroup,
-})(DefaultGroups);
+})(DefaultGroupsImpl);
+
+export default DefaultGroups;

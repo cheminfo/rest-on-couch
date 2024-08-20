@@ -25,7 +25,7 @@ function populate(db) {
   return Promise.all(prom);
 }
 
-module.exports = async function () {
+module.exports = async function populateByOwnerUnicity() {
   global.couch = await resetDatabase('test-by-owner-unicity', {
     database: 'test-by-owner-unicity',
     rights: {

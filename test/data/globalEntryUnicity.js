@@ -32,7 +32,7 @@ function populate(db) {
   return Promise.all(prom);
 }
 
-module.exports = async function () {
+module.exports = async function populateGlobalUnicity() {
   global.couch = await resetDatabase('test-global-unicity', {
     database: 'test-global-unicity',
     rights: {

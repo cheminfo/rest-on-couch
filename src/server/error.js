@@ -1,6 +1,6 @@
 'use strict';
 
-exports.handleError = function (ctx, code, error) {
+exports.handleError = function handleError(ctx, code, error) {
   if (code instanceof Error) {
     error = code;
     code = null;

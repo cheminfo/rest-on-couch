@@ -1,6 +1,4 @@
 import React from 'react';
-import Select2 from 'react-select2-wrapper';
-import 'react-select2-wrapper/css/select2.css';
 
 export default function DatabaseSelector({ dbName, dbList, onDbSelected }) {
   return (
@@ -10,18 +8,28 @@ export default function DatabaseSelector({ dbName, dbList, onDbSelected }) {
         position: 'relative',
       }}
     >
-      <Select2
+      <select
         style={{
           width: '200px',
         }}
-        multiple={false}
+        className="form-control"
         value={dbName}
-        data={[''].concat(dbList)}
-        options={{
-          placeholder: 'Select a database',
+        onChange={(event) => {
+          onDbSelected(event);
         }}
-        onSelect={onDbSelected}
-      />
+      >
+        {!dbList.includes(dbName) && (
+          <option value={dbName} style={{ color: 'lightblue' }}>
+            Select a database...
+          </option>
+        )}
+
+        {dbList.map((element) => (
+          <option value={element} key={element}>
+            {element}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

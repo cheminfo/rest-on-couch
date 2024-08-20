@@ -28,6 +28,18 @@ export async function apiFetchJSON(path, options) {
   return req.json();
 }
 
+export async function apiFetchJSONOptional(path, options) {
+  path = path.replace(/^\/+/, '');
+  const req = await apiFetch(path, options);
+  if (req.status === 404) {
+    return null;
+  } else if (req.status < 300) {
+    return req.json();
+  } else {
+    throw new Error(`Unexpected status code ${req.status}`);
+  }
+}
+
 export function apiFetchForm(path, data) {
   const formData = new URLSearchParams();
   for (const key in data) {
