@@ -249,7 +249,7 @@ function getFilesToProcess(directory, maxElements) {
     const items = [];
     const walkStream = klaw(directory, { queueMethod: sortWalk });
     walkStream
-      .on('data', (item) => {
+      .on('data', function onData(item) {
         if (item.stats.isFile()) {
           items.push(item.path);
           if (maxElements > 0 && items.length >= maxElements) {
@@ -260,7 +260,7 @@ function getFilesToProcess(directory, maxElements) {
         }
       })
       .on('end', () => resolve(items))
-      .on('error', (err) => {
+      .on('error', function onError(err) {
         // eslint-disable-next-line no-invalid-this
         this.close();
         reject(err);
