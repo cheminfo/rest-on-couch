@@ -3,6 +3,6 @@ reject:
   - delay
   - got
 
-  # Other
-  - koa-hbs
+  # v3 of ldapjs is a large refactoring followed closely by maintainer abandoning the project
+  # I am concerned it might not be stable enough
   - ldapjs
