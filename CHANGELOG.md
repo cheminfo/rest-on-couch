@@ -1,5 +1,12 @@
 # Changelog
 
+## [16.0.1](https://github.com/cheminfo/rest-on-couch/compare/v16.0.0...v16.0.1) (2024-09-13)
+
+
+### Bug Fixes
+
+* make sure the `this` reference is correct when working with `klaw` library ([29f0feb](https://github.com/cheminfo/rest-on-couch/commit/29f0feb32cb1a29f225538c60b760c324a805fd4))
+
 ## [16.0.0](https://github.com/cheminfo/rest-on-couch/compare/v15.0.2...v16.0.0) (2024-08-20)
 
 
