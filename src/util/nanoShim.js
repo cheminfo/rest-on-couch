@@ -347,7 +347,7 @@ function prepareSearchParamsForView(searchParams) {
       } else {
         try {
           JSON.parse(searchParams[param]);
-        } catch (e) {
+        } catch {
           searchParams[param] = JSON.stringify(searchParams[param]);
         }
       }

@@ -1,6 +1,6 @@
 'use strict';
 
-const delay = require('delay');
+const { setTimeout } = require('node:timers/promises');
 
 const config = require('../../config/config').globalConfig;
 const { RocZenodo } = require('../../roc-zenodo');
@@ -215,7 +215,7 @@ async function publish(
           userEmail,
           true,
         );
-        await delay(600);
+        await setTimeout(600);
         await rocZenodo.uploadFile(deposition, {
           filename: `${filenamePrefix}/${attachmentPath}`,
           contentType,
@@ -235,7 +235,7 @@ async function publish(
   } catch (e) {
     try {
       await rocZenodo.deleteEntry(deposition);
-    } catch (_) {
+    } catch {
       // ignore
     }
     zenodoEntry.$content.doi = '';

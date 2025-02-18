@@ -20,6 +20,7 @@ export default config(
       'no-await-in-loop': 'off',
       'no-var': 'off',
       'prefer-named-capture-group': 'off',
+      'import/no-dynamic-require': 'off',
     },
   },
   {

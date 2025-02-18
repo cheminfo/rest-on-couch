@@ -21,7 +21,7 @@ export function getRocStatus() {
       } else {
         dispatch({ type: ROC_ONLINE, payload: false });
       }
-    } catch (e) {
+    } catch {
       dispatch({ type: ROC_ONLINE, payload: false });
     }
     setTimeout(() => dispatch(getRocStatus()), 10000);
