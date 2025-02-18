@@ -2,12 +2,11 @@
 
 const path = require('path');
 
-const dotenv = require('dotenv');
 const supertest = require('supertest');
 
-dotenv.config({
-  path: './.env.test',
-});
+const { loadEnvFile } = require('node:process');
+
+loadEnvFile('.env.test');
 
 process.env.REST_ON_COUCH_HOME_DIR = path.join(
   __dirname,
