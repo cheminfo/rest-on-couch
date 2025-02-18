@@ -52,7 +52,7 @@
   },
   "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
   "volta": {
-    "node": "20.16.0"
+    "node": "22.14.0"
   },
   "dependencies": {
     "@koa/router": "^13.0.0",
