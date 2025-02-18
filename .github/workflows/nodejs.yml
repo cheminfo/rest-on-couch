@@ -50,5 +50,8 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npm run test-coverage
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
+      - name: Send coverage report to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.codecov-token }}
