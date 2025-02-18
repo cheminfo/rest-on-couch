@@ -1,10 +1,10 @@
 'use strict';
 
+const { loadEnvFile } = require('node:process');
 const path = require('path');
 
 const supertest = require('supertest');
 
-const { loadEnvFile } = require('node:process');
 
 loadEnvFile('.env.test');
 
