@@ -2,7 +2,7 @@
 
 'use strict';
 
-const program = require('commander');
+const { program } = require('commander');
 
 const server = require('../src/server/server');
 const debug = require('../src/util/debug')('bin:server');

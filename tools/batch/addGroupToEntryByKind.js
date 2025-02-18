@@ -7,7 +7,7 @@
     This script allows to add group(s) to entries matching a list of kinds
  */
 
-const program = require('commander');
+const { program } = require('commander');
 
 program
   .option('-c --config <path>', 'Path to custom config file')

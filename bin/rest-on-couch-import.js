@@ -4,7 +4,7 @@
 
 const path = require('path');
 
-const program = require('commander');
+const { program } = require('commander');
 const fs = require('fs-extra');
 const klaw = require('klaw');
 

@@ -2,7 +2,7 @@
 
 'use strict';
 
-const program = require('commander');
+const { program } = require('commander');
 
 const constants = require('../src/constants');
 const log = require('../src/couch/log');
