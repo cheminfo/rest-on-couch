@@ -5,7 +5,6 @@ const path = require('path');
 
 const supertest = require('supertest');
 
-
 loadEnvFile('.env.test');
 
 process.env.REST_ON_COUCH_HOME_DIR = path.join(
