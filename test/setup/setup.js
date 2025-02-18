@@ -5,8 +5,6 @@ const path = require('path');
 const dotenv = require('dotenv');
 const supertest = require('supertest');
 
-require('make-promises-safe');
-
 dotenv.config({
   path: './.env.test',
 });
