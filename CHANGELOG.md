@@ -1,5 +1,16 @@
 # Changelog
 
+## [17.0.0](https://github.com/cheminfo/rest-on-couch/compare/v16.0.1...v17.0.0) (2025-02-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* Deprecate Node.js 18 and add support for Node.js 22.
+
+### Miscellaneous Chores
+
+* update deps and upgrade Node.js to 22 ([#401](https://github.com/cheminfo/rest-on-couch/issues/401)) ([02ccab6](https://github.com/cheminfo/rest-on-couch/commit/02ccab6d665cfa9770d78a6724f6e899f64c3675))
+
 ## [16.0.1](https://github.com/cheminfo/rest-on-couch/compare/v16.0.0...v16.0.1) (2024-09-13)
 
 
