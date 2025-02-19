@@ -188,7 +188,7 @@ function addCustomViews(customMap, designDocNames, databasePath) {
   let customViews;
   try {
     customViews = fs.readdirSync(path.join(databasePath, viewsFolder));
-  } catch (e) {
+  } catch {
     customViews = [];
   }
 
@@ -221,7 +221,7 @@ function addCustomIndexes(customMap, designDocNames, databasePath) {
   let customIndexes;
   try {
     customIndexes = fs.readdirSync(path.join(databasePath, indexesFolder));
-  } catch (e) {
+  } catch {
     customIndexes = [];
   }
 

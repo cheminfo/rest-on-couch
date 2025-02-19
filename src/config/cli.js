@@ -17,7 +17,7 @@ function loadCliConfig(source) {
   source = path.resolve(source);
   try {
     return require(source);
-  } catch (e) {
+  } catch {
     return die(`could not load custom config from ${source}`);
   }
 }

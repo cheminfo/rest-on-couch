@@ -27,7 +27,7 @@ async function resetDatabaseWithoutCouch(databaseName) {
   );
   try {
     await destroy(nano, databaseName);
-  } catch (e) {
+  } catch {
     // ignore if db doesn't exist
   }
   // Workaround flaky tests: "The database could not be created, the file already exists."

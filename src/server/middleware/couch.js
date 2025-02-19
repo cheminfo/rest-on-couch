@@ -562,7 +562,7 @@ function processCouchQuery(ctx) {
         ctx.query[couchNeedsParse[i]] = JSON.parse(
           ctx.query[couchNeedsParse[i]],
         );
-      } catch (e) {
+      } catch {
         // Keep original value if parsing failed
       }
     }
@@ -618,7 +618,7 @@ function processQuery(ctx) {
     if (type) {
       applyType(query, type);
     }
-  } catch (e) {
+  } catch {
     debug.warn('Could not apply type to query');
   }
 }

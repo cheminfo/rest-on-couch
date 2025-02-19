@@ -67,7 +67,7 @@ async function writeUpload(ctx, database, kind, filename) {
     });
     ctx.body = 'ok';
     ctx.status = 200;
-  } catch (e) {
+  } catch {
     ctx.body = 'error';
     ctx.status = 500;
   }

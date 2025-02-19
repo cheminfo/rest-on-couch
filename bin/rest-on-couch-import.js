@@ -4,7 +4,7 @@
 
 const path = require('path');
 
-const program = require('commander');
+const { program } = require('commander');
 const fs = require('fs-extra');
 const klaw = require('klaw');
 
@@ -210,12 +210,12 @@ async function findFiles(homeDir, limit) {
                   return files;
                 }
               }
-            } catch (e) {
+            } catch {
               // ignore
             }
           }
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
 
@@ -235,7 +235,7 @@ async function findFiles(homeDir, limit) {
             return files;
           }
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     }

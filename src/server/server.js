@@ -8,7 +8,7 @@ const Koa = require('koa');
 const hbs = require('koa-hbs');
 const passport = require('koa-passport');
 const responseTime = require('koa-response-time');
-const session = require('koa-session');
+const { createSession } = require('koa-session');
 const koaStatic = require('koa-static');
 
 const config = require('../config/config').globalConfig;
@@ -75,7 +75,7 @@ const sessionMaxAge = Number.isNaN(Number(config.sessionMaxAge))
   : Number(config.sessionMaxAge);
 app.keys = config.keys;
 app.use(
-  session(
+  createSession(
     {
       key: config.sessionKey,
       maxAge: sessionMaxAge,

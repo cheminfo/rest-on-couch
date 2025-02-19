@@ -1,15 +1,11 @@
 'use strict';
 
+const { loadEnvFile } = require('node:process');
 const path = require('path');
 
-const dotenv = require('dotenv');
 const supertest = require('supertest');
 
-require('make-promises-safe');
-
-dotenv.config({
-  path: './.env.test',
-});
+loadEnvFile('.env.test');
 
 process.env.REST_ON_COUCH_HOME_DIR = path.join(
   __dirname,

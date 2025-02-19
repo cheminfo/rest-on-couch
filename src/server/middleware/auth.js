@@ -132,7 +132,7 @@ exports.createUser = async (ctx) => {
   let currentUser;
   try {
     currentUser = await getCouchdbUser(email);
-  } catch (e) {
+  } catch {
     userDatabaseDenied(ctx);
     return;
   }
@@ -195,7 +195,7 @@ exports.changePassword = async (ctx) => {
     let currentUser;
     try {
       currentUser = await getCouchdbUser(email);
-    } catch (e) {
+    } catch {
       userDatabaseDenied(ctx);
       return;
     }

@@ -1,6 +1,5 @@
 reject:
   # ESM only packages
-  - delay
   - got
 
   # v3 of ldapjs is a large refactoring followed closely by maintainer abandoning the project
