@@ -8,7 +8,7 @@ module.exports = {
   password: 'roc-123',
   adminPassword: 'admin',
   administrators: ['admin@a.com'],
-  allowedOrigins: ['http://127.0.0.1:8080'],
+  allowedOrigins: ['http://127.0.0.1:3309', 'http://localhost:3309'],
   sessionSigned: false,
   customDesign: {
     views: {

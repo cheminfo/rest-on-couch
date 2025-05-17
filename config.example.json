@@ -38,6 +38,15 @@
       "searchBase": "c=ch",
       "searchFilter": "uid={{username}}"
     },
+    "oidc": {
+      "title": "Microsoft SSO",
+      "issuer": "https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/v2.0",
+      "authorizationURL": "https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/oauth2/v2.0/authorize",
+      "tokenURL": "https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/oauth2/v2.0/token",
+      "userInfoURL": "https://graph.microsoft.com/oidc/userinfo",
+      "clientID": "",
+      "clientSecret": ""
+    },
     "couchdb": {}
   },
   "authServers": ["http://www.cheminfo.org/clp"]

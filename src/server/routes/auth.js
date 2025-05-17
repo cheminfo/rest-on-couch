@@ -18,17 +18,26 @@ const die = require('../../util/die');
 const auth = require('../middleware/auth');
 const util = require('../middleware/util');
 
-const authPlugins = ['couchdb', 'google', 'facebook', 'github', 'ldap'];
+const authPlugins = ['couchdb', 'google', 'facebook', 'github', 'ldap', 'oidc'];
 
 const enabledAuthPlugins = [];
 const showLoginAuthPlugins = [];
 
 const defaultAuthPluginConfig = {
   ldap: {
-    title: 'LDAP login',
+    title: 'LDAP',
   },
   couchdb: {
-    title: 'CouchDB login',
+    title: 'CouchDB',
+  },
+  google: {
+    title: 'Google',
+  },
+  facebook: {
+    title: 'Facebook',
+  },
+  github: {
+    title: 'GitHub',
   },
 };
 const authPluginConfig = {};
@@ -69,8 +78,10 @@ if (config.auth) {
 
 router.get('/providers', (ctx) => {
   ctx.body = enabledAuthPlugins.map((plugin) => {
+    const pluginConfig = authPluginConfig[plugin];
     return {
       name: plugin,
+      title: pluginConfig.title || plugin,
       visible: enabledAuthPlugins.includes(plugin),
     };
   });

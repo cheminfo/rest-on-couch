@@ -1,56 +1,78 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { loginCouchDB, loginLDAP } from '../actions/login';
+import { API_ROOT } from '../api';
 
 import LoginGeneric from './LoginGeneric';
 import LoginGoogle from './LoginGoogle';
 
-const LoginImpl = (props) => (
-  <div>
-    {props.loginProviders.length === 0 ? 'No login provider available' : ''}
-    {props.loginProviders.includes('google') ? (
-      <div className="card">
-        <div className="header">
-          <h4 className="title">Google login</h4>
+const LoginImpl = (props) => {
+  const [redirectURL] = useState(() => {
+    const url = new URL(window.location.href);
+    url.hash = '';
+    return url.toString();
+  });
+  const googleProvider = props.loginProviders.find((p) => p.name === 'google');
+  const couchdbProvider = props.loginProviders.find(
+    (p) => p.name === 'couchdb',
+  );
+  const ldapProvider = props.loginProviders.find((p) => p.name === 'ldap');
+  const oidcProvider = props.loginProviders.find((p) => p.name === 'oidc');
+  return (
+    <div>
+      {props.loginProviders.length === 0 ? 'No login provider available' : ''}
+      {googleProvider && (
+        <div className="card">
+          <div className="header">
+            <h4 className="title">{googleProvider.title}</h4>
+          </div>
+          <div className="content">
+            <LoginGoogle />
+          </div>
         </div>
-        <div className="content">
-          <LoginGoogle />
+      )}
+      {ldapProvider && (
+        <div className="card">
+          <div className="header">
+            <h4 className="title">{ldapProvider.title}</h4>
+          </div>
+          <div className="content">
+            <LoginGeneric error={props.errors.ldap} login={props.loginLDAP} />
+          </div>
         </div>
-      </div>
-    ) : (
-      ''
-    )}
-    {props.loginProviders.includes('ldap') ? (
-      <div className="card">
-        <div className="header">
-          <h4 className="title">LDAP Login</h4>
+      )}
+      {couchdbProvider && (
+        <div className="card">
+          <div className="header">
+            <h4 className="title">{couchdbProvider.title}</h4>
+          </div>
+          <div className="content">
+            <LoginGeneric
+              error={props.errors.couchdb}
+              login={props.loginCouchDB}
+            />
+          </div>
         </div>
-        <div className="content">
-          <LoginGeneric error={props.errors.ldap} login={props.loginLDAP} />
+      )}
+      {oidcProvider && (
+        <div className="card">
+          <div className="header">
+            <h4 className="title">{oidcProvider.title}</h4>
+          </div>
+          <div className="content">
+            <a
+              href={`${API_ROOT}auth/login/oidc?continue=${encodeURIComponent(redirectURL)}`}
+            >
+              Click here to login with {oidcProvider.title}
+            </a>
+          </div>
         </div>
-      </div>
-    ) : (
-      ''
-    )}
-    {props.loginProviders.includes('couchdb') ? (
-      <div className="card">
-        <div className="header">
-          <h4 className="title">CouchDB Login</h4>
-        </div>
-        <div className="content">
-          <LoginGeneric
-            error={props.errors.couchdb}
-            login={props.loginCouchDB}
-          />
-        </div>
-      </div>
-    ) : (
-      ''
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
+};
 
 LoginImpl.propTypes = {
   errors: PropTypes.object.isRequired,
@@ -61,9 +83,7 @@ LoginImpl.propTypes = {
 const Login = connect(
   (state) => ({
     errors: state.login.errors,
-    loginProviders: state.login.loginProviders
-      .filter((p) => p.visible)
-      .map((p) => p.name),
+    loginProviders: state.login.loginProviders.filter((p) => p.visible),
   }),
   (dispatch) => ({
     loginLDAP: loginLDAP(dispatch),

@@ -15,6 +15,11 @@ module.exports = {
   auth: {
     couchdb: {},
   },
+  // Default redirect after successful or failed authentication
+  // The /auth/login endpoint has redirects when the user is already authenticated.
+  // The default redirect is /
+  // To redirect to a specific page, bring the user to the provider's login page with the `continue` query parameter set to the desired URL.
+  authRedirectUrl: '/auth/login',
   authServers: [],
   proxy: true,
   proxyPrefix: '',

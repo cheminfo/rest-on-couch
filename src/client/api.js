@@ -4,7 +4,7 @@ let API_ROOT;
 if (import.meta.env.prod) {
   API_ROOT = location.origin + location.pathname;
 } else {
-  API_ROOT = location.origin.replace(/:\d+/, `:${3000}`) + location.pathname;
+  API_ROOT = location.origin.replace(/:\d+/, `:${3300}`) + location.pathname;
 }
 
 export { API_ROOT };

@@ -3,6 +3,26 @@
 const couchdbHost = process.env.COUCHDB_HOST || '127.0.0.1';
 const couchdbPort = process.env.COUCHDB_PORT || '5984';
 
+let oidcAuthConfig;
+const oidcClient = process.env.OIDC_CLIENT_ID;
+const oidcClientSecret = process.env.OIDC_CLIENT_SECRET;
+
+if (oidcClient && oidcClientSecret) {
+  // This dev app is configured on entra.microsoft.com (zakodium.com organization)
+  oidcAuthConfig = {
+    title: 'Microsoft SSO',
+    issuer:
+      'https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/v2.0',
+    authorizationURL:
+      'https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/oauth2/v2.0/authorize',
+    tokenURL:
+      'https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/oauth2/v2.0/token',
+    userInfoURL: 'https://graph.microsoft.com/oidc/userinfo',
+    clientID: oidcClient,
+    clientSecret: oidcClientSecret,
+  };
+}
+
 const ldapAuthConfig = {
   server: {
     url: process.env.REST_ON_COUCH_LDAP_URL,
@@ -22,4 +42,5 @@ module.exports = {
   couchdbHost,
   couchdbPort,
   ldapAuthConfig,
+  oidcAuthConfig,
 };
