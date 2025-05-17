@@ -11,6 +11,7 @@ if (oidcClient && oidcClientSecret) {
   // This dev app is configured on entra.microsoft.com (zakodium.com organization)
   oidcAuthConfig = {
     title: 'Microsoft SSO',
+    showLogin: true,
     issuer:
       'https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/v2.0',
     authorizationURL:
