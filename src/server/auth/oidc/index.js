@@ -15,20 +15,45 @@ exports.init = function initOidc(passport, router, authConfig, globalConfig) {
         userInfoURL: authConfig.userInfoURL,
         clientID: authConfig.clientID,
         clientSecret: authConfig.clientSecret,
+        claims: authConfig.claims,
         callbackURL:
           authConfig.callbackURL ||
           `${globalConfig.publicAddress}/auth/login/oidc/callback`,
         scope: ['openid', 'profile', 'email'],
         passReqToCallback: true,
       },
-      function verify(req, issuer, profile, done) {
-        if (!profile.username || !isEmail(profile.username)) {
+      function verify(
+        req,
+        issuer,
+        // Warning: this won't contain all the profile information, and you might
+        // want to parse the id token yourself
+        profile,
+        context,
+        idToken,
+        accessToken,
+        refreshToken,
+        done,
+      ) {
+        let email;
+
+        if (authConfig.getEmail) {
+          try {
+            email = authConfig.getEmail({ profile, idToken, accessToken });
+          } catch {
+            return done(null, false, 'error while parsing user email');
+          }
+        } else {
+          email = profile.username;
+        }
+
+        if (typeof email !== 'string' || !isEmail(profile.username)) {
           return done(null, false, 'username must be an email');
         }
-        auditLogin(profile.username, true, 'oidc', req.ctx);
+
+        auditLogin(email, true, 'oidc', req.ctx);
         done(null, {
           provider: 'oidc',
-          email: profile.username,
+          email,
         });
       },
     ),

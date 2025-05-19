@@ -1,5 +1,7 @@
 'use strict';
 
+const jwt = require('jsonwebtoken');
+
 const couchdbHost = process.env.COUCHDB_HOST || '127.0.0.1';
 const couchdbPort = process.env.COUCHDB_PORT || '5984';
 
@@ -19,6 +21,18 @@ if (oidcClient && oidcClientSecret) {
     tokenURL:
       'https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/oauth2/v2.0/token',
     userInfoURL: 'https://graph.microsoft.com/oidc/userinfo',
+    claims: {
+      id_token: {
+        tenant_ctry: { essential: true },
+      },
+    },
+    getEmail: function getEmail({ profile, idToken }) {
+      // You can customize the email extraction logic here
+      const decoded = jwt.decode(idToken);
+      console.log(decoded);
+      // This is the default behavior
+      return profile.username;
+    },
     clientID: oidcClient,
     clientSecret: oidcClientSecret,
   };
