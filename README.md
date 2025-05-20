@@ -13,10 +13,10 @@ Interface to CouchDB that allows the control of permissions on the documents.
 
 ## Configuration
 
-The configuration is being read on load from many sources, in the following order (ascending priority):
+The configuration is being read on-load from many sources, in the following order (ascending priority):
 
 1. Default configuration. Some configuration elements have default values. They are defined in the [source code](./src/config/default.js)
-2. Main configuration file (`config.js` or `config.json` in ROC's home directory)
+2. Main configuration file (`config.js` or `config.json` in ROC's home directory). See [this configuration example](./test/homeDirectories/dev/config.js) which is used for the dev server.
 3. Database configuration file (`config.js` in database's subdirectory)
 4. Environment variable (uppercase snake-case with `REST_ON_COUCH_` prefix)
 5. Custom config file passed with `--config` in the CLI

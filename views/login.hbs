@@ -12,45 +12,67 @@
         body {
             display: flex;
             align-items: center;
+            gap: 24px;
+            justify-items: center;
             justify-content: center;
             flex-direction: column;
+        }
+
+        .form-grid {
+          display: grid;
+          grid-template-columns: auto 160px;
+          gap: 8px 12px;
         }
     </style>
 </head>
 
 <body>
     {{#if google }}
-    <h3>Google login</h3>
-    <p>
-        <a id="google-login-link" href="#"><img src="{{pathPrefix}}/assets/img/logo/google_signin.png" /></a>
-    </p>
+      <div>
+        <h3>Google login</h3>
+        <p>
+            <a id="google-login-link" href="#"><img src="{{pathPrefix}}/assets/img/logo/google_signin.png" /></a>
+        </p>
+      </div>
     {{/if }}
 
     {{#if ldap }}
-    <h3>{{ pluginConfig.ldap.title }}</h3>
-    <div>{{{ pluginConfig.ldap.description }}}</div>
-    <p>
-        <form method="post" action="login/ldap">
-            <label for="ldap-username">Username</label>
-            <input id="ldap-username" type="text" name="username" /><br>
-            <label for="ldap-password">Password</label>
-            <input id="ldap-password" type="password" name="password" /><br>
-            <input type="submit" value="Connect" />
-        </form>
-    </p>
+      <div>
+        <h3>{{ pluginConfig.ldap.title }}</h3>
+        <p>
+            <form method="post" action="login/ldap" class="form-grid">
+                <label for="ldap-username">Username</label>
+                <input id="ldap-username" type="text" name="username" />
+                <label for="ldap-password">Password</label>
+                <input id="ldap-password" type="password" name="password" />
+                <input type="submit" value="Login" />
+            </form>
+        </p>
+      </div>
     {{/if }}
 
     {{#if couchdb }}
-    <h3>{{ pluginConfig.couchdb.title }}</h3>
-    <p>
-        <form method="post" action="login/couchdb">
-            <label for="couchdb-username">Username</label>
-            <input id="couchdb-username" type="text" name="username" /><br>
-            <label for="couchdb-password">Password</label>
-            <input id="couchdb-password" type="password" name="password" /><br>
-            <input type="submit" value="Connect" />
-        </form>
-    </p>
+      <div>
+        <h3>{{ pluginConfig.couchdb.title }}</h3>
+        <p>
+            <form method="post" action="login/couchdb" class="form-grid">
+                <label for="couchdb-username">Username</label>
+                <input id="couchdb-username" type="text" name="username" />
+                <label for="couchdb-password">Password</label>
+                <input id="couchdb-password" type="password" name="password" />
+                <input type="submit" value="Login" />
+            </form>
+        </p>
+      </div>
+    {{/if }}
+
+    {{#if oidc }}
+      <div>
+        <h3>{{ pluginConfig.oidc.title }}</h3>
+        <p>
+          <a href="login/oidc">Click here to login with {{ pluginConfig.oidc.title }}</a>
+        </p>
+      </div>
     {{/if }}
 </body>
 <script>

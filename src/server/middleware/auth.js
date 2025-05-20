@@ -26,7 +26,7 @@ exports.okOrRedirect = function okOrRedirect(ctx) {
       ctx.body = { ok: true };
       break;
     default:
-      ctx.redirect('/auth/login');
+      ctx.redirect(config.authRedirectUrl);
   }
 };
 

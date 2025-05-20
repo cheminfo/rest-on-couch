@@ -1,15 +1,21 @@
 'use strict';
 
-const { couchdbHost, couchdbPort, ldapAuthConfig } = require('../constants');
+const {
+  couchdbHost,
+  couchdbPort,
+  ldapAuthConfig,
+  oidcAuthConfig,
+} = require('../constants');
 
 module.exports = {
   url: `http://${couchdbHost}:${couchdbPort}`,
-  port: 3000,
+  port: 3300,
   auth: {
     couchdb: {
       showLogin: true,
     },
     ldap: ldapAuthConfig,
+    oidc: oidcAuthConfig,
   },
   username: 'rest-on-couch',
   password: 'roc-123',
@@ -17,7 +23,8 @@ module.exports = {
   // Already administrator from global configuration
   superAdministrators: ['admin@a.com', 'a@a.com', 'admin@zakodium.com'],
   sessionSigned: true,
-  allowedOrigins: ['http://127.0.0.1:8080'],
+  publicAddress: 'http://localhost:3300',
+  allowedOrigins: ['http://127.0.0.1:3309', 'http://localhost:3309'],
   getUserInfo: function (user) {
     return {
       uid: user.uid,
