@@ -124,66 +124,6 @@ Default: `false`
 If set to `true`, a stack trace will be print to the body of the response when an error occurs.  
 Do not use this in production!
 
-### Zenodo options
-
-#### zenodo
-
-Type: boolean  
-Default: `false`
-If set to `true`, enables the Zenodo API.
-
-#### zenodoName
-
-Type: string  
-Name of this application/database. This will be used in the keywords for each
-entry that is created. For example, if `zenodoName` is `'db123'`, entries will
-contain the keyword `'from:db123'`.  
-This option is mandatory if `zenodo` is `true`.
-
-#### zenodoToken
-
-Type: string  
-API token for Zenodo.  
-This option is mandatory if `zenodo` is `true`.
-
-#### zenodoSandboxToken
-
-Type: string  
-API token for Zenodo's sandbox.
-
-#### zenodoVisualizationUrl
-
-Type: string  
-URL prefix for entry visualization. If set, the Zenodo entry ID will be appended
-to this, optionally with a `?sandbox=1` query string. A link will be added at the
-end of the entry's description.
-
-#### zenodoReadme
-
-Type: string  
-Default contents of the `_README.md` that is published in the Zenodo entry.
-
-#### zenodoAttachments
-
-Type: function  
-Function that is called with each ROC entry's contents and must return a list of
-attachments to add to the Zenodo entry. It can also return an object if a single
-attachment is to be added
-
-```js
-function zenodoAttachments(content) {
-  if (content.general && content.general.molfile) {
-    return {
-      filename: 'molfile.mol',
-      contentType: 'chemical/x-mdl-molfile',
-      data: content.general.molfile,
-    };
-  } else {
-    return [];
-  }
-}
-```
-
 ## Setup environment with Docker (for running tests)
 
 ```bash

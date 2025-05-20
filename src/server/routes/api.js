@@ -6,7 +6,6 @@ const router = new Router({
   prefix: '/db',
 });
 
-const config = require('../../config/config').globalConfig;
 const couch = require('../middleware/couch');
 const util = require('../middleware/util');
 
@@ -191,11 +190,5 @@ router.delete('/:dbname/token/:tokenid', couch.deleteTokenById);
 // Importations
 router.get('/:dbname/imports', couch.getImports);
 router.get('/:dbname/import/:uuid', couch.getImport);
-
-// Zenodo
-if (config.zenodo === true) {
-  const zenodo = require('../middleware/zenodo');
-  router.post('/:dbname/zenodo/create', zenodo.createEntry);
-}
 
 module.exports = router;
