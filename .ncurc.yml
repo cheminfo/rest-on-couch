@@ -4,4 +4,5 @@ reject:
 
   # v3 of ldapjs is a large refactoring followed closely by maintainer abandoning the project
   # I am concerned it might not be stable enough
+  # Possible alternative more actively maintained is https://github.com/ldapts/ldapts
   - ldapjs
