@@ -13,7 +13,7 @@ Interface to CouchDB that allows the control of permissions on the documents.
 
 ## Configuration
 
-The configuration is being read on loaded from many sources, in the following order (ascending priority):
+The configuration is being read on-load from many sources, in the following order (ascending priority):
 
 1. Default configuration. Some configuration elements have default values. They are defined in the [source code](./src/config/default.js)
 2. Main configuration file (`config.js` or `config.json` in ROC's home directory). See [this configuration example](./test/homeDirectories/dev/config.js) which is used for the dev server.
@@ -25,33 +25,33 @@ The configuration is being read on loaded from many sources, in the following or
 
 #### url
 
-Type: string
-Default: `'http://localhost:5984'`
+Type: string  
+Default: `'http://localhost:5984'`  
 URL of the CouchDB server.
 
 #### username
 
-Type: string
-Default: `undefined`
+Type: string  
+Default: `undefined`  
 Username for CouchDB connection.
 
 #### password
 
-Type: string
-Default: `undefined`
+Type: string  
+Default: `undefined`  
 Password for CouchDB connection.
 
 #### logLevel
 
-Type: string
-Default: `'WARN'`
+Type: string  
+Default: `'WARN'`  
 Level of the logs stored in the database. Possible values are FATAL (1), ERROR (2), WARN (3), INFO (4), DEBUG (5) and TRACE (6).
 Logs are only inserted if the current level is equal or higher to the log's level.
 
 #### authRenewal
 
-Type: number
-Default: `570`
+Type: number  
+Default: `570`  
 Time in seconds that the application waits before revalidating the session with CouchDB.
 This number should be smaller than the session's cookie life.
 
@@ -59,38 +59,38 @@ This number should be smaller than the session's cookie life.
 
 #### port
 
-Type: number
-Default: `3000`
+Type: number  
+Default: `3000`  
 Port used by the rest-on-couch server.
 
 #### auth
 
-Type: object
-Default: `{couchdb:{}}`
+Type: object  
+Default: `{couchdb:{}}`  
 Object describing the authentication strategies that are available and providing options to them.
 
 #### proxy
 
-Type: boolean
-Default: `true`
+Type: boolean  
+Default: `true`  
 Set to `true` if your application is behind a proxy and needs to trust `X-Forwarded-` headers.
 
 #### proxyPrefix
 
-Type: string
-Default: `'/'`
+Type: string  
+Default: `'/'`  
 If the proxy is not at the root level of the URL, set this value to the corresponding prefix.
 
 #### allowedOrigins
 
-Type: array\<string>
-Default: `[]`
+Type: array\<string>  
+Default: `[]`  
 If cross-origin calls need to be done, set the list of trusted origins here.
 
 #### sessionDomain
 
-Type: string
-Default: `undefined`
+Type: string  
+Default: `undefined`  
 Domain of the session cookie.
 
 #### sessionKey
@@ -107,8 +107,8 @@ Path of the session cookie.
 
 #### sessionSecure
 
-Type: boolean
-Default: `false`
+Type: boolean  
+Default: `false`  
 Set to `true` if the cookie should only be valid on secure URLs.
 
 #### sessionSameSite
@@ -119,53 +119,53 @@ Value of the ["SameSite"](https://developer.mozilla.org/en-US/docs/Web/HTTP/Head
 
 #### debugrest
 
-Type: boolean
-Default: `false`
-If set to `true`, a stack trace will be print to the body of the response when an error occurs.
+Type: boolean  
+Default: `false`  
+If set to `true`, a stack trace will be print to the body of the response when an error occurs.  
 Do not use this in production!
 
 ### Zenodo options
 
 #### zenodo
 
-Type: boolean
+Type: boolean  
 Default: `false`
 If set to `true`, enables the Zenodo API.
 
 #### zenodoName
 
-Type: string
+Type: string  
 Name of this application/database. This will be used in the keywords for each
 entry that is created. For example, if `zenodoName` is `'db123'`, entries will
-contain the keyword `'from:db123'`.
+contain the keyword `'from:db123'`.  
 This option is mandatory if `zenodo` is `true`.
 
 #### zenodoToken
 
-Type: string
-API token for Zenodo.
+Type: string  
+API token for Zenodo.  
 This option is mandatory if `zenodo` is `true`.
 
 #### zenodoSandboxToken
 
-Type: string
+Type: string  
 API token for Zenodo's sandbox.
 
 #### zenodoVisualizationUrl
 
-Type: string
+Type: string  
 URL prefix for entry visualization. If set, the Zenodo entry ID will be appended
 to this, optionally with a `?sandbox=1` query string. A link will be added at the
 end of the entry's description.
 
 #### zenodoReadme
 
-Type: string
+Type: string  
 Default contents of the `_README.md` that is published in the Zenodo entry.
 
 #### zenodoAttachments
 
-Type: function
+Type: function  
 Function that is called with each ROC entry's contents and must return a list of
 attachments to add to the Zenodo entry. It can also return an object if a single
 attachment is to be added
