@@ -6,7 +6,6 @@ const router = new Router({
   prefix: '/db',
 });
 
-const config = require('../../config/config').globalConfig;
 const couch = require('../middleware/couch');
 const util = require('../middleware/util');
 
