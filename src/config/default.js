@@ -50,13 +50,4 @@ module.exports = {
   // Options related to audit logs
   auditActions: false,
   auditActionsDb: 'roc-audit-actions',
-
-  // Options for Zenodo publication
-  zenodo: false,
-  zenodoSandbox: false,
-  zenodoToken: null,
-  zenodoName: null,
-  zenodoVisualizationUrl: null,
-  zenodoReadme: null,
-  zenodoAttachments: null,
 };

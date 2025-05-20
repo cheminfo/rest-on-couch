@@ -192,10 +192,4 @@ router.delete('/:dbname/token/:tokenid', couch.deleteTokenById);
 router.get('/:dbname/imports', couch.getImports);
 router.get('/:dbname/import/:uuid', couch.getImport);
 
-// Zenodo
-if (config.zenodo === true) {
-  const zenodo = require('../middleware/zenodo');
-  router.post('/:dbname/zenodo/create', zenodo.createEntry);
-}
-
 module.exports = router;
