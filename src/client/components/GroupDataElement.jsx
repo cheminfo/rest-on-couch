@@ -1,5 +1,3 @@
-import React from 'react';
-
 const GroupDataElement = ({ value, removeValue, editable }) => (
   <tr>
     <td>{value}</td>

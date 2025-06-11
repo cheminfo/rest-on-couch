@@ -1,5 +1,3 @@
-import React from 'react';
-
 const labelTypes = {
   create: 'success',
   read: 'info',

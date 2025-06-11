@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import EnterTextField from './EnterTextField';
 import GroupDataElement from './GroupDataElement';

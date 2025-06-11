@@ -1,5 +1,3 @@
-import React from 'react';
-
 import DisplayGroup from './DisplayGroup';
 
 const DisplayGroupList = (props) => {

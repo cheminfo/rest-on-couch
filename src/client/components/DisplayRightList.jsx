@@ -1,5 +1,3 @@
-import React from 'react';
-
 import DisplayRight from './DisplayRight';
 
 const rightImportance = {
