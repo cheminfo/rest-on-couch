@@ -1,5 +1,21 @@
 # Changelog
 
+## [18.0.0](https://github.com/cheminfo/rest-on-couch/compare/v17.0.0...v18.0.0) (2025-06-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* removed zenodo API endpoint and any zenodo-related code
+
+### Features
+
+* add OIDC authentication ([#412](https://github.com/cheminfo/rest-on-couch/issues/412)) ([777464c](https://github.com/cheminfo/rest-on-couch/commit/777464c159315af0d4cf3962b59b0891787b0426))
+
+
+### Code Refactoring
+
+* remove zenodo ([#417](https://github.com/cheminfo/rest-on-couch/issues/417)) ([6280796](https://github.com/cheminfo/rest-on-couch/commit/6280796f1d55c285255f5f3663880e1608033054))
+
 ## [17.0.0](https://github.com/cheminfo/rest-on-couch/compare/v16.0.1...v17.0.0) (2025-02-19)
 
 
