@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import { Component } from 'react';
 
-class EnterTextField extends React.Component {
+class EnterTextField extends Component {
   constructor(props) {
     super(props);
     this.state = {

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import DefaultGroups from './DefaultGroups';
 import GlobalRights from './GlobalRights';
 

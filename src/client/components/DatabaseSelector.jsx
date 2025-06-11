@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function DatabaseSelector({ dbName, dbList, onDbSelected }) {
   return (
     <div

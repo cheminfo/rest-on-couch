@@ -1,9 +1,9 @@
-import React from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { changeCouchDBPassword } from '../actions/login';
 
-class ChangePasswordImpl extends React.Component {
+class ChangePasswordImpl extends Component {
   constructor(props) {
     super(props);
     this.state = {

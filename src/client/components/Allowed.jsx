@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function Allowed(props) {
   if (props.allowed) {
     return <div>{props.children}</div>;

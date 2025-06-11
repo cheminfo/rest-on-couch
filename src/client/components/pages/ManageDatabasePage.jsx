@@ -1,5 +1,3 @@
-import React from 'react';
-
 import Allowed from '../Allowed';
 import DatabaseAdministration from '../DatabaseAdministration';
 

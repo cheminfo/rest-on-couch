@@ -1,6 +1,6 @@
-import React from 'react';
+import { Component } from 'react';
 
-class LoginGeneric extends React.Component {
+class LoginGeneric extends Component {
   constructor(props) {
     super(props);
     this.state = {

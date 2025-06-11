@@ -1,9 +1,9 @@
-import React from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { createCouchDBUser } from '../actions/login';
 
-class CreateUserImpl extends React.Component {
+class CreateUserImpl extends Component {
   constructor(props) {
     super(props);
     this.state = {

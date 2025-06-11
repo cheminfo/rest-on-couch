@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import { Component, createRef } from 'react';
 
-class EditableTextField extends React.Component {
+class EditableTextField extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -9,7 +9,7 @@ class EditableTextField extends React.Component {
       isEdited: false,
       focus: false,
     };
-    this.textInput = React.createRef();
+    this.textInput = createRef();
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);

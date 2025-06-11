@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { loginCouchDB, loginLDAP } from '../actions/login';

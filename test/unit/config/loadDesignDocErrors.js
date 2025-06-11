@@ -24,7 +24,7 @@ test('configuration has duplicate view name', () => {
     return getDbConfig(
       path.join(__dirname, '../../homeDirectories/failDuplicateView'),
     );
-  }).toThrowError(/a view is defined more than once: viewTest/);
+  }).toThrow(/a view is defined more than once: viewTest/);
 });
 
 test('loading configuration that has duplicate index name', () => {
@@ -32,7 +32,7 @@ test('loading configuration that has duplicate index name', () => {
     return getDbConfig(
       path.join(__dirname, '../../homeDirectories/failDuplicateIndex'),
     );
-  }).toThrowError(/an index is defined more than once: indexTest/);
+  }).toThrow(/an index is defined more than once: indexTest/);
 });
 
 test('loading configuration that has duplicate index name', () => {
@@ -40,7 +40,7 @@ test('loading configuration that has duplicate index name', () => {
     return getDbConfig(
       path.join(__dirname, '../../homeDirectories/failShareDesignDoc'),
     );
-  }).toThrowError(
+  }).toThrow(
     /query indexes and javascript views cannot share design documents: foo/,
   );
 });
@@ -50,9 +50,7 @@ test('loading configuration that has duplicate names', () => {
     return getDbConfig(
       path.join(__dirname, '../../homeDirectories/failShareName'),
     );
-  }).toThrowError(
-    /query indexes and javascript views cannot share names: test/,
-  );
+  }).toThrow(/query indexes and javascript views cannot share names: test/);
 });
 
 test('loading configuration with unallowed override of the filters prop', () => {
@@ -60,5 +58,5 @@ test('loading configuration with unallowed override of the filters prop', () => 
     return getDbConfig(
       path.join(__dirname, '../../homeDirectories/failUnallowedOverride'),
     );
-  }).toThrowError(/^customDesign\.updates cannot be overriden$/);
+  }).toThrow(/^customDesign\.updates cannot be overriden$/);
 });
