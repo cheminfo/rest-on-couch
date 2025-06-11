@@ -226,7 +226,7 @@ describe('ImportResult', () => {
     result.skipMetadata();
     expect(() => {
       result.getUpdateType();
-    }).toThrowError('Cannot skip metadata without skipping attachment');
+    }).toThrow('Cannot skip metadata without skipping attachment');
   });
 });
 
@@ -236,7 +236,7 @@ function checkWithoutPropShouldThrow(prop, message, importType) {
   delete importResult[prop];
   expect(() => {
     importResult.check();
-  }).toThrowError(message);
+  }).toThrow(message);
 }
 
 function checkWithoutAttachmentPropShouldThrow(prop, message, importType) {
@@ -244,7 +244,7 @@ function checkWithoutAttachmentPropShouldThrow(prop, message, importType) {
   delete importResult.attachments[0][prop];
   expect(() => {
     importResult.check();
-  }).toThrowError(message);
+  }).toThrow(message);
 }
 
 function checkWithWrongTypeAttachmentPropShouldThrow(
@@ -257,5 +257,5 @@ function checkWithWrongTypeAttachmentPropShouldThrow(
   importResult.attachments[0][prop] = value;
   expect(() => {
     importResult.check();
-  }).toThrowError(message);
+  }).toThrow(message);
 }

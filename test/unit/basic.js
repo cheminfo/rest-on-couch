@@ -25,13 +25,13 @@ describe('basic initialization tests', () => {
   });
 
   test('should throw on invalid db name', () => {
-    expect(() => new Couch({ database: '_test' })).toThrowError(
+    expect(() => new Couch({ database: '_test' })).toThrow(
       /invalid database name/,
     );
 
     expect(() => {
       Couch.get(1);
-    }).toThrowError(/database name must be a string/);
+    }).toThrow(/database name must be a string/);
   });
 });
 
