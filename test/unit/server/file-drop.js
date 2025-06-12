@@ -9,9 +9,8 @@ const homedir = path.join(__dirname, '../../homeDirectories/main');
 
 describe('drop file server', () => {
   afterEach(() =>
-    fs.rmdir(path.join(homedir, 'test/kind1'), {
+    fs.rm(path.join(homedir, 'test/kind1'), {
       recursive: true,
-      force: true,
     }),
   );
   test('api endpoint using query strings', async () => {
