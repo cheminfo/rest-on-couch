@@ -1,5 +1,12 @@
 # Changelog
 
+## [18.0.2](https://github.com/cheminfo/rest-on-couch/compare/v18.0.1...v18.0.2) (2025-06-12)
+
+
+### Bug Fixes
+
+* correctly detect prod environment with vite ([#421](https://github.com/cheminfo/rest-on-couch/issues/421)) ([79bf6aa](https://github.com/cheminfo/rest-on-couch/commit/79bf6aa013317f92faeb339cc579bafc31cb2def))
+
 ## [18.0.1](https://github.com/cheminfo/rest-on-couch/compare/v18.0.0...v18.0.1) (2025-06-12)
 
 
