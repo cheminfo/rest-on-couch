@@ -32,7 +32,7 @@
     "eslint-fix": "npm run eslint -- --fix",
     "prettier": "prettier . --check",
     "prettier-write": "prettier . --write",
-    "preview:api": "NODE_ENV=production npm run build && node bin/rest-on-couch-server.js",
+    "preview:api": "NODE_ENV=production npm run build && node --env-file=.env.dev bin/rest-on-couch-server.js",
     "test": "npm run test-coverage && npm run eslint && npm run prettier",
     "test-coverage": "npm run test-only -- --coverage",
     "test-only": "jest --runInBand"

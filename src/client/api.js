@@ -1,7 +1,7 @@
 const location = window.location;
 
 let API_ROOT;
-if (import.meta.env.prod) {
+if (import.meta.env.PROD) {
   API_ROOT = location.origin + location.pathname;
 } else {
   API_ROOT = location.origin.replace(/:\d+/, `:${3300}`) + location.pathname;
