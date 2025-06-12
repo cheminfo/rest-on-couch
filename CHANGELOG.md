@@ -1,5 +1,12 @@
 # Changelog
 
+## [18.0.3](https://github.com/cheminfo/rest-on-couch/compare/v18.0.2...v18.0.3) (2025-06-12)
+
+
+### Bug Fixes
+
+* make sure dev dependencies are installed for the build phase ([#423](https://github.com/cheminfo/rest-on-couch/issues/423)) ([8e43e73](https://github.com/cheminfo/rest-on-couch/commit/8e43e737aebf4677c1d4d5b43cf03edc4311218c))
+
 ## [18.0.2](https://github.com/cheminfo/rest-on-couch/compare/v18.0.1...v18.0.2) (2025-06-12)
 
 
