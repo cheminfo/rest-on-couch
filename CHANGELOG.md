@@ -1,5 +1,12 @@
 # Changelog
 
+## [18.0.1](https://github.com/cheminfo/rest-on-couch/compare/v18.0.0...v18.0.1) (2025-06-12)
+
+
+### Bug Fixes
+
+* correct missing React in front build ([#419](https://github.com/cheminfo/rest-on-couch/issues/419)) ([36dbce9](https://github.com/cheminfo/rest-on-couch/commit/36dbce98138692b27b447b418cbc007cab570d00))
+
 ## [18.0.0](https://github.com/cheminfo/rest-on-couch/compare/v17.0.0...v18.0.0) (2025-06-11)
 
 
