@@ -1,5 +1,12 @@
 # Changelog
 
+## [18.0.4](https://github.com/cheminfo/rest-on-couch/compare/v18.0.3...v18.0.4) (2025-07-01)
+
+
+### Bug Fixes
+
+* correct oidc final email check ([#427](https://github.com/cheminfo/rest-on-couch/issues/427)) ([136ba08](https://github.com/cheminfo/rest-on-couch/commit/136ba0890e94adf67b5887b9c1f5fff192854ef7))
+
 ## [18.0.3](https://github.com/cheminfo/rest-on-couch/compare/v18.0.2...v18.0.3) (2025-06-12)
 
 
