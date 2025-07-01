@@ -46,7 +46,7 @@ exports.init = function initOidc(passport, router, authConfig, globalConfig) {
           email = profile.username;
         }
 
-        if (typeof email !== 'string' || !isEmail(profile.username)) {
+        if (typeof email !== 'string' || !isEmail(email)) {
           return done(null, false, 'username must be an email');
         }
 
