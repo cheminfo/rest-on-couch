@@ -130,12 +130,12 @@ Do not use this in production!
 docker-compose up -d
 ```
 
-Go to http://localhost:5984/\_utils/#setup
+Go to <http://localhost:5984/_utils/#setup>
 
 - Single node
 - username: admin, password: admin
 - bind address: 0.0.0.0
-- Execute the bash script `/setupDatabase.sh`
+- Execute the bash script `./setupDatabase.sh`
 - Execute the tests: `npm t`
 
 ## Automatic importation
