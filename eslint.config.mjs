@@ -1,19 +1,17 @@
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import { globals } from 'eslint-config-zakodium';
 import js from 'eslint-config-zakodium/js';
 import react from 'eslint-config-zakodium/react';
 
 export default defineConfig(
-  {
-    ignores: [
-      'public',
-      'test/homeDirectories/**',
-      'src/design/*',
-      'coverage',
-      'dist',
-    ],
-  },
-  ...js,
+  globalIgnores([
+    'public',
+    'test/homeDirectories/**',
+    'src/design/*',
+    'coverage',
+    'dist',
+  ]),
+  js,
   {
     rules: {
       camelcase: ['error', { properties: 'never' }],
@@ -22,6 +20,7 @@ export default defineConfig(
       'no-var': 'off',
       'prefer-named-capture-group': 'off',
       'import/no-dynamic-require': 'off',
+      'import/order': 'off',
     },
   },
   {
