@@ -1,9 +1,9 @@
 'use strict';
 
-const got = require('got');
+const got = require('got').default;
 const passport = require('koa-passport');
 
-const config = require('../../config/config').globalConfig;
+const { getGlobalConfig } = require('../../config/config');
 const debug = require('../../util/debug')('auth');
 const isEmail = require('../../util/isEmail');
 const getNano = require('../../util/nanoShim');
@@ -26,7 +26,7 @@ exports.okOrRedirect = function okOrRedirect(ctx) {
       ctx.body = { ok: true };
       break;
     default:
-      ctx.redirect(config.authRedirectUrl);
+      ctx.redirect(getGlobalConfig().authRedirectUrl);
   }
 };
 
@@ -54,7 +54,7 @@ exports.isAdmin = function isAdmin(ctx) {
   // Don't allow tokens to check for admins
   if (ctx.isAuthenticated()) {
     const email = ctx.session.passport.user.email;
-    if (config.administrators.includes(email)) {
+    if (getGlobalConfig().administrators.includes(email)) {
       return true;
     }
   }
@@ -97,6 +97,7 @@ exports.getProvider = function getProvider(ctx) {
 };
 
 async function getUserEmailFromToken(ctx) {
+  const config = getGlobalConfig();
   if (!config.authServers.length) return 'anonymous';
 
   const token = ctx.headers['x-auth-session'] || ctx.query['x-auth-session'];
@@ -177,7 +178,7 @@ exports.changePassword = async (ctx) => {
   if (provider === 'local') {
     // check oldPassword
     try {
-      await got.post(`${config.url}/_session`, {
+      await got.post(`${getGlobalConfig().url}/_session`, {
         json: {
           name: email,
           password: body.oldPassword,
@@ -231,6 +232,7 @@ async function updateCouchdbUser(user) {
 }
 
 function getAdminNano() {
+  const config = getGlobalConfig();
   if (!config.adminPassword) {
     throw new Error('Admin password is not set');
   }

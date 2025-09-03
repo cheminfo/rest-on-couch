@@ -1,8 +1,6 @@
-'use strict';
+import { resetDatabase } from '../utils/utils.js';
 
-const { resetDatabase } = require('../utils/utils');
-
-const insertDocument = require('./insertDocument');
+import insertDocument from './insertDocument.js';
 
 function populate(db) {
   const prom = [];
@@ -25,7 +23,7 @@ function populate(db) {
   return Promise.all(prom);
 }
 
-module.exports = async function populateByOwnerUnicity() {
+export default async function populateByOwnerUnicity() {
   global.couch = await resetDatabase('test-by-owner-unicity', {
     database: 'test-by-owner-unicity',
     rights: {
@@ -33,4 +31,4 @@ module.exports = async function populateByOwnerUnicity() {
     },
   });
   await populate(global.couch._db);
-};
+}

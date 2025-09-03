@@ -1,12 +1,15 @@
-'use strict';
+import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
-const config = require('../../../src/config/config').globalConfig;
-const getNano = require('../../../src/util/nanoShim');
-const request = require('../../setup/setup').getAgent();
-const authenticateCouchDB = require('../../utils/authenticateCouchDB');
+import { getGlobalConfig } from '../../../src/config/config.js';
+import getNano from '../../../src/util/nanoShim.js';
+import { getAgent } from '../../setup/setup.js';
+import authenticateCouchDB from '../../utils/authenticateCouchDB.js';
+
+const request = getAgent();
 
 let nano;
 beforeAll(async () => {
+  const config = getGlobalConfig();
   nano = await getNano(config.url, 'admin', config.adminPassword);
   const db = nano.useDb('_users');
   await db.destroyDocument('org.couchdb.user:test@user.com');

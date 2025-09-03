@@ -1,6 +1,6 @@
-'use strict';
+import { expect, it } from 'vitest';
 
-const okORCID = require('../../src/util/orcid');
+import okORCID from '../../src/util/orcid.js';
 
 it('test ORCID checksum calculation', () => {
   expect(okORCID('0000-0003-4894-4660')).toBe(true);

@@ -3,7 +3,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const hasOwn = require('has-own');
 const _ = require('lodash');
 
 const constants = require('../constants');
@@ -172,7 +171,7 @@ function addCustomViewMap(customMap, designDocNames, newCustomMap) {
     throw new Error(`a view is defined more than once: ${intersectionKeys}`);
   }
   for (const key in newCustomMap) {
-    if (hasOwn(key, newCustomMap)) {
+    if (Object.hasOwn(newCustomMap, key)) {
       if (!newCustomMap[key].designDoc) {
         newCustomMap[key].designDoc = constants.CUSTOM_DESIGN_DOC_NAME;
       }
@@ -206,7 +205,7 @@ function addCustomIndexMap(customMap, designDocNames, newCustomMap) {
     throw new Error(`an index is defined more than once: ${intersectionKeys}`);
   }
   for (const key in newCustomMap) {
-    if (hasOwn(key, newCustomMap)) {
+    if (Object.hasOwn(newCustomMap, key)) {
       if (!newCustomMap[key].ddoc) {
         throw new Error('index must have ddoc');
       }

@@ -3,7 +3,7 @@
 const crypto = require('crypto');
 const http = require('http');
 
-const got = require('got');
+const got = require('got').default;
 
 const getConfig = require('../config/config').getConfig;
 const { DESIGN_DOC_NAME } = require('../constants');

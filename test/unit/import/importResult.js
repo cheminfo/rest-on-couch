@@ -1,7 +1,7 @@
-'use strict';
+import { describe, expect, test } from 'vitest';
 
-const constants = require('../../../src/constants');
-const ImportResult = require('../../../src/import/ImportResult');
+import constants from '../../../src/constants.js';
+import ImportResult from '../../../src/import/ImportResult.js';
 
 function getValidResult(importType) {
   const result = new ImportResult();

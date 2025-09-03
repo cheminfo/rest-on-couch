@@ -1,9 +1,11 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const data = require('../../data/data');
-const request = require('../../setup/setup').getAgent();
-const authenticateCouchDB = require('../../utils/authenticateCouchDB');
-const authenticateLDAP = require('../../utils/authenticateLDAP');
+import data from '../../data/data.js';
+import { getAgent } from '../../setup/setup.js';
+import authenticateCouchDB from '../../utils/authenticateCouchDB.js';
+import authenticateLDAP from '../../utils/authenticateLDAP.js';
+
+const request = getAgent();
 
 describe('User REST-api (data, anonymous)', () => {
   beforeEach(data);

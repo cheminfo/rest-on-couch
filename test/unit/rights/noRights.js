@@ -1,7 +1,7 @@
-'use strict';
+import { beforeAll, describe, expect, test } from 'vitest';
 
-const constants = require('../../data/constants');
-const data = require('../../data/noRights');
+import constants from '../../data/constants.js';
+import data from '../../data/noRights.js';
 
 describe('entry reads, database without any default rights', () => {
   beforeAll(data);

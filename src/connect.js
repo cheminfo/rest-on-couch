@@ -1,16 +1,15 @@
 'use strict';
 
-const config = require('./config/config').globalConfig;
+const { getGlobalConfig } = require('./config/config');
 const CouchError = require('./util/CouchError');
 const debug = require('./util/debug')('main:connect');
 const getNano = require('./util/nanoShim');
-
-const authRenewal = config.authRenewal * 1000;
 
 let globalNano;
 let lastAuthentication = 0;
 
 function open() {
+  const authRenewal = getGlobalConfig().authRenewal * 1000;
   const currentDate = Date.now();
   if (currentDate - lastAuthentication > authRenewal) {
     if (lastAuthentication === 0) {
@@ -24,6 +23,7 @@ function open() {
 
 async function getGlobalNano() {
   debug.trace('renew CouchDB cookie');
+  const config = getGlobalConfig();
   if (config.url && config.username && config.password) {
     return getNano(config.url, config.username, config.password);
   } else {

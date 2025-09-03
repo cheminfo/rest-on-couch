@@ -1,8 +1,8 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const { getDefaultGroupsByRight } = require('../../../src/couch/validate');
-const data = require('../../data/data');
-const noRights = require('../../data/noRights');
+import { getDefaultGroupsByRight } from '../../../src/couch/validate.js';
+import data from '../../data/data.js';
+import noRights from '../../data/noRights.js';
 
 describe('getGroupsByRight', () => {
   beforeEach(data);

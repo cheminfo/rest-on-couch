@@ -1,7 +1,7 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const anyuser = require('../data/anyuser');
-const noRights = require('../data/noRights');
+import anyuser from '../data/anyuser.js';
+import noRights from '../data/noRights.js';
 
 describe('no rights mango queries', () => {
   beforeEach(noRights);

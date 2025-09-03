@@ -1,6 +1,6 @@
 'use strict';
 
-const config = require('../config/config').globalConfig;
+const { getGlobalConfig } = require('../config/config');
 const kEntryUnicity = require('../constants').kEntryUnicity;
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:entry');
@@ -321,7 +321,8 @@ async function _createNew(ctx, entry, user, options) {
     $content: entry.$content,
     _attachments: entry._attachments,
   };
-  if (config.beforeCreateHook) {
+  const beforeCreateHook = getGlobalConfig().beforeCreateHook;
+  if (beforeCreateHook) {
     const allGroups = await ctx._db.queryView(
       'documentByType',
       { key: 'group', include_docs: true },
@@ -329,7 +330,7 @@ async function _createNew(ctx, entry, user, options) {
     );
     try {
       const proxy = new Proxy(newEntry, alterEntryProxyHandler);
-      await config.beforeCreateHook(proxy, allGroups);
+      await beforeCreateHook(proxy, allGroups);
     } catch (e) {
       e.message = `failed during call to beforeCreateHook: ${e.message}`;
       throw e;

@@ -20,6 +20,11 @@ export default defineConfig(
       'no-var': 'off',
       'prefer-named-capture-group': 'off',
       'import/no-dynamic-require': 'off',
+      'import/no-extraneous-dependencies': [
+        'error',
+        // So the deep package.json files (used to specify the module format) are not taken into account.
+        { packageDir: import.meta.dirname },
+      ],
       'import/order': 'off',
     },
   },
@@ -34,8 +39,8 @@ export default defineConfig(
   {
     files: ['test/**'],
     languageOptions: {
+      sourceType: 'module',
       globals: {
-        ...globals.jest,
         couch: true,
       },
     },

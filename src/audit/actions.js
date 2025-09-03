@@ -1,15 +1,21 @@
 'use strict';
 
-const config = require('../config/config').globalConfig;
+const { getGlobalConfig } = require('../config/config');
 const { open } = require('../connect');
 const debug = require('../util/debug')('audit:actions');
 
-const auditEnabled = !!config.auditActions;
+let auditEnabled;
+
+function isAuditEnabled() {
+  auditEnabled ??= !!getGlobalConfig().auditActions;
+  return auditEnabled;
+}
 
 let _globalNano = null;
 let _db = null;
 
 async function ensureNano() {
+  const config = getGlobalConfig();
   const newGlobalNano = await open();
   if (_globalNano !== newGlobalNano) {
     _db = newGlobalNano.useDb(config.auditActionsDb);
@@ -18,7 +24,7 @@ async function ensureNano() {
 }
 
 async function auditAction(action, username, ip, meta) {
-  if (!auditEnabled) return;
+  if (!isAuditEnabled()) return;
   debug('logAction', action, username, ip);
   validateString('action', action);
   validateString('username', username);

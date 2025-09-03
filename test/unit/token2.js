@@ -1,7 +1,7 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const constants = require('../data/constants');
-const data = require('../data/data');
+import constants from '../data/constants.js';
+import data from '../data/data.js';
 
 describe('token methods data', () => {
   beforeEach(data);

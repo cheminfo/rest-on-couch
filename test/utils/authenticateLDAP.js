@@ -1,6 +1,6 @@
-'use strict';
+import { expect } from 'vitest';
 
-module.exports = function authenticateLDAP(agent, username, password) {
+export default function authenticateLDAP(agent, username, password) {
   return agent.get('/auth/logout').then((res) => {
     expect(res.statusCode).toBe(200);
     return agent
@@ -19,4 +19,4 @@ module.exports = function authenticateLDAP(agent, username, password) {
         }
       });
   });
-};
+}

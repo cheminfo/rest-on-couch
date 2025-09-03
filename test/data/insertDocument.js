@@ -1,9 +1,7 @@
-'use strict';
-
-module.exports = function insertDocument(db, entry) {
+export default function insertDocument(db, entry) {
   processEntry(entry);
   return db.insertDocument(entry);
-};
+}
 
 function processEntry(entry) {
   if (entry.$type === 'entry') {

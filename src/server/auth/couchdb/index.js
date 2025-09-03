@@ -1,15 +1,17 @@
 'use strict';
 
-const got = require('got');
+const got = require('got').default;
 const LocalStrategy = require('passport-local').Strategy;
 
 const { auditLogin } = require('../../../audit/actions');
-const couchUrl = require('../../../config/config').globalConfig.url;
+const { getGlobalConfig } = require('../../../config/config');
 const isEmail = require('../../../util/isEmail');
 const auth = require('../../middleware/auth');
 const util = require('../../middleware/util');
 
 exports.init = function initCouchdb(passport, router) {
+  const config = getGlobalConfig();
+
   router.post(
     '/couchdb/user',
     util.parseBody({ jsonLimit: '1kb' }),
@@ -31,7 +33,7 @@ exports.init = function initCouchdb(passport, router) {
           }
           try {
             const res = (
-              await got.post(`${couchUrl}/_session`, {
+              await got.post(`${config.url}/_session`, {
                 responseType: 'json',
                 json: {
                   name: username,

@@ -1,6 +1,6 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const entryUnicity = require('../data/byOwnerEntryUnicity');
+import entryUnicity from '../data/byOwnerEntryUnicity.js';
 
 describe('byOwner entry unicity', () => {
   beforeEach(entryUnicity);

@@ -1,9 +1,9 @@
-'use strict';
+import path from 'node:path';
 
-const path = require('path');
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const { importFile } = require('../../../src/index');
-const testUtils = require('../../utils/utils');
+import { importFile } from '../../../src/index.js';
+import { resetDatabase } from '../../utils/utils.js';
 
 const databaseName = 'test-new-import';
 
@@ -11,18 +11,18 @@ var importCouch;
 // The file in most test cases does not matter
 // We just have to pick an existing file
 const textFile1 = path.resolve(
-  __dirname,
+  import.meta.dirname,
   '../../homeDirectories/main/test-new-import/full/to_process/test.txt',
 );
 
 const textFile2 = path.resolve(
-  __dirname,
+  import.meta.dirname,
   '../../homeDirectories/main/test-new-import/changeFilename/to_process/test.txt',
 );
 
 describe('import', () => {
   beforeEach(async () => {
-    importCouch = await testUtils.resetDatabase(databaseName);
+    importCouch = await resetDatabase(databaseName);
   });
   test('full import', async () => {
     await importFile(databaseName, 'full', textFile1);
@@ -176,8 +176,8 @@ describe('import', () => {
     expect(metadata2.reference).toBe('ref2');
   });
 
-  test('without reference', () => {
-    expect(() =>
+  test('without reference', async () => {
+    await expect(() =>
       importFile(databaseName, 'noReference', textFile1),
     ).rejects.toThrow(/reference must be of type String/);
   });

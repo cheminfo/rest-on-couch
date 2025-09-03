@@ -1,7 +1,7 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const anyuserData = require('../../data/anyuser');
-const noRights = require('../../data/noRights');
+import anyuserData from '../../data/anyuser.js';
+import noRights from '../../data/noRights.js';
 
 describe('Access based on global rights', () => {
   beforeEach(anyuserData);

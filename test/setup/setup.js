@@ -1,24 +1,22 @@
-'use strict';
+import { loadEnvFile } from 'node:process';
+import path from 'node:path';
 
-const { loadEnvFile } = require('node:process');
-const path = require('path');
+import supertest from 'supertest';
 
-const supertest = require('supertest');
+import { getApp as getFileDropApp } from '../../src/file-drop/server.js';
+import { getApp as getMainApp } from '../../src/server/server.js';
 
 loadEnvFile('.env.test');
 
 process.env.REST_ON_COUCH_HOME_DIR = path.join(
-  __dirname,
+  import.meta.dirname,
   '../homeDirectories/main',
 );
 
-const fileDropServer = require('../../src/file-drop/server');
-const server = require('../../src/server/server');
+export function getAgent() {
+  return supertest.agent(getMainApp().callback());
+}
 
-exports.getAgent = function getAgent() {
-  return supertest.agent(server.app.callback());
-};
-
-exports.getFileDropAgent = function getFileDropAgent() {
-  return supertest.agent(fileDropServer.app.callback());
-};
+export function getFileDropAgent() {
+  return supertest.agent(getFileDropApp().callback());
+}

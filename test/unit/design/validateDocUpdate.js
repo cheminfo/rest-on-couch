@@ -1,11 +1,6 @@
-'use strict';
+import { describe, expect, test } from 'vitest';
 
-const validateDocUpdate = require('../../../src/design/validateDocUpdate');
-
-// TODO workaround for CentOS 6.
-global.isArray = function isArray(obj) {
-  return Array.isArray(obj);
-};
+import validateDocUpdate from '../../../src/design/validateDocUpdate.js';
 
 describe('validate_doc_update', () => {
   describe('general', () => {

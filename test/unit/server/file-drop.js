@@ -1,11 +1,12 @@
-'use strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
-const fs = require('node:fs/promises');
-const path = require('node:path');
+import { afterEach, describe, expect, test } from 'vitest';
 
-const request = require('../../setup/setup').getFileDropAgent();
+import { getFileDropAgent } from '../../setup/setup.js';
 
-const homedir = path.join(__dirname, '../../homeDirectories/main');
+const request = getFileDropAgent();
+const homedir = path.join(import.meta.dirname, '../../homeDirectories/main');
 
 describe('drop file server', () => {
   afterEach(() =>
