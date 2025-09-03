@@ -1,8 +1,6 @@
-'use strict';
+import { resetDatabase } from '../utils/utils.js';
 
-const { resetDatabase } = require('../utils/utils');
-
-const insertDocument = require('./insertDocument');
+import insertDocument from './insertDocument.js';
 
 function populate(db) {
   const prom = [];
@@ -148,9 +146,7 @@ function populate(db) {
   return Promise.all(prom);
 }
 
-module.exports = createDatabase;
-
-async function createDatabase() {
+export default async function createDatabase() {
   global.couch = await resetDatabase('test');
   await populate(global.couch._db);
 }

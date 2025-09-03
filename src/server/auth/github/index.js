@@ -43,7 +43,7 @@
 //    }
 // }
 
-const got = require('got');
+const got = require('got').default;
 const GitHubStrategy = require('passport-github').Strategy;
 
 const { auditLogin } = require('../../../audit/actions');

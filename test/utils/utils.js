@@ -1,15 +1,8 @@
-'use strict';
+import Couch from '../../src/index.js';
+import { getGlobalConfig } from '../../src/config/config.js';
+import getNano from '../../src/util/nanoShim.js';
 
-const Couch = require('../..');
-const globalConfig = require('../../src/config/config').globalConfig;
-const getNano = require('../../src/util/nanoShim');
-
-module.exports = {
-  resetDatabase,
-  resetDatabaseWithoutCouch,
-};
-
-async function resetDatabase(
+export async function resetDatabase(
   databaseName,
   options = { database: databaseName },
 ) {
@@ -19,7 +12,8 @@ async function resetDatabase(
   return couchInstance;
 }
 
-async function resetDatabaseWithoutCouch(databaseName) {
+export async function resetDatabaseWithoutCouch(databaseName) {
+  const globalConfig = getGlobalConfig();
   const nano = await getNano(
     globalConfig.url,
     'admin',

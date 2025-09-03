@@ -1,5 +1,3 @@
-'use strict';
-
 const constants = {
   newEntry: {
     $id: 'E',
@@ -16,4 +14,4 @@ const constants = {
   },
 };
 
-module.exports = constants;
+export default constants;

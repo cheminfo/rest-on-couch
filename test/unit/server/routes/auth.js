@@ -1,6 +1,8 @@
-'use strict';
+import { describe, expect, it, test } from 'vitest';
 
-const request = require('../../../setup/setup').getAgent();
+import { getAgent } from '../../../setup/setup.js';
+
+const request = getAgent();
 
 describe('server/routes/auth', () => {
   describe('couchdb login', () => {

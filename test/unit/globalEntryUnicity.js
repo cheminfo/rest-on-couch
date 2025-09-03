@@ -1,6 +1,6 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const entryUnicity = require('../data/globalEntryUnicity');
+import entryUnicity from '../data/globalEntryUnicity.js';
 
 describe('global entry unicity', () => {
   beforeEach(entryUnicity);

@@ -4,7 +4,7 @@ const path = require('path');
 
 const fs = require('fs-extra');
 
-const config = require('../config/config');
+const { getGlobalConfig } = require('../config/config');
 
 const debug = require('./debug')('util:getConfiguredDbs');
 
@@ -13,7 +13,7 @@ let configuredDbsPromise;
 function getConfiguredDbs() {
   if (configuredDbsPromise) return configuredDbsPromise;
   debug.trace('get list of databases that have a configuration file');
-  const homeDir = config.globalConfig.homeDir;
+  const homeDir = getGlobalConfig().homeDir;
 
   configuredDbsPromise = readConfiguredDbs(homeDir);
   return configuredDbsPromise;

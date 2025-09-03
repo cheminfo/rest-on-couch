@@ -1,11 +1,13 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const { version } = require('../package.json');
+import pkg from '../package.json' with { type: 'json' };
 
-const data = require('./data/data');
-const noRights = require('./data/noRights');
-const request = require('./setup/setup').getAgent();
-const authenticateAs = require('./utils/authenticateCouchDB');
+import data from './data/data.js';
+import noRights from './data/noRights.js';
+import { getAgent } from './setup/setup.js';
+import authenticateAs from './utils/authenticateCouchDB.js';
+
+const request = getAgent();
 
 describe('basic rest-api as anonymous (noRights)', () => {
   beforeEach(noRights);
@@ -73,7 +75,7 @@ describe('basic rest-api as anonymous (noRights)', () => {
       .get('/db/_version')
       .expect(200)
       .then((data) => {
-        expect(data.body).toStrictlyEqual(version);
+        expect(data.body).toStrictlyEqual(pkg.version);
       });
   });
   test('forbidden datbase names', () => {

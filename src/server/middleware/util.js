@@ -4,7 +4,7 @@ const bodyParser = require('koa-bodyparser');
 const compose = require('koa-compose');
 const rawBody = require('raw-body');
 
-const config = require('../../config/config').globalConfig;
+const { getGlobalConfig } = require('../../config/config');
 const debug = require('../../util/debug')('middleware:util');
 
 const { decorateError, responseHasBody } = require('./decorateError');
@@ -71,7 +71,7 @@ function onGetError(ctx, e, secure) {
       }
       break;
   }
-  if (config.debugrest && responseHasBody(ctx)) {
+  if (getGlobalConfig().debugrest && responseHasBody(ctx)) {
     ctx.body.stack = e.stack;
   }
 }

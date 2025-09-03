@@ -5,14 +5,14 @@ const debug = require('../util/debug')('config');
 const cliConfig = require('./cli');
 const { getDbConfigOrDie } = require('./db');
 const defaultConfig = require('./default');
-const envConfig = require('./env');
-const { getHomeDir, getHomeConfig } = require('./home');
+const getEnvConfig = require('./env');
+const { getHomeConfig } = require('./home');
 
+let dbConfig;
 const configStore = {};
-const homeDir = getHomeDir();
-const dbConfig = getDbConfigOrDie(homeDir);
 
 function getConfig(database, customConfig) {
+  dbConfig ??= getDbConfigOrDie();
   debug.trace('getConfig - db: %s', database);
   const homeConfig = getHomeConfig();
   if (!configStore[database]) {
@@ -20,7 +20,7 @@ function getConfig(database, customConfig) {
       ...defaultConfig,
       ...homeConfig,
       ...dbConfig[database],
-      ...envConfig,
+      ...getEnvConfig(),
       ...cliConfig,
     };
   }
@@ -43,22 +43,31 @@ function getImportConfig(database, importName) {
   return config.import[importName];
 }
 
-const globalConfig = getConfig();
+let globalConfig;
 
-let proxyPrefix = globalConfig.proxyPrefix;
-if (!proxyPrefix.startsWith('/')) {
-  proxyPrefix = `/${proxyPrefix}`;
-}
-if (proxyPrefix.endsWith('/')) {
-  proxyPrefix = proxyPrefix.replace(/\/+$/, '');
-}
-globalConfig.proxyPrefix = proxyPrefix;
+function getGlobalConfig() {
+  if (globalConfig) {
+    return globalConfig;
+  }
 
-globalConfig.publicAddress =
-  globalConfig.publicAddress.replace(/\/+$/, '') + proxyPrefix;
+  globalConfig = getConfig();
+  let proxyPrefix = globalConfig.proxyPrefix;
+  if (!proxyPrefix.startsWith('/')) {
+    proxyPrefix = `/${proxyPrefix}`;
+  }
+  if (proxyPrefix.endsWith('/')) {
+    proxyPrefix = proxyPrefix.replace(/\/+$/, '');
+  }
+  globalConfig.proxyPrefix = proxyPrefix;
+
+  globalConfig.publicAddress =
+    globalConfig.publicAddress.replace(/\/+$/, '') + proxyPrefix;
+
+  return globalConfig;
+}
 
 module.exports = {
   getConfig,
   getImportConfig,
-  globalConfig,
+  getGlobalConfig,
 };

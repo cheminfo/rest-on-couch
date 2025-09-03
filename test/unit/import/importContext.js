@@ -1,14 +1,14 @@
-'use strict';
+import fs from 'node:fs';
+import path from 'node:path';
 
-const fs = require('fs');
-const path = require('path');
+import { describe, expect, test } from 'vitest';
 
-const ImportContext = require('../../../src/import/ImportContext');
+import ImportContext from '../../../src/import/ImportContext.js';
 
 describe('ImportContext', () => {
   test('should instanciate a new import context', async () => {
     const file = path.join(
-      __dirname,
+      import.meta.dirname,
       '../../homeDirectories/main/test-new-import/full/to_process/test.txt',
     );
     const fileContents = await fs.readFileSync(file, 'utf-8');

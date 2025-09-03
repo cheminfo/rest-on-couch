@@ -1,11 +1,11 @@
-'use strict';
+import assert from 'node:assert';
 
-const assert = require('assert');
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const Couch = require('../..');
-const constants = require('../../src/constants');
-const entryUnicity = require('../data/byOwnerEntryUnicity');
-const { resetDatabaseWithoutCouch } = require('../utils/utils');
+import Couch from '../../src/index.js';
+import constants from '../../src/constants.js';
+import entryUnicity from '../data/byOwnerEntryUnicity.js';
+import { resetDatabaseWithoutCouch } from '../utils/utils.js';
 
 process.on('unhandledRejection', function handleUnhandledRejection(err) {
   throw err;

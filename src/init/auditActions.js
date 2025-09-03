@@ -1,11 +1,12 @@
 'use strict';
 
-const config = require('../config/config').globalConfig;
+const { getGlobalConfig } = require('../config/config');
 const auditDesignDoc = require('../design/audit');
 const debug = require('../util/debug')('main:initCouch');
 
 async function setupAuditActions(nano) {
   debug('setup audit actions');
+  const config = getGlobalConfig();
   const auditActionsDb = config.auditActionsDb;
   // Check if database is accessible
   try {

@@ -1,7 +1,7 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const data = require('../data/data');
-const noRights = require('../data/noRights');
+import data from '../data/data.js';
+import noRights from '../data/noRights.js';
 
 describe('group methods', () => {
   beforeEach(data);

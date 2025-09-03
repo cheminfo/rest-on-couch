@@ -1,8 +1,8 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const constants = require('../data/constants');
-const data = require('../data/data');
-const testUtils = require('../utils/testUtils');
+import constants from '../data/constants.js';
+import data from '../data/data.js';
+import testUtils from '../utils/testUtils.js';
 
 describe('entry reads', () => {
   beforeEach(data);
@@ -410,12 +410,12 @@ describe('entry creation and editions', () => {
     expect(entry2.action).toBe('created');
     expect(entry3.action).toBe('created');
 
-    expect(() => couch.getEntryById(null, 'a@a.com')).rejects.toThrow(
+    await expect(() => couch.getEntryById(null, 'a@a.com')).rejects.toThrow(
       /id must be defined in getEntryById/,
     );
-    expect(() => couch.getEntryById(undefined, 'a@a.com')).rejects.toThrow(
-      /id must be defined in getEntryById/,
-    );
+    await expect(() =>
+      couch.getEntryById(undefined, 'a@a.com'),
+    ).rejects.toThrow(/id must be defined in getEntryById/);
   });
 
   test('$id is null by default', async () => {

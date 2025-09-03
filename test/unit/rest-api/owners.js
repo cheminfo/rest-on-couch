@@ -1,8 +1,10 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const data = require('../../data/data');
-const request = require('../../setup/setup').getAgent();
-const authenticateAs = require('../../utils/authenticateCouchDB');
+import data from '../../data/data.js';
+import { getAgent } from '../../setup/setup.js';
+import authenticateAs from '../../utils/authenticateCouchDB.js';
+
+const request = getAgent();
 
 describe('rest api - manage owners', () => {
   const id = 'A';

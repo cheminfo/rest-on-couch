@@ -1,8 +1,6 @@
-'use strict';
+import { resetDatabase } from '../utils/utils.js';
 
-const { resetDatabase } = require('../utils/utils');
-
-const insertDocument = require('./insertDocument');
+import insertDocument from './insertDocument.js';
 
 function populate(db) {
   const prom = [];
@@ -25,7 +23,7 @@ function populate(db) {
   return Promise.all(prom);
 }
 
-module.exports = async function populateAnyUser() {
+export default async function populateAnyUser() {
   global.couch = await resetDatabase('test', {
     database: 'test',
     rights: {
@@ -33,4 +31,4 @@ module.exports = async function populateAnyUser() {
     },
   });
   await populate(global.couch._db);
-};
+}

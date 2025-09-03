@@ -1,6 +1,6 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const data = require('../../data/noRights');
+import data from '../../data/noRights.js';
 
 describe('entry reads, database with default groups', () => {
   beforeEach(data);

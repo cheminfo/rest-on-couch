@@ -21,8 +21,7 @@ router.get('/_version', couch.getVersion);
 router.get('/_all_dbs', couch.getAllDbs);
 
 // All subsequent routes require :dbname
-router.use('/:dbname', couch.setupCouch);
-router.use(couch.tokenLookup);
+router.use('/:dbname', couch.setupCouch, couch.tokenLookup);
 
 // Entries
 router.post('/:dbname/entry', parseJson100mb, couch.newOrUpdateEntry);
@@ -48,6 +47,8 @@ router.delete(
 // Entry rights
 router.get('/:dbname/entry/:uuid/_rights/:right', couch.getRights);
 
+// Change the patterns to finish with "*attachment" instead of ":attachment+" when
+// @koa/router is updated to v14+
 // Attachments
 router.get('/:dbname/entry/:uuid/:attachment+', couch.getAttachment);
 // Delete attachment slightly different from couchdb api. It does not require _rev in the query parameters.
@@ -58,7 +59,7 @@ router.put(
   couch.saveAttachment,
 );
 
-// User related routes
+// User-related routes
 router.get('/:dbname/user/_me', couch.getUser);
 router.post('/:dbname/user/_me', parseJson1mb, couch.editUser);
 router.get('/:dbname/userInfo/_me', couch.getUserInfo);

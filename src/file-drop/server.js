@@ -9,18 +9,14 @@ const Router = require('@koa/router');
 const fs = require('fs-extra');
 const Koa = require('koa');
 
-const config = require('../config/config').globalConfig;
+const { getGlobalConfig } = require('../config/config');
 const debug = require('../util/debug')('server');
 const tryMove = require('../util/tryMove');
 
 const router = new Router();
-let _started = false;
-
-const app = new Koa();
-app.proxy = config.fileDropProxy;
 
 async function getHomeDir(ctx, next) {
-  let homeDir = config.homeDir;
+  let homeDir = getGlobalConfig().homeDir;
   if (!homeDir) {
     ctx.body = 'No homeDir';
     ctx.status = 500;
@@ -83,40 +79,62 @@ router.post('/upload', getHomeDir, async (ctx) => {
   await writeUpload(ctx, database, kind, filename);
 });
 
-app.on('error', printError);
+function createApp() {
+  const config = getGlobalConfig();
 
-// Unhandled errors
-if (config.debugrest) {
-  // In debug mode, show unhandled errors to the user
-  app.use(function* debugMiddleware(next) {
-    try {
-      yield next;
-    } catch (err) {
-      // eslint-disable-next-line no-invalid-this
-      this.status = err.status || 500;
-      // eslint-disable-next-line no-invalid-this
-      this.body = `${err.message}\n${err.stack}`;
-      printError(err);
-    }
-  });
+  const app = new Koa();
+  app.proxy = config.fileDropProxy;
+  app.on('error', printError);
+
+  // Unhandled errors
+  if (config.debugrest) {
+    // In debug mode, show unhandled errors to the user
+    app.use(async function debugMiddleware(next) {
+      try {
+        await next();
+      } catch (err) {
+        // eslint-disable-next-line no-invalid-this
+        this.status = err.status || 500;
+        // eslint-disable-next-line no-invalid-this
+        this.body = `${err.message}\n${err.stack}`;
+        printError(err);
+      }
+    });
+  }
+
+  // Main routes
+  app.use(router.routes());
+
+  return app;
 }
-
-// Main routes
-app.use(router.routes());
 
 function printError(err) {
   debug.error('unexpected error:', err.stack || err);
 }
 
-module.exports.start = function start() {
+let _started;
+
+function start() {
   if (_started) return _started;
   _started = new Promise((resolve) => {
+    const config = getGlobalConfig();
+    const app = getApp();
     http.createServer(app.callback()).listen(config.fileDropPort, () => {
       debug.warn('file-drop running on localhost:%s', config.fileDropPort);
       resolve(app);
     });
   });
   return _started;
-};
+}
 
-module.exports.app = app;
+let _app;
+
+function getApp() {
+  _app ??= createApp();
+  return _app;
+}
+
+module.exports = {
+  start,
+  getApp,
+};

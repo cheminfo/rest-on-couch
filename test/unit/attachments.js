@@ -1,6 +1,6 @@
-'use strict';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-const data = require('../data/data');
+import data from '../data/data.js';
 
 describe('entries with attachments', () => {
   beforeEach(data);
