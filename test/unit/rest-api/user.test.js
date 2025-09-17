@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 
 import data from '../../data/data.js';
 import { getAgent } from '../../setup/setup.js';
-import authenticateCouchDB from '../../utils/authenticateCouchDB.js';
+import { authenticateAs } from '../../utils/authenticateCouchDB.js';
 import authenticateLDAP from '../../utils/authenticateLDAP.js';
 
 const request = getAgent();
@@ -71,7 +71,7 @@ describe('User REST-api (token)', () => {
 
 describe('User REST-api , a@a.com', () => {
   beforeEach(() => {
-    return data().then(() => authenticateCouchDB(request, 'a@a.com', '123'));
+    return data().then(() => authenticateAs(request, 'a@a.com', '123'));
   });
 
   test('Should get user details', () => {
