@@ -28,7 +28,8 @@ const methods = {
     if (!entry) {
       entry = dbEntry;
     }
-    return this._db.attachFiles(entry, attachments);
+    const response = await this._db.attachFiles(entry, attachments);
+    return response.body;
   },
 
   async deleteAttachment(uuid, user, attachmentName, options) {

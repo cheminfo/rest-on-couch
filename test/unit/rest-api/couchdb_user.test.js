@@ -3,7 +3,7 @@ import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
 import { getGlobalConfig } from '../../../src/config/config.js';
 import getNano from '../../../src/util/nanoShim.js';
 import { getAgent } from '../../setup/setup.js';
-import authenticateCouchDB from '../../utils/authenticateCouchDB.js';
+import { authenticateAs } from '../../utils/authenticateCouchDB.js';
 
 const request = getAgent();
 
@@ -17,8 +17,9 @@ beforeAll(async () => {
 
 describe('administrators can configure couchdb users', () => {
   beforeEach(async () => {
-    await authenticateCouchDB(request, 'admin@a.com', '123');
+    await authenticateAs(request, 'admin@a.com', '123');
   });
+
   test('create a new user', async () => {
     await request
       .post('/auth/couchdb/user')
@@ -35,8 +36,9 @@ describe('administrators can configure couchdb users', () => {
 
 describe('non-administrators cannot configure couchdb users', () => {
   beforeEach(async () => {
-    await authenticateCouchDB(request, 'a@a.com', '123');
+    await authenticateAs(request, 'a@a.com', '123');
   });
+
   test('cannot create a new user', async () => {
     await request
       .post('/auth/couchdb/user')
