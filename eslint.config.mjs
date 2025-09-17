@@ -59,6 +59,12 @@ export default defineConfig(
     extends: [...react],
   },
   {
+    files: ['scripts/**'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
     files: ['**/*.mjs'],
     languageOptions: {
       sourceType: 'module',
