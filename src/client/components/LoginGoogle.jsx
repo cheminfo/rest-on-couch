@@ -5,9 +5,11 @@ import { checkLogin } from '../actions/login';
 import { API_ROOT } from '../api';
 import { dbManager } from '../store';
 
+import googleSigninImage from '../../../public/assets/img/logo/google_signin.png';
+
 const LoginGoogleImpl = ({ doGoogleLogin }) => (
   <a href="#" onClick={doGoogleLogin}>
-    <img src="/assets/img/logo/google_signin.png" />
+    <img alt="Google signin" src={googleSigninImage} />
   </a>
 );
 
