@@ -1,5 +1,17 @@
 # Changelog
 
+## [18.1.0](https://github.com/cheminfo/rest-on-couch/compare/v18.0.4...v18.1.0) (2025-10-13)
+
+
+### Features
+
+* update major dependencies ([ee0082e](https://github.com/cheminfo/rest-on-couch/commit/ee0082e587f05e097ddec92ae80cd5406d643005))
+
+
+### Bug Fixes
+
+* correct URL to google signin image ([#442](https://github.com/cheminfo/rest-on-couch/issues/442)) ([614de57](https://github.com/cheminfo/rest-on-couch/commit/614de576c4263ebf5f6301a90c320e2aeec65fac))
+
 ## [18.0.4](https://github.com/cheminfo/rest-on-couch/compare/v18.0.3...v18.0.4) (2025-07-01)
 
 
