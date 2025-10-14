@@ -52,6 +52,7 @@ jobs:
       - name: Run tests
         run: npm run test-coverage
       - name: Send coverage report to Codecov
+        if: ${{ matrix.node-version == '24.x' && matrix.couchdb-version == 'latest' }}
         uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: true
