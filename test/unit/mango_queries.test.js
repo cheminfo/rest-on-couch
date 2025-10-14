@@ -2,8 +2,10 @@ import { beforeEach, describe, expect, test } from 'vitest';
 
 import anyuser from '../data/anyuser.js';
 import noRights from '../data/noRights.js';
+import { skipIfCouchV1 } from '../setup/setup.js';
 
 describe('no rights mango queries', () => {
+  beforeEach(skipIfCouchV1);
   beforeEach(noRights);
   test('users should get all entries with read access', async () => {
     const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
@@ -192,7 +194,8 @@ describe('no rights mango queries', () => {
   });
 });
 
-test('use sort without index is forbidden', async () => {
+test('use sort without index is forbidden', async (context) => {
+  skipIfCouchV1(context);
   return expect(() =>
     couch.findEntriesByRight('a@a.com', 'read', {
       query: {
@@ -202,7 +205,8 @@ test('use sort without index is forbidden', async () => {
   ).rejects.toThrow(/query with sort must use index/);
 });
 
-test('bookmark', async () => {
+test('bookmark', async (context) => {
+  skipIfCouchV1(context);
   const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
     query: { limit: 1 },
   });
@@ -220,6 +224,7 @@ test('bookmark', async () => {
 });
 
 describe('anyuser mango queries', () => {
+  beforeEach(skipIfCouchV1);
   beforeEach(anyuser);
   test('should get all entries with any user (global right)', async () => {
     const data = await couch.findEntriesByRight('a@a.com', 'read', {

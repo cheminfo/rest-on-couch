@@ -6,6 +6,7 @@ import Couch from '../../src/index.js';
 import constants from '../../src/constants.js';
 import entryUnicity from '../data/byOwnerEntryUnicity.js';
 import { resetDatabaseWithoutCouch } from '../utils/utils.js';
+import { getCouchMajorVersion } from '../setup/setup.js';
 
 process.on('unhandledRejection', function handleUnhandledRejection(err) {
   throw err;
@@ -59,8 +60,14 @@ describe('basic initialization with custom design docs', () => {
     const customIndex = couch._db
       .getDocument('_design/modDateIndex')
       .then((custom) => {
-        assert.notEqual(custom, null);
-        assert.ok(custom.views.modDate);
+        const couchdbVersion = getCouchMajorVersion();
+        if (couchdbVersion === 1) {
+          // In CouchDB 1, there is no support for mango indexes so this design doc is not created.
+          assert.equal(custom, null);
+        } else {
+          assert.notEqual(custom, null);
+          assert.ok(custom.views.modDate);
+        }
       });
 
     return Promise.all([app, customApp, custom, customIndex]);
