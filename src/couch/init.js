@@ -44,9 +44,9 @@ const methods = {
     await checkSecurity(this._db, this._couchOptions.username);
 
     const updateDocsSettled = await Promise.allSettled([
-      checkDesignDoc(this),
-      checkRightsDoc(this._db, this._rights),
-      checkDefaultGroupsDoc(this._db),
+      initDesignDocs(this),
+      initRightsDoc(this._db, this._rights),
+      initDefaultGroupsDoc(this._db),
     ]);
 
     if (
@@ -56,6 +56,15 @@ const methods = {
     ) {
       // Conflict in case of multiple roc instances checking the design doc at the same time.
       this._initPromise = null;
+    }
+
+    for (let settled of updateDocsSettled) {
+      if (settled.status === 'rejected') {
+        debug.error(
+          'error while initializing design docs, rights and default groups ',
+          settled.reason,
+        );
+      }
     }
 
     const migrationsSettled = await Promise.allSettled([
@@ -96,11 +105,16 @@ async function checkSecurity(db, admin) {
   }
 }
 
-async function checkDesignDoc(couch) {
+async function initDesignDocs(couch) {
   const db = couch._db;
   const { dbName } = db;
+  const [major, minor, patch] = await couch._nano.getVersion();
+  const supportsIndexes = major >= 3 || (major === 2 && minor >= 2);
+  debug.trace(
+    `couchdb version is ${major}.${minor}.${patch}, mango indexes are ${supportsIndexes ? '' : 'not '}supported`,
+  );
   debug.trace('check design documents for database %s', dbName);
-  var custom = couch._customDesign;
+  let custom = couch._customDesign;
   custom.views = custom.views || {};
   custom.indexes = custom.indexes || {};
   const designNames = new Set();
@@ -136,28 +150,33 @@ async function checkDesignDoc(couch) {
   }
 
   // Create new indexes
-  for (let indexName of Object.keys(custom.indexes)) {
-    const index = custom.indexes[indexName];
-    index.name = indexName;
-    await db.createIndex(index);
-  }
-
-  // Delete orphan indexes
-  const allDesignDocs = await db.getDesignDocs();
-  for (let designDoc of allDesignDocs) {
-    if (designDoc.language === 'query') {
-      // if design doc is not referenced, delete the whole design document
-      if (!indexDesignNames.has(designDoc._id.replace(/^_design\//, ''))) {
-        debug.warn('destroy design doc', designDoc._id);
-        await db.destroyDocument(designDoc._id, designDoc._rev);
-      } else {
-        for (let key of Object.keys(designDoc.views)) {
-          if (!custom.indexes[key]) {
-            await db.deleteIndex(designDoc._id, key);
+  if (supportsIndexes) {
+    for (let indexName of indexNames) {
+      const index = custom.indexes[indexName];
+      index.name = indexName;
+      await db.createIndex(index);
+    }
+    // Delete orphan indexes and design docs
+    const allDesignDocs = await db.getDesignDocs();
+    for (let designDoc of allDesignDocs) {
+      if (designDoc.language === 'query') {
+        // if design doc is not referenced, delete the whole design document
+        if (!indexDesignNames.has(designDoc._id.replace(/^_design\//, ''))) {
+          debug.warn('destroy design doc', designDoc._id);
+          await db.destroyDocument(designDoc._id, designDoc._rev);
+        } else {
+          for (let key of Object.keys(designDoc.views)) {
+            if (!custom.indexes[key]) {
+              await db.deleteIndex(designDoc._id, key);
+            }
           }
         }
       }
     }
+  } else if (indexNames.length > 0) {
+    debug.error(
+      `The database ${couch._databaseName} has configured mango indexes but they are not supported by rest-on-couch with CouchDB version ${major}.${minor}.${patch}. Please upgrade to CouchDB 2.2.0 or later.`,
+    );
   }
 
   function designDocNeedsUpdate(newDesignDoc, oldDesignDoc) {
@@ -206,7 +225,7 @@ function createDesignDoc(db, revID, designDoc) {
   return db.insertDocument(designDoc);
 }
 
-async function checkRightsDoc(db, rights) {
+async function initRightsDoc(db, rights) {
   debug.trace('check rights doc');
   const doc = await db.getDocument(constants.RIGHTS_DOC_ID);
   if (doc === null) {
@@ -220,7 +239,7 @@ function createRightsDoc(db, rightsDoc) {
   return db.insertDocument(rightsDoc);
 }
 
-async function checkDefaultGroupsDoc(db) {
+async function initDefaultGroupsDoc(db) {
   debug.trace('check defaultGroups doc');
   const doc = await db.getDocument(constants.DEFAULT_GROUPS_DOC_ID);
   if (doc === null) {

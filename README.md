@@ -7,6 +7,16 @@
 
 Interface to CouchDB that allows the control of permissions on the documents.
 
+## Prerequisites
+
+- Node.js >= 20
+- CouchDB >= 1.7
+
+Certain features are only supported with a version of CouchDB >= 2.2:
+
+- Mango queries
+- Automatic destruction of design documents present in the database but not in the configuration file
+
 ## REST API
 
 [API documentation](API.md)
