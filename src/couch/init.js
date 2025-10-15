@@ -44,9 +44,9 @@ const methods = {
     await checkSecurity(this._db, this._couchOptions.username);
 
     const updateDocsSettled = await Promise.allSettled([
-      checkDesignDoc(this),
-      checkRightsDoc(this._db, this._rights),
-      checkDefaultGroupsDoc(this._db),
+      initDesignDocs(this),
+      initRightsDoc(this._db, this._rights),
+      initDefaultGroupsDoc(this._db),
     ]);
 
     if (
@@ -56,6 +56,15 @@ const methods = {
     ) {
       // Conflict in case of multiple roc instances checking the design doc at the same time.
       this._initPromise = null;
+    }
+
+    for (let settled of updateDocsSettled) {
+      if (settled.status === 'rejected') {
+        debug.error(
+          'error while initializing design docs, rights and default groups ',
+          settled.reason,
+        );
+      }
     }
 
     const migrationsSettled = await Promise.allSettled([
@@ -96,7 +105,7 @@ async function checkSecurity(db, admin) {
   }
 }
 
-async function checkDesignDoc(couch) {
+async function initDesignDocs(couch) {
   const db = couch._db;
   const { dbName } = db;
   debug.trace('check design documents for database %s', dbName);
@@ -206,7 +215,7 @@ function createDesignDoc(db, revID, designDoc) {
   return db.insertDocument(designDoc);
 }
 
-async function checkRightsDoc(db, rights) {
+async function initRightsDoc(db, rights) {
   debug.trace('check rights doc');
   const doc = await db.getDocument(constants.RIGHTS_DOC_ID);
   if (doc === null) {
@@ -220,7 +229,7 @@ function createRightsDoc(db, rightsDoc) {
   return db.insertDocument(rightsDoc);
 }
 
-async function checkDefaultGroupsDoc(db) {
+async function initDefaultGroupsDoc(db) {
   debug.trace('check defaultGroups doc');
   const doc = await db.getDocument(constants.DEFAULT_GROUPS_DOC_ID);
   if (doc === null) {
