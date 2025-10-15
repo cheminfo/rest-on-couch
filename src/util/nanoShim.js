@@ -45,6 +45,15 @@ class NanoShim {
     this.client = got.extend(this.options);
   }
 
+  async getVersion() {
+    const dbInfo = await this.client.get('').json();
+    const version = dbInfo.version?.split('.');
+    if (!version) {
+      throw new Error('unable to get CouchDB version');
+    }
+    return version;
+  }
+
   useDb(dbName) {
     dbName = cleanDbName(dbName);
     const client = got.extend({
@@ -196,6 +205,11 @@ class NanoDbShim {
     await this.client.delete(`_index/${designDoc}/json/${name}`);
   }
 
+  /**
+   * Get all design documents, including views and indexes.
+   * This method is only supported with couchdb >= 2.2
+   * @returns {Promise<Array>} Array of design documents
+   */
   async getDesignDocs() {
     debug.trace('getDesignDocs');
     const searchParams = new URLSearchParams();
