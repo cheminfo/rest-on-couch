@@ -34,11 +34,11 @@ jobs:
           COUCHDB_USER: admin
           COUCHDB_PASSWORD: admin
         ports:
-          - 5984:5984
+          - 127.0.0.1:5984:5984
       ldap:
         image: ghcr.io/zakodium/ldap-with-users:1
         ports:
-          - 389:389
+          - 127.0.0.1:1389:389
     steps:
       - uses: actions/checkout@v5
       - name: Use Node.js ${{ matrix.node-version }}
