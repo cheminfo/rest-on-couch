@@ -8,13 +8,12 @@ const defaultConfig = require('./default');
 const getEnvConfig = require('./env');
 const { getHomeConfig } = require('./home');
 
-let dbConfig;
 const configStore = {};
+const homeConfig = getHomeConfig();
+const dbConfig = getDbConfigOrDie();
 
 function getConfig(database, customConfig) {
-  dbConfig ??= getDbConfigOrDie();
   debug.trace('getConfig - db: %s', database);
-  const homeConfig = getHomeConfig();
   if (!configStore[database]) {
     configStore[database] = {
       ...defaultConfig,

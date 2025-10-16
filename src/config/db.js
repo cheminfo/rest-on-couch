@@ -31,11 +31,11 @@ function getDbConfigOrDie(homeDir) {
 
 function extendConfig(
   finalConfig,
-  config,
+  homeConfig,
   viewDesignDocNames,
   indexDesignDocNames,
 ) {
-  const { customDesign = {}, ...otherConfig } = config;
+  const { customDesign = {}, ...otherConfig } = homeConfig;
 
   // Other props include filters, lists and other useful things in design docs
   const { views, indexes, ...otherProps } = customDesign;

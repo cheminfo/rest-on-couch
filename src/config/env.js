@@ -27,7 +27,7 @@ function getEnvConfig() {
         envValue = false;
       }
 
-      debug('setting config from env, %s: %s', realName, envValue);
+      debug('setting config from env, %s', realName);
       envConfig[realName] = envValue;
     }
   }
