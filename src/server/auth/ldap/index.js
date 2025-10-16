@@ -51,10 +51,7 @@ exports.init = function ldapInit(passport, router, config) {
     '/login/ldap',
     util.parseBody(),
     auth.afterFailure,
-    (...args) => {
-      const x = passport.authenticate('ldapauth');
-      return x(...args);
-    },
+    passport.authenticate('ldapauth'),
     auth.afterSuccess,
   );
 };
