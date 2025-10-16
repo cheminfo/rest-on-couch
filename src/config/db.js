@@ -9,6 +9,7 @@ const constants = require('../constants');
 const die = require('../util/die');
 
 const { getHomeDir, getHomeConfig } = require('./home');
+const { freeze } = require('immer');
 
 function getDbConfigOrDie(homeDir) {
   if (!homeDir) {
@@ -126,6 +127,11 @@ function getDbConfig(homeDir) {
     readImportConfig(databasePath, configDraft);
     configDraft.database = database;
     dbConfig[database] = configDraft;
+  }
+  const env = process.env.NODE_ENV;
+  if (env !== 'production') {
+    // Help catch accidental mutations during development and in test excecutions
+    return freeze(dbConfig, true);
   }
   return dbConfig;
 }

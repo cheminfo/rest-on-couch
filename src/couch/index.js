@@ -1,5 +1,8 @@
 'use strict';
 
+const { freeze } = require('immer');
+const { z } = require('zod');
+
 const getConfig = require('../config/config').getConfig;
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');
@@ -13,6 +16,22 @@ const basicRights = {
   create: [],
   read: [],
 };
+
+const customDesignSchema = z
+  .looseObject({
+    views: z.record(z.string(), z.looseObject({})).default({}),
+    indexes: z.record(z.string(), z.looseObject({})).default({}),
+    filters: z.record(z.string(), z.function()).default({}),
+  })
+  .default({
+    views: {},
+    indexes: {},
+    filters: {},
+  });
+
+const customGetEntrySchema = z
+  .union([z.record(z.string(), z.function()), z.function()])
+  .default(() => getDefaultEntry);
 
 const databaseCache = new Map();
 
@@ -52,7 +71,7 @@ class Couch {
     this._logLevel = log.getLevel(config.logLevel);
     this._config = config;
 
-    this._customDesign = config.customDesign || {};
+    this._customDesign = freeze(customDesignSchema.parse(config.customDesign));
     this._viewsWithOwner = new Set();
     if (this._customDesign.views) {
       for (const i in this._customDesign.views) {
@@ -62,7 +81,7 @@ class Couch {
       }
     }
 
-    this._defaultEntry = config.defaultEntry || getDefaultEntry;
+    this._defaultEntry = customGetEntrySchema.parse(config.defaultEntry);
     this._rights = { ...basicRights, ...config.rights };
     this._administrators = config.administrators || [];
     this._superAdministrators = config.superAdministrators || [];

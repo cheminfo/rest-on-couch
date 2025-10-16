@@ -114,9 +114,7 @@ async function initDesignDocs(couch) {
     `couchdb version is ${major}.${minor}.${patch}, mango indexes are ${supportsIndexes ? '' : 'not '}supported`,
   );
   debug.trace('check design documents for database %s', dbName);
-  let custom = couch._customDesign;
-  custom.views = custom.views || {};
-  custom.indexes = custom.indexes || {};
+  const custom = couch._customDesign;
   const designNames = new Set();
   designNames.add(constants.DESIGN_DOC_NAME);
   const viewNames = Object.keys(custom.views);
@@ -154,7 +152,7 @@ async function initDesignDocs(couch) {
     for (let indexName of indexNames) {
       const index = custom.indexes[indexName];
       index.name = indexName;
-      await db.createIndex(index);
+      await db.createIndex(structuredClone(index));
     }
     // Delete orphan indexes and design docs
     const allDesignDocs = await db.getDesignDocs();
@@ -186,12 +184,8 @@ async function initDesignDocs(couch) {
 
   // Generates design document from customViews config
   function getNewDesignDoc(designName) {
-    var designDoc;
-    if (designName === constants.DESIGN_DOC_NAME) {
-      designDoc = { ...custom };
-    } else {
-      designDoc = {};
-    }
+    const designDoc =
+      designName === constants.DESIGN_DOC_NAME ? { ...custom } : {};
     designDoc.views = {};
     designDoc.designDoc = designName;
     for (var i = 0; i < viewNames.length; i++) {
@@ -206,9 +200,9 @@ async function initDesignDocs(couch) {
       }
     }
     designDoc._id = `_design/${designName}`;
-    designDoc = getDesignDoc(designDoc, dbName);
-    designDoc.hash = objHash(designDoc);
-    return designDoc;
+    const finalDesignDoc = getDesignDoc(designDoc, dbName);
+    finalDesignDoc.hash = objHash(finalDesignDoc);
+    return finalDesignDoc;
   }
 }
 

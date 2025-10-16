@@ -75,7 +75,8 @@
     "passport-local": "^1.0.0",
     "passport-openidconnect": "^0.1.2",
     "randomatic": "^3.1.1",
-    "raw-body": "^3.0.0"
+    "raw-body": "^3.0.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.2",
