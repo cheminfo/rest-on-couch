@@ -128,8 +128,7 @@ function getDbConfig(homeDir) {
     configDraft.database = database;
     dbConfig[database] = configDraft;
   }
-  const env = process.env.NODE_ENV;
-  if (env !== 'production') {
+  if (process.env.NODE_ENV !== 'production') {
     // Help catch accidental mutations during development and in test excecutions
     return freeze(dbConfig, true);
   }
