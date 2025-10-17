@@ -9,6 +9,7 @@ const constants = require('../constants');
 const die = require('../util/die');
 
 const { getHomeDir, getHomeConfig } = require('./home');
+const { freeze } = require('immer');
 
 function getDbConfigOrDie(homeDir) {
   if (!homeDir) {
@@ -30,11 +31,11 @@ function getDbConfigOrDie(homeDir) {
 
 function extendConfig(
   finalConfig,
-  config,
+  homeConfig,
   viewDesignDocNames,
   indexDesignDocNames,
 ) {
-  const { customDesign = {}, ...otherConfig } = config;
+  const { customDesign = {}, ...otherConfig } = homeConfig;
 
   // Other props include filters, lists and other useful things in design docs
   const { views, indexes, ...otherProps } = customDesign;
@@ -126,6 +127,10 @@ function getDbConfig(homeDir) {
     readImportConfig(databasePath, configDraft);
     configDraft.database = database;
     dbConfig[database] = configDraft;
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    // Help catch accidental mutations during development and in test excecutions
+    return freeze(dbConfig, true);
   }
   return dbConfig;
 }

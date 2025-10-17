@@ -29,7 +29,7 @@ const mapTpl = function (doc) {
 
 // Extends design doc with default views
 // Adds the special lib view to the design doc
-module.exports = function (custom, dbName) {
+module.exports = function getDesignDoc(custom, dbName) {
   custom = custom || {};
   const config = getConfig(dbName);
   processViews(custom, config);

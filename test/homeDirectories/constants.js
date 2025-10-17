@@ -2,9 +2,6 @@
 
 const jwt = require('jsonwebtoken');
 
-const couchdbHost = process.env.COUCHDB_HOST || '127.0.0.1';
-const couchdbPort = process.env.COUCHDB_PORT || '5984';
-
 let oidcAuthConfig;
 const oidcClient = process.env.OIDC_CLIENT_ID;
 const oidcClientSecret = process.env.OIDC_CLIENT_SECRET;
@@ -54,8 +51,6 @@ const ldapAuthConfig = {
 };
 
 module.exports = {
-  couchdbHost,
-  couchdbPort,
   ldapAuthConfig,
   oidcAuthConfig,
 };
