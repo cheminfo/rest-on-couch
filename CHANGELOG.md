@@ -1,5 +1,12 @@
 # Changelog
 
+## [18.1.2](https://github.com/cheminfo/rest-on-couch/compare/v18.1.1...v18.1.2) (2025-10-17)
+
+
+### Bug Fixes
+
+* immer should be a production dependency now ([#448](https://github.com/cheminfo/rest-on-couch/issues/448)) ([0891a78](https://github.com/cheminfo/rest-on-couch/commit/0891a7877f4426f3235afdc4bb73fd0bbee3dcfb))
+
 ## [18.1.1](https://github.com/cheminfo/rest-on-couch/compare/v18.1.0...v18.1.1) (2025-10-17)
 
 
