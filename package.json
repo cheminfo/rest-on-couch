@@ -1,6 +1,6 @@
 {
   "name": "rest-on-couch",
-  "version": "18.1.1",
+  "version": "18.1.2",
   "description": "Interface to CouchDB that allows the control of permissions on the documents",
   "main": "src/index.js",
   "files": [
