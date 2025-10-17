@@ -1,5 +1,12 @@
 # Changelog
 
+## [18.1.1](https://github.com/cheminfo/rest-on-couch/compare/v18.1.0...v18.1.1) (2025-10-17)
+
+
+### Bug Fixes
+
+* improve logs and add tests for legacy couchdb versions ([#443](https://github.com/cheminfo/rest-on-couch/issues/443)) ([4b02671](https://github.com/cheminfo/rest-on-couch/commit/4b026718c1af7221db5bd82326c47fbcda85f5ea))
+
 ## [18.1.0](https://github.com/cheminfo/rest-on-couch/compare/v18.0.4...v18.1.0) (2025-10-13)
 
 
