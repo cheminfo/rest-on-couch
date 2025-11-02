@@ -12,9 +12,11 @@ module.exports = async function tryMove(from, to, suffix = 0) {
   }
   try {
     await fs.move(from, newTo);
-  } catch (e) {
-    if (e.code !== 'EEXIST' && e.message !== 'dest already exists.') {
-      throw new Error(`Could not rename ${from} to ${newTo}: ${e}`);
+  } catch (error) {
+    if (error.code !== 'EEXIST' && error.message !== 'dest already exists.') {
+      throw new Error(`Could not rename ${from} to ${newTo}`, {
+        cause: error,
+      });
     }
     await tryMove(from, to, ++suffix);
   }
