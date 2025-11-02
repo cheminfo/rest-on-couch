@@ -160,7 +160,7 @@ class NanoDbShim {
       return result.body;
     } catch (err) {
       if (
-        err.response.statusCode === 404 &&
+        err.response?.statusCode === 404 &&
         (err.response.body.reason === 'missing' ||
           err.response.body.reason === 'deleted')
       ) {
