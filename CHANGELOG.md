@@ -1,5 +1,12 @@
 # Changelog
 
+## [18.1.3](https://github.com/cheminfo/rest-on-couch/compare/v18.1.2...v18.1.3) (2025-11-07)
+
+
+### Bug Fixes
+
+* **nanoShim:** do not assume error has a response object ([d934348](https://github.com/cheminfo/rest-on-couch/commit/d9343486b3729cb531e8ed20d86c41506fc0b0ce))
+
 ## [18.1.2](https://github.com/cheminfo/rest-on-couch/compare/v18.1.1...v18.1.2) (2025-10-17)
 
 
