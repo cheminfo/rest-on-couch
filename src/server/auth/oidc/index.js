@@ -16,6 +16,7 @@ exports.init = function initOidc(passport, router, authConfig, globalConfig) {
         clientID: authConfig.clientID,
         clientSecret: authConfig.clientSecret,
         claims: authConfig.claims,
+        skipUserProfile: authConfig.skipUserProfile,
         callbackURL:
           authConfig.callbackURL ||
           `${globalConfig.publicAddress}/auth/login/oidc/callback`,
