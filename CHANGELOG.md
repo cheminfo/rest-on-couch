@@ -1,5 +1,17 @@
 # Changelog
 
+## [18.2.0](https://github.com/cheminfo/rest-on-couch/compare/v18.1.2...v18.2.0) (2025-12-08)
+
+
+### Features
+
+* forward skipUserProfile OIDC auth option to passport plugin ([#460](https://github.com/cheminfo/rest-on-couch/issues/460)) ([fbff18a](https://github.com/cheminfo/rest-on-couch/commit/fbff18acd8cd8733cbe16283bb0581abaeaf0c08))
+
+
+### Bug Fixes
+
+* **nanoShim:** do not assume error has a response object ([d934348](https://github.com/cheminfo/rest-on-couch/commit/d9343486b3729cb531e8ed20d86c41506fc0b0ce))
+
 ## [18.1.2](https://github.com/cheminfo/rest-on-couch/compare/v18.1.1...v18.1.2) (2025-10-17)
 
 
