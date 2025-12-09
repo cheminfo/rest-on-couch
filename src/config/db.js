@@ -243,10 +243,17 @@ function readImportConfig(databasePath, configDraft) {
     if (shouldIgnore(importDir)) continue;
     const importPath = path.join(databasePath, importDir);
     const importConfigPath = path.join(importPath, 'import.js');
+    const importConfigPathEsm = path.join(importPath, 'import.mjs');
     if (fs.statSync(importPath).isDirectory()) {
       let importConfig = {};
       if (fs.existsSync(importConfigPath)) {
         importConfig = require(importConfigPath);
+      } else if (fs.existsSync(importConfigPathEsm)) {
+        importConfig = require(importConfigPathEsm);
+        importConfig = importConfig.importFile;
+        if (!importConfig || typeof importConfig !== 'function') {
+          throw new Error('import.mjs must export an `importFile` function');
+        }
       }
       if (typeof importConfig === 'function') {
         // New import

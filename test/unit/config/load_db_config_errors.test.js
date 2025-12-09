@@ -1,7 +1,9 @@
 import path from 'node:path';
+import assert from 'node:assert';
 import { expect, test, vi } from 'vitest';
 
 import { getDbConfig, getDbConfigOrDie } from '../../../src/config/db.js';
+import fs from 'node:fs';
 
 process.stderr.write = () => {
   // ignore
@@ -68,4 +70,24 @@ test('loading configuration with unallowed override of the filters prop', () => 
       ),
     );
   }).toThrow(/^customDesign\.updates cannot be overriden$/);
+});
+
+test('loading import.js file implemented with ESM syntax', async () => {
+  const dir = path.join(
+    import.meta.dirname,
+    '../../homeDirectories/failEsmInJsFile',
+  );
+  assert(fs.existsSync(dir));
+  expect(() => getDbConfig(dir)).toThrow(/Unexpected token 'export'/);
+});
+
+test('failEsmWrongExport - loading import.mjs with a default export instead of named export', async () => {
+  const dir = path.join(
+    import.meta.dirname,
+    '../../homeDirectories/failEsmWrongExport',
+  );
+  assert(fs.existsSync(dir));
+  expect(() => getDbConfig(dir)).toThrow(
+    /import.mjs must export an `importFile` function/,
+  );
 });
