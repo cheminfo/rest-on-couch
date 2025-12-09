@@ -1,9 +1,9 @@
 import path from 'node:path';
 import assert from 'node:assert';
+import fs from 'node:fs';
 import { expect, test, vi } from 'vitest';
 
 import { getDbConfig, getDbConfigOrDie } from '../../../src/config/db.js';
-import fs from 'node:fs';
 
 process.stderr.write = () => {
   // ignore

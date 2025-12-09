@@ -1,5 +1,4 @@
-// Same simple import function as "noReference"
-export default function esmImport(ctx, result) {
+export default function importFile(ctx, result) {
   result.kind = 'sample';
   result.id = 'esm_import';
   result.reference = 'esm_import';
