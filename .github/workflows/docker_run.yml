@@ -49,6 +49,7 @@ jobs:
             docker rm "$CONTAINER_ID" >/dev/null
             exit 1
           else
+            docker logs "$CONTAINER_ID"
             echo "✅ Still running after 10 seconds (stable)."
             docker rm -f "$CONTAINER_ID" >/dev/null
           fi
