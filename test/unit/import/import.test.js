@@ -205,6 +205,12 @@ describe('import', () => {
     expect(importLogs[0].error.message).toBe('this import is wrong');
     expect(typeof importLogs[0].error.stack).toBe('string');
   });
+
+  test('load import.mjs using ESM syntax', async () => {
+    const { result } = await importFile(databaseName, 'esm_mjs', textFile1);
+    expect(result).toBeDefined();
+    expect(result.id).toBe('esm_import');
+  });
 });
 
 function readStream(stream) {
