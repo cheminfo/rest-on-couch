@@ -47,8 +47,6 @@ router.delete(
 // Entry rights
 router.get('/:dbname/entry/:uuid/_rights/:right', couch.getRights);
 
-// Change the patterns to finish with "*attachment" instead of ":attachment+" when
-// @koa/router is updated to v14+
 // Attachments
 router.get('/:dbname/entry/:uuid/*attachment', couch.getAttachment);
 // Delete attachment slightly different from couchdb api. It does not require _rev in the query parameters.
