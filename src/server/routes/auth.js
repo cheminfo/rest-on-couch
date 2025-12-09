@@ -1,6 +1,6 @@
 'use strict';
 
-const Router = require('@koa/router');
+const { Router } = require('@koa/router');
 const passport = require('koa-passport');
 
 const router = new Router({

@@ -1,6 +1,6 @@
 'use strict';
 
-const Router = require('@koa/router');
+const { Router } = require('@koa/router');
 
 const router = new Router({
   prefix: '/db',
@@ -50,11 +50,11 @@ router.get('/:dbname/entry/:uuid/_rights/:right', couch.getRights);
 // Change the patterns to finish with "*attachment" instead of ":attachment+" when
 // @koa/router is updated to v14+
 // Attachments
-router.get('/:dbname/entry/:uuid/:attachment+', couch.getAttachment);
+router.get('/:dbname/entry/:uuid/*attachment', couch.getAttachment);
 // Delete attachment slightly different from couchdb api. It does not require _rev in the query parameters.
-router.delete('/:dbname/entry/:uuid/:attachment+', couch.deleteAttachment);
+router.delete('/:dbname/entry/:uuid/*attachment', couch.deleteAttachment);
 router.put(
-  '/:dbname/entry/:uuid/:attachment+',
+  '/:dbname/entry/:uuid/*attachment',
   util.parseRawBody({ limit: '100mb' }),
   couch.saveAttachment,
 );
