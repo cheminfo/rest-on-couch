@@ -165,7 +165,7 @@ describe('rest-api as anonymous (data)', () => {
 
   test('handle attachment names with unescaped slashes', async () => {
     await authenticateAs(request, 'a@a.com', '123');
-    // The attachment name intentionally has an encoded + to make sure URLs are
+    // The attachment name intentionally has an encoded "/" to make sure URLs are
     // correctly encoded and decoded by the API.
     let res = await request
       .put('/db/test/entry/B/my/attachment.txt')
