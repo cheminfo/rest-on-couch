@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  run:
+  test_docker:
     runs-on: ubuntu-latest
     services:
       couchdb:
