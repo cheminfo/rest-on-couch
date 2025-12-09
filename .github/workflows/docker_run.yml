@@ -1,0 +1,54 @@
+name: Docker run
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    services:
+      couchdb:
+        image: couchdb:latest
+        env:
+          COUCHDB_USER: admin
+          COUCHDB_PASSWORD: admin
+        ports:
+          - 127.0.0.1:5984:5984
+      ldap:
+        image: ghcr.io/zakodium/ldap-with-users:1
+        ports:
+          - 127.0.0.1:1389:389
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: package.json
+      - name: Setup test database
+        run: node scripts/setup_database.mjs
+      - name: Build docker image
+        run: docker build ./ -t rest-on-couch
+      - name: Run docker container
+        run: |
+          echo "Running docker container for 10s..."
+          CONTAINER_ID=$(docker run -d \
+            --network host \
+            -v ./test/homeDirectories/dev:/rest-on-couch \
+            -e REST_ON_COUCH_USERNAME=rest-on-couch \
+            -e REST_ON_COUCH_PASSWORD=roc-123 \
+            -e DEBUG=couch:* \
+            rest-on-couch)
+
+          # Wait up to 10s to see if it exits
+          if timeout 10s bash -c "docker wait $CONTAINER_ID > /dev/null"; then
+            echo "❌ Container exited within 10 seconds."
+            docker logs "$CONTAINER_ID"
+            docker rm "$CONTAINER_ID" >/dev/null
+            exit 1
+          else
+            echo "✅ Still running after 10 seconds (stable)."
+            docker rm -f "$CONTAINER_ID" >/dev/null
+          fi

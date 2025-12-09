@@ -5,9 +5,16 @@ const COUCHDB_PORT = process.env.COUCHDB_PORT || 5984;
 
 const COUCHDB_URL = `http://${COUCHDB_HOST}:${COUCHDB_PORT}`;
 
+const maxTries = 3;
+let tries = 0;
+
 //  CouchDB takes some time to start. We have to wait before setting it up.
 while (!(await isCouchReady())) {
+  tries++;
   console.log('CouchDB is starting up...');
+  if (tries >= maxTries) {
+    throw new Error('CouchDB did not start in time');
+  }
   await wait(5_000);
 }
 
