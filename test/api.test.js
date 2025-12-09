@@ -162,6 +162,38 @@ describe('rest-api as anonymous (data)', () => {
 
     await request.get('/db/test/entry/B/my%2Battachment.txt').expect(404);
   });
+
+  test('handle attachment names with unescaped slashes', async () => {
+    await authenticateAs(request, 'a@a.com', '123');
+    // The attachment name intentionally has an encoded + to make sure URLs are
+    // correctly encoded and decoded by the API.
+    let res = await request
+      .put('/db/test/entry/B/my/attachment.txt')
+      .set('Content-Type', 'text/plain')
+      .set('Accept', 'application/json')
+      .send('rest-on-couch!!')
+      .expect(200);
+
+    expect(res.body.id).toBe('B');
+
+    // Unescaped
+    res = await request.get('/db/test/entry/B/my/attachment.txt');
+    expect(res.text).toBe('rest-on-couch!!');
+    expect(res.headers['content-type']).toBe('text/plain');
+
+    // Escaped
+    res = await request.get('/db/test/entry/B/my%2Fattachment.txt');
+    expect(res.text).toBe('rest-on-couch!!');
+
+    await authenticateAs(request, 'a@a.com', '123');
+    await request
+      .delete('/db/test/entry/B/my/attachment.txt')
+      .send()
+      .expect(200);
+    await logout(request);
+
+    await request.get('/db/test/entry/B/my/attachment.txt').expect(404);
+  });
 });
 
 describe('basic rest-api as b@b.com (data)', () => {
