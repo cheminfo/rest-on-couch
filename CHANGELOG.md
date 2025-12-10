@@ -1,5 +1,21 @@
 # Changelog
 
+## [19.0.0](https://github.com/cheminfo/rest-on-couch/compare/v18.2.0...v19.0.0) (2025-12-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade docker image base to Node.js 24, and remove global pm2 install from it
+
+### Features
+
+* allow ESM in mjs import files using named exports ([#461](https://github.com/cheminfo/rest-on-couch/issues/461)) ([d822fa7](https://github.com/cheminfo/rest-on-couch/commit/d822fa7c717b6bbd051e619e87860d943cdb497d))
+
+
+### Miscellaneous Chores
+
+* upgrade deps and node ([#464](https://github.com/cheminfo/rest-on-couch/issues/464)) ([2ca0631](https://github.com/cheminfo/rest-on-couch/commit/2ca0631583a859055e7b242dc86474b154091a96))
+
 ## [18.2.0](https://github.com/cheminfo/rest-on-couch/compare/v18.1.2...v18.2.0) (2025-12-08)
 
 
