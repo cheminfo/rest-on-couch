@@ -3,13 +3,12 @@
 const fs = require('fs');
 const path = require('path');
 
-const _ = require('lodash');
-
 const constants = require('../constants');
 const die = require('../util/die');
 
 const { getHomeDir, getHomeConfig } = require('./home');
 const { freeze } = require('immer');
+const { intersection } = require('../util/array_sets.mjs');
 
 function getDbConfigOrDie(homeDir) {
   if (!homeDir) {
@@ -136,7 +135,7 @@ function getDbConfig(homeDir) {
 }
 
 function checkDocNames(viewDesignDocNames, indexDesignDocNames) {
-  const sharedDesignDocNames = _.intersection(
+  const sharedDesignDocNames = intersection(
     Object.values(indexDesignDocNames),
     Object.values(viewDesignDocNames),
   );
@@ -171,7 +170,7 @@ function checkDocNames(viewDesignDocNames, indexDesignDocNames) {
 function addCustomViewMap(customMap, designDocNames, newCustomMap) {
   const currentKeys = Object.keys(customMap);
   const newKeys = Object.keys(newCustomMap);
-  const intersectionKeys = _.intersection(currentKeys, newKeys);
+  const intersectionKeys = intersection(currentKeys, newKeys);
   if (intersectionKeys.length !== 0) {
     throw new Error(`a view is defined more than once: ${intersectionKeys}`);
   }
@@ -205,7 +204,7 @@ function addCustomViews(customMap, designDocNames, databasePath) {
 function addCustomIndexMap(customMap, designDocNames, newCustomMap) {
   const currentKeys = Object.keys(customMap);
   const newKeys = Object.keys(newCustomMap);
-  const intersectionKeys = _.intersection(currentKeys, newKeys);
+  const intersectionKeys = intersection(currentKeys, newKeys);
   if (intersectionKeys.length !== 0) {
     throw new Error(`an index is defined more than once: ${intersectionKeys}`);
   }
