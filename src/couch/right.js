@@ -1,13 +1,12 @@
 'use strict';
 
-const _ = require('lodash');
-
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:right');
 
 const nano = require('./nano');
 const util = require('./util');
+const { union, difference } = require('../util/array_sets.mjs');
 
 const methods = {
   async editGlobalRight(user, type, target, action) {
@@ -107,9 +106,9 @@ const methods = {
     }
     const doc = await getDefaultGroupsDocument(this);
     if (action === 'add') {
-      doc[genUser] = _.union(doc[genUser], [group]);
+      doc[genUser] = union(doc[genUser], [group]);
     } else {
-      doc[genUser] = _.difference(doc[genUser], [group]);
+      doc[genUser] = difference(doc[genUser], [group]);
     }
     return this._db.insertDocument(doc);
   },
@@ -134,10 +133,7 @@ const methods = {
   async getGlobalRights(user) {
     await this.open();
     if (this.isSuperAdmin(user)) {
-      return _.union(
-        constants.globalRightTypes,
-        constants.globalAdminRightTypes,
-      );
+      return union(constants.globalRightTypes, constants.globalAdminRightTypes);
     } else {
       const globalRightsDoc = await getGlobalRightsDocument(this);
       const globalRightsKeys = Object.keys(globalRightsDoc).filter((key) =>
@@ -174,7 +170,7 @@ const methods = {
 
       const finalRights = Array.from(userRights);
       return this.isAdmin(user)
-        ? _.union(finalRights, constants.globalAdminRightTypes)
+        ? union(finalRights, constants.globalAdminRightTypes)
         : finalRights;
     }
   },
