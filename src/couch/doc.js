@@ -6,7 +6,7 @@ const debug = require('../util/debug')('main:doc');
 const nanoMethods = require('./nano');
 const util = require('./util');
 const validate = require('./validate');
-const { union, difference } = require('../util/array_sets.mjs');
+const { union, difference } = require('../util/array_sets.js');
 
 const methods = {
   async getDocUuidFromId(id, user, type) {

@@ -3,7 +3,6 @@ import { loadEnv } from 'vite';
 
 export default defineConfig({
   test: {
-    restoreMocks: true,
     env: loadEnv('test', process.cwd(), ''),
     setupFiles: ['test/setup/setup.js'],
     testTimeout: 20_000,

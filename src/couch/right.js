@@ -6,7 +6,7 @@ const debug = require('../util/debug')('main:right');
 
 const nano = require('./nano');
 const util = require('./util');
-const { union, difference } = require('../util/array_sets.mjs');
+const { union, difference } = require('../util/array_sets.js');
 
 const methods = {
   async editGlobalRight(user, type, target, action) {

@@ -8,7 +8,7 @@ const die = require('../util/die');
 
 const { getHomeDir, getHomeConfig } = require('./home');
 const { freeze } = require('immer');
-const { intersection } = require('../util/array_sets.mjs');
+const { intersection } = require('../util/array_sets.js');
 
 function getDbConfigOrDie(homeDir) {
   if (!homeDir) {
