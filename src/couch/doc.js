@@ -1,13 +1,12 @@
 'use strict';
 
-const _ = require('lodash');
-
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:doc');
 
 const nanoMethods = require('./nano');
 const util = require('./util');
 const validate = require('./validate');
+const { union, difference } = require('../util/array_sets.js');
 
 const methods = {
   async getDocUuidFromId(id, user, type) {
@@ -54,7 +53,7 @@ const methods = {
     await this.open();
     owners = util.ensureOwnersArray(owners);
     const doc = await this.getDocByRights(uuid, user, 'owner', type, options);
-    doc.$owners = _.union(doc.$owners, owners);
+    doc.$owners = union(doc.$owners, owners);
     return nanoMethods.save(this._db, doc, user);
   },
 
@@ -67,7 +66,7 @@ const methods = {
     if (owners.includes(mainOwner)) {
       throw new CouchError('cannot remove primary owner', 'forbidden');
     }
-    const newArray = _.pullAll(doc.$owners.slice(1), owners);
+    const newArray = difference(doc.$owners.slice(1), owners);
     newArray.unshift(doc.$owners[0]);
     doc.$owners = newArray;
     return nanoMethods.save(this._db, doc, user);

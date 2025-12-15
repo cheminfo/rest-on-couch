@@ -1,7 +1,5 @@
 'use strict';
 
-const _ = require('lodash');
-
 const constants = require('../constants');
 const CouchError = require('../util/CouchError');
 const ldapSearch = require('../util/LDAP').search;
@@ -10,6 +8,8 @@ const debug = require('../util/debug')('main:group');
 const nanoMethods = require('./nano');
 const util = require('./util');
 const validate = require('./validate');
+
+const { union, difference } = require('../util/array_sets.js');
 
 const methods = {
   async editDefaultGroup(group, type, action) {
@@ -258,7 +258,7 @@ const methods = {
       { onlyValue: true },
     );
     // Merge both lists
-    return _.union(defaultGroups, userGroups);
+    return union(defaultGroups, userGroups);
   },
 
   async addUsersToGroup(uuid, user, usernames, options = {}) {
@@ -272,7 +272,7 @@ const methods = {
       'group',
       options,
     );
-    group.customUsers = _.union(group.customUsers, usernames);
+    group.customUsers = union(group.customUsers, usernames);
     if (arraysAreEqual(group.users, group.customUsers)) {
       return getUnchangedGroupResult(group);
     }
@@ -290,7 +290,7 @@ const methods = {
       'group',
       options,
     );
-    _.pullAll(group.customUsers, usernames);
+    group.customUsers = difference(group.customUsers, usernames);
     if (arraysAreEqual(group.users, group.customUsers)) {
       return getUnchangedGroupResult(group);
     }
@@ -308,7 +308,7 @@ const methods = {
       'group',
       options,
     );
-    group.rights = _.union(group.rights, rights);
+    group.rights = union(group.rights, rights);
     return nanoMethods.save(this._db, group, user);
   },
 
@@ -323,7 +323,7 @@ const methods = {
       'group',
       options,
     );
-    _.pullAll(group.rights, rights);
+    group.rights = difference(group.rights, rights);
     return nanoMethods.save(this._db, group, user);
   },
 
@@ -463,7 +463,7 @@ async function syncOneLdapGroup(ctx, group, user) {
 
   let result;
   // Check if changed to avoid many revisions
-  const newUsers = _.union(emails, group.customUsers);
+  const newUsers = union(emails, group.customUsers);
   if (arraysAreEqual(newUsers, group.users)) {
     result = getUnchangedGroupResult(group);
   } else {
