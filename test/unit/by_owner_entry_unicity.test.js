@@ -1,4 +1,6 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, test } from 'node:test';
+
+import { expect } from 'chai';
 
 import entryUnicity from '../data/byOwnerEntryUnicity.js';
 

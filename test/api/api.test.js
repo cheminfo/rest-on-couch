@@ -1,4 +1,5 @@
-import { beforeAll, describe, expect, test } from 'vitest';
+import { before, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import pkg from '../../package.json' with { type: 'json' };
 
@@ -10,66 +11,66 @@ import { getAgent } from '../utils/agent.js';
 const request = getAgent();
 
 describe('basic rest-api as anonymous (noRights)', () => {
-  beforeAll(async () => {
+  before(async () => {
     await noRights();
     await logout(request);
   });
 
-  test('get an entry', async () => {
+  it('get an entry', async () => {
     await request.get('/db/test/entry/A').expect(401);
   });
 
-  test('get an entry with token', async () => {
+  it('get an entry with token', async () => {
     await request.get('/db/test/entry/A?token=mytoken').expect(200);
   });
 
-  test('get an entry with token (wrong uuid)', async () => {
+  it('get an entry with token (wrong uuid)', async () => {
     await request.get('/db/test/entry/onlyB?token=mytoken').expect(401);
   });
 
-  test('get an entry with token (inexisting token)', async () => {
+  it('get an entry with token (inexisting token)', async () => {
     await request.get('/db/test/entry/onlyB?token=notexist').expect(401);
   });
 
-  test('not allowed to delete an entry', async () => {
+  it('not allowed to delete an entry', async () => {
     await request.delete('/db/test/entry/onlyB?token=mytoken').expect(401);
   });
 
-  test('not allowed to create an entry', async () => {
+  it('not allowed to create an entry', async () => {
     await request
       .post('/db/test/entry?token=mytoken')
       .send({ $id: 'XXX', $content: { value: 42 } })
       .expect(401);
   });
 
-  test('not allowed to create a token', async () => {
+  it('not allowed to create a token', async () => {
     await request.post('/db/test/entry/A/_token').expect(401);
   });
 
-  test('get all entries', async () => {
+  it('get all entries', async () => {
     const response = await request.get('/db/test/entry/_all').expect(200);
     expect(response.body).toHaveLength(2);
   });
 
-  test('get unknown group', async () => {
+  it('get unknown group', async () => {
     await request.get('/db/test/group/doesnotexist').expect(404);
   });
 
-  test('get group without permission', async () => {
+  it('get group without permission', async () => {
     await request.get('/db/test/group/groupA').expect(401);
   });
 
-  test('_all_dbs', async () => {
+  it('_all_dbs', async () => {
     const data = await request.get('/db/_all_dbs').expect(200);
     expect(data.body).toHaveProperty('length');
   });
 
-  test('_version', async () => {
+  it('_version', async () => {
     const data = await request.get('/db/_version').expect(200);
     expect(data.text).toStrictEqual(pkg.version);
   });
 
-  test('forbidden database names', async () => {
+  it('forbidden database names', async () => {
     const data = await request.get('/db/_a$aa/entry/aaa').expect(403);
     expect(data.body).toMatchObject({
       error: 'invalid database name',
@@ -79,19 +80,19 @@ describe('basic rest-api as anonymous (noRights)', () => {
 });
 
 describe('rest-api as b@b.com (noRights)', () => {
-  beforeAll(async () => {
+  before(async () => {
     await noRights();
     await authenticateAs(request, 'b@b.com', '123');
   });
 
-  test('query view with owner, wrong key', async () => {
+  it('query view with owner, wrong key', async () => {
     const rows = await request
       .get('/db/test/_query/entryIdByRight?key=xxx')
       .expect(200);
     expect(rows.text).toBe('[]');
   });
 
-  test('query view with owner', async () => {
+  it('query view with owner', async () => {
     const rows = await request
       .get(
         `/db/test/_query/entryIdByRight?key=${encodeURIComponent(
@@ -102,22 +103,22 @@ describe('rest-api as b@b.com (noRights)', () => {
     expect(rows.text).not.toBe('[]');
   });
 
-  test('get an entry authenticated', async () => {
+  it('get an entry authenticated', async () => {
     await request.get('/db/test/entry/onlyB').expect(200);
   });
 
-  test('get an entry authenticated but asAnonymous', async () => {
+  it('get an entry authenticated but asAnonymous', async () => {
     await request.get('/db/test/entry/onlyB?asAnonymous=true').expect(401);
   });
 
-  test('check if user has read access to a resource', async () => {
+  it('check if user has read access to a resource', async () => {
     const data = await request
       .get('/db/test/entry/onlyB/_rights/read')
       .expect(200);
     expect(data.body).toBe(true);
   });
 
-  test('check if user has write access to a resource (as anonymous)', async () => {
+  it('check if user has write access to a resource (as anonymous)', async () => {
     const data = await request
       .get('/db/test/entry/onlyB/_rights/read?asAnonymous=1')
       .expect(200);
@@ -126,12 +127,12 @@ describe('rest-api as b@b.com (noRights)', () => {
 });
 
 describe('rest-api as anonymous (data)', () => {
-  beforeAll(async () => {
+  before(async () => {
     await data();
     await logout(request);
   });
 
-  test('save and delete an attachment', async () => {
+  it('save and delete an attachment', async () => {
     await authenticateAs(request, 'a@a.com', '123');
     // The attachment name intentionally has an encoded + to make sure URLs are
     // correctly encoded and decoded by the API.
@@ -163,7 +164,7 @@ describe('rest-api as anonymous (data)', () => {
     await request.get('/db/test/entry/B/my%2Battachment.txt').expect(404);
   });
 
-  test('handle attachment names with unescaped slashes', async () => {
+  it('handle attachment names with unescaped slashes', async () => {
     await authenticateAs(request, 'a@a.com', '123');
     // The attachment name intentionally has an encoded "/" to make sure URLs are
     // correctly encoded and decoded by the API.
@@ -197,12 +198,12 @@ describe('rest-api as anonymous (data)', () => {
 });
 
 describe('basic rest-api as b@b.com (data)', () => {
-  beforeAll(async () => {
+  before(async () => {
     await data();
     await authenticateAs(request, 'b@b.com', '123');
   });
 
-  test('head existing entry', async () => {
+  it('head existing entry', async () => {
     const entry = await couch.getEntryById('A', 'b@b.com');
     await request
       .head(`/db/test/entry/${entry._id}`)
@@ -210,11 +211,11 @@ describe('basic rest-api as b@b.com (data)', () => {
       .expect('ETag', `"${entry._rev}"`);
   });
 
-  test('head non-existing entry', async () => {
+  it('head non-existing entry', async () => {
     await request.head('/db/test/entry/bad').expect(404);
   });
 
-  test('head with if-none-match', async () => {
+  it('head with if-none-match', async () => {
     const entry = await couch.getEntryById('A', 'b@b.com');
     await request
       .head(`/db/test/entry/${entry._id}`)
@@ -223,31 +224,31 @@ describe('basic rest-api as b@b.com (data)', () => {
       .expect('ETag', `"${entry._rev}"`);
   });
 
-  test('get an entry', async () => {
+  it('get an entry', async () => {
     const entry = await couch.getEntryById('A', 'b@b.com');
     await request.get(`/db/test/entry/${entry._id}`).expect(200);
   });
 
-  test('get all entries', async () => {
+  it('get all entries', async () => {
     const response = await request.get('/db/test/entry/_all').expect(200);
     expect(response.body).toHaveLength(6);
   });
 
-  test('query view', async () => {
+  it('query view', async () => {
     const response = await request
       .get('/db/test/_view/entryById?key=%22A%22')
       .expect(200);
     expect(response.body).toHaveLength(1);
   });
 
-  test('query view with reduce', async () => {
+  it('query view with reduce', async () => {
     const response = await request
       .get('/db/test/_view/entryById?reduce=true')
       .expect(200);
     expect(response.body[0].value).toBe(6);
   });
 
-  test('create new document', async () => {
+  it('create new document', async () => {
     const result = await request
       .post('/db/test/entry')
       .send({ $id: 'new', $content: {} })
@@ -256,7 +257,7 @@ describe('basic rest-api as b@b.com (data)', () => {
     expect(result.body).toHaveProperty('rev');
   });
 
-  test('non-existent document cannot be updated', async () => {
+  it('non-existent document cannot be updated', async () => {
     // document with uuid A does not exist
     await request
       .put('/db/test/entry/NOTEXIST')
@@ -264,7 +265,7 @@ describe('basic rest-api as b@b.com (data)', () => {
       .expect(404);
   });
 
-  test('existent document cannot be update if no write access', async () => {
+  it('existent document cannot be update if no write access', async () => {
     // Update document for which user has no access
     await request
       .put('/db/test/entry/B')
@@ -272,14 +273,14 @@ describe('basic rest-api as b@b.com (data)', () => {
       .expect(401);
   });
 
-  test('update existing document with no _rev return 409 (conflict)', async () => {
+  it('update existing document with no _rev return 409 (conflict)', async () => {
     await request
       .put('/db/test/entry/C')
       .send({ $id: 'C', $content: {} })
       .expect(409);
   });
 
-  test('update document', async () => {
+  it('update document', async () => {
     const entry = await couch.getEntryById('C', 'b@b.com');
     const res = await request
       .put('/db/test/entry/C')
@@ -289,34 +290,34 @@ describe('basic rest-api as b@b.com (data)', () => {
     expect(res.body.rev).toMatch(/^2/);
   });
 
-  test('create token', async () => {
+  it('create token', async () => {
     await request.post('/db/test/entry/C/_token').expect(201);
   });
 
-  test('delete document', async () => {
+  it('delete document', async () => {
     const res = await request.del('/db/test/entry/C').expect(200);
     expect(res.body).toEqual({ ok: true });
   });
 
-  test('get group without permission', async () => {
+  it('get group without permission', async () => {
     await request.get('/db/test/group/groupA').expect(401);
   });
 });
 
 describe('basic rest-api as a@a.com (data)', () => {
-  beforeAll(async () => {
+  before(async () => {
     await data();
     await authenticateAs(request, 'a@a.com', '123');
   });
 
-  test('get group with permission', async () => {
+  it('get group with permission', async () => {
     const response = await request.get('/db/test/group/groupA').expect(200);
     expect(response.body).toHaveProperty('name');
     expect(response.body).toHaveProperty('users');
     expect(response.body).toHaveProperty('rights');
   });
 
-  test('get list of groups', async () => {
+  it('get list of groups', async () => {
     const response = await request.get('/db/test/groups').expect(200);
     expect(response.body).toHaveLength(3);
     expect(response.body[0]).toBeDefined();

@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import constants from '../data/constants.js';
 import data from '../data/noRights.js';
@@ -7,7 +8,7 @@ import testUtils from '../utils/testUtils.js';
 describe('token methods', () => {
   beforeEach(data);
 
-  test('user should be able to create and get tokens', async () => {
+  it('user should be able to create and get tokens', async () => {
     const tokens = await Promise.all([
       couch.createEntryToken('b@b.com', 'A'),
       couch.createEntryToken('b@b.com', 'onlyB'),
@@ -38,7 +39,7 @@ describe('token methods', () => {
     expect(allTokens.length).toBe(3);
   });
 
-  test('user should be able to create and destroy tokens', async () => {
+  it('user should be able to create and destroy tokens', async () => {
     const token = await couch.createEntryToken('b@b.com', 'A');
     const gotToken = await couch.getToken(token.$id);
     expect(gotToken.$id).toBe(token.$id);
@@ -46,11 +47,11 @@ describe('token methods', () => {
     return expect(couch.getToken(token.$id)).rejects.toBeDefined();
   });
 
-  test('user should not be able to create a token without write right', () => {
+  it('user should not be able to create a token without write right', () => {
     return expect(couch.createEntryToken('b@b.com', 'C')).rejects.toBeDefined();
   });
 
-  test('user should be able to create a user token', async () => {
+  it('user should be able to create a user token', async () => {
     const token = await couch.createUserToken('b@b.com');
     expect(token.$id).toMatch(testUtils.tokenReg);
     expect(token.$creationDate).toBeGreaterThan(0);
@@ -64,7 +65,7 @@ describe('token methods', () => {
     });
   });
 
-  test('user should be able to create a user token with rights', async () => {
+  it('user should be able to create a user token with rights', async () => {
     const token = await couch.createUserToken('b@b.com', [
       'read',
       'addAttachment',
@@ -81,7 +82,7 @@ describe('token methods', () => {
     });
   });
 
-  test('user token should give read access to non public data', async () => {
+  it('user token should give read access to non public data', async () => {
     const token = await couch.createUserToken('b@b.com');
     await expect(couch.getEntryById('A', 'a@a.com')).rejects.toThrow(
       'document not found',
@@ -90,7 +91,7 @@ describe('token methods', () => {
     expect(entry).toBeDefined();
   });
 
-  test('user token should not allow to create document if user cannot create', async () => {
+  it('user token should not allow to create document if user cannot create', async () => {
     const token = await couch.createUserToken('b@b.com', [
       'read',
       'write',
@@ -103,7 +104,7 @@ describe('token methods', () => {
     ).rejects.toThrow('b@b.com not allowed to create');
   });
 
-  test('token should give only the right for which it was created', async () => {
+  it('token should give only the right for which it was created', async () => {
     const token = await couch.createUserToken('b@b.com', 'delete');
     await expect(couch.getEntryById('A', 'a@a.com', { token })).rejects.toThrow(
       'document not found',
@@ -111,7 +112,7 @@ describe('token methods', () => {
     await couch.deleteEntry('A', 'a@a.com', { token });
   });
 
-  test('anonymous user should not be able to create a token', async () => {
+  it('anonymous user should not be able to create a token', async () => {
     await expect(couch.createEntryToken('anonymous', 'A')).rejects.toThrow(
       'only a user can create a token',
     );
@@ -120,7 +121,7 @@ describe('token methods', () => {
     );
   });
 
-  test('token should not accept invalid right', async () => {
+  it('token should not accept invalid right', async () => {
     await expect(couch.createUserToken('a@a.com', 'test1')).rejects.toThrow(
       'invalid right: test1',
     );

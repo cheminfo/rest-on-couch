@@ -1,39 +1,40 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import data from '../data/data.js';
 import noRights from '../data/noRights.js';
 
 describe('group methods', () => {
   beforeEach(data);
-  test('anyone should be able to create a group', () => {
+  it('anyone should be able to create a group', () => {
     return expect(
       couch.createGroup('groupX', 'a@a.com'),
     ).resolves.toBeDefined();
   });
 
-  test('cannot create if the group exists', () => {
+  it('cannot create if the group exists', () => {
     return expect(couch.createGroup('groupA', 'a@a.com')).rejects.toThrow(
       /already exists/,
     );
   });
 
-  test('cannot delete group if user is not the owner of the group', () => {
+  it('cannot delete group if user is not the owner of the group', () => {
     return expect(couch.deleteGroup('groupA', 'b@b.com')).rejects.toThrow();
   });
 
-  test('should delete a group', () => {
+  it('should delete a group', () => {
     return expect(
       couch.deleteGroup('groupA', 'a@a.com'),
     ).resolves.toBeDefined();
   });
 
-  test('should throw if deleting non-existant group', () => {
+  it('should throw if deleting non-existant group', () => {
     return expect(couch.deleteGroup('inexistant', 'a@a.com')).rejects.toThrow(
       /group does not exist/,
     );
   });
 
-  test('should add one user to group', () => {
+  it('should add one user to group', () => {
     return couch
       .addUsersToGroup('groupA', 'a@a.com', 'test123@example.com')
       .then(() => {
@@ -47,7 +48,7 @@ describe('group methods', () => {
       });
   });
 
-  test('should add several users to group', () => {
+  it('should add several users to group', () => {
     return couch
       .addUsersToGroup('groupA', 'a@a.com', [
         'test123@example.com',
@@ -66,7 +67,7 @@ describe('group methods', () => {
       });
   });
 
-  test('should add user which already exists', async () => {
+  it('should add user which already exists', async () => {
     const group = await couch.getGroup('groupA', 'a@a.com');
 
     const updateData = await couch.addUsersToGroup('groupA', 'a@a.com', [
@@ -80,7 +81,7 @@ describe('group methods', () => {
     expect(updateData.isNew).toBe(false);
   });
 
-  test('should remove user which does not exist', async () => {
+  it('should remove user which does not exist', async () => {
     const group = await couch.getGroup('groupA', 'a@a.com');
 
     const updateData = await couch.removeUsersFromGroup('groupA', 'a@a.com', [
@@ -94,7 +95,7 @@ describe('group methods', () => {
     expect(updateData.isNew).toBe(false);
   });
 
-  test('should remove users from group', () => {
+  it('should remove users from group', () => {
     return couch
       .addUsersToGroup('groupA', 'a@a.com', ['test123@example.com'])
       .then(() => {
@@ -111,7 +112,7 @@ describe('group methods', () => {
       });
   });
 
-  test('getGroups should return users groups when owner without global readGroup right', () => {
+  it('getGroups should return users groups when owner without global readGroup right', () => {
     return couch.getGroups('a@a.com').then((docs) => {
       expect(docs).toHaveLength(3);
       expect(docs[0].users[0]).toBe('a@a.com');
@@ -119,7 +120,7 @@ describe('group methods', () => {
     });
   });
 
-  test('getGroupsInfo should return all data when group owner', () => {
+  it('getGroupsInfo should return all data when group owner', () => {
     return couch.getGroupsInfo('a@a.com').then((groups) => {
       expect(groups).toHaveLength(3);
       // a@a.com sees users and rights because it is the owner of all groups
@@ -146,7 +147,7 @@ describe('group methods', () => {
     });
   });
 
-  test('getGroupsInfo should return all data when user has readGroup right', () => {
+  it('getGroupsInfo should return all data when user has readGroup right', () => {
     return couch.getGroupsInfo('b@b.com').then((groups) => {
       expect(groups).toHaveLength(3);
       // Sees everything because has global readGroup right
@@ -173,7 +174,7 @@ describe('group methods', () => {
     });
   });
 
-  test('getGroupsInfo should return limited data except if member', () => {
+  it('getGroupsInfo should return limited data except if member', () => {
     return couch.getGroupsInfo('c@c.com').then((groups) => {
       expect(groups).toHaveLength(3);
       // Sees everything because has global readGroup right
@@ -197,26 +198,26 @@ describe('group methods', () => {
     });
   });
 
-  test('getGroupsInfo should throw if user is anonymous', () => {
+  it('getGroupsInfo should throw if user is anonymous', () => {
     return expect(couch.getGroupsInfo('anonymous')).rejects.toThrow(
       /user must be authenticated to get groups info/,
     );
   });
 
-  test('getGroups should return groups when owner not owner but has global readGroup right', () => {
+  it('getGroups should return groups when owner not owner but has global readGroup right', () => {
     return couch.getGroups('b@b.com').then((docs) => {
       expect(docs).toHaveLength(3);
       expect(docs[0].users[0]).toBe('a@a.com');
     });
   });
 
-  test('getGroups should not return groups when not owner and without the global readGroup right', () => {
+  it('getGroups should not return groups when not owner and without the global readGroup right', () => {
     return couch.getGroups('c@c.com').then((docs) => {
       expect(docs).toHaveLength(0);
     });
   });
 
-  test('should get list of groups user is member of', async () => {
+  it('should get list of groups user is member of', async () => {
     const users = await couch.getUserGroups('a@a.com');
     expect(users.map((g) => g.name).sort()).toEqual(['groupA', 'groupB']);
   });
@@ -229,7 +230,7 @@ describe('ldap group methods', () => {
       '(&(objectClass=inetOrgPerson)(memberOf=cn=Maintainers,ou=Groups,dc=zakodium,dc=com))',
     DN: 'dc=zakodium,dc=com',
   };
-  test('create an LDAP group', async () => {
+  it('create an LDAP group', async () => {
     const newGroup = await couch.createGroup('groupLdap', 'a@a.com', []);
     expect(newGroup).toBeDefined();
     expect(newGroup.isNew).toBe(true);
@@ -241,7 +242,7 @@ describe('ldap group methods', () => {
     expect(group.users).toStrictEqual([]);
   });
 
-  test('set ldap group properties and sync group', async () => {
+  it('set ldap group properties and sync group', async () => {
     const newGroup = await couch.createGroup('groupLdap', 'a@a.com', []);
     await couch.setGroupProperties(newGroup.id, 'a@a.com', ldapGroupProperties);
 
@@ -261,7 +262,7 @@ describe('ldap group methods', () => {
     expect(updatedGroup.customUsers).toHaveLength(1);
   });
 
-  test('getGroupsInfo and getGroupInfo with ldap group', async () => {
+  it('getGroupsInfo and getGroupInfo with ldap group', async () => {
     const newGroup = await couch.createGroup('groupLdap', 'a@a.com', []);
     await couch.setGroupProperties(newGroup.id, 'a@a.com', ldapGroupProperties);
 
@@ -293,7 +294,7 @@ describe('ldap group methods', () => {
     expect(info).toStrictEqual(expectedResult);
   });
 
-  test('getGroupInfo with inexistant group', () => {
+  it('getGroupInfo with inexistant group', () => {
     return expect(() =>
       couch.getGroupInfo('notexisting', 'a@a.com'),
     ).rejects.toThrow(/group does not exist/);
@@ -303,13 +304,13 @@ describe('ldap group methods', () => {
 describe('group methods (no default rights)', () => {
   beforeEach(noRights);
 
-  test('anyone cannot create group', () => {
+  it('anyone cannot create group', () => {
     return expect(couch.createGroup('groupX', 'a@a.com')).rejects.toThrow(
       /does not have createGroup right/,
     );
   });
 
-  test('should get list of groups user is member of, including default groups', async () => {
+  it('should get list of groups user is member of, including default groups', async () => {
     let groups = await couch.getUserGroups('a@a.com');
     groups.sort((a, b) => a.name.localeCompare(b.name));
     expect(groups).toEqual([

@@ -26,8 +26,8 @@
     "prettier-write": "prettier . --write",
     "preview:api": "NODE_ENV=production npm run build && node --env-file=.env.dev bin/rest-on-couch-server.js",
     "test": "npm run test-coverage && npm run eslint && npm run prettier",
-    "test-coverage": "npm run test-only -- --coverage",
-    "test-only": "vitest run"
+    "test-coverage": "node --test --env-file=.env.test --experimental-config-file=node_test_coverage.config.json **/*.test.js",
+    "test-only": "node --test --env-file=.env.test --import ./test/setup.js --test-concurrency=1 --test-timeout=20000  **/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -49,6 +49,7 @@
   "dependencies": {
     "@koa/router": "^15.0.0",
     "@ladjs/koa-views": "^9.0.0",
+    "@vitest/expect": "^4.0.16",
     "commander": "^14.0.2",
     "debug": "^4.4.3",
     "extend": "^3.0.2",
@@ -84,8 +85,8 @@
   "devDependencies": {
     "@fontsource-variable/roboto": "^5.2.9",
     "@vitejs/plugin-react": "^5.1.2",
-    "@vitest/coverage-v8": "^4.0.15",
     "bootstrap": "^3.4.1",
+    "chai": "^6.2.1",
     "eslint": "^9.39.1",
     "eslint-config-zakodium": "^18.0.0",
     "font-awesome": "^4.7.0",
@@ -102,7 +103,6 @@
     "redux-promise-middleware": "^6.2.0",
     "redux-thunk": "^3.1.0",
     "supertest": "^7.1.4",
-    "vite": "^7.2.7",
-    "vitest": "^4.0.15"
+    "vite": "^7.2.7"
   }
 }

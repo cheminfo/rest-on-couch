@@ -1,7 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { afterEach, describe, expect, test } from 'vitest';
+import { afterEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import { getFileDropAgent } from '../../utils/agent.js';
 
@@ -14,7 +15,7 @@ describe('drop file server', () => {
       recursive: true,
     }),
   );
-  test('api endpoint using query strings', async () => {
+  it('api endpoint using query strings', async () => {
     const buffer = Buffer.from('test with query strings');
     await request
       .post('/upload?kind=kind1&database=test&filename=test 123')
@@ -28,7 +29,7 @@ describe('drop file server', () => {
     expect(content).toBe('test with query strings');
   });
 
-  test('api endpoint using path paramaters', async () => {
+  it('api endpoint using path paramaters', async () => {
     const buffer = Buffer.from('test with params');
     await request.post('/upload/test/kind1/test123').send(buffer).expect(200);
 
@@ -39,7 +40,7 @@ describe('drop file server', () => {
     expect(content).toBe('test with params');
   });
 
-  test('sending a file twice should rename it with an incremental part', async () => {
+  it('sending a file twice should rename it with an incremental part', async () => {
     const buffer = Buffer.from('test conflict');
     await request
       .post('/upload?kind=kind1&database=test&filename=testConflict.txt')

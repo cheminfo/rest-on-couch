@@ -1,17 +1,18 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import data from '../data/data.js';
 import noRights from '../data/noRights.js';
 
 describe('Query default data', () => {
   beforeEach(data);
-  test('Should query by user id', () => {
+  it('Should query by user id', () => {
     return couch.queryViewByUser('a@a.com', 'entryById').then((rows) => {
       expect(rows.length).toBe(6);
     });
   });
 
-  test('Should query limiting the size of the response', () => {
+  it('Should query limiting the size of the response', () => {
     return couch
       .queryViewByUser('a@a.com', 'entryById', { limit: 2 })
       .then((rows) => {
@@ -19,7 +20,7 @@ describe('Query default data', () => {
       });
   });
 
-  test('Should query by user id with key', () => {
+  it('Should query by user id with key', () => {
     return couch
       .queryViewByUser('a@a.com', 'entryById', { key: 'A' })
       .then((rows) => {
@@ -30,7 +31,7 @@ describe('Query default data', () => {
 
 describe('Query no rights data', () => {
   beforeEach(noRights);
-  test('Should not grant access to all entries', () => {
+  it('Should not grant access to all entries', () => {
     return couch.queryViewByUser('a@a.com', 'entryById').then((rows) => {
       expect(rows.length).toBe(5);
     });
@@ -39,7 +40,7 @@ describe('Query no rights data', () => {
 
 describe('Query view with owner (global right)', () => {
   beforeEach(data);
-  test('should return all docs with global right', () => {
+  it('should return all docs with global right', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight')
       .then((res) => {
@@ -58,7 +59,7 @@ describe('Query view with owner (global right)', () => {
 
 describe('Query view with owner (group right)', () => {
   beforeEach(noRights);
-  test('should return authorized docs for user', () => {
+  it('should return authorized docs for user', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight')
       .then((res) => {
@@ -72,7 +73,7 @@ describe('Query view with owner (group right)', () => {
         ]);
       });
   });
-  test('should return authorized docs for anonymous', () => {
+  it('should return authorized docs for anonymous', () => {
     return couch
       .queryEntriesByRight('anonymous', 'entryIdByRight')
       .then((res) => {
@@ -87,7 +88,7 @@ describe('Query view with owner (group right)', () => {
 
 describe('Query entries filter groups', () => {
   beforeEach(noRights);
-  test('should only return entries owned by the user', () => {
+  it('should only return entries owned by the user', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
         groups: 'a@a.com',
@@ -98,7 +99,7 @@ describe('Query entries filter groups', () => {
       });
   });
 
-  test('should only return entries owned by the defaultAnonymousRead group', () => {
+  it('should only return entries owned by the defaultAnonymousRead group', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
         groups: ['defaultAnonymousRead'],
@@ -111,7 +112,7 @@ describe('Query entries filter groups', () => {
       });
   });
 
-  test('should only return entries owned by the defaultAnonymousRead or defaultAnyuserRead groups', () => {
+  it('should only return entries owned by the defaultAnonymousRead or defaultAnyuserRead groups', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
         groups: ['defaultAnonymousRead', 'defaultAnyuserRead'],
@@ -125,7 +126,7 @@ describe('Query entries filter groups', () => {
       });
   });
 
-  test('should only return entries owned by the owner by using the "mine" option', () => {
+  it('should only return entries owned by the owner by using the "mine" option', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, { mine: 1 })
       .then((res) => {
@@ -134,7 +135,7 @@ describe('Query entries filter groups', () => {
       });
   });
 
-  test('should return group entries and owner entries when "groups" and "mine" options are used in combination', () => {
+  it('should return group entries and owner entries when "groups" and "mine" options are used in combination', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
         mine: 1,
@@ -145,7 +146,7 @@ describe('Query entries filter groups', () => {
       });
   });
 
-  test('should ignore groups in the "groups" option if the user does not belong to it', () => {
+  it('should ignore groups in the "groups" option if the user does not belong to it', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'entryIdByRight', null, {
         groups: 'x@x.com',
@@ -158,7 +159,7 @@ describe('Query entries filter groups', () => {
 
 describe('Query view with reduce', () => {
   beforeEach(data);
-  test('Should query by user id', () => {
+  it('Should query by user id', () => {
     return couch
       .queryViewByUser('a@a.com', 'testReduce', { reduce: true })
       .then((rows) => {
@@ -166,13 +167,13 @@ describe('Query view with reduce', () => {
         expect(rows[0].value).toBe(6);
       });
   });
-  test('should fail because emits owners', () => {
+  it('should fail because emits owners', () => {
     return expect(
       couch.queryViewByUser('a@a.com', 'entryIdByRight', { reduce: true }),
     ).rejects.toThrow(/is a view with owner/);
   });
 
-  test('Should fail because no reduce', () => {
+  it('Should fail because no reduce', () => {
     return expect(
       couch.queryViewByUser('a@a.com', 'globalRight', { reduce: true }),
     ).rejects.toThrow(/Bad Request/);
@@ -181,13 +182,13 @@ describe('Query view with reduce', () => {
 
 describe('Query with multiple emitWithOwner and global rights', () => {
   beforeEach(data);
-  test('Should return all emited values', () => {
+  it('Should return all emited values', () => {
     return couch.queryEntriesByRight('a@a.com', 'multiEmit').then((rows) => {
       expect(rows).toHaveLength(12);
     });
   });
 
-  test('Should ignore the specified key when user has global right', () => {
+  it('Should ignore the specified key when user has global right', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'multiEmit', 'read', { key: 'A' })
       .then((rows) => {
@@ -198,7 +199,7 @@ describe('Query with multiple emitWithOwner and global rights', () => {
 
 describe('Query with multiple emitWithOwner', () => {
   beforeEach(noRights);
-  test('Should return all emited values (a@a.com)', () => {
+  it('Should return all emited values (a@a.com)', () => {
     return couch.queryEntriesByRight('a@a.com', 'multiEmit').then((rows) => {
       expect(rows).toHaveLength(10);
       expect(rows.find((row) => row.id === 'onlyA')).toBeDefined();
@@ -206,7 +207,7 @@ describe('Query with multiple emitWithOwner', () => {
     });
   });
 
-  test('Should return all emited values (b@b.com)', () => {
+  it('Should return all emited values (b@b.com)', () => {
     return couch.queryEntriesByRight('b@b.com', 'multiEmit').then((rows) => {
       expect(rows).toHaveLength(10);
       expect(rows.find((row) => row.id === 'onlyB')).toBeDefined();
@@ -214,7 +215,7 @@ describe('Query with multiple emitWithOwner', () => {
     });
   });
 
-  test('Should return all emited values for specified key', () => {
+  it('Should return all emited values for specified key', () => {
     return couch
       .queryEntriesByRight('a@a.com', 'multiEmit', 'read', { key: 'A' })
       .then((rows) => {

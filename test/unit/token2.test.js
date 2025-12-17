@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import constants from '../data/constants.js';
 import data from '../data/data.js';
@@ -6,7 +7,7 @@ import data from '../data/data.js';
 describe('token methods data', () => {
   beforeEach(data);
 
-  test('user token allow to create document', async () => {
+  it('user token allow to create document', async () => {
     const token = await couch.createUserToken('a@a.com', [
       'read',
       'write',
@@ -19,7 +20,7 @@ describe('token methods data', () => {
     expect(newEntry.info.isNew).toBe(true);
   });
 
-  test('user token should not allow to create document with groups if not owner', async () => {
+  it('user token should not allow to create document with groups if not owner', async () => {
     const token = await couch.createUserToken('a@a.com', ['read', 'create']);
     await expect(
       couch.insertEntry(constants.newEntry, 'anonymous', {
@@ -29,7 +30,7 @@ describe('token methods data', () => {
     ).rejects.toThrow(/not allowed to create with groups/);
   });
 
-  test('user token allow to create document with groups if owner', async () => {
+  it('user token allow to create document with groups if owner', async () => {
     const token = await couch.createUserToken('a@a.com', [
       'read',
       'create',

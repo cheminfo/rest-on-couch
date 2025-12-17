@@ -1,4 +1,5 @@
-import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
+import { before, beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import { getGlobalConfig } from '../../../src/config/config.js';
 import getNano from '../../../src/util/nanoShim.js';
@@ -8,7 +9,7 @@ import { getAgent } from '../../utils/agent.js';
 const request = getAgent();
 
 let nano;
-beforeAll(async () => {
+before(async () => {
   const config = getGlobalConfig();
   nano = await getNano(config.url, 'admin', config.adminPassword);
   const db = nano.useDb('_users');
@@ -20,7 +21,7 @@ describe('administrators can configure couchdb users', () => {
     await authenticateAs(request, 'admin@a.com', '123');
   });
 
-  test('create a new user', async () => {
+  it('create a new user', async () => {
     await request
       .post('/auth/couchdb/user')
       .send({
@@ -39,7 +40,7 @@ describe('non-administrators cannot configure couchdb users', () => {
     await authenticateAs(request, 'a@a.com', '123');
   });
 
-  test('cannot create a new user', async () => {
+  it('cannot create a new user', async () => {
     await request
       .post('/auth/couchdb/user')
       .send({

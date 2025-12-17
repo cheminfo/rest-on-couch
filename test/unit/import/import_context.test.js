@@ -1,12 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { describe, expect, test } from 'vitest';
+import { describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import ImportContext from '../../../src/import/ImportContext.js';
 
 describe('ImportContext', () => {
-  test('should instanciate a new import context', async () => {
+  it('should instanciate a new import context', async () => {
     const file = path.join(
       import.meta.dirname,
       '../../homeDirectories/main/test-new-import/full/to_process/test.txt',

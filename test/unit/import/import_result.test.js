@@ -1,4 +1,5 @@
-import { describe, expect, test } from 'vitest';
+import { describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import constants from '../../../src/constants.js';
 import ImportResult from '../../../src/import/ImportResult.js';
@@ -62,14 +63,14 @@ function getValidResult(importType) {
 }
 
 describe('ImportResult', () => {
-  test('valid import results', () => {
+  it('valid import results', () => {
     // Valid results shouldn't throw
     getValidResult(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT).check();
     getValidResult(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT).check();
     getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY).check();
   });
 
-  test('valid update type', () => {
+  it('valid update type', () => {
     // Check type of update
     expect(getValidResult(constants.IMPORT_UPDATE_FULL).getUpdateType()).toBe(
       constants.IMPORT_UPDATE_FULL,
@@ -84,7 +85,7 @@ describe('ImportResult', () => {
     ).toBe(constants.IMPORT_UPDATE_$CONTENT_ONLY);
   });
 
-  test('throws when fields are missing - full upload', () => {
+  it('throws when fields are missing - full upload', () => {
     // Mandotory fields
     checkWithoutPropShouldThrow(
       'id',
@@ -175,7 +176,7 @@ describe('ImportResult', () => {
     // Import without attachment
   });
 
-  test('throws when fields are missing - without attachment', () => {
+  it('throws when fields are missing - without attachment', () => {
     checkWithoutPropShouldThrow(
       'id',
       'id must be defined',
@@ -198,7 +199,7 @@ describe('ImportResult', () => {
     );
   });
 
-  test('throws when fields are missing - content only', () => {
+  it('throws when fields are missing - content only', () => {
     checkWithoutPropShouldThrow(
       'id',
       'id must be defined',
@@ -221,7 +222,7 @@ describe('ImportResult', () => {
     );
   });
 
-  test('Cannot skip metadata without skipping attachment', () => {
+  it('Cannot skip metadata without skipping attachment', () => {
     const result = new ImportResult();
     result.skipMetadata();
     expect(() => {
