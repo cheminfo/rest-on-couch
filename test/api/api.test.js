@@ -1,11 +1,11 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 
-import pkg from '../package.json' with { type: 'json' };
+import pkg from '../../package.json' with { type: 'json' };
 
-import data from './data/data.js';
-import noRights from './data/noRights.js';
-import { getAgent } from './setup/setup.js';
-import { authenticateAs, logout } from './utils/authenticateCouchDB.js';
+import data from '../data/data.js';
+import noRights from '../data/noRights.js';
+import { authenticateAs, logout } from '../utils/authenticate.js';
+import { getAgent } from '../utils/agent.js';
 
 const request = getAgent();
 
