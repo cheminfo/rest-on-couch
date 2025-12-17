@@ -8,6 +8,3 @@ process.on('unhandledRejection', function handleUnhandledRejection(err) {
 });
 
 module.exports = Couch;
-
-// must be after module.exports to avoid circular dependency
-Couch.importFile = require('./import/import').import;

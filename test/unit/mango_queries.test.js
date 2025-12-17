@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, test } from 'vitest';
 
 import anyuser from '../data/anyuser.js';
 import noRights from '../data/noRights.js';
-import { skipIfCouchV1 } from '../setup/setup.js';
+
+import { skipIfCouchV1 } from '../utils/couch.js';
 
 describe('no rights mango queries', () => {
   beforeEach(skipIfCouchV1);
@@ -206,7 +207,7 @@ test('use sort without index is forbidden', async (context) => {
 });
 
 test('bookmark', async (context) => {
-  skipIfCouchV1(context);
+  await skipIfCouchV1(context);
   const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
     query: { limit: 1 },
   });

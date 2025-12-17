@@ -2,8 +2,8 @@ import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
 import { getGlobalConfig } from '../../../src/config/config.js';
 import getNano from '../../../src/util/nanoShim.js';
-import { getAgent } from '../../setup/setup.js';
-import { authenticateAs } from '../../utils/authenticateCouchDB.js';
+import { authenticateAs } from '../../utils/authenticate.js';
+import { getAgent } from '../../utils/agent.js';
 
 const request = getAgent();
 

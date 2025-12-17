@@ -1,9 +1,8 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import data from '../../data/data.js';
-import { getAgent } from '../../setup/setup.js';
-import { authenticateAs } from '../../utils/authenticateCouchDB.js';
-import authenticateLDAP from '../../utils/authenticateLDAP.js';
+import { authenticateAs, authenticateLDAP } from '../../utils/authenticate.js';
+import { getAgent } from '../../utils/agent.js';
 
 const request = getAgent();
 

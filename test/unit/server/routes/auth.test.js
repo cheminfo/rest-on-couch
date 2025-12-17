@@ -1,6 +1,6 @@
 import { describe, expect, it, test } from 'vitest';
 
-import { getAgent } from '../../../setup/setup.js';
+import { getAgent } from '../../../utils/agent.js';
 
 const request = getAgent();
 
