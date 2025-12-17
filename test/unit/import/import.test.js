@@ -1,8 +1,9 @@
 import path from 'node:path';
 
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
-import { importFile } from '../../../src/import';
+import { importFile } from '../../../src/import/index.js';
 import { resetDatabase } from '../../utils/utils.js';
 
 const databaseName = 'test-new-import';
@@ -24,7 +25,7 @@ describe('import', () => {
   beforeEach(async () => {
     importCouch = await resetDatabase(databaseName);
   });
-  test('full import', async () => {
+  it('full import', async () => {
     await importFile(databaseName, 'full', textFile1);
     const data = await importCouch.getEntryById('test.txt', 'a@a.com');
     expect(data).toBeDefined();
@@ -97,7 +98,7 @@ describe('import', () => {
     });
   });
 
-  test('change filename', async () => {
+  it('change filename', async () => {
     await importFile(databaseName, 'changeFilename', textFile2);
     const entry = await importCouch.getEntryById('test.txt', 'a@a.com');
     const attachment = entry._attachments['jpath/in/document/newFilename.txt'];
@@ -108,7 +109,7 @@ describe('import', () => {
     expect(metadata.field.filename).toBe('jpath/in/document/newFilename.txt');
   });
 
-  test('All attachments and metadata are separate', async () => {
+  it('All attachments and metadata are separate', async () => {
     await importCouch.insertEntry(
       {
         $kind: 'sample',
@@ -176,13 +177,13 @@ describe('import', () => {
     expect(metadata2.reference).toBe('ref2');
   });
 
-  test('without reference', async () => {
+  it('without reference', async () => {
     await expect(() =>
       importFile(databaseName, 'noReference', textFile1),
     ).rejects.toThrow(/reference must be of type String/);
   });
 
-  test('error when the import function throws', async () => {
+  it('error when the import function throws', async () => {
     await expect(importFile(databaseName, 'error', textFile1)).rejects.toThrow(
       /this import is wrong/,
     );
@@ -206,7 +207,7 @@ describe('import', () => {
     expect(typeof importLogs[0].error.stack).toBe('string');
   });
 
-  test('load import.mjs using ESM syntax', async () => {
+  it('load import.mjs using ESM syntax', async () => {
     const { result } = await importFile(databaseName, 'esm_mjs', textFile1);
     expect(result).toBeDefined();
     expect(result.id).toBe('esm_import');

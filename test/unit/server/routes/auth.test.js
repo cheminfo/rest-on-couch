@@ -1,4 +1,5 @@
-import { describe, expect, it, test } from 'vitest';
+import { describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import { getAgent } from '../../../utils/agent.js';
 
@@ -20,7 +21,7 @@ describe('server/routes/auth', () => {
     });
   });
   describe('session', () => {
-    test('should return anonymous for unauthenticated users', () => {
+    it('should return anonymous for unauthenticated users', () => {
       return request
         .get('/auth/session')
         .expect(200)

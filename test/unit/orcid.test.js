@@ -1,4 +1,5 @@
-import { expect, it } from 'vitest';
+import { it } from 'node:test';
+import { expect } from 'chai';
 
 import okORCID from '../../src/util/orcid.js';
 

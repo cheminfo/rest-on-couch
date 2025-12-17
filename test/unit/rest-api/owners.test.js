@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import data from '../../data/data.js';
 import { authenticateAs } from '../../utils/authenticate.js';
@@ -11,7 +12,7 @@ describe('rest api - manage owners', () => {
   beforeEach(() => {
     return data().then(() => authenticateAs(request, 'b@b.com', '123'));
   });
-  test('get owners', () => {
+  it('get owners', () => {
     return request
       .get(`/db/test/entry/${id}/_owner`)
       .expect(200)
@@ -20,7 +21,7 @@ describe('rest api - manage owners', () => {
         expect(result.body[0]).toBe('b@b.com');
       });
   });
-  test('add owner', () => {
+  it('add owner', () => {
     return request
       .put(`/db/test/entry/${id}/_owner/test`)
       .expect(200)
@@ -29,7 +30,7 @@ describe('rest api - manage owners', () => {
         expect(entry.$owners.includes('test')).toBe(true);
       });
   });
-  test('remove owner', () => {
+  it('remove owner', () => {
     return couch
       .addOwnersToDoc(id, 'b@b.com', 'testRemove', 'entry')
       .then(() => {

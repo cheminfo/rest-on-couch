@@ -1,16 +1,17 @@
-import { describe, expect, test } from 'vitest';
+import { describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import validateDocUpdate from '../../../src/design/validateDocUpdate.js';
 
 describe('validate_doc_update', () => {
   describe('general', () => {
-    test('$type', () => {
+    it('$type', () => {
       assert({ $type: 'abc' }, null, 'Invalid type: abc');
       assert({ $type: 'entry' }, { $type: 'group' }, /Cannot change the type/);
     });
   });
   describe('$type: entry', () => {
-    test('id', () => {
+    it('id', () => {
       assert(
         addOwners(addDate({ $type: 'entry' })),
         null,
@@ -39,7 +40,7 @@ describe('validate_doc_update', () => {
         'Cannot change the ID',
       );
     });
-    test('date', () => {
+    it('date', () => {
       assert(
         addOwners({ $type: 'entry', $id: 'abc' }),
         null,
@@ -74,7 +75,7 @@ describe('validate_doc_update', () => {
         /cannot change to the past/,
       );
     });
-    test('owners', () => {
+    it('owners', () => {
       assert(addDate(addTypeID({ $owners: [] })), null, /must be an email/);
       assert(
         addDate(addTypeID({ $owners: ['abc'] })),
@@ -83,14 +84,14 @@ describe('validate_doc_update', () => {
       );
       assert(addDate(addTypeID({})), null, /Missing owners/);
     });
-    test('group', () => {
+    it('group', () => {
       assert(
         addDate(addOwners(addGroup({ name: 'a@a.com', users: [] }))),
         null,
         /Names can only contain alphanumerical characters and _-\./,
       );
     });
-    test('kind', () => {
+    it('kind', () => {
       assert(
         addOwners(addDate({ $type: 'entry', $id: 'abc' })),
         addOwners(addDate({ $type: 'entry', $id: 'abc', $kind: 'xy' })),

@@ -1,4 +1,4 @@
-import { expect } from 'vitest';
+import { expect } from 'chai';
 
 export async function authenticateAs(agent, username, password) {
   await logout(agent);

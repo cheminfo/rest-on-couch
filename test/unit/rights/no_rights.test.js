@@ -1,34 +1,35 @@
-import { beforeAll, describe, expect, test } from 'vitest';
+import { before, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import constants from '../../data/constants.js';
 import data from '../../data/noRights.js';
 
 describe('entry reads, database without any default rights', () => {
-  beforeAll(data);
+  before(data);
 
-  test('should grant read access to group member with read access', () => {
+  it('should grant read access to group member with read access', () => {
     return expect(couch.getEntry('A', 'a@a.com')).resolves.toBeInstanceOf(
       Object,
     );
   });
 
-  test('should not grant read access to inexistant user', () => {
+  it('should not grant read access to inexistant user', () => {
     return expect(couch.getEntry('A', 'z@z.com')).rejects.toThrow(/no access/);
   });
 
-  test('owner of entry should have access to it', () => {
+  it('owner of entry should have access to it', () => {
     return expect(couch.getEntry('A', 'b@b.com')).toBeInstanceOf(Object);
   });
 
-  test('non-read member should not have access to entry', () => {
+  it('non-read member should not have access to entry', () => {
     return expect(couch.getEntry('A', 'c@c.com')).rejects.toThrow(/no access/);
   });
 
-  test('non-read member should not have access to entry (by uuid)', () => {
+  it('non-read member should not have access to entry (by uuid)', () => {
     return expect(couch.getEntry('A', 'c@c.com')).rejects.toThrow(/no access/);
   });
 
-  test('should only get entries for which user has read access', () => {
+  it('should only get entries for which user has read access', () => {
     return couch
       .getEntriesByUserAndRights('a@a.com', 'read')
       .then((entries) => {
@@ -37,7 +38,7 @@ describe('entry reads, database without any default rights', () => {
       });
   });
 
-  test('should reject anonymous user', () => {
+  it('should reject anonymous user', () => {
     return expect(couch.getEntry('A', 'anonymous')).rejects.toThrow(
       /no access/,
     );
@@ -45,9 +46,9 @@ describe('entry reads, database without any default rights', () => {
 });
 
 describe('entry editions, database without any default rights', () => {
-  beforeAll(data);
+  before(data);
 
-  test('any user is not allowed to create entry', () => {
+  it('any user is not allowed to create entry', () => {
     return expect(
       couch.insertEntry(constants.newEntry, 'z@z.com'),
     ).rejects.toThrow(/not allowed to create/);

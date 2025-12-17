@@ -50,9 +50,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run tests
+        if: ${{ matrix.node-version != '24.x' }}
+        run: npm run test-only
+      - name: Run tests with coverage
+        # This command is only supported by Node.js 24 because it uses experimental-config-file
+        if: ${{ matrix.node-version == '24.x' }}
         run: npm run test-coverage
       - name: Send coverage report to Codecov
         if: ${{ matrix.node-version == '24.x' && matrix.couchdb-version == 'latest' }}
         uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: true
+          disable_search: true
+          files: lcov.info

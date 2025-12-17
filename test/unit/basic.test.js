@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 
-import { beforeEach, describe, expect, it, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import Couch from '../../src/index.js';
 import constants from '../../src/constants.js';
@@ -14,19 +15,19 @@ process.on('unhandledRejection', function handleUnhandledRejection(err) {
 });
 
 describe('basic initialization tests', () => {
-  test('should init', async () => {
+  it('should init', async () => {
     await resetDatabaseWithoutCouch('test2');
     const couch = Couch.get('test2');
     return couch.open();
   });
 
-  test('should throw if no database given', () => {
+  it('should throw if no database given', () => {
     return expect(Promise.resolve().then(() => new Couch())).rejects.toThrow(
       'database option is mandatory',
     );
   });
 
-  test('should throw on invalid db name', () => {
+  it('should throw on invalid db name', () => {
     expect(() => new Couch({ database: '_test' })).toThrow(
       /invalid database name/,
     );

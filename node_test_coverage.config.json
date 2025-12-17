@@ -1,0 +1,15 @@
+{
+  "$schema": "https://nodejs.org/dist/v24.11.1/docs/node-config-schema.json",
+  "nodeOptions": {
+    "import": "./test/setup.js"
+  },
+  "testRunner": {
+    "experimental-test-coverage": true,
+    "test-coverage-include": "src/**/*",
+    "test-coverage-exclude": "src/client/**/*",
+    "test-concurrency": 1,
+    "test-timeout": 20000,
+    "test-reporter": ["lcov", "spec"],
+    "test-reporter-destination": ["lcov.info", "stdout"]
+  }
+}

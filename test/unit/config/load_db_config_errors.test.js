@@ -1,7 +1,8 @@
 import path from 'node:path';
 import assert from 'node:assert';
 import fs from 'node:fs';
-import { expect, test, vi } from 'vitest';
+import { it, mock } from 'node:test';
+import { expect } from 'chai';
 
 import { getDbConfig, getDbConfigOrDie } from '../../../src/config/db.js';
 
@@ -13,15 +14,15 @@ process.exit = () => {
   // ignore
 };
 
-test('process should die when there is a problem loading the database configuration', () => {
-  const exit = vi.spyOn(process, 'exit');
+it('process should die when there is a problem loading the database configuration', () => {
+  const exit = mock.method(process, 'exit');
   getDbConfigOrDie(
     path.join(import.meta.dirname, '../../homeDirectories/failDuplicateView'),
   );
-  expect(exit).toHaveBeenCalledWith(1);
+  expect(exit.mock.calls[0].arguments[0]).toBe(1);
 });
 
-test('configuration has duplicate view name', () => {
+it('configuration has duplicate view name', () => {
   expect(function load() {
     return getDbConfig(
       path.join(import.meta.dirname, '../../homeDirectories/failDuplicateView'),
@@ -29,7 +30,7 @@ test('configuration has duplicate view name', () => {
   }).toThrow(/a view is defined more than once: viewTest/);
 });
 
-test('loading configuration that has duplicate index name', () => {
+it('loading configuration that has duplicate index name', () => {
   expect(function load() {
     return getDbConfig(
       path.join(
@@ -40,7 +41,7 @@ test('loading configuration that has duplicate index name', () => {
   }).toThrow(/an index is defined more than once: indexTest/);
 });
 
-test('loading configuration that has duplicate index name', () => {
+it('loading configuration that has duplicate index name', () => {
   expect(function load() {
     return getDbConfig(
       path.join(
@@ -53,7 +54,7 @@ test('loading configuration that has duplicate index name', () => {
   );
 });
 
-test('loading configuration that has duplicate names', () => {
+it('loading configuration that has duplicate names', () => {
   expect(function load() {
     return getDbConfig(
       path.join(import.meta.dirname, '../../homeDirectories/failShareName'),
@@ -61,7 +62,7 @@ test('loading configuration that has duplicate names', () => {
   }).toThrow(/query indexes and javascript views cannot share names: test/);
 });
 
-test('loading configuration with unallowed override of the filters prop', () => {
+it('loading configuration with unallowed override of the filters prop', () => {
   expect(function load() {
     return getDbConfig(
       path.join(
@@ -72,7 +73,7 @@ test('loading configuration with unallowed override of the filters prop', () => 
   }).toThrow(/^customDesign\.updates cannot be overriden$/);
 });
 
-test('loading import.js file implemented with ESM syntax', async () => {
+it('loading import.js file implemented with ESM syntax', async () => {
   const dir = path.join(
     import.meta.dirname,
     '../../homeDirectories/failEsmInJsFile',
@@ -81,7 +82,7 @@ test('loading import.js file implemented with ESM syntax', async () => {
   expect(() => getDbConfig(dir)).toThrow(/Unexpected token 'export'/);
 });
 
-test('failEsmWrongExport - loading import.mjs with a default export instead of named export', async () => {
+it('failEsmWrongExport - loading import.mjs with a default export instead of named export', async () => {
   const dir = path.join(
     import.meta.dirname,
     '../../homeDirectories/failEsmWrongExport',

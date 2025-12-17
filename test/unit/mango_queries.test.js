@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import anyuser from '../data/anyuser.js';
 import noRights from '../data/noRights.js';
@@ -8,7 +9,7 @@ import { skipIfCouchV1 } from '../utils/couch.js';
 describe('no rights mango queries', () => {
   beforeEach(skipIfCouchV1);
   beforeEach(noRights);
-  test('users should get all entries with read access', async () => {
+  it('users should get all entries with read access', async () => {
     const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
       query: {
         selector: {},
@@ -24,7 +25,7 @@ describe('no rights mango queries', () => {
     expect(data2.docs).toHaveLength(5);
   });
 
-  test('anonymous should get all entries with the defaultAnonymousRead group', async () => {
+  it('anonymous should get all entries with the defaultAnonymousRead group', async () => {
     const anonymousData = await couch.findEntriesByRight('anonymous', 'read', {
       query: {},
     });
@@ -37,7 +38,7 @@ describe('no rights mango queries', () => {
     ).toBe(true);
   });
 
-  test('should get owned entries', async () => {
+  it('should get owned entries', async () => {
     const dataA = await couch.findEntriesByRight('a@a.com', 'owner', {
       query: {
         selector: {},
@@ -60,7 +61,7 @@ describe('no rights mango queries', () => {
     expect(dataX.docs).toHaveLength(3);
   });
 
-  test('use selector to get specific entry', async () => {
+  it('use selector to get specific entry', async () => {
     const data = await couch.findEntriesByRight('a@a.com', 'read', {
       query: {
         selector: {
@@ -74,7 +75,7 @@ describe('no rights mango queries', () => {
     expect(data.warning).toMatch(/No matching index found/);
   });
 
-  test('return field selection', async () => {
+  it('return field selection', async () => {
     const data = await couch.findEntriesByRight('a@a.com', 'read', {
       query: {
         selector: {
@@ -93,7 +94,7 @@ describe('no rights mango queries', () => {
     );
   });
 
-  test('filter with mine=true', async () => {
+  it('filter with mine=true', async () => {
     const data = await couch.findEntriesByRight('a@a.com', 'read', {
       query: {
         fields: ['\\$content.x'],
@@ -105,7 +106,7 @@ describe('no rights mango queries', () => {
     expect(data.docs).toStrictEqual([{ $content: { x: 3 } }]);
   });
 
-  test('filter with groups', async () => {
+  it('filter with groups', async () => {
     const data = await couch.findEntriesByRight('a@a.com', 'read', {
       groups: ['groupA'],
       query: {
@@ -117,7 +118,7 @@ describe('no rights mango queries', () => {
     expect(data.docs).toStrictEqual([{ $content: { x: 1 } }]);
   });
 
-  test('use an index', async () => {
+  it('use an index', async () => {
     const data = await couch.findEntriesByRight('a@a.com', 'read', {
       query: {
         selector: {
@@ -134,7 +135,7 @@ describe('no rights mango queries', () => {
     expect(data.warning).toBe(undefined);
   });
 
-  test('query with limit', async () => {
+  it('query with limit', async () => {
     const data = await couch.findEntriesByRight('a@a.com', 'read', {
       query: {
         limit: 1,
@@ -146,7 +147,7 @@ describe('no rights mango queries', () => {
     expect(data.docs).toHaveLength(1);
   });
 
-  test('query and sorting', async () => {
+  it('query and sorting', async () => {
     const dataAsc = await couch.findEntriesByRight('a@a.com', 'read', {
       query: {
         selector: {
@@ -178,7 +179,7 @@ describe('no rights mango queries', () => {
     expect(data.docs[0].$content.x).toBe(3);
   });
 
-  test('use an index which does not exist', async () => {
+  it('use an index which does not exist', async () => {
     return expect(() =>
       couch.findEntriesByRight('a@a.com', 'read', {
         query: {
@@ -195,7 +196,7 @@ describe('no rights mango queries', () => {
   });
 });
 
-test('use sort without index is forbidden', async (context) => {
+it('use sort without index is forbidden', async (context) => {
   skipIfCouchV1(context);
   return expect(() =>
     couch.findEntriesByRight('a@a.com', 'read', {
@@ -206,7 +207,7 @@ test('use sort without index is forbidden', async (context) => {
   ).rejects.toThrow(/query with sort must use index/);
 });
 
-test('bookmark', async (context) => {
+it('bookmark', async (context) => {
   await skipIfCouchV1(context);
   const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
     query: { limit: 1 },
@@ -227,7 +228,7 @@ test('bookmark', async (context) => {
 describe('anyuser mango queries', () => {
   beforeEach(skipIfCouchV1);
   beforeEach(anyuser);
-  test('should get all entries with any user (global right)', async () => {
+  it('should get all entries with any user (global right)', async () => {
     const data = await couch.findEntriesByRight('a@a.com', 'read', {
       query: {
         selector: {},

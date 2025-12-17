@@ -1,29 +1,30 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import data from '../data/data.js';
 
 describe('entries with attachments', () => {
   beforeEach(data);
 
-  test('should error if entry has no attachment', () => {
+  it('should error if entry has no attachment', () => {
     return expect(
       couch.getAttachmentByName('anonymousEntry', 'foo.txt', 'b@b.com'),
     ).rejects.toThrow(/attachment foo\.txt not found/);
   });
 
-  test('should error if entry attachment does not exist', () => {
+  it('should error if entry attachment does not exist', () => {
     return expect(
       couch.getAttachmentByName('entryWithAttachment', 'foo.txt', 'b@b.com'),
     ).rejects.toThrow(/attachment foo\.txt not found/);
   });
 
-  test('should return attachment data', () => {
+  it('should return attachment data', () => {
     return expect(
       couch.getAttachmentByName('entryWithAttachment', 'test.txt', 'b@b.com'),
     ).resolves.toEqual(Buffer.from('THIS IS A TEST'));
   });
 
-  test('should delete an attachment from a document given by its uuid', () => {
+  it('should delete an attachment from a document given by its uuid', () => {
     return couch
       .getEntry('entryWithAttachment', 'b@b.com')
       .then((entry) =>

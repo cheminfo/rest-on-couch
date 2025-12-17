@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import data from '../../data/data.js';
 import { authenticateAs, authenticateLDAP } from '../../utils/authenticate.js';
@@ -8,7 +9,7 @@ const request = getAgent();
 
 describe('User REST-api (data, anonymous)', () => {
   beforeEach(data);
-  test('Should return 404 if anonymous', () => {
+  it('Should return 404 if anonymous', () => {
     return request.get('/db/test/user/_me').expect(404);
   });
 
@@ -17,7 +18,7 @@ describe('User REST-api (data, anonymous)', () => {
 
 describe('User REST-api (token)', () => {
   beforeEach(data);
-  test('Should be able to PUT', () => {
+  it('Should be able to PUT', () => {
     return request
       .put('/db/test/entry/documentOfA/blub.txt?token=myAddAttachmentToken')
       .set('Content-Type', 'text/plain')
@@ -25,7 +26,7 @@ describe('User REST-api (token)', () => {
       .expect(200);
   });
 
-  test('Should be able to PUT but not without the right in the token', () => {
+  it('Should be able to PUT but not without the right in the token', () => {
     return request
       .put('/db/test/entry/documentOfA/blub.txt?token=myReadOnlyToken')
       .set('Content-Type', 'text/plain')
@@ -33,13 +34,13 @@ describe('User REST-api (token)', () => {
       .expect(401);
   });
 
-  test('Should be able to GET with the token', () => {
+  it('Should be able to GET with the token', () => {
     return request
       .get('/db/test/entry/A?token=myAddAttachmentToken')
       .expect(200);
   });
 
-  test('Should be able to update document with user token', () => {
+  it('Should be able to update document with user token', () => {
     return couch.getEntryById('A', 'b@b.com').then((entry) => {
       return request
         .put('/db/test/entry/A?token=myUserToken')
@@ -52,7 +53,7 @@ describe('User REST-api (token)', () => {
     });
   });
 
-  test('Should be able to create and delete document with user token', async () => {
+  it('Should be able to create and delete document with user token', async () => {
     const newEntry = await request
       .post('/db/test/entry?token=myUserToken')
       .send({
@@ -73,7 +74,7 @@ describe('User REST-api , a@a.com', () => {
     return data().then(() => authenticateAs(request, 'a@a.com', '123'));
   });
 
-  test('Should get user details', () => {
+  it('Should get user details', () => {
     return request
       .get('/db/test/user/_me')
       .expect(200)
@@ -83,7 +84,7 @@ describe('User REST-api , a@a.com', () => {
       });
   });
 
-  test('Should save user details', () => {
+  it('Should save user details', () => {
     return request
       .post('/db/test/user/_me')
       .send({ val: 'x' })
@@ -104,12 +105,12 @@ describe('LDAP user, developer@zakodium.com', () => {
     );
   });
 
-  test('Should get ldap user details', () => {
+  it('Should get ldap user details', () => {
     // Ldap users don't store user data
     return request.get('/db/test/user/_me').expect(404);
   });
 
-  test('Should get ldap user info', () => {
+  it('Should get ldap user info', () => {
     return request
       .get('/db/test/userInfo/_me')
       .expect(200)

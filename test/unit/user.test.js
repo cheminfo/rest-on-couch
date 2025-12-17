@@ -1,25 +1,26 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, it } from 'node:test';
+import { expect } from 'chai';
 
 import data from '../data/data.js';
 
 describe('Couch user API', () => {
   beforeEach(data);
-  test('Should get a user', async () => {
+  it('Should get a user', async () => {
     const doc = await couch.getUser('a@a.com');
     expect(doc.user).toBe('a@a.com');
   });
 
-  test('Get user should throw if not exists', () => {
+  it('Get user should throw if not exists', () => {
     return expect(couch.getUser('b@b.com')).rejects.toThrow(/not found/);
   });
 
-  test('Edit user should throw when anonymous', () => {
+  it('Edit user should throw when anonymous', () => {
     return expect(couch.editUser('anonymous', { val: 'test' })).rejects.toThrow(
       /must be an email/,
     );
   });
 
-  test('Should edit user', async () => {
+  it('Should edit user', async () => {
     {
       const res = await couch.editUser('b@b.com', { val: 'b', v: 'b' });
       expect(res.rev).toMatch(/^1/);
@@ -41,7 +42,7 @@ describe('Couch user API', () => {
     }
   });
 
-  test('getUserInfo', async () => {
+  it('getUserInfo', async () => {
     const user = await couch.getUserInfo('user@test.com');
     expect(user.email).toBe('user@test.com');
     expect(user.value).toBe(42);
