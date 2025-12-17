@@ -49,7 +49,6 @@
   "dependencies": {
     "@koa/router": "^15.0.0",
     "@ladjs/koa-views": "^9.0.0",
-    "@vitest/expect": "^4.0.16",
     "commander": "^14.0.2",
     "debug": "^4.4.3",
     "extend": "^3.0.2",
@@ -85,6 +84,7 @@
   "devDependencies": {
     "@fontsource-variable/roboto": "^5.2.9",
     "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/expect": "^4.0.16",
     "bootstrap": "^3.4.1",
     "chai": "^6.2.1",
     "eslint": "^9.39.1",
