@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { afterEach, describe, expect, test } from 'vitest';
 
-import { getFileDropAgent } from '../../setup/setup.js';
+import { getFileDropAgent } from '../../utils/agent.js';
 
 const request = getFileDropAgent();
 const homedir = path.join(import.meta.dirname, '../../homeDirectories/main');

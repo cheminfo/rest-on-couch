@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import { beforeEach, describe, expect, test } from 'vitest';
 
-import { importFile } from '../../../src/index.js';
+import { importFile } from '../../../src/import';
 import { resetDatabase } from '../../utils/utils.js';
 
 const databaseName = 'test-new-import';

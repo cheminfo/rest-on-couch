@@ -1,12 +1,13 @@
 import assert from 'node:assert';
 
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, it, test } from 'vitest';
 
 import Couch from '../../src/index.js';
 import constants from '../../src/constants.js';
 import entryUnicity from '../data/byOwnerEntryUnicity.js';
 import { resetDatabaseWithoutCouch } from '../utils/utils.js';
-import { getCouchMajorVersion } from '../setup/setup.js';
+
+import { getCouchMajorVersion } from '../utils/couch.js';
 
 process.on('unhandledRejection', function handleUnhandledRejection(err) {
   throw err;
@@ -39,41 +40,41 @@ describe('basic initialization tests', () => {
 describe('basic initialization with custom design docs', () => {
   beforeEach(entryUnicity);
 
-  test('should load the design doc files at initialization', () => {
-    const app = couch._db
-      .getDocument(`_design/${constants.DESIGN_DOC_NAME}`)
-      .then((app) => {
-        assert.notEqual(app, null);
-        assert.ok(app.filters.abc);
-      });
-    const customApp = couch._db
-      .getDocument(`_design/${constants.CUSTOM_DESIGN_DOC_NAME}`)
-      .then((app) => {
-        assert.notEqual(app, null);
-        assert.ok(app.views.test);
-      });
-    const custom = couch._db.getDocument('_design/custom').then((custom) => {
-      assert.notEqual(custom, null);
-      assert.ok(custom.views.testCustom);
-    });
-
-    const customIndex = couch._db
-      .getDocument('_design/modDateIndex')
-      .then((custom) => {
-        const couchdbVersion = getCouchMajorVersion();
-        if (couchdbVersion === 1) {
-          // In CouchDB 1, there is no support for mango indexes so this design doc is not created.
-          assert.equal(custom, null);
-        } else {
-          assert.notEqual(custom, null);
-          assert.ok(custom.views.modDate);
-        }
-      });
-
-    return Promise.all([app, customApp, custom, customIndex]);
+  it('should have initialized the main app design document', async () => {
+    const app = await couch._db.getDocument(
+      `_design/${constants.DESIGN_DOC_NAME}`,
+    );
+    assert.notEqual(app, null);
+    assert.ok(app.filters.abc);
   });
 
-  test('should query a custom design document', () => {
+  it('should have initialized the default custom design doc', async () => {
+    const app = await couch._db.getDocument(
+      `_design/${constants.CUSTOM_DESIGN_DOC_NAME}`,
+    );
+    assert.notEqual(app, null);
+    assert.ok(app.views.test);
+  });
+
+  it('should have initialized a named custom views design doc', async () => {
+    const custom = await couch._db.getDocument('_design/custom');
+    assert.notEqual(custom, null);
+    assert.ok(custom.views.testCustom);
+  });
+
+  it('should have initialized a named custom index design doc', async () => {
+    const custom = await couch._db.getDocument('_design/modDateIndex');
+    const couchdbVersion = await getCouchMajorVersion();
+    if (couchdbVersion === 1) {
+      // In CouchDB 1, there is no support for mango indexes so this design doc is not created.
+      assert.equal(custom, null);
+    } else {
+      assert.notEqual(custom, null);
+      assert.ok(custom.views.modDate);
+    }
+  });
+
+  it('should query a custom design document', () => {
     return couch.queryEntriesByUser('a@a.com', 'testCustom').then((data) => {
       expect(data).toHaveLength(1);
     });

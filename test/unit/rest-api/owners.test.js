@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import data from '../../data/data.js';
-import { getAgent } from '../../setup/setup.js';
-import { authenticateAs } from '../../utils/authenticateCouchDB.js';
+import { authenticateAs } from '../../utils/authenticate.js';
+import { getAgent } from '../../utils/agent.js';
 
 const request = getAgent();
 
