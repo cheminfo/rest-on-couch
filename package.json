@@ -27,7 +27,7 @@
     "preview:api": "NODE_ENV=production npm run build && node --env-file=.env.dev bin/rest-on-couch-server.js",
     "test": "npm run test-coverage && npm run eslint && npm run prettier",
     "test-coverage": "node --test --env-file=.env.test --experimental-config-file=node_test_coverage.config.json **/*.test.js",
-    "test-only": "node --test --env-file=.env.test --import ./test/setup.js --test-concurrency=1 --test-timeout=20000  **/*.test.js"
+    "test-only": "node --test --env-file=.env.test --import ./test/setup.js --test-concurrency=1 --test-timeout=20000 --test-reporter=spec  **/*.test.js"
   },
   "repository": {
     "type": "git",
