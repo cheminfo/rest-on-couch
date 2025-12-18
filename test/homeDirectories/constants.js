@@ -7,28 +7,26 @@ const oidcClient = process.env.OIDC_CLIENT_ID;
 const oidcClientSecret = process.env.OIDC_CLIENT_SECRET;
 
 if (oidcClient && oidcClientSecret) {
-  // This dev app is configured on entra.microsoft.com (zakodium.com organization)
+  // This dev app is configured on id.zakodium.com
   oidcAuthConfig = {
-    title: 'Microsoft SSO',
+    title: 'Zakodium SSO',
     showLogin: true,
-    issuer:
-      'https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/v2.0',
-    authorizationURL:
-      'https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/oauth2/v2.0/authorize',
-    tokenURL:
-      'https://login.microsoftonline.com/2661e5e2-a012-441b-84ba-c046ea88d607/oauth2/v2.0/token',
-    userInfoURL: 'https://graph.microsoft.com/oidc/userinfo',
-    claims: {
-      id_token: {
-        tenant_ctry: { essential: true },
-      },
-    },
-    getEmail: function getEmail({ profile, idToken }) {
+    issuer: 'https://id.zakodium.com',
+    authorizationURL: 'https://id.zakodium.com/oauth/v2/authorize',
+    tokenURL: 'https://id.zakodium.com/oauth/v2/token',
+    userInfoURL: 'https://id.zakodium.com/oidc/v1/userinfo',
+    skipUserProfile: false,
+    storeProfileInSession: true,
+    getEmail: function getEmail(data) {
       // You can customize the email extraction logic here
-      const decoded = jwt.decode(idToken);
-      console.log(decoded);
-      // This is the default behavior
-      return profile.username;
+      // If data is missing from the profile, you might want to decode the jwt token directly
+      const decoded = jwt.decode(data.idToken);
+      console.log({ decoded });
+      const { profile } = data;
+      return profile.emails?.[0]?.value;
+    },
+    getProfile: function getProfile(data) {
+      return data.profile;
     },
     clientID: oidcClient,
     clientSecret: oidcClientSecret,

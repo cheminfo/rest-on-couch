@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('../../../util/debug.js')('auth:oidc');
 const OIDCStrategy = require('passport-openidconnect');
 
 const { auditLogin } = require('../../../audit/actions');
@@ -26,8 +27,8 @@ exports.init = function initOidc(passport, router, authConfig, globalConfig) {
       function verify(
         req,
         issuer,
-        // Warning: this won't contain all the profile information, and you might
-        // want to parse the id token yourself
+        // Warning: this won't always contain all the profile information,
+        // and you might want to parse the id token yourself
         profile,
         context,
         idToken,
@@ -36,25 +37,35 @@ exports.init = function initOidc(passport, router, authConfig, globalConfig) {
         done,
       ) {
         let email;
+        let sessionProfile;
 
-        if (authConfig.getEmail) {
-          try {
-            email = authConfig.getEmail({ profile, idToken, accessToken });
-          } catch {
-            return done(null, false, 'error while parsing user email');
-          }
-        } else {
-          email = profile.username;
+        const { getEmail = () => profile.email, getProfile = () => profile } =
+          authConfig;
+        try {
+          email = getEmail({ profile, idToken, accessToken });
+        } catch (err) {
+          debug.error('error while parsing user email', err);
+          return done(null, false, 'error while parsing user email');
         }
 
         if (typeof email !== 'string' || !isEmail(email)) {
           return done(null, false, 'username must be an email');
         }
 
+        try {
+          sessionProfile = getProfile({ profile, idToken, accessToken });
+        } catch (err) {
+          debug.error('error while parsing user profile', err);
+          return done(null, false, 'error while parsing user profile');
+        }
+
         auditLogin(email, true, 'oidc', req.ctx);
         done(null, {
           provider: 'oidc',
           email,
+          profile: authConfig.storeProfileInSession
+            ? sessionProfile
+            : undefined,
         });
       },
     ),
@@ -66,8 +77,7 @@ exports.init = function initOidc(passport, router, authConfig, globalConfig) {
     '/login/oidc/callback',
     passport.authenticate('openidconnect', {
       failureRedirect: globalConfig.authRedirectUrl,
-      // TODO: activate this and show messages in the UI
-      failureMessage: false,
+      failureMessage: true,
     }),
     (ctx) => {
       ctx.response.redirect(globalConfig.authRedirectUrl);

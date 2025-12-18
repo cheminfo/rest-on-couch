@@ -88,12 +88,11 @@ exports.getUserEmail = function getUserEmail(ctx) {
 };
 
 exports.getProvider = function getProvider(ctx) {
-  let user;
-  if (ctx.session.passport && (user = ctx.session.passport.user)) {
-    return user.provider;
-  } else {
-    return null;
-  }
+  return ctx.session.passport?.user?.provider ?? null;
+};
+
+exports.getProfile = function getProfile(ctx) {
+  return ctx.session.passport?.user?.profile ?? null;
 };
 
 async function getUserEmailFromToken(ctx) {
