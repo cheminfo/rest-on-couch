@@ -91,13 +91,15 @@ function getAuthRouter() {
   });
 
   router.get('/login', async (ctx) => {
-    if (ctx.isAuthenticated() && !ctx.session.popup) {
+    if (ctx.isAuthenticated()) {
       ctx.session.messages = [];
-      ctx.redirect(ctx.session.continue || '/');
-      ctx.session.continue = null;
-    } else if (ctx.isAuthenticated() && ctx.session.popup) {
-      ctx.session.popup = false;
-      ctx.body = '<script>window.close();</script>';
+      if (ctx.session.popup) {
+        ctx.session.popup = false;
+        ctx.body = '<script>window.close();</script>';
+      } else {
+        ctx.redirect(ctx.session.continue || '/');
+        ctx.session.continue = null;
+      }
     } else {
       ctx.session.popup = false;
       const sessionMessage = Array.isArray(ctx.session.messages)
