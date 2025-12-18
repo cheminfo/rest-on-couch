@@ -31,6 +31,7 @@ describe('server/routes/auth', () => {
             authenticated: false,
             username: 'anonymous',
             provider: null,
+            profile: null,
             admin: false,
           });
         });
