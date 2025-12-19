@@ -1,25 +1,19 @@
 import { z } from 'zod';
 
-const level = z.union([
-  z.literal('FATAL'),
-  z.literal('ERROR'),
-  z.literal('WARN'),
-  z.literal('INFO'),
-  z.literal('DEBUG'),
-  z.literal('TRACE'),
-]);
+const level = z.enum(['FATAL', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE']);
 
-export const globalRightType = z.union([
-  z.literal('delete'),
-  z.literal('read'),
-  z.literal('write'),
-  z.literal('create'),
-  z.literal('readGroup'),
-  z.literal('writeGroup'),
-  z.literal('createGroup'),
-  z.literal('readImport'),
-  z.literal('owner'),
-  z.literal('addAttachment'),
+export const globalRightType = z.enum([
+  'admin',
+  'delete',
+  'read',
+  'write',
+  'create',
+  'readGroup',
+  'writeGroup',
+  'createGroup',
+  'readImport',
+  'owner',
+  'addAttachment',
 ]);
 
 const authPlugin = z.looseObject({
@@ -27,21 +21,28 @@ const authPlugin = z.looseObject({
   showLogin: z.boolean().default(false),
 });
 
-const configBoolean = z.union([
-  z.boolean(),
-  z
-    .string()
-    .trim()
-    .toLowerCase()
-    .refine((value) => value === 'true' || value === 'false', {
-      error: 'Value must be "true" or "false"',
-    })
-    .transform((v) => {
-      if (v === 'true') return true;
-      if (v === 'false') return false;
-      throw new Error('Unreachable');
-    }),
-]);
+const boolean = z.union(
+  [
+    z.boolean(),
+    z
+      .string()
+      .trim()
+      .toLowerCase()
+      .refine((value) => value === 'true' || value === 'false')
+      .transform((v) => {
+        return v === 'true';
+      }),
+  ],
+  { error: 'Value must be a boolean, "true" or "false"' },
+);
+
+const nonnegativeInteger = z.union(
+  [
+    z.number().nonnegative(),
+    z.string().trim().regex(/^\d+$/).transform(parseInt),
+  ],
+  { error: 'Value must be a non-negative integer' },
+);
 
 const globalRightUser = z.union([
   z.email(),
@@ -49,7 +50,7 @@ const globalRightUser = z.union([
   z.literal('anonymous'),
 ]);
 
-const entryUnicity = z.union([z.literal('byOwner'), z.literal('global')]);
+const entryUnicity = z.enum(['byOwner', 'global']);
 
 export const configSchema = z.looseObject({
   // Main options
@@ -58,14 +59,14 @@ export const configSchema = z.looseObject({
   password: z.string(),
   adminPassword: z.string(),
   logLevel: level.default('FATAL'),
-  authRenewal: z.number().default(570),
-  ldapGroupsRenewal: z.number().default(300),
+  authRenewal: nonnegativeInteger.default(570),
+  ldapGroupsRenewal: nonnegativeInteger.default(300),
   administrators: z.array(z.email()).default([]),
   superAdministrators: z.array(z.email()).default([]),
 
   // Server options
-  port: z.number().default(3000),
-  fileDropPort: z.number().default(3001),
+  port: nonnegativeInteger.default(3000),
+  fileDropPort: nonnegativeInteger.default(3001),
   auth: z
     .object({
       couchdb: authPlugin,
@@ -86,14 +87,14 @@ export const configSchema = z.looseObject({
   /**
    * Make koa trust X-Forwarded- headers
    */
-  proxy: configBoolean.default(true),
+  proxy: boolean.default(true),
   proxyPrefix: z
     .string()
     .trim()
     .default('')
     .transform((value) => {
       let transformed = value;
-      // Add loading slash
+      // Add leading slash
       if (!value.startsWith('/')) {
         transformed = `/${value}`;
       }
@@ -111,14 +112,14 @@ export const configSchema = z.looseObject({
   keys: z.array(z.string().trim()).min(1),
 
   sessionKey: z.string().trim().default('roc:sess'),
-  sessionMaxAge: z.number().default(24 * 60 * 60 * 1000), // One day
+  sessionMaxAge: nonnegativeInteger.default(24 * 60 * 60 * 1000), // One day
   sessionPath: z.string().trim().default('/'),
-  sessionSecure: configBoolean.default(false),
-  sessionSigned: configBoolean.default(true),
+  sessionSecure: boolean.default(false),
+  sessionSigned: boolean.default(true),
   sessionSameSite: z.string().trim().default('lax'),
 
   allowedOrigins: z.array(z.string()).default([]),
-  debugrest: configBoolean.default(false),
+  debugrest: boolean.default(false),
   /**
    * Global rights
    */
@@ -135,7 +136,7 @@ export const configSchema = z.looseObject({
   entryUnicity: entryUnicity.default('byOwner'), // can be byOwner or global
 
   // Options related to audit logs
-  auditActions: configBoolean.default(false),
+  auditActions: boolean.default(false),
   auditActionsDb: z.string().trim().default('roc-audit-actions'),
 
   beforeCreateHook: z.function().optional(),

@@ -8,6 +8,7 @@ const getEnvConfig = require('./env');
 const { getHomeConfig } = require('./home');
 const { configSchema } = require('./schema.mjs');
 const { getConfigGlobal } = require('./global.mjs');
+const { z } = require('zod');
 
 const configStore = {};
 let homeConfig;
@@ -23,7 +24,7 @@ function getConfig(database, customConfig = undefined) {
 
   if (!customConfig) {
     if (!configStore[database]) {
-      configStore[database] = configSchema.parse({
+      configStore[database] = parseConfig({
         ...globalConfig,
         ...homeConfig,
         ...dbConfig[database],
@@ -41,7 +42,16 @@ function getConfig(database, customConfig = undefined) {
       ...cliConfig,
       ...customConfig,
     };
-    return configSchema.parse(final);
+    return parseConfig(final);
+  }
+}
+
+function parseConfig(config) {
+  const result = configSchema.safeParse(config);
+  if (result.success) {
+    return result.data;
+  } else {
+    throw new Error(z.prettifyError(result.error));
   }
 }
 
