@@ -36,9 +36,8 @@ jobs:
           echo "Running docker container for 10s..."
           CONTAINER_ID=$(docker run -d \
             --network host \
-            -v ./test/homeDirectories/dev:/rest-on-couch \
-            -e REST_ON_COUCH_USERNAME=rest-on-couch \
-            -e REST_ON_COUCH_PASSWORD=roc-123 \
+            -v ./test/homeDirectories:/rest-on-couch \
+            -e REST_ON_COUCH_HOME_DIR=/rest-on-couch/dev \
             -e DEBUG=couch:* \
             rest-on-couch)
 

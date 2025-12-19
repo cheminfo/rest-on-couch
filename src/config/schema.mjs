@@ -66,13 +66,15 @@ export const configSchema = z.looseObject({
   // Server options
   port: z.number().default(3000),
   fileDropPort: z.number().default(3001),
-  auth: z.object({
-    couchdb: authPlugin.default({}),
-    github: authPlugin.optional(),
-    google: authPlugin.optional(),
-    ldap: authPlugin.optional(),
-    oidc: authPlugin.optional(),
-  }),
+  auth: z
+    .object({
+      couchdb: authPlugin,
+      github: authPlugin.optional(),
+      google: authPlugin.optional(),
+      ldap: authPlugin.optional(),
+      oidc: authPlugin.optional(),
+    })
+    .default({ couchdb: {} }),
   /**
    * Default redirect after successful or failed authentication
    * The /auth/login endpoint has redirects when the user is already authenticated.

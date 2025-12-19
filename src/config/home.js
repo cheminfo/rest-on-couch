@@ -1,6 +1,7 @@
 'use strict';
 
-const path = require('path');
+const path = require('node:path');
+const fs = require('node:fs');
 
 const debug = require('../util/debug')('config:home');
 
@@ -27,16 +28,15 @@ function getHomeConfig(homeDir) {
 
   debug('get home dir config from %s', homeDir);
   result.homeDir = homeDir;
-  try {
-    let config = require(path.join(homeDir, 'config'));
+  const files = fs.readdirSync(homeDir);
+  const configFile = files.find((file) => /config\.m?js/.exec(file));
+  if (configFile) {
+    let config = require(path.join(homeDir, configFile));
     debug('loaded main config file');
     return config;
-  } catch (e) {
-    if (e.code === 'MODULE_NOT_FOUND') {
-      debug('no main config found');
-      return {};
-    }
-    throw e;
+  } else {
+    debug(`no config found in home directory ${homeDir}`);
+    return {};
   }
 }
 
