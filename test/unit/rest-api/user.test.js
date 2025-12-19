@@ -122,4 +122,24 @@ describe('LDAP user, developer@zakodium.com', () => {
         });
       });
   });
+
+  it('Session should contain profile', () => {
+    return request
+      .get('/auth/session')
+      .expect(200)
+      .then((res) => {
+        expect(res.body).toBeDefined();
+        expect(res.body).toStrictEqual({
+          ok: true,
+          username: 'developer@zakodium.com',
+          admin: false,
+          provider: 'ldap',
+          authenticated: true,
+          profile: {
+            uid: 'developer',
+            displayName: 'Developer User',
+          },
+        });
+      });
+  });
 });
