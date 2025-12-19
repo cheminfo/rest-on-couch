@@ -41,9 +41,11 @@ const ldapAuthConfig = {
     bindDN: process.env.REST_ON_COUCH_LDAP_BIND_D_N,
     bindCredentials: process.env.REST_ON_COUCH_LDAP_BIND_PASSWORD,
   },
+  // TODO: this is not tested
   getUserInfo: function (user) {
     return {
-      uid: user.uid[0],
+      uid: user.uid,
+      displayName: user.displayName,
     };
   },
 };

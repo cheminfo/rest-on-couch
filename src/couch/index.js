@@ -12,9 +12,6 @@ const log = require('./log');
 const basicRights = {
   $type: 'db',
   _id: constants.RIGHTS_DOC_ID,
-  createGroup: [],
-  create: [],
-  read: [],
 };
 
 const customDesignSchema = z

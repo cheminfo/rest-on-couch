@@ -1,18 +1,23 @@
 'use strict';
 
 // super administrators have all these rights
-const globalRightTypes = [
-  'delete',
-  'read',
-  'write',
-  'create',
-  'readGroup',
-  'writeGroup',
-  'createGroup',
-  'readImport',
-  'owner',
-  'addAttachment',
-];
+const { z } = require('zod');
+const { globalRightType } = require('./config/schema.mjs');
+
+const globalRightTypes = z
+  .array(globalRightType)
+  .parse([
+    'delete',
+    'read',
+    'write',
+    'create',
+    'readGroup',
+    'writeGroup',
+    'createGroup',
+    'readImport',
+    'owner',
+    'addAttachment',
+  ]);
 
 // administrators only have these rights
 const globalAdminRightTypes = ['admin', 'create', 'createGroup'];
