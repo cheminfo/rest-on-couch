@@ -30,10 +30,10 @@ exports.init = function ldapInit(passport, router, config) {
           new Error(`LDAP email must be a string. Saw ${data.email} instead.`),
         );
       }
-      if (typeof config.getUserInfo === 'function') {
-        return Promise.resolve(config.getUserInfo(user)).then(
+      if (typeof config.getSessionProfile === 'function') {
+        return Promise.resolve(config.getSessionProfile(user)).then(
           (info) => {
-            data.info = info;
+            data.profile = info;
             auditLogin(data.email, true, 'ldap', req.ctx);
             done(null, data);
           },
