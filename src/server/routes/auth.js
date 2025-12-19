@@ -91,17 +91,24 @@ function getAuthRouter() {
   });
 
   router.get('/login', async (ctx) => {
-    if (ctx.isAuthenticated() && !ctx.session.popup) {
-      ctx.redirect(ctx.session.continue || '/');
-      ctx.session.continue = null;
-    } else if (ctx.isAuthenticated() && ctx.session.popup) {
-      ctx.session.popup = false;
-      ctx.body = '<script>window.close();</script>';
+    if (ctx.isAuthenticated()) {
+      ctx.session.messages = [];
+      if (ctx.session.popup) {
+        ctx.session.popup = false;
+        ctx.body = '<script>window.close();</script>';
+      } else {
+        ctx.redirect(ctx.session.continue || '/');
+        ctx.session.continue = null;
+      }
     } else {
       ctx.session.popup = false;
+      const sessionMessage = Array.isArray(ctx.session.messages)
+        ? ctx.session.messages.at(-1)
+        : undefined;
       const hbsCtx = {
         pathPrefix: ctx.state.pathPrefix,
         pluginConfig: authPluginConfig,
+        sessionMessage,
       };
       for (const authPlugin of showLoginAuthPlugins) {
         hbsCtx[authPlugin] = true;
@@ -123,6 +130,7 @@ function getAuthRouter() {
       admin: auth.isAdmin(ctx),
       provider: auth.getProvider(ctx),
       authenticated: ctx.isAuthenticated(),
+      profile: auth.getProfile(ctx),
     };
   });
 
