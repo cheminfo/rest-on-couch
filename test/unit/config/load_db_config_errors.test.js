@@ -19,7 +19,7 @@ it('process should die when there is a problem loading the database configuratio
   getDbConfigOrDie(
     path.join(import.meta.dirname, '../../homeDirectories/failDuplicateView'),
   );
-  expect(exit.mock.calls[0].arguments[0]).toBe(1);
+  expect(exit.mock.calls[0]?.arguments[0]).toBe(1);
 });
 
 it('configuration has duplicate view name', () => {

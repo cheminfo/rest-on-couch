@@ -29,7 +29,7 @@ function getHomeConfig(homeDir) {
   debug('get home dir config from %s', homeDir);
   result.homeDir = homeDir;
   const files = fs.readdirSync(homeDir);
-  const configFile = files.find((file) => /config\.m?js/.exec(file));
+  const configFile = files.find((file) => /config\.m?js/.test(file));
   if (configFile) {
     let config = require(path.join(homeDir, configFile));
     debug('loaded main config file');

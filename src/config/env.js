@@ -3,14 +3,8 @@
 const prefix = 'REST_ON_COUCH_';
 const debug = require('../util/debug')('roc:env-config');
 
-let envConfig;
-
 function getEnvConfig() {
-  if (envConfig) {
-    return envConfig;
-  }
-
-  envConfig = {};
+  const envConfig = {};
   for (const name in process.env) {
     if (name.startsWith(prefix)) {
       const realName = name
@@ -20,15 +14,8 @@ function getEnvConfig() {
           return value[1].toUpperCase();
         });
 
-      let envValue = process.env[name];
-      if (envValue === 'true') {
-        envValue = true;
-      } else if (envValue === 'false') {
-        envValue = false;
-      }
-
       debug('setting config from env, %s', realName);
-      envConfig[realName] = envValue;
+      envConfig[realName] = process.env[name];
     }
   }
   return envConfig;

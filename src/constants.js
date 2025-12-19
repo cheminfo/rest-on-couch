@@ -4,23 +4,28 @@
 const { z } = require('zod');
 const { globalRightType } = require('./config/schema.mjs');
 
-const globalRightTypes = z
-  .array(globalRightType)
-  .parse([
-    'delete',
-    'read',
-    'write',
-    'create',
-    'readGroup',
-    'writeGroup',
-    'createGroup',
-    'readImport',
-    'owner',
-    'addAttachment',
-  ]);
+const globalTypesSchema = z.array(globalRightType);
+
+// This list does not include the 'admin' right
+const globalRightTypes = globalTypesSchema.parse([
+  'delete',
+  'read',
+  'write',
+  'create',
+  'readGroup',
+  'writeGroup',
+  'createGroup',
+  'readImport',
+  'owner',
+  'addAttachment',
+]);
 
 // administrators only have these rights
-const globalAdminRightTypes = ['admin', 'create', 'createGroup'];
+const globalAdminRightTypes = globalTypesSchema.parse([
+  'admin',
+  'create',
+  'createGroup',
+]);
 
 const allowedFirstLevelKeys = ['$deleted'];
 
