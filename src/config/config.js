@@ -4,32 +4,44 @@ const debug = require('../util/debug')('config');
 
 const cliConfig = require('./cli');
 const { getDbConfigOrDie } = require('./db');
-const defaultConfig = require('./default');
 const getEnvConfig = require('./env');
 const { getHomeConfig } = require('./home');
+const { configSchema } = require('./schema.mjs');
+const { getConfigGlobal } = require('./global.mjs');
 
 const configStore = {};
 let homeConfig;
 let dbConfig;
 
-function getConfig(database, customConfig) {
+const noDbKey = Symbol('noDbKey');
+
+function getConfig(database, customConfig = undefined) {
   homeConfig ??= getHomeConfig();
   dbConfig ??= getDbConfigOrDie();
+  const globalConfig = getConfigGlobal();
   debug.trace('getConfig - db: %s', database);
-  if (!configStore[database]) {
-    configStore[database] = {
-      ...defaultConfig,
+
+  if (!customConfig) {
+    if (!configStore[database]) {
+      configStore[database] = configSchema.parse({
+        ...globalConfig,
+        ...homeConfig,
+        ...dbConfig[database],
+        ...getEnvConfig(),
+        ...cliConfig,
+      });
+    }
+    return configStore[database];
+  } else {
+    const final = {
+      ...globalConfig,
       ...homeConfig,
       ...dbConfig[database],
       ...getEnvConfig(),
       ...cliConfig,
+      ...customConfig,
     };
-  }
-
-  if (!customConfig) {
-    return configStore[database];
-  } else {
-    return { ...configStore[database], ...customConfig };
+    return configSchema.parse(final);
   }
 }
 
@@ -44,27 +56,8 @@ function getImportConfig(database, importName) {
   return config.import[importName];
 }
 
-let globalConfig;
-
-function getGlobalConfig() {
-  if (globalConfig) {
-    return globalConfig;
-  }
-
-  globalConfig = getConfig();
-  let proxyPrefix = globalConfig.proxyPrefix;
-  if (!proxyPrefix.startsWith('/')) {
-    proxyPrefix = `/${proxyPrefix}`;
-  }
-  if (proxyPrefix.endsWith('/')) {
-    proxyPrefix = proxyPrefix.replace(/\/+$/, '');
-  }
-  globalConfig.proxyPrefix = proxyPrefix;
-
-  globalConfig.publicAddress =
-    globalConfig.publicAddress.replace(/\/+$/, '') + proxyPrefix;
-
-  return globalConfig;
+function getGlobalConfig(customConfig) {
+  return getConfig(noDbKey, customConfig);
 }
 
 module.exports = {

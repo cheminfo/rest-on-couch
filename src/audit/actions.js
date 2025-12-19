@@ -55,6 +55,5 @@ function validateString(name, value) {
 }
 
 module.exports = {
-  auditAction,
   auditLogin,
 };

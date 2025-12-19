@@ -443,15 +443,13 @@ async function syncOneLdapGroup(ctx, group, user) {
     let user = entry.object;
     // Custom email extraction
     if (user) {
-      if (ctx._config.getPublicUserInfo) {
-        try {
-          const userInfo = ctx._config.getPublicUserInfo(user);
-          if (userInfo !== null) {
-            info.push(ctx._config.getPublicUserInfo(user));
-          }
-        } catch {
-          // Do not add anything to info
+      try {
+        const userInfo = ctx._config.getPublicUserInfo(user);
+        if (userInfo !== null) {
+          info.push(ctx._config.getPublicUserInfo(user));
         }
+      } catch {
+        // Do not add anything to info
       }
       emails.push(
         ...util.ensureUsersArray(couchOptions.ldapGetUserEmail(user)),

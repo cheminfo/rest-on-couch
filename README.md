@@ -25,7 +25,7 @@ Certain features are only supported with a version of CouchDB >= 2.2:
 
 The configuration is being read on-load from many sources, in the following order (ascending priority):
 
-1. Default configuration. Some configuration elements have default values. They are defined in the [source code](./src/config/default.js)
+1. Default configuration. Some configuration elements have default values. They are defined in the [source code](src/config/default.mjs)
 2. Main configuration file (`config.js` or `config.json` in ROC's home directory). See [this configuration example](./test/homeDirectories/dev/config.js) which is used for the dev server.
 3. Database configuration file (`config.js` in database's subdirectory)
 4. Environment variable (uppercase snake-case with `REST_ON_COUCH_` prefix)
@@ -70,7 +70,7 @@ This number should be smaller than the session's cookie life.
 #### port
 
 Type: number  
-Default: `3000`  
+Default: `3300`  
 Port used by the rest-on-couch server.
 
 #### auth
@@ -90,6 +90,12 @@ Set to `true` if your application is behind a proxy and needs to trust `X-Forwar
 Type: string  
 Default: `'/'`  
 If the proxy is not at the root level of the URL, set this value to the corresponding prefix.
+
+#### publicAddress
+
+Type: string
+Default: `'http://localhost:3300`
+Use by the application to construct authentication callback URLs.
 
 #### allowedOrigins
 
