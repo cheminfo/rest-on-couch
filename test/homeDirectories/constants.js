@@ -1,7 +1,5 @@
 'use strict';
 
-const jwt = require('jsonwebtoken');
-
 let oidcAuthConfig;
 const oidcClient = process.env.OIDC_CLIENT_ID;
 const oidcClientSecret = process.env.OIDC_CLIENT_SECRET;
@@ -20,8 +18,9 @@ if (oidcClient && oidcClientSecret) {
     getEmail: function getEmail(data) {
       // You can customize the email extraction logic here
       // If data is missing from the profile, you might want to decode the jwt token directly
-      const decoded = jwt.decode(data.idToken);
-      console.log({ decoded });
+      // const jwt = require('jsonwebtoken');
+      // const decoded = jwt.decode(data.idToken);
+
       const { profile } = data;
       return profile.emails?.[0]?.value;
     },

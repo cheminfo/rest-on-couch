@@ -12,7 +12,6 @@ module.exports = {
     oidc: oidcAuthConfig,
   },
   keys: ['app-key'],
-  username: 'rest-on-couch',
   password: 'roc-123',
   adminPassword: 'admin',
   // Already administrator from global configuration
