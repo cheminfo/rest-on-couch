@@ -119,6 +119,16 @@ describe('LDAP user, developer@zakodium.com', () => {
         expect(res.body).toStrictEqual({
           displayName: 'Developer User',
           email: 'developer@zakodium.com',
+          sessionData: {
+            username: 'developer@zakodium.com',
+            admin: false,
+            provider: 'ldap',
+            authenticated: true,
+            profile: {
+              uid: 'developer',
+              displayName: 'Developer User',
+            },
+          },
         });
       });
   });

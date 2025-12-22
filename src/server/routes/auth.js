@@ -126,11 +126,7 @@ function getAuthRouter() {
     // Check if session exists
     ctx.body = {
       ok: true,
-      username: await auth.getUserEmail(ctx),
-      admin: auth.isAdmin(ctx),
-      provider: auth.getProvider(ctx),
-      authenticated: ctx.isAuthenticated(),
-      profile: auth.getProfile(ctx),
+      ...(await auth.getSessionData(ctx)),
     };
   });
 

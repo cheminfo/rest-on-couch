@@ -35,14 +35,14 @@ const methods = {
     return getUser(this._db, user);
   },
 
-  getUserInfo(user) {
+  getUserInfo(user, sessionData) {
     debug('getUserInfo (%s)', user);
     // Callback which allows to do a custom ldap search to get user data
     // If it exists, it uses the auth ldap config for default values
     const ldapServer = this._config.auth.ldap?.server;
 
-    function ldapSearch(ldapOptions, searchOptions) {
-      debug('getUserInfo ldapSearch callback');
+    function searchLdap(ldapOptions, searchOptions) {
+      debug('getUserInfo searchLdap callback');
       const defaultLdapOptions = ldapServer
         ? {
             url: ldapServer.url,
@@ -74,7 +74,11 @@ const methods = {
     if (!this._config.getUserInfo) {
       throw new CouchError('getUserInfo is not configured', 'bad request');
     }
-    return this._config.getUserInfo(user, ldapSearch, this);
+    return this._config.getUserInfo(user, {
+      searchLdap,
+      couch: this,
+      sessionData,
+    });
   },
 
   async getUserGroups(user) {
