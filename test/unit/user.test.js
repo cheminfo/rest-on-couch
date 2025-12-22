@@ -44,7 +44,22 @@ describe('Couch user API', () => {
 
   it('getUserInfo', async () => {
     const user = await couch.getUserInfo('user@test.com');
-    expect(user.email).toBe('user@test.com');
-    expect(user.value).toBe(42);
+    expect(user).toStrictEqual({
+      email: 'user@test.com',
+      value: 42,
+      groups: [],
+    });
+  });
+
+  it('getUserInfo with user which belongs to groups', async () => {
+    const user = await couch.getUserInfo('a@a.com');
+    expect(user).toStrictEqual({
+      email: 'a@a.com',
+      value: 42,
+      groups: [
+        { name: 'groupA', rights: ['create', 'write', 'delete', 'read'] },
+        { name: 'groupB', rights: ['create'] },
+      ],
+    });
   });
 });
