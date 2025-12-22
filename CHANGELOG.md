@@ -1,5 +1,38 @@
 # Changelog
 
+## [19.0.0](https://github.com/cheminfo/rest-on-couch/compare/v18.2.0...v19.0.0) (2025-12-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* the callback signature of getUserInfo config has changed. The first argument is unchanged, but the second argument now contains the couch instance, the searchLdap helper and session data within object properties.
+* The publicAddress configuration should now be the full path to the app, including the proxy prefix if there is one.
+* There are no default app key values anymore and the app won't load if not provided.
+* `importFile` is no longer a static method on Couch, but a separate export
+* drop support for Node.js 20
+* upgrade docker image base to Node.js 24, and remove global pm2 install from it
+
+### Features
+
+* allow ESM in mjs import files using named exports ([#461](https://github.com/cheminfo/rest-on-couch/issues/461)) ([d822fa7](https://github.com/cheminfo/rest-on-couch/commit/d822fa7c717b6bbd051e619e87860d943cdb497d))
+* do not add proxy prefix to publicAddress and validate config ([c878f21](https://github.com/cheminfo/rest-on-couch/commit/c878f210fc570e5f0c673b3849bb173eea091c09))
+* give access to couch instance in `getUserInfo` config callback ([#474](https://github.com/cheminfo/rest-on-couch/issues/474)) ([ea634c0](https://github.com/cheminfo/rest-on-couch/commit/ea634c0f8ca44e36afb33a1999866b4c5eff1845))
+* improve OIDC authentication plugin ([#472](https://github.com/cheminfo/rest-on-couch/issues/472)) ([9d49d69](https://github.com/cheminfo/rest-on-couch/commit/9d49d69883b18dd4011c75602c097b2b5c7c29b5))
+* pass user profile to session if getSessionProfile is defined in ldap auth plugin ([6ae8804](https://github.com/cheminfo/rest-on-couch/commit/6ae8804bb12187c9ae0fc59008e9b11d25b89e4b))
+* provide session data in getUserInfo callback ([#478](https://github.com/cheminfo/rest-on-couch/issues/478)) ([7945e01](https://github.com/cheminfo/rest-on-couch/commit/7945e01e0facbded7fb8b93ab508da6cf9b19650))
+
+
+### Bug Fixes
+
+* don't eagerly catch MODULE_NOT_FOUND errors while loading home config ([315be2c](https://github.com/cheminfo/rest-on-couch/commit/315be2c6480346d7a6182c8391ab25c7b9df008a))
+
+
+### Miscellaneous Chores
+
+* remove vitest setup file ([#470](https://github.com/cheminfo/rest-on-couch/issues/470)) ([03ddba3](https://github.com/cheminfo/rest-on-couch/commit/03ddba3dda5a659c3cf21677614990d288fe0466))
+* replace lodash with native JS ([#467](https://github.com/cheminfo/rest-on-couch/issues/467)) ([f1c318f](https://github.com/cheminfo/rest-on-couch/commit/f1c318fce01b8e6f1fe6978b4650834b6a41f653))
+* upgrade deps and node ([#464](https://github.com/cheminfo/rest-on-couch/issues/464)) ([2ca0631](https://github.com/cheminfo/rest-on-couch/commit/2ca0631583a859055e7b242dc86474b154091a96))
+
 ## [18.2.0](https://github.com/cheminfo/rest-on-couch/compare/v18.1.2...v18.2.0) (2025-12-08)
 
 
