@@ -74,7 +74,7 @@ const methods = {
     if (!this._config.getUserInfo) {
       throw new CouchError('getUserInfo is not configured', 'bad request');
     }
-    return this._config.getUserInfo(user, ldapSearch);
+    return this._config.getUserInfo(user, ldapSearch, this);
   },
 
   async getUserGroups(user) {

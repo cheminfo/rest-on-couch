@@ -43,7 +43,8 @@ module.exports = {
     },
     ldap: ldapAuthConfig,
   },
-  async getUserInfo(email, searchLdap) {
+  async getUserInfo(email, searchLdap, couch) {
+    const groups = await couch.getUserGroups(email);
     if (email.endsWith('@zakodium.com')) {
       const uid = email.slice(0, email.indexOf('@'));
       const data = await searchLdap({
@@ -58,6 +59,7 @@ module.exports = {
       return {
         email,
         value: 42,
+        groups,
       };
     }
   },
