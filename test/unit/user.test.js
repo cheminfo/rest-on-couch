@@ -43,16 +43,17 @@ describe('Couch user API', () => {
   });
 
   it('getUserInfo', async () => {
-    const user = await couch.getUserInfo('user@test.com');
+    const user = await couch.getUserInfo('user@test.com', null);
     expect(user).toStrictEqual({
       email: 'user@test.com',
       value: 42,
       groups: [],
+      sessionData: null,
     });
   });
 
   it('getUserInfo with user which belongs to groups', async () => {
-    const user = await couch.getUserInfo('a@a.com');
+    const user = await couch.getUserInfo('a@a.com', null);
     expect(user).toStrictEqual({
       email: 'a@a.com',
       value: 42,
@@ -60,6 +61,7 @@ describe('Couch user API', () => {
         { name: 'groupA', rights: ['create', 'write', 'delete', 'read'] },
         { name: 'groupB', rights: ['create'] },
       ],
+      sessionData: null,
     });
   });
 });

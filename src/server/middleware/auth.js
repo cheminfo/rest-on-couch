@@ -95,6 +95,17 @@ exports.getProfile = function getProfile(ctx) {
   return ctx.session.passport?.user?.profile ?? null;
 };
 
+exports.getSessionData = async function getSessionData(ctx) {
+  const username = await this.getUserEmail(ctx);
+  return {
+    username,
+    admin: this.isAdmin(ctx),
+    provider: this.getProvider(ctx),
+    authenticated: ctx.isAuthenticated(),
+    profile: this.getProfile(ctx),
+  };
+};
+
 async function getUserEmailFromToken(ctx) {
   const config = getGlobalConfig();
   if (!config.authServers.length) return 'anonymous';

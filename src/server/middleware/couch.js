@@ -271,7 +271,11 @@ exports.editUser = composeWithError(async (ctx) => {
 });
 
 exports.getUserInfo = composeWithError(async (ctx) => {
-  ctx.body = await ctx.state.couch.getUserInfo(ctx.state.userEmail);
+  const sessionData = await auth.getSessionData(ctx);
+  ctx.body = await ctx.state.couch.getUserInfo(
+    ctx.state.userEmail,
+    sessionData,
+  );
 });
 
 exports.getOwners = function getOwners(type) {
