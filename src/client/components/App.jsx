@@ -105,7 +105,7 @@ function AppImpl(props) {
                       path="/group_memberships"
                       element={<GroupMembershipsPage hasDb={props.hasDb} />}
                     />
-                    <Route component={NoMatch} />
+                    <Route path="*" element={<NoMatch />} />
                   </Routes>
                 ) : rocOnline === false ? (
                   <div>Could not connect to the database...</div>
