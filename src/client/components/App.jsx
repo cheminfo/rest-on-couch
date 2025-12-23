@@ -86,7 +86,7 @@ function AppImpl(props) {
                         />
                       }
                     />
-                    <Route path="/create_user" component={CreateUser} />
+                    <Route path="/create_user" element={<CreateUser />} />
                     <Route
                       path="/manage_database"
                       element={
