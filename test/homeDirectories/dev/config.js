@@ -14,7 +14,7 @@ module.exports = {
   keys: ['app-key'],
   password: 'roc-123',
   adminPassword: 'admin',
-  // Already administrator from global configuration
+  administrators: ['admin@a.com', 'a@a.com', 'admin@zakodium.com'],
   superAdministrators: ['admin@a.com', 'a@a.com', 'admin@zakodium.com'],
   publicAddress: 'http://127.0.0.1:3300',
   allowedOrigins: ['http://127.0.0.1:3309', 'http://localhost:3309'],
