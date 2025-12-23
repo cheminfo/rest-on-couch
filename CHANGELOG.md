@@ -1,5 +1,12 @@
 # Changelog
 
+## [19.0.1](https://github.com/cheminfo/rest-on-couch/compare/v19.0.0...v19.0.1) (2025-12-23)
+
+
+### Bug Fixes
+
+* correct import in rest-on-couch-import script ([#479](https://github.com/cheminfo/rest-on-couch/issues/479)) ([bed3131](https://github.com/cheminfo/rest-on-couch/commit/bed313187530b6099f06143cacd1ff77d197add0))
+
 ## [19.0.0](https://github.com/cheminfo/rest-on-couch/compare/v18.2.0...v19.0.0) (2025-12-22)
 
 
