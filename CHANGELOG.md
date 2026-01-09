@@ -1,5 +1,13 @@
 # Changelog
 
+## [19.0.2](https://github.com/cheminfo/rest-on-couch/compare/v19.0.1...v19.0.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* correct create_user route ([3dd84b6](https://github.com/cheminfo/rest-on-couch/commit/3dd84b66497fef7f4ce5d0b7641a22b0d19b231b))
+* superAdministrators should be considered auth administrators ([2890801](https://github.com/cheminfo/rest-on-couch/commit/2890801eb98a791ff885560931e43e2ebfea8a75))
+
 ## [19.0.1](https://github.com/cheminfo/rest-on-couch/compare/v19.0.0...v19.0.1) (2025-12-23)
 
 
