@@ -157,6 +157,7 @@ export default async function populateData() {
       create: ['anyuser'],
       addAttachment: ['anyuser'],
       readGroup: ['b@b.com'],
+      writeGroup: ['group_admin@a.com'],
     },
   });
   await populate(global.couch._db);
