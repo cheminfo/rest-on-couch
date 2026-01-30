@@ -8,6 +8,17 @@ const ensureStringArray = require('../util/ensureStringArray');
 
 const getGroup = require('./nano').getGroup;
 
+function validateRightsWithToken(token, rights, type) {
+  rights = prepareRights(rights, type);
+  for (var i = 0; i < rights.length; i++) {
+    if (!token.rights.includes(rights[i])) {
+      debug.trace('entry token does not have sufficient rights');
+      return false;
+    }
+  }
+  return true;
+}
+
 async function validateRights(ctx, ownerArrays, user, rights, type = 'entry') {
   debug.trace('validateRights');
   if (!Array.isArray(ownerArrays[0])) {
@@ -26,11 +37,7 @@ async function validateRights(ctx, ownerArrays, user, rights, type = 'entry') {
     return areOwners;
   }
 
-  rights = ensureStringArray(rights);
-  if (type !== 'entry') {
-    const suffix = type.charAt(0).toUpperCase() + type.substring(1);
-    rights = rights.map((right) => right + suffix);
-  }
+  rights = prepareRights(rights, type);
 
   const checks = [];
   for (let i = 0; i < rights.length; i++) {
@@ -99,7 +106,7 @@ async function validateTokenOrRights(
   rights = ensureStringArray(rights);
   if (token && token.$kind === 'user') {
     debug.trace('user token right validation');
-    if (!areRightsInToken(rights, token)) {
+    if (!areRightsInToken(rights, token, type)) {
       debug.trace('user token that does not have sufficient rights');
       return false;
     }
@@ -108,13 +115,7 @@ async function validateTokenOrRights(
 
   if (token && token.$kind === type && token.uuid === uuid) {
     debug.trace('entry token right validation');
-    for (var i = 0; i < rights.length; i++) {
-      if (!token.rights.includes(rights[i])) {
-        debug.trace('entry token does not have sufficient rights');
-        return false;
-      }
-    }
-    return true;
+    return validateRightsWithToken(token, rights, type);
   }
   const ok = await validateRights(ctx, owners, user, rights, type);
   return ok[0];
@@ -212,16 +213,22 @@ async function getDefaultGroups(db, user, listOnly) {
   }
 }
 
-function userFromTokenAndRights(user, token, rights) {
+function userFromTokenAndRights(user, token, rights, type) {
   assert(Array.isArray(rights));
-  if (token && token.$kind === 'user' && areRightsInToken(rights, token)) {
+  if (
+    token &&
+    token.$kind === 'user' &&
+    areRightsInToken(rights, token, type)
+  ) {
     return token.$owner;
   } else {
     return user;
   }
 }
 
-function areRightsInToken(rights, token) {
+function areRightsInToken(rights, token, type) {
+  rights = prepareRights(rights, type);
+
   if (rights.length > token.rights.length) {
     return false;
   }
@@ -233,6 +240,19 @@ function areRightsInToken(rights, token) {
     }
   }
   return true;
+}
+
+const nonGenericRights = new Set(['create', 'read', 'write', 'delete']);
+
+function prepareRights(rights, type) {
+  rights = ensureStringArray(rights);
+  if (type !== 'entry') {
+    const suffix = type.charAt(0).toUpperCase() + type.substring(1);
+    rights = rights.map((right) =>
+      nonGenericRights.has(right) ? right + suffix : right,
+    );
+  }
+  return rights;
 }
 
 module.exports = {
