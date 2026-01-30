@@ -2,11 +2,12 @@ import { beforeEach, describe, it } from 'node:test';
 import { expect } from 'chai';
 
 import constants from '../data/constants.js';
-import data from '../data/noRights.js';
+import noRights from '../data/noRights.js';
+import data from '../data/data.js';
 import testUtils from '../utils/testUtils.js';
 
 describe('token methods', () => {
-  beforeEach(data);
+  beforeEach(noRights);
 
   it('user should be able to create and get tokens', async () => {
     const tokens = await Promise.all([
@@ -91,17 +92,24 @@ describe('token methods', () => {
     expect(entry).toBeDefined();
   });
 
-  it('user token should not allow to create document if user cannot create', async () => {
+  it('user token should not grant a right which the user itself does not have', async () => {
     const token = await couch.createUserToken('b@b.com', [
       'read',
       'write',
       'create',
+      'writeGroup',
     ]);
     await expect(
       couch.insertEntry(constants.newEntry, 'anonymous', {
         token,
       }),
     ).rejects.toThrow('b@b.com not allowed to create');
+
+    await expect(
+      couch.addUsersToGroup('groupA', 'anonymous', ['a@a.com'], {
+        token,
+      }),
+    ).rejects.toThrow('user has no access');
   });
 
   it('token should give only the right for which it was created', async () => {
@@ -132,5 +140,16 @@ describe('token methods', () => {
     await expect(
       couch.createEntryToken('a@a.com', 'A', 'test1'),
     ).rejects.toThrow('invalid right: test1');
+  });
+});
+
+describe('token methods (config with global rights)', () => {
+  beforeEach(data);
+  it('token can provide ability to update groups', async () => {
+    const token = await couch.createUserToken(
+      'group_admin@a.com',
+      'writeGroup',
+    );
+    await couch.addUsersToGroup('groupC', 'anonymous', ['a@a.com'], { token });
   });
 });
