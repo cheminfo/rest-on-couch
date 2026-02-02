@@ -2,6 +2,9 @@ import { describe, it } from 'node:test';
 import { expect } from 'chai';
 
 import validateDocUpdate from '../../../src/design/validateDocUpdate.js';
+import constants from '../../../src/constants.js';
+
+const { globalRightTypes } = constants;
 
 describe('validate_doc_update', () => {
   describe('general', () => {
@@ -102,6 +105,27 @@ describe('validate_doc_update', () => {
         addOwners(addDate({ $type: 'entry', $id: 'abc', $kind: 'xy' })),
         'Cannot change the kind',
       );
+    });
+  });
+  describe('$type: db', () => {
+    it('global rights with valid values', () => {
+      for (let globalRight of globalRightTypes) {
+        validateDocUpdate(
+          { $type: 'db', _id: 'rights', [globalRight]: ['user@a.com'] },
+          { $type: 'db', _id: 'rights' },
+          { name: 'admin' },
+        );
+      }
+    });
+
+    it('global right with invalid values', () => {
+      for (let globalRight of globalRightTypes) {
+        assert(
+          { $type: 'db', _id: 'rights', [globalRight]: 'user@a.com' },
+          { $type: 'db', _id: 'rights' },
+          'global db right should always be an array',
+        );
+      }
     });
   });
 });

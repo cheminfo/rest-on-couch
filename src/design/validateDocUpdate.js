@@ -15,13 +15,19 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     return;
   }
   var validTypes = ['entry', 'group', 'db', 'log', 'user', 'token', 'import'];
+
+  // Copied from src/constants.js
   var validGlobalRights = [
-    'create',
+    'delete',
     'read',
     'write',
-    'createGroup',
+    'create',
     'readGroup',
     'writeGroup',
+    'createGroup',
+    'readImport',
+    'owner',
+    'addAttachment',
   ];
   // see http://emailregex.com/
   var validEmail = /^.+@.+$/;
