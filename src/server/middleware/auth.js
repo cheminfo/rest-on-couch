@@ -54,7 +54,12 @@ exports.isAdmin = function isAdmin(ctx) {
   // Don't allow tokens to check for admins
   if (ctx.isAuthenticated()) {
     const email = ctx.session.passport.user.email;
-    if (getGlobalConfig().administrators.includes(email)) {
+    const config = getGlobalConfig();
+
+    if (
+      config.administrators.includes(email) ||
+      config.superAdministrators.includes(email)
+    ) {
       return true;
     }
   }
