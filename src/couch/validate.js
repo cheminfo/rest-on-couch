@@ -242,14 +242,24 @@ function areRightsInToken(rights, token, type) {
   return true;
 }
 
-const nonGenericRights = new Set(['create', 'read', 'write', 'delete']);
-
+/**
+ * Transform rights into their final form based on the base right and the underlying type of managed document.
+ * The managed document type can only be one of 'entry' or 'group'.
+ * The final form of the right to check is specific to a type of managed document, so that it applies to only one or the other.
+ * The exception is the "owner" right, which is not declined into 2 forms.
+ *
+ * Example:
+ *   The "create" right exists in 2 forms: "create" for entries and "createGroup" for groups.
+ * @param {Array<'owner' | 'read' | 'write' | 'create' | 'delete' | 'addAttachment'>} rights - An array of raw rights.
+ * @param {'entry' | 'group'} type - The type of managed document it applies to.
+ * @returns {[*]} An array of transformed rights in their final form.
+ */
 function prepareRights(rights, type) {
   rights = ensureStringArray(rights);
   if (type !== 'entry') {
     const suffix = type.charAt(0).toUpperCase() + type.substring(1);
     rights = rights.map((right) =>
-      nonGenericRights.has(right) ? right + suffix : right,
+      right === 'owner' ? right : right + suffix,
     );
   }
   return rights;
