@@ -1,61 +1,47 @@
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { useCallback, useId, useState } from 'react';
 
-class EnterTextField extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: props.value || '',
-    };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-  }
+export default function EnterTextField(props) {
+  const [value, setValue] = useState('');
+  const listId = useId();
+  const { onSubmit } = props;
 
-  handleChange(event) {
-    this.setState({
-      value: event.target.value,
-    });
-  }
-
-  handleSubmit() {
-    if (this.isEmpty()) return;
-    this.props.onSubmit(this.state.value);
-    this.setState({
-      value: '',
-    });
-  }
-
-  handleKeyPress(event) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.handleSubmit();
-    }
-  }
-
-  isEmpty() {
-    return this.state.value === '';
-  }
-
-  render() {
-    const { label } = this.props;
-    return (
-      <form>
-        <label>{label}</label>
-        <input
-          type="text"
-          className="form-control"
-          value={this.state.value}
-          onChange={this.handleChange}
-          onKeyPress={this.handleKeyPress}
-        />
-      </form>
-    );
-  }
+  const handleSubmit = useCallback(
+    (fieldValue) => {
+      if (!fieldValue) return;
+      onSubmit(fieldValue).then(() => {
+        setValue('');
+      });
+    },
+    [onSubmit],
+  );
+  return (
+    <div>
+      <label>{props.label}</label>
+      <input
+        type="text"
+        list={listId}
+        placeholder="Type and press enter to add..."
+        className="form-control"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            handleSubmit(value);
+          }
+        }}
+      />
+      <input
+        type="button"
+        className="hidden"
+        onClick={() => handleSubmit(value)}
+      />
+      {props.datalist && (
+        <datalist id={listId}>
+          {props.datalist.map((element) => (
+            <option key={element} value={element} />
+          ))}
+        </datalist>
+      )}
+    </div>
+  );
 }
-
-EnterTextField.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
-
-export default EnterTextField;

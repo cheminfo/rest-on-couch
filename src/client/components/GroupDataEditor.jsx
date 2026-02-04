@@ -22,7 +22,10 @@ function GroupDataEditor({
       <ResponsiveTable>
         <thead>
           <tr>
-            <th>{type}</th>
+            <th>
+              {type}
+              {type !== 'rights' && ' (email address)'}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -37,7 +40,25 @@ function GroupDataEditor({
           {canAdd ? (
             <tr>
               <td>
-                <EnterTextField onSubmit={addValue} />
+                <EnterTextField
+                  datalist={
+                    type === 'rights'
+                      ? [
+                          'read',
+                          'write',
+                          'create',
+                          'delete',
+                          'readGroup',
+                          'writeGroup',
+                          'createGroup',
+                          'readImport',
+                          'owner',
+                          'addAttachment',
+                        ]
+                      : undefined
+                  }
+                  onSubmit={addValue}
+                />
               </td>
               <td />
             </tr>

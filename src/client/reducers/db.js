@@ -43,6 +43,9 @@ const dbReducer = (state = initialState, action = {}) => {
       return { ...state, userRights: action.payload };
     case SET_USER_GROUPS:
       return { ...state, userGroups: action.payload.sort(sortByName) };
+    case `${CREATE_GROUP}_PENDING`: {
+      return { ...state, errors: { ...state.errors, createGroup: null } };
+    }
     case `${CREATE_GROUP}_FULFILLED`: {
       if (action.payload.error) {
         const errors = { ...state.errors, createGroup: action.payload.error };
