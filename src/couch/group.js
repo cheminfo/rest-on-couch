@@ -68,7 +68,12 @@ const methods = {
       debug.trace('group does not exist');
       throw new CouchError('group does not exist', 'not found');
     }
-    user = validate.userFromTokenAndRights(user, options.token, ['owner']);
+    user = validate.userFromTokenAndRights(
+      user,
+      options.token,
+      ['owner'],
+      'group',
+    );
     if (!validate.isOwner(doc.$owners, user)) {
       debug.trace('not allowed to delete group');
       throw new CouchError(
@@ -87,9 +92,12 @@ const methods = {
 
     await this.open();
 
-    user = validate.userFromTokenAndRights(user, options.token, [
-      'createGroup',
-    ]);
+    user = validate.userFromTokenAndRights(
+      user,
+      options.token,
+      ['create'],
+      'group',
+    );
     const hasRight = await validate.checkRightAnyGroup(
       this,
       user,
@@ -129,7 +137,12 @@ const methods = {
       debug.trace('group does not exist');
       throw new CouchError('group does not exist', 'not found');
     }
-    user = validate.userFromTokenAndRights(user, options.token, ['owner']);
+    user = validate.userFromTokenAndRights(
+      user,
+      options.token,
+      ['owner'],
+      'group',
+    );
     if (!this.isSuperAdmin(user) && !validate.isOwner(doc.$owners, user)) {
       debug.trace('not allowed to get group');
       throw new CouchError(
@@ -148,7 +161,12 @@ const methods = {
   async getGroups(user, options = {}) {
     debug.trace('getGroups (%s)', user);
     await this.open();
-    user = validate.userFromTokenAndRights(user, options.token, ['readGroup']);
+    user = validate.userFromTokenAndRights(
+      user,
+      options.token,
+      ['read'],
+      'group',
+    );
     const ok = await validate.checkGlobalRight(this, user, 'readGroup');
     if (ok) {
       return this._db.queryView(
@@ -174,7 +192,12 @@ const methods = {
       throw new CouchError('group does not exist', 'not found');
     }
 
-    user = validate.userFromTokenAndRights(user, options.token, ['readGroup']);
+    user = validate.userFromTokenAndRights(
+      user,
+      options.token,
+      ['read'],
+      'group',
+    );
 
     // Can read group if owner, even if it does not have the global readGroup right
     const hasReadGroupRight = validate.isOwner(group.$owners, user)

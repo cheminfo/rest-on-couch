@@ -146,7 +146,12 @@ const methods = {
       startkey: from,
     });
 
-    user = validateMethods.userFromTokenAndRights(user, options.token, rights);
+    user = validateMethods.userFromTokenAndRights(
+      user,
+      options.token,
+      rights,
+      'entry',
+    );
 
     let allowedDocs;
     if (typeof owner === 'string') {
@@ -288,7 +293,12 @@ async function _createNew(ctx, entry, user, options) {
 
   const hasGroups = options.groups ? options.groups.length > 0 : false;
   const rights = hasGroups ? ['create', 'owner'] : ['create'];
-  user = validateMethods.userFromTokenAndRights(user, options.token, rights);
+  user = validateMethods.userFromTokenAndRights(
+    user,
+    options.token,
+    rights,
+    'entry',
+  );
 
   if (!(await validateMethods.checkGlobalRight(ctx, user, 'create'))) {
     let msg = `${user} not allowed to create${

@@ -21,7 +21,12 @@ const methods = {
 
     right = right || 'read';
 
-    user = validateMethods.userFromTokenAndRights(user, options.token, [right]);
+    user = validateMethods.userFromTokenAndRights(
+      user,
+      options.token,
+      [right],
+      'entry',
+    );
 
     // First check if user has global right
     const hasGlobalRight = await validateMethods.checkGlobalRight(

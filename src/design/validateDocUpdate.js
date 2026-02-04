@@ -9,12 +9,26 @@ module.exports = function (newDoc, oldDoc, userCtx) {
   if (userCtx.name === null) {
     throw { forbidden: 'must be connected' };
   }
+
   // allow to delete documents
   if (newDoc._deleted) {
     return;
   }
   var validTypes = ['entry', 'group', 'db', 'log', 'user', 'token', 'import'];
-  var validRights = ['create', 'read', 'write', 'createGroup'];
+
+  // Copied from src/constants.js
+  var validGlobalRights = [
+    'delete',
+    'read',
+    'write',
+    'create',
+    'readGroup',
+    'writeGroup',
+    'createGroup',
+    'readImport',
+    'owner',
+    'addAttachment',
+  ];
   // see http://emailregex.com/
   var validEmail = /^.+@.+$/;
   var validName = /^[0-9a-zA-Z._-]+$/;
@@ -145,10 +159,10 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     throw { forbidden: 'Logs cannot be changed' };
   } else if (newDoc.$type === 'db') {
     if (newDoc._id === 'rights') {
-      for (var j = 0; j < validRights.length; j++) {
+      for (var j = 0; j < validGlobalRights.length; j++) {
         if (
-          newDoc[validRights[j]] !== undefined &&
-          !Array.isArray(newDoc[validRights[j]])
+          newDoc[validGlobalRights[j]] !== undefined &&
+          !Array.isArray(newDoc[validGlobalRights[j]])
         ) {
           throw {
             forbidden: 'global db right should always be an array',

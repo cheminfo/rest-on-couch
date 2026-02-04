@@ -19,7 +19,57 @@ describe('group methods', () => {
   });
 
   it('cannot delete group if user is not the owner of the group', () => {
-    return expect(couch.deleteGroup('groupA', 'b@b.com')).rejects.toThrow();
+    return expect(couch.deleteGroup('groupA', 'b@b.com')).rejects.toThrow(
+      /b@b.com is not an owner of the group/,
+    );
+  });
+
+  it('cannot add users to group without writeGroup right', () => {
+    return expect(
+      couch.addUsersToGroup('groupA', 'c@c.com', ['c@c.com']),
+    ).rejects.toThrow(/user has no access/);
+  });
+
+  it('cannot remove users from group without writeGroup right', () => {
+    return expect(
+      couch.removeUsersFromGroup('groupA', 'c@c.com', ['c@c.com']),
+    ).rejects.toThrow(/user has no access/);
+  });
+
+  it('cannot add rights to group without writeGroup right', () => {
+    return expect(
+      couch.addRightsToGroup('groupA', 'c@c.com', ['read']),
+    ).rejects.toThrow(/user has no access/);
+  });
+
+  it('cannot remove rights from group without writeGroup right', () => {
+    return expect(
+      couch.removeRightsFromGroup('groupA', 'c@c.com', ['read']),
+    ).rejects.toThrow(/user has no access/);
+  });
+
+  it('can add users to group with global writeGroup right', () => {
+    return expect(
+      couch.addUsersToGroup('groupA', 'group_admin@a.com', ['b@b.com']),
+    ).resolves.toBeDefined();
+  });
+
+  it('can remove users from group with global writeGroup right', () => {
+    return expect(
+      couch.removeUsersFromGroup('groupA', 'group_admin@a.com', ['b@b.com']),
+    ).resolves.toBeDefined();
+  });
+
+  it('can add rights to group with global writeGroup right', () => {
+    return expect(
+      couch.addRightsToGroup('groupA', 'group_admin@a.com', ['read']),
+    ).resolves.toBeDefined();
+  });
+
+  it('can remove rights from group with global writeGroup right', () => {
+    return expect(
+      couch.removeRightsFromGroup('groupA', 'group_admin@a.com', ['read']),
+    ).resolves.toBeDefined();
   });
 
   it('should delete a group', () => {
@@ -177,8 +227,8 @@ describe('group methods', () => {
   it('getGroupsInfo should return limited data except if member', () => {
     return couch.getGroupsInfo('c@c.com').then((groups) => {
       expect(groups).toHaveLength(3);
-      // Sees everything because has global readGroup right
       expect(groups).toStrictEqual([
+        // Sees limited information because no readGroup right
         {
           name: 'groupA',
           description: 'groupA description',
