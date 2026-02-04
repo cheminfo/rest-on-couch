@@ -5,6 +5,8 @@ import { clearGroupError, clearGroupSuccess } from '../actions/db';
 
 import EditableTextField from './EditableTextField';
 import GroupDataEditor from './GroupDataEditor';
+import { useState } from 'react';
+import { Modal } from './Modal';
 
 function GroupEditorImpl({
   group,
@@ -15,6 +17,7 @@ function GroupEditorImpl({
   clearGroupSuccess,
   clearGroupError,
 }) {
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const customUsers = group.customUsers || [];
   const users = group.users || [];
   const sortedUsers = Array.from(new Set([...customUsers, ...users]));
@@ -27,12 +30,39 @@ function GroupEditorImpl({
           <button
             type="button"
             className="btn btn-danger btn-simple btn-s pull-right"
-            onClick={() => removeGroup(group.name)}
+            onClick={() => setIsRemoveModalOpen(true)}
           >
             REMOVE
           </button>
         </h4>
       </div>
+      <Modal
+        open={isRemoveModalOpen}
+        onClose={() => setIsRemoveModalOpen(false)}
+        title={`Remove group "${group.name}"?`}
+        body={`Are you sure you want to remove this group? This action affects users' permissions and cannot be undone.`}
+        footer={
+          <>
+            <button
+              type="button"
+              className="btn btn-fill"
+              onClick={() => setIsRemoveModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger btn-fill"
+              onClick={() => {
+                removeGroup(group.name);
+                setIsRemoveModalOpen(false);
+              }}
+            >
+              Remove group
+            </button>
+          </>
+        }
+      />
       <div className="content">
         <EditableTextField
           label="Description"
