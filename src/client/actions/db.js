@@ -69,14 +69,15 @@ async function doUpdateGroup(groupName, type, value, method) {
   if (method !== 'DELETE' && method !== 'PUT') {
     throw new Error('wrong method');
   }
-  const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
+  const encodedValue = encodeURIComponent(value);
+  const groupUrl = `db/${dbManager.currentDb}/group/${encodeURIComponent(groupName)}`;
   let url;
   if (type === 'owners') {
-    url = `${groupUrl}/_owner/${value}`;
+    url = `${groupUrl}/_owner/${encodedValue}`;
   } else if (type === 'users') {
-    url = `${groupUrl}/user/${value}`;
+    url = `${groupUrl}/user/${encodedValue}`;
   } else if (type === 'rights') {
-    url = `${groupUrl}/right/${value}`;
+    url = `${groupUrl}/right/${encodedValue}`;
   } else {
     throw new Error('unreachable');
   }
@@ -90,7 +91,7 @@ async function doUpdateGroup(groupName, type, value, method) {
 
 export const CREATE_GROUP = 'CREATE_GROUP';
 export function createGroup(groupName) {
-  const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
+  const groupUrl = `db/${dbManager.currentDb}/group/${encodeURIComponent(groupName)}`;
   return {
     type: CREATE_GROUP,
     payload: doCreateGroup(groupUrl),
@@ -107,7 +108,7 @@ async function doCreateGroup(groupUrl) {
 
 export const REMOVE_GROUP = 'REMOVE_GROUP';
 export function removeGroup(groupName) {
-  const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
+  const groupUrl = `db/${dbManager.currentDb}/group/${encodeURIComponent(groupName)}`;
   return {
     type: REMOVE_GROUP,
     meta: { groupName },
@@ -116,7 +117,7 @@ export function removeGroup(groupName) {
 }
 
 export function setGroupProperties(groupName, properties) {
-  const groupUrl = `db/${dbManager.currentDb}/group/${groupName}`;
+  const groupUrl = `db/${dbManager.currentDb}/group/${encodeURIComponent(groupName)}`;
   const setPropUrl = `${groupUrl}/properties`;
   return {
     type: UPDATE_GROUP,
