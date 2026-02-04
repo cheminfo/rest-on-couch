@@ -227,7 +227,6 @@ describe('group methods', () => {
   it('getGroupsInfo should return limited data except if member', () => {
     return couch.getGroupsInfo('c@c.com').then((groups) => {
       expect(groups).toHaveLength(3);
-      // Sees everything because has global readGroup right
       expect(groups).toStrictEqual([
         // Sees limited information because no readGroup right
         {
