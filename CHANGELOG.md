@@ -1,5 +1,20 @@
 # Changelog
 
+## [19.1.0](https://github.com/cheminfo/rest-on-couch/compare/v19.0.1...v19.1.0) (2026-02-05)
+
+
+### Features
+
+* improve group editor UI ([6fbff56](https://github.com/cheminfo/rest-on-couch/commit/6fbff56606f7919d577535dc98e6ad8d7e5d8d6d))
+* show confirm modal before removing group ([09dc122](https://github.com/cheminfo/rest-on-couch/commit/09dc1222c5cca6752874b3a2fc102672cca0315e))
+
+
+### Bug Fixes
+
+* correct create_user route ([3dd84b6](https://github.com/cheminfo/rest-on-couch/commit/3dd84b66497fef7f4ce5d0b7641a22b0d19b231b))
+* do not confuse group and entry permissions when using user tokens ([#487](https://github.com/cheminfo/rest-on-couch/issues/487)) ([3a16cfe](https://github.com/cheminfo/rest-on-couch/commit/3a16cfe596e58c54b5985f9ff7c3295594d17d23))
+* superAdministrators should be considered auth administrators ([2890801](https://github.com/cheminfo/rest-on-couch/commit/2890801eb98a791ff885560931e43e2ebfea8a75))
+
 ## [19.0.1](https://github.com/cheminfo/rest-on-couch/compare/v19.0.0...v19.0.1) (2025-12-23)
 
 
