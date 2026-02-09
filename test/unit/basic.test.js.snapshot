@@ -1,0 +1,3 @@
+exports[`basic initialization with custom design docs > should have initialized the main app design document 1`] = `
+"function (doc) {\\n        return doc.$type === 'log';\\n      }"
+`;
