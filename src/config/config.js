@@ -20,10 +20,10 @@ function getConfig(database, customConfig = undefined) {
   homeConfig ??= getHomeConfig();
   dbConfig ??= getDbConfigOrDie();
   const globalConfig = getConfigGlobal();
-  debug.trace('getConfig - db: %s', database);
 
   if (!customConfig) {
     if (!configStore[database]) {
+      debug('loading config for db: %s', database);
       configStore[database] = parseConfig({
         ...globalConfig,
         ...homeConfig,
@@ -34,6 +34,7 @@ function getConfig(database, customConfig = undefined) {
     }
     return configStore[database];
   } else {
+    debug('loading config for db: %s, with custom config', database);
     const final = {
       ...globalConfig,
       ...homeConfig,
