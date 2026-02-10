@@ -1,5 +1,12 @@
 # Changelog
 
+## [19.1.1](https://github.com/cheminfo/rest-on-couch/compare/v19.1.0...v19.1.1) (2026-02-10)
+
+
+### Bug Fixes
+
+* do not use z.function in config schema ([#489](https://github.com/cheminfo/rest-on-couch/issues/489)) ([1cf8dec](https://github.com/cheminfo/rest-on-couch/commit/1cf8decc30ef479beeec486d0d6164a37f85c5e6))
+
 ## [19.1.0](https://github.com/cheminfo/rest-on-couch/compare/v19.0.1...v19.1.0) (2026-02-05)
 
 
