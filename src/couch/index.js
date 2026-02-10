@@ -1,7 +1,6 @@
 'use strict';
 
 const { freeze } = require('immer');
-const { z } = require('zod');
 
 const getConfig = require('../config/config').getConfig;
 const constants = require('../constants');
