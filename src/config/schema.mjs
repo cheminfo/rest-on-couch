@@ -52,6 +52,10 @@ const globalRightUser = z.union([
 
 const entryUnicity = z.enum(['byOwner', 'global']);
 
+const functionSchema = z.custom((val) => {
+  return typeof val === 'function';
+}, 'Expecting a function');
+
 export const configSchema = z.looseObject({
   // Main options
   url: z.url().trim().default('http://127.0.0.1:5984'),
@@ -63,6 +67,23 @@ export const configSchema = z.looseObject({
   ldapGroupsRenewal: nonnegativeInteger.default(300),
   administrators: z.array(z.email()).default([]),
   superAdministrators: z.array(z.email()).default([]),
+
+  // Design documents
+  customDesign: z
+    .looseObject({
+      views: z.record(z.string(), z.looseObject({})).default({}),
+      indexes: z.record(z.string(), z.looseObject({})).default({}),
+      filters: z.record(z.string(), functionSchema).default({}),
+    })
+    .default({
+      views: {},
+      indexes: {},
+      filters: {},
+    }),
+
+  defaultEntry: z
+    .union([z.record(z.string(), functionSchema), functionSchema])
+    .default(() => getDefaultEntry),
 
   // Server options
   port: nonnegativeInteger.default(3000),
@@ -126,18 +147,22 @@ export const configSchema = z.looseObject({
   rights: z
     .partialRecord(globalRightType, z.array(globalRightUser))
     .default({}),
-  getUserInfo: z.function().default(() => (email) => {
+  getUserInfo: functionSchema.default(() => (email) => {
     return { email };
   }),
-  ldapGetUserEmail: z.function().default(() => (user) => {
+  ldapGetUserEmail: functionSchema.default(() => (user) => {
     return user.mail;
   }),
-  getPublicUserInfo: z.function().default(() => () => null),
+  getPublicUserInfo: functionSchema.default(() => () => null),
   entryUnicity: entryUnicity.default('byOwner'), // can be byOwner or global
 
   // Options related to audit logs
   auditActions: boolean.default(false),
   auditActionsDb: z.string().trim().default('roc-audit-actions'),
 
-  beforeCreateHook: z.function().optional(),
+  beforeCreateHook: functionSchema.optional(),
 });
+
+function getDefaultEntry() {
+  return {};
+}

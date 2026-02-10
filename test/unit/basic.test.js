@@ -41,12 +41,14 @@ describe('basic initialization tests', () => {
 describe('basic initialization with custom design docs', () => {
   beforeEach(entryUnicity);
 
-  it('should have initialized the main app design document', async () => {
+  it('should have initialized the main app design document', async ({
+    assert,
+  }) => {
     const app = await couch._db.getDocument(
       `_design/${constants.DESIGN_DOC_NAME}`,
     );
     assert.notEqual(app, null);
-    assert.ok(app.filters.abc);
+    assert.snapshot(app.filters?.abc);
   });
 
   it('should have initialized the default custom design doc', async () => {
