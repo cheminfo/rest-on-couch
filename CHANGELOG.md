@@ -1,5 +1,12 @@
 # Changelog
 
+## [19.1.2](https://github.com/cheminfo/rest-on-couch/compare/v19.1.1...v19.1.2) (2026-02-10)
+
+
+### Bug Fixes
+
+* allow non-email strings in config.rights and log database name before validation ([#492](https://github.com/cheminfo/rest-on-couch/issues/492)) ([e1f3be1](https://github.com/cheminfo/rest-on-couch/commit/e1f3be1666c264354c1d34508a26ec2984b334a9))
+
 ## [19.1.1](https://github.com/cheminfo/rest-on-couch/compare/v19.1.0...v19.1.1) (2026-02-10)
 
 
