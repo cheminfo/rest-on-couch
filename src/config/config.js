@@ -24,6 +24,7 @@ function getConfig(database, customConfig = undefined) {
 
   if (!customConfig) {
     if (!configStore[database]) {
+      debug('loading config for db: %s', database);
       configStore[database] = parseConfig({
         ...globalConfig,
         ...homeConfig,

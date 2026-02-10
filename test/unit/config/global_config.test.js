@@ -14,4 +14,15 @@ describe('initialization of global configuration properties', () => {
     });
     expect(config.publicAddress).toBe('http://127.0.0.1:3300/roc');
   });
+
+  it('should accept non-email strings in rights (e.g. group names)', () => {
+    const config = getGlobalConfig({
+      rights: {
+        read: ['anyuser', 'group1', 'myGroup'],
+        create: ['user@example.com', 'admins'],
+      },
+    });
+    expect(config.rights.read).toEqual(['anyuser', 'group1', 'myGroup']);
+    expect(config.rights.create).toEqual(['user@example.com', 'admins']);
+  });
 });

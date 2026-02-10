@@ -44,11 +44,7 @@ const nonnegativeInteger = z.union(
   { error: 'Value must be a non-negative integer' },
 );
 
-const globalRightUser = z.union([
-  z.email(),
-  z.literal('anyuser'),
-  z.literal('anonymous'),
-]);
+const globalRightUser = z.string().trim().min(1);
 
 const entryUnicity = z.enum(['byOwner', 'global']);
 
