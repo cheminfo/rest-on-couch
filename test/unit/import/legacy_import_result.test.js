@@ -2,10 +2,10 @@ import { describe, it } from 'node:test';
 import { expect } from 'chai';
 
 import constants from '../../../src/constants.js';
-import ImportResult from '../../../src/import/ImportResult.js';
+import { LegacyImportResult } from '../../../src/import/LegacyImportResult.mjs';
 
 function getValidResult(importType) {
-  const result = new ImportResult();
+  const result = new LegacyImportResult();
   switch (importType) {
     case constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT:
       Object.assign(result, {
@@ -62,7 +62,7 @@ function getValidResult(importType) {
   return result;
 }
 
-describe('ImportResult', () => {
+describe('LegacyImportResult', () => {
   it('valid import results', () => {
     // Valid results shouldn't throw
     getValidResult(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT).check();
@@ -111,43 +111,43 @@ describe('ImportResult', () => {
     // Additional attachments
     checkWithoutAttachmentPropShouldThrow(
       'filename',
-      'In attachment: filename must be of type String',
+      'filename must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
     checkWithoutAttachmentPropShouldThrow(
       'jpath',
-      'In attachment: jpath must be of type Array',
+      'jpath must be of type Array',
       constants.IMPORT_UPDATE_FULL,
     );
     checkWithoutAttachmentPropShouldThrow(
       'field',
-      'In attachment: field must be of type String',
+      'field must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
     checkWithoutAttachmentPropShouldThrow(
       'reference',
-      'In attachment: reference must be of type String',
+      'reference must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
     checkWithoutAttachmentPropShouldThrow(
       'content_type',
-      'In attachment: content_type must be of type String',
+      'content_type must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
     checkWithoutAttachmentPropShouldThrow(
       'metadata',
-      'In attachment: metadata must be of type Object',
+      'metadata must be of type Object',
       constants.IMPORT_UPDATE_FULL,
     );
     checkWithoutAttachmentPropShouldThrow(
       'contents',
-      'In attachment: contents must be a Buffer or TypedArray',
+      'contents must be a Buffer or TypedArray',
       constants.IMPORT_UPDATE_FULL,
     );
     checkWithWrongTypeAttachmentPropShouldThrow(
       'contents',
       'this is a string',
-      'In attachment: contents must be a Buffer or TypedArray',
+      'contents must be a Buffer or TypedArray',
       constants.IMPORT_UPDATE_FULL,
     );
 
@@ -223,7 +223,7 @@ describe('ImportResult', () => {
   });
 
   it('Cannot skip metadata without skipping attachment', () => {
-    const result = new ImportResult();
+    const result = new LegacyImportResult();
     result.skipMetadata();
     expect(() => {
       result.getUpdateType();

@@ -4,7 +4,7 @@ import path from 'node:path';
 import { describe, it } from 'node:test';
 import { expect } from 'chai';
 
-import ImportContext from '../../../src/import/ImportContext.js';
+import ImportContext from '../../../src/import/ImportContext.mjs';
 
 describe('ImportContext', () => {
   it('should instanciate a new import context', async () => {

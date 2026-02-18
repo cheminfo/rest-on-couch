@@ -1,16 +1,14 @@
-'use strict';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 
-const path = require('path');
-
-const fs = require('fs-extra');
-
-const Couch = require('..');
+import Couch from '../couch/index.js';
 
 const kFilePath = Symbol('filePath');
 const kContents = Symbol('contents');
 const kDB = Symbol('db');
 
-module.exports = class ImportContext {
+export default class ImportContext {
   constructor(filePath, database) {
     this[kFilePath] = filePath;
     this[kContents] = {};
@@ -50,4 +48,18 @@ module.exports = class ImportContext {
       return fs.readFile(this[kFilePath], encoding);
     }
   }
-};
+
+  getContentsSync(encoding = null, cache = true) {
+    if (cache) {
+      if (!this[kContents][encoding]) {
+        this[kContents][encoding] = fsSync.readFileSync(
+          this[kFilePath],
+          encoding,
+        );
+      }
+      return this[kContents][encoding];
+    } else {
+      return fsSync.readFileSync(this[kFilePath], encoding);
+    }
+  }
+}

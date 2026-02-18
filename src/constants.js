@@ -45,6 +45,7 @@ module.exports = {
   allowedFirstLevelKeys,
 
   kEntryUnicity: Symbol('entryUnicity'),
+  kImportType: Symbol('importType'),
   IMPORT_UPDATE_FULL,
   IMPORT_UPDATE_WITHOUT_ATTACHMENT,
   IMPORT_UPDATE_$CONTENT_ONLY,

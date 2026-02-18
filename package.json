@@ -4,7 +4,7 @@
   "description": "Interface to CouchDB that allows the control of permissions on the documents",
   "exports": {
     ".": "./src/index.js",
-    "./import": "./src/import/index.js"
+    "./import": "./src/import/index.mjs"
   },
   "files": [
     "bin",
@@ -20,7 +20,7 @@
     "debug": "node --env-file=.env.dev --inspect bin/rest-on-couch-server.js",
     "dev:api": "node --watch --env-file=.env.dev bin/rest-on-couch-server.js",
     "dev:front": "vite --open",
-    "eslint": "eslint . --cache",
+    "eslint": "eslint . --cache --max-warnings=4",
     "eslint-fix": "npm run eslint -- --fix",
     "prettier": "prettier . --check",
     "prettier-write": "prettier . --write",

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { beforeEach, describe, it } from 'node:test';
 import { expect } from 'chai';
 
-import { importFile } from '../../../src/import/index.js';
+import importFile from '../../../src/import/index.mjs';
 import { resetDatabase } from '../../utils/utils.js';
 
 const databaseName = 'test-new-import';

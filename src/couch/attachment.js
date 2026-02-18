@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 'use strict';
 
 const extend = require('extend');
@@ -53,84 +55,102 @@ const methods = {
     return getAttachmentFromEntry(entry, this, name, asStream);
   },
 
-  // - id: used to find the appropriate document. Method will throw if document is not found
-  // - json: the content to push into the array pointed by the jpath,
-  //   or to merge into an existing element with the same reference
-  // - file: object containing:
-  //   - reference: reference of this attachment
-  //   - name: name of the attachment
-  //   - data: content of the attachment
-  //   - field: field in the json in which a ref to the attachment filename should be added
-  // - newContent: object to deep-merge with the found document. New content precedes over old content
-  // - noFile: set to true if the attachment should not be added to the document
-  async addFileToJpath(id, user, jpath, json, file, newContent, noFile) {
+  /**
+   * This function should be called with a validated `analyses` parameter, using `EntryImportResult.getAnalyses()`
+   * - id: used to find the appropriate document. Method will throw if document is not found.
+   * - user: user modifying the entry
+   * - analyses[]:
+   *   - jpath: The jpath to which the analysis should be added or updated (based on the reference existing or not). The jpath should always point to an array.
+   *   - metadata: custom metadata fields
+   *   - reference: the reference to this file. Used to identify a pre-existing file item with the same reference.
+   *   - attachments[]:
+   *     - field: field in the metadata which contains a reference to the attachment. A file item can contain multiple fields which reference different attachments.
+   *     - filename: name of the attachment
+   *     - content_type: Content-Type of the attachment
+   *     - contents: contents of the attachment
+   *
+   *   or to merge into an existing element with the same reference
+   * - file: object containing:
+   *
+   *
+   * - newContent: object to deep-merge with the found document. New content precedes over old content
+   * - noFile: set to true if the attachment should not be added to the document
+   */
+  async addFileToJpath(id, user, analyses, newContent) {
     debug('addFileToJpath (%s, %s)', id, user);
-    if (!Array.isArray(jpath)) {
-      throw new CouchError('jpath must be an array');
+    if (!Array.isArray(analyses)) {
+      throw new CouchError('analyses must be an array');
     }
-    if (typeof json !== 'object') {
-      throw new CouchError('json must be an object');
-    }
-    json.$modificationDate = Date.now();
-    if (typeof file !== 'object' || file === null) {
-      throw new CouchError('file must be an object');
-    }
-    if (!noFile && (!file.field || !file.name || !file.data)) {
-      throw new CouchError('file must have field, name and data properties');
-    }
+    const dateNow = Date.now();
 
     const entry = await this.getEntryById(id, user);
-    let current = entry.$content || {};
+    const current = entry.$content || {};
 
     debug.trace('extend current content with new content');
     if (newContent) {
       extend(current, newContent);
     }
 
-    debug.trace('create structure to jpath');
-    for (var i = 0; i < jpath.length; i++) {
-      let newCurrent = current[jpath[i]];
-      if (!newCurrent) {
-        if (i < jpath.length - 1) {
-          current[jpath[i]] = {};
-        } else {
-          current[jpath[i]] = [];
+    debug.trace('prepare entry and attachments data');
+    const documentAttachments = [];
+    for (let analysis of analyses) {
+      let currentAnalysis = current;
+      const { jpath, reference, metadata = {}, attachments } = analysis;
+
+      let analysisMetadata = metadata ? structuredClone(metadata) : {};
+      analysisMetadata.$modificationDate = dateNow;
+
+      for (var i = 0; i < jpath.length; i++) {
+        let newCurrent = currentAnalysis[jpath[i]];
+        if (!newCurrent) {
+          if (i < jpath.length - 1) {
+            currentAnalysis[jpath[i]] = {};
+          } else {
+            currentAnalysis[jpath[i]] = [];
+          }
+          newCurrent = currentAnalysis[jpath[i]];
         }
-        newCurrent = current[jpath[i]];
+        currentAnalysis = newCurrent;
       }
-      current = newCurrent;
-    }
-    if (!Array.isArray(current)) {
-      throw new CouchError('jpath must point to an array');
+
+      if (!Array.isArray(currentAnalysis)) {
+        throw new CouchError('jpath must point to an array');
+      }
+
+      let found = currentAnalysis.find((el) => el.reference === reference);
+      if (found) {
+        Object.assign(found, analysisMetadata);
+        analysisMetadata = found;
+      } else {
+        analysisMetadata.reference = reference;
+        currentAnalysis.push(
+          Object.assign(analysisMetadata, { $creationDate: Date.now() }),
+        );
+      }
+
+      for (let attachment of attachments) {
+        const { field, filename, contents, content_type } = attachment;
+        analysisMetadata[field] = {
+          filename,
+        };
+        const documentAttachment = {
+          reference,
+          field,
+          name: filename,
+          data:
+            typeof contents === 'string'
+              ? Buffer.from(contents, 'base64')
+              : contents,
+          content_type,
+        };
+        documentAttachments.push(documentAttachment);
+      }
     }
 
-    if (!file.reference) {
-      throw new Error('file must have a reference');
-    }
-    debug.trace('set metadata');
-
-    let found = current.find((el) => el.reference === file.reference);
-    if (found) {
-      Object.assign(found, json);
-      json = found;
-    } else {
-      json.reference = file.reference;
-      current.push(Object.assign(json, { $creationDate: Date.now() }));
-    }
-
-    if (noFile) {
-      debug.trace('noFile is true, saving without attachment');
+    if (documentAttachments.length === 0) {
       return this.insertEntry(entry, user);
     } else {
-      debug.trace('add attachment');
-      json[file.field] = {
-        filename: file.name,
-      };
-      const fileCopy = { ...file };
-      if (typeof fileCopy.data === 'string') {
-        fileCopy.data = Buffer.from(fileCopy.data, 'base64');
-      }
-      return this.addAttachments(entry, user, file);
+      return this.addAttachments(entry, user, documentAttachments);
     }
   },
 };
