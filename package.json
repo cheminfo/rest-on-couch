@@ -25,9 +25,11 @@
     "prettier": "prettier . --check",
     "prettier-write": "prettier . --write",
     "preview:api": "NODE_ENV=production npm run build && node --env-file=.env.dev --env-file-if-exists=.env.dev.local bin/rest-on-couch-server.js",
-    "test": "npm run test-coverage && npm run eslint && npm run prettier",
+    "test": "npm run tsc && npm run test-coverage && npm run eslint && npm run prettier",
     "test-coverage": "node --test --env-file=.env.test --experimental-config-file=node_test_coverage.config.json **/*.test.js",
-    "test-only": "node --test --env-file=.env.test --import ./test/setup.js --test-concurrency=1 --test-timeout=20000 --test-reporter=spec  **/*.test.js"
+    "test-only": "node --test --env-file=.env.test --import ./test/setup.js --test-concurrency=1 --test-timeout=20000 --test-reporter=spec  **/*.test.js",
+    "tsc": "tsc --build",
+    "tsc-watch": "tsc --build --watch"
   },
   "repository": {
     "type": "git",
@@ -83,8 +85,11 @@
   },
   "devDependencies": {
     "@fontsource-variable/roboto": "^5.2.9",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
     "@vitest/expect": "^4.0.18",
+    "@zakodium/tsconfig": "^1.0.2",
     "bootstrap": "^3.4.1",
     "chai": "^6.2.2",
     "eslint": "^9.39.1",
@@ -102,6 +107,7 @@
     "redux-promise-middleware": "^6.2.0",
     "redux-thunk": "^3.1.0",
     "supertest": "^7.2.2",
+    "typescript": "^5.9.3",
     "vite": "^7.3.1"
   }
 }

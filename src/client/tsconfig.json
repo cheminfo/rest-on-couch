@@ -1,0 +1,10 @@
+{
+  "extends": "@zakodium/tsconfig/jsx",
+  "include": ["."],
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "moduleResolution": "Bundler",
+    "module": "ESNext"
+  }
+}

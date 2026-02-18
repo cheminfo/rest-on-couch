@@ -2,6 +2,7 @@
   <configuration default="false" name="Dev" type="CompoundRunConfigurationType">
     <toRun name="dev:api" type="js.build_tools.npm" />
     <toRun name="dev:front" type="js.build_tools.npm" />
+    <toRun name="tsc-watch" type="js.build_tools.npm" />
     <method v="2" />
   </configuration>
 </component>

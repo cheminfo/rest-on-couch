@@ -1,6 +1,6 @@
 import { defineConfig, globalIgnores } from 'eslint/config';
 import { globals } from 'eslint-config-zakodium';
-import js from 'eslint-config-zakodium/js';
+import ts from 'eslint-config-zakodium/ts';
 import react from 'eslint-config-zakodium/react';
 
 export default defineConfig(
@@ -11,7 +11,7 @@ export default defineConfig(
     'coverage',
     'dist',
   ]),
-  js,
+  ts,
   {
     rules: {
       camelcase: ['error', { properties: 'never' }],
@@ -46,17 +46,14 @@ export default defineConfig(
     },
   },
   {
-    files: ['src/client/**/*'],
+    files: ['src/client/**'],
     languageOptions: {
       sourceType: 'module',
       globals: {
         ...globals.browser,
       },
     },
-  },
-  {
-    files: ['src/client/**/*.jsx'],
-    extends: [...react],
+    extends: [react],
   },
   {
     files: ['scripts/**'],

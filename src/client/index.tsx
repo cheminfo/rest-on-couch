@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import App from './components/App';
 import store from './store';
 
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById('root') as HTMLDivElement);
 
 root.render(
   <StrictMode>
