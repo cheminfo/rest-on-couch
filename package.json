@@ -90,7 +90,6 @@
     "eslint": "^9.39.1",
     "eslint-config-zakodium": "^19.1.0",
     "font-awesome": "^4.7.0",
-    "jquery": "^3.7.1",
     "prettier": "^3.8.1",
     "prop-types": "^15.8.1",
     "react": "^19.2.4",
