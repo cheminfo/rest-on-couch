@@ -1,4 +1,4 @@
-import { apiFetchJSON } from '../api';
+import { apiFetchJSON } from '../api.ts';
 
 import { getDbList } from './db';
 import { checkLogin, getLoginProviders } from './login';

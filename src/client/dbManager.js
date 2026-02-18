@@ -6,7 +6,7 @@ import {
   setUserGroups,
   setUserRights,
 } from './actions/db';
-import { apiFetchJSONOptional } from './api';
+import { apiFetchJSONOptional } from './api.ts';
 
 export default class DbManager {
   constructor(store) {

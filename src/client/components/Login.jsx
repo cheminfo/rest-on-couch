@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { loginCouchDB, loginLDAP } from '../actions/login';
-import { API_ROOT } from '../api';
+import { API_ROOT } from '../api.ts';
 
 import LoginGeneric from './LoginGeneric';
 import LoginGoogle from './LoginGoogle';

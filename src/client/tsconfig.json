@@ -5,6 +5,7 @@
     "noEmit": true,
     "allowJs": true,
     "moduleResolution": "Bundler",
-    "module": "ESNext"
+    "module": "ESNext",
+    "types": ["vite/client"]
   }
 }

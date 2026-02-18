@@ -1,4 +1,4 @@
-import { apiFetchJSON, apiFetchForm, apiFetchFormJSON } from '../api';
+import { apiFetchForm, apiFetchFormJSON, apiFetchJSON } from '../api.ts';
 import { dbManager } from '../store';
 
 export const CHECK_LOGIN = 'CHECK_LOGIN';
