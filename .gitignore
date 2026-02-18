@@ -1,13 +1,13 @@
 # Coverage files
 lcov.info
 
-
-
 node_modules
 
 .eslintcache
 
 .env.*.local
+
+*.tsbuildinfo
 
 # Front build
 /dist
