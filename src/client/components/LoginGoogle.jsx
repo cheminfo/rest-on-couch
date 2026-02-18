@@ -5,7 +5,8 @@ import { checkLogin } from '../actions/login';
 import { API_ROOT } from '../api';
 import { dbManager } from '../store';
 
-import googleSigninImage from '../../../public/assets/img/logo/google_signin.png';
+// eslint-disable-next-line import/no-absolute-path
+import googleSigninImage from '/assets/img/logo/google_signin.png?url';
 
 const LoginGoogleImpl = ({ doGoogleLogin }) => (
   <a href="#" onClick={doGoogleLogin}>
