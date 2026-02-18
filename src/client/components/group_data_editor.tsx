@@ -1,19 +1,33 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { match } from 'ts-pattern';
 
 import EnterTextField from './EnterTextField';
 import GroupDataElement from './GroupDataElement';
 import ResponsiveTable from './ResponsiveTable';
 
-function GroupDataEditor({
-  canAdd = true,
-  editable = 'all',
-  type,
-  data,
-  addValue,
-  limit = Infinity,
-  removeValue,
-}) {
+type EditableValue = number | 'all-except-first' | 'none' | 'all';
+
+interface GroupDataEditorProps {
+  data: string[];
+  type: string;
+  addValue: (value: string) => void;
+  removeValue: (value: string) => void;
+  canAdd?: boolean;
+  editable?: EditableValue;
+  limit?: number;
+}
+
+export default function GroupDataEditor(props: GroupDataEditorProps) {
+  const {
+    canAdd = true,
+    editable = 'all',
+    type,
+    data,
+    addValue,
+    limit = Infinity,
+    removeValue,
+  } = props;
+
   const [showAll, setShowAll] = useState(false);
 
   const slicedData = showAll ? data : data.slice(0, limit);
@@ -78,27 +92,13 @@ function GroupDataEditor({
   );
 }
 
-GroupDataEditor.propTypes = {
-  addValue: PropTypes.func.isRequired,
-  removeValue: PropTypes.func.isRequired,
-  data: PropTypes.array.isRequired,
-  type: PropTypes.string.isRequired,
-};
-
-function isEditable(type, idx) {
+function isEditable(type: EditableValue, idx: number) {
   if (typeof type === 'number') {
     return idx < type;
   }
-  switch (type) {
-    case 'all-except-first':
-      return idx !== 0;
-    case 'none':
-      return false;
-    case 'all':
-      return true;
-    default:
-      throw new Error('Invalid prop editable');
-  }
+  return match(type)
+    .with('all-except-first', () => idx !== 0)
+    .with('none', () => false)
+    .with('all', () => true)
+    .exhaustive();
 }
-
-export default GroupDataEditor;

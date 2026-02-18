@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 import { globalRightTypes } from '../constants';
 
-import GroupDataEditor from './GroupDataEditor';
+import GroupDataEditor from './group_data_editor.tsx';
 
 const GlobalRightsEditor = ({ globalRights, addRight, removeRight }) => (
   <div>
