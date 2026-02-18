@@ -41,7 +41,7 @@ class CreateUserImpl extends Component {
         <form>
           <div className="row">
             <div className="col-md-4">
-              <div className="form-group">
+              <div className="mb-3">
                 <label>Email</label>
                 <input
                   name="email"
@@ -54,7 +54,7 @@ class CreateUserImpl extends Component {
               </div>
             </div>
             <div className="col-md-4">
-              <div className="form-group">
+              <div className="mb-3">
                 <label>Password</label>
                 <input
                   name="password"

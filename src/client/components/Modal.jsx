@@ -29,18 +29,19 @@ export function Modal({ open, onClose, title, body, footer }) {
         style={{ display: 'block' }}
         onClick={onClose}
       >
-        <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal-dialog-centered modal-dialog"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="modal-content">
             <div className="modal-header">
+              <div className="modal-title fs-5">{title}</div>
               <button
                 type="button"
-                className="close"
+                className="btn-close"
                 aria-label="Close"
                 onClick={onClose}
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-              <h4 className="modal-title">{title}</h4>
+              />
             </div>
 
             <div className="modal-body">{body}</div>
@@ -49,7 +50,7 @@ export function Modal({ open, onClose, title, body, footer }) {
         </div>
       </div>
 
-      <div className="modal-backdrop fade in" />
+      <div className="modal-backdrop show" />
     </>
   );
 }

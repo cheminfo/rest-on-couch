@@ -25,30 +25,30 @@ const LoginImpl = (props) => {
       {props.loginProviders.length === 0 ? 'No login provider available' : ''}
       {googleProvider && (
         <div className="card">
-          <div className="header">
-            <h4 className="title">{googleProvider.title}</h4>
+          <div className="card-header">
+            <h4 className="card-title">{googleProvider.title}</h4>
           </div>
-          <div className="content">
+          <div className="card-body">
             <LoginGoogle />
           </div>
         </div>
       )}
       {ldapProvider && (
         <div className="card">
-          <div className="header">
-            <h4 className="title">{ldapProvider.title}</h4>
+          <div className="card-header">
+            <h4 className="card-title">{ldapProvider.title}</h4>
           </div>
-          <div className="content">
+          <div className="card-body">
             <LoginGeneric error={props.errors.ldap} login={props.loginLDAP} />
           </div>
         </div>
       )}
       {couchdbProvider && (
         <div className="card">
-          <div className="header">
-            <h4 className="title">{couchdbProvider.title}</h4>
+          <div className="card-header">
+            <h4 className="card-title">{couchdbProvider.title}</h4>
           </div>
-          <div className="content">
+          <div className="card-body">
             <LoginGeneric
               error={props.errors.couchdb}
               login={props.loginCouchDB}
@@ -58,10 +58,10 @@ const LoginImpl = (props) => {
       )}
       {oidcProvider && (
         <div className="card">
-          <div className="header">
-            <h4 className="title">{oidcProvider.title}</h4>
+          <div className="card-header">
+            <h4 className="card-title">{oidcProvider.title}</h4>
           </div>
-          <div className="content">
+          <div className="card-body">
             <a
               href={`${API_ROOT}auth/login/oidc?continue=${encodeURIComponent(redirectURL)}`}
             >

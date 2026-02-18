@@ -3,16 +3,22 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { logout as logoutAction } from '../actions/login';
+import { clsx } from 'clsx';
 
-const LoginButtonImpl = ({ message = 'Login', logout, username }) => {
+const LoginButtonImpl = ({ message = 'Login', logout, username, isNav }) => {
+  const className = clsx({ 'nav-link': isNav });
   if (username) {
     return (
-      <a href="#" onClick={logout}>
+      <a className={className} href="#" onClick={logout}>
         {`${username} - Logout`}
       </a>
     );
   } else {
-    return <Link to="/login">{message}</Link>;
+    return (
+      <Link className={className} to="/login">
+        {message}
+      </Link>
+    );
   }
 };
 

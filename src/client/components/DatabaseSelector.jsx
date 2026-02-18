@@ -10,7 +10,7 @@ export default function DatabaseSelector({ dbName, dbList, onDbSelected }) {
         style={{
           width: '200px',
         }}
-        className="form-control"
+        className="form-select"
         value={dbName}
         onChange={(event) => {
           onDbSelected(event);

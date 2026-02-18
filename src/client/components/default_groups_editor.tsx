@@ -24,6 +24,7 @@ export default function DefaultGroupsEditor(props: DefaultGroupsEditorProps) {
                 data={defaultGroups.anonymous}
                 addValue={(value) => addGroup('anonymous', value)}
                 removeValue={(value) => removeGroup('anonymous', value)}
+                lightTable
               />
             </div>
             <div className="col-md-6">
@@ -32,6 +33,7 @@ export default function DefaultGroupsEditor(props: DefaultGroupsEditorProps) {
                 data={defaultGroups.anyuser}
                 addValue={(value) => addGroup('anyuser', value)}
                 removeValue={(value) => removeGroup('anyuser', value)}
+                lightTable
               />
             </div>
           </div>

@@ -24,8 +24,8 @@ function GroupEditorImpl({
 
   return (
     <div>
-      <div className="header">
-        <h4 className="title">
+      <div className="card-header">
+        <h4 className="card-title">
           {`${group.name} `}
           <button
             type="button"
@@ -63,7 +63,7 @@ function GroupEditorImpl({
           </>
         }
       />
-      <div className="content">
+      <div className="card-body">
         <EditableTextField
           label="Description"
           value={group.description}
@@ -93,7 +93,7 @@ function GroupEditorImpl({
             }
           />
         </div>
-        <div className="container-fluid">
+        <div className="container-fluid mt-4">
           <div className="row">
             <div className="col-md-4">
               <GroupDataEditor

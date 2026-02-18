@@ -3,7 +3,7 @@ import { match } from 'ts-pattern';
 
 import EnterTextField from './EnterTextField';
 import GroupDataElement from './GroupDataElement';
-import ResponsiveTable from './ResponsiveTable';
+import ResponsiveTable from './responsive_table.tsx';
 
 type EditableValue = number | 'all-except-first' | 'none' | 'all';
 
@@ -15,6 +15,7 @@ interface GroupDataEditorProps {
   canAdd?: boolean;
   editable?: EditableValue;
   limit?: number;
+  lightTable?: boolean;
 }
 
 export default function GroupDataEditor(props: GroupDataEditorProps) {
@@ -26,6 +27,7 @@ export default function GroupDataEditor(props: GroupDataEditorProps) {
     addValue,
     limit = Infinity,
     removeValue,
+    lightTable,
   } = props;
 
   const [showAll, setShowAll] = useState(false);
@@ -33,10 +35,10 @@ export default function GroupDataEditor(props: GroupDataEditorProps) {
   const slicedData = showAll ? data : data.slice(0, limit);
   return (
     <>
-      <ResponsiveTable>
+      <ResponsiveTable lightTable={lightTable}>
         <thead>
           <tr>
-            <th>
+            <th colSpan={2}>
               {type}
               {type !== 'rights' && ' (email address)'}
             </th>

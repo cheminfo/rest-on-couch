@@ -15,7 +15,7 @@ export default function Sidebar({
     <div className="sidebar" data-color="blue">
       <div className="sidebar-wrapper">
         <div className="logo">
-          <Link to="/" className="simple-text">
+          <Link to="/" className="simple-text text-decoration-none">
             rest-on-couch
           </Link>
         </div>

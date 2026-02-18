@@ -33,23 +33,23 @@ function AppImpl(props) {
             isGroupOwner={props.isGroupOwner}
           />
           <div className="main-panel">
-            <nav className="navbar navbar-default navbar-fixed">
+            <nav className="navbar navbar-default navbar-light navbar-expand-lg">
               <div className="container-fluid">
-                <div className="collapse navbar-collapse">
+                <div className="collapse navbar-collapse justify-content-end">
                   {rocOnline && (
                     <ul
                       style={{ display: 'flex', alignItems: 'center', gap: 2 }}
-                      className="nav navbar-nav navbar-right"
+                      className="nav navbar-nav"
                     >
-                      <li>
+                      <li className="nav-item">
                         <DatabaseSelector
                           dbName={props.dbName}
                           dbList={props.dbList}
                           onDbSelected={handleDbSelected}
                         />
                       </li>
-                      <li>
-                        <LoginButton />
+                      <li className="nav-item">
+                        <LoginButton isNav />
                       </li>
                     </ul>
                   )}

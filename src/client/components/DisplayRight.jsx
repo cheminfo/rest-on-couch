@@ -1,4 +1,4 @@
-const labelTypes = {
+const badgeTypes = {
   create: 'success',
   read: 'info',
   write: 'warning',
@@ -6,9 +6,9 @@ const labelTypes = {
 };
 
 const DisplayRight = (props) => {
-  const labelType = labelTypes[props.right] || 'default';
+  const badgeType = badgeTypes[props.right] || 'secondary';
   return (
-    <span style={props.style} className={`label label-${labelType}`}>
+    <span style={props.style} className={`badge bg-${badgeType}`}>
       {` ${props.right} `}
     </span>
   );
