@@ -98,6 +98,30 @@ describe('import', () => {
     });
   });
 
+  it('no attachment', async () => {
+    await importFile(databaseName, 'no_attachment', textFile1);
+    const entry = await importCouch.getEntryById('test.txt', 'a@a.com');
+    expect(entry).toBeDefined();
+    expect(entry.$owners).toEqual(['a@a.com', 'group1', 'group2', 'group3']);
+    expect(entry.$content).toBeDefined();
+    // Check that new content has been merged
+    expect(entry.$content.sideEffect).toBe(true);
+    let metadata = entry.$content.jpath.in.document[0];
+    expect(metadata).toBeDefined();
+
+    // Automatic fields were added
+    expect(typeof metadata.$modificationDate).toBe('number');
+    expect(typeof metadata.$creationDate).toBe('number');
+
+    // Metadata was added to the jpath, without a referenced attachment
+    expect(metadata.hasMetadata).toBe(true);
+    expect(metadata.field).not.toBeDefined();
+    expect(metadata.reference).toBe('test.txt');
+
+    // No attachments
+    expect(entry._attachments).not.toBeDefined();
+  });
+
   it('change filename', async () => {
     await importFile(databaseName, 'changeFilename', textFile2);
     const entry = await importCouch.getEntryById('test.txt', 'a@a.com');
