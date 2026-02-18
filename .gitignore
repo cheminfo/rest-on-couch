@@ -7,5 +7,7 @@ node_modules
 
 .eslintcache
 
+.env.*.local
+
 # Front build
 /dist

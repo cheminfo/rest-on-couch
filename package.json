@@ -17,14 +17,14 @@
   },
   "scripts": {
     "build": "vite build",
-    "debug": "node --env-file=.env.dev --inspect bin/rest-on-couch-server.js",
-    "dev:api": "node --watch --env-file=.env.dev bin/rest-on-couch-server.js",
+    "debug": "node --env-file=.env.dev --env-file-if-exists=.env.dev.local --inspect bin/rest-on-couch-server.js",
+    "dev:api": "node --watch --env-file=.env.dev --env-file-if-exists=.env.dev.local bin/rest-on-couch-server.js",
     "dev:front": "vite --open",
     "eslint": "eslint . --cache",
     "eslint-fix": "npm run eslint -- --fix",
     "prettier": "prettier . --check",
     "prettier-write": "prettier . --write",
-    "preview:api": "NODE_ENV=production npm run build && node --env-file=.env.dev bin/rest-on-couch-server.js",
+    "preview:api": "NODE_ENV=production npm run build && node --env-file=.env.dev --env-file-if-exists=.env.dev.local bin/rest-on-couch-server.js",
     "test": "npm run test-coverage && npm run eslint && npm run prettier",
     "test-coverage": "node --test --env-file=.env.test --experimental-config-file=node_test_coverage.config.json **/*.test.js",
     "test-only": "node --test --env-file=.env.test --import ./test/setup.js --test-concurrency=1 --test-timeout=20000 --test-reporter=spec  **/*.test.js"

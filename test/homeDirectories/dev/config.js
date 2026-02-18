@@ -10,6 +10,11 @@ module.exports = {
     },
     ldap: ldapAuthConfig,
     oidc: oidcAuthConfig,
+    google: {
+      showLogin: true,
+      clientID: 'dummy',
+      clientSecret: 'dummy',
+    },
   },
   keys: ['app-key'],
   password: 'roc-123',
