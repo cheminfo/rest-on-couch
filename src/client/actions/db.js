@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
 
-import { apiFetchJSON } from '../api';
+import { apiFetchJSON } from '../api.ts';
 import { dbManager } from '../store';
 
 export const GET_DB_LIST = 'GET_DB_LIST';

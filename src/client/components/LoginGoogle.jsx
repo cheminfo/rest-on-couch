@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { checkLogin } from '../actions/login';
-import { API_ROOT } from '../api';
+import { API_ROOT } from '../api.ts';
 import { dbManager } from '../store';
 
 // eslint-disable-next-line import/no-absolute-path
