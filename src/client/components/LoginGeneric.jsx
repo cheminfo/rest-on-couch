@@ -36,7 +36,7 @@ class LoginGeneric extends Component {
       <form>
         <div className="row">
           <div className="col-md-4">
-            <div className="form-group">
+            <div className="mb-3">
               <label>Username</label>
               <input
                 name="username"
@@ -49,7 +49,7 @@ class LoginGeneric extends Component {
             </div>
           </div>
           <div className="col-md-4">
-            <div className="form-group">
+            <div className="mb-3">
               <label>Password</label>
               <input
                 name="password"

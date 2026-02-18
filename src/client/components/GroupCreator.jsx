@@ -18,10 +18,10 @@ function GroupCreatorImpl(props) {
   );
   return (
     <div className="card">
-      <div className="header">
-        <h4 className="title">Create new group</h4>
+      <div className="card-header">
+        <h4 className="card-title">Create new group</h4>
       </div>
-      <div className="content">
+      <div className="card-body">
         <input
           type="text"
           value={value}
