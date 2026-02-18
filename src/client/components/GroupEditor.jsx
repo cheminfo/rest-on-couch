@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { clearGroupError, clearGroupSuccess } from '../actions/db';
 
 import EditableTextField from './EditableTextField';
-import GroupDataEditor from './GroupDataEditor';
+import GroupDataEditor from './group_data_editor.tsx';
 import { useState } from 'react';
 import { Modal } from './Modal';
 

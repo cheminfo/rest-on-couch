@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 
 import { addDefaultGroup, removeDefaultGroup } from '../actions/db';
 
-import DefaultGroupsEditor from './DefaultGroupsEditor';
+import DefaultGroupsEditor from './default_groups_editor.tsx';
 
 function DefaultGroupsImpl(props) {
   if (!props.defaultGroups) return null;
