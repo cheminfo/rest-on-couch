@@ -16,7 +16,7 @@ export default function EnterTextField(props) {
   );
   return (
     <div>
-      <label>{props.label}</label>
+      {props.label ? <label>{props.label}</label> : null}
       <input
         type="text"
         list={listId}
@@ -32,7 +32,7 @@ export default function EnterTextField(props) {
       />
       <input
         type="button"
-        className="hidden"
+        className="d-none"
         onClick={() => handleSubmit(value)}
       />
       {props.datalist && (

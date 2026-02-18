@@ -48,7 +48,7 @@ class ChangePasswordImpl extends Component {
         <form>
           <div className="row">
             <div className="col-md-4">
-              <div className="form-group">
+              <div className="mb-3">
                 <label>Current password</label>
                 <input
                   name="oldPassword"
@@ -62,7 +62,7 @@ class ChangePasswordImpl extends Component {
               </div>
             </div>
             <div className="col-md-4">
-              <div className="form-group">
+              <div className="mb-3">
                 <label>New password</label>
                 <input
                   name="newPassword"
