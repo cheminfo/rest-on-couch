@@ -1,5 +1,12 @@
 # Changelog
 
+## [19.1.3](https://github.com/cheminfo/rest-on-couch/compare/v19.1.2...v19.1.3) (2026-02-18)
+
+
+### Bug Fixes
+
+* update dependencies ([3c21184](https://github.com/cheminfo/rest-on-couch/commit/3c21184c6a05c6560f4da25c8960015f152503de))
+
 ## [19.1.2](https://github.com/cheminfo/rest-on-couch/compare/v19.1.1...v19.1.2) (2026-02-10)
 
 
