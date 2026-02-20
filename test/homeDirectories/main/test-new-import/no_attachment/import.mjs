@@ -1,6 +1,6 @@
 export function importFile(ctx, result) {
+  result.id = 'no_attachment';
   result.kind = 'sample';
-  result.id = ctx.filename;
   result.owner = 'a@a.com';
   result.reference = ctx.filename;
   result.jpath = ['jpath', 'in', 'document'];

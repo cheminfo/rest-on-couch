@@ -62,9 +62,9 @@ const methods = {
    * - analyses[]:
    *   - jpath: The jpath to which the analysis should be added or updated (based on the reference existing or not). The jpath should always point to an array.
    *   - metadata: custom metadata fields
-   *   - reference: the reference to this file. Used to identify a pre-existing file item with the same reference.
+   *   - reference: the unique identifier of the analysis. Used to identify a pre-existing analysis with the same reference.
    *   - attachments[]:
-   *     - field: field in the metadata which contains a reference to the attachment. A file item can contain multiple fields which reference different attachments.
+   *     - field: field in the metadata which contains a reference to the attachment. An analysis can contain multiple fields which reference different attachments.
    *     - filename: name of the attachment
    *     - content_type: Content-Type of the attachment
    *     - contents: contents of the attachment
@@ -74,13 +74,9 @@ const methods = {
    *
    *
    * - newContent: object to deep-merge with the found document. New content precedes over old content
-   * - noFile: set to true if the attachment should not be added to the document
    */
   async addFileToJpath(id, user, analyses, newContent) {
     debug('addFileToJpath (%s, %s)', id, user);
-    if (!Array.isArray(analyses)) {
-      throw new CouchError('analyses must be an array');
-    }
     const dateNow = Date.now();
 
     const entry = await this.getEntryById(id, user);

@@ -2,9 +2,9 @@ import { describe, it } from 'node:test';
 import { expect } from 'chai';
 
 import constants from '../../../src/constants.js';
-import { LegacyImportResult } from '../../../src/import/LegacyImportResult.mjs';
-import ImportContext from '../../../src/import/ImportContext.mjs';
+import { EntryImportResult } from '../../../src/import/EntryImportResult.mjs';
 import path from 'node:path';
+import ImportContext from '../../../src/import/ImportContext.mjs';
 
 const context = new ImportContext(
   path.join(
@@ -15,56 +15,61 @@ const context = new ImportContext(
 );
 
 function getValidResult(importType) {
-  const result = new LegacyImportResult(context);
+  const result = new EntryImportResult(context);
   switch (importType) {
     case constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT:
       Object.assign(result, {
         id: 'test',
         kind: 'test',
-        reference: 'testRef',
         owner: 'a@a.com',
         groups: ['groupRead'],
+      });
+      result.addAnalysis({
+        reference: 'testRef',
         jpath: ['jpath', 'in', 'document'],
-        field: 'text',
         metadata: {
           metaField: 'test',
         },
       });
-      result.skipAttachment();
       break;
     case constants.IMPORT_UPDATE_$CONTENT_ONLY:
       Object.assign(result, {
         id: 'test',
         kind: 'test',
-        reference: 'testRef',
         owner: 'a@a.com',
       });
-      result.skipAttachment();
-      result.skipMetadata();
       break;
-    case constants.IMPORT_UPDATE_FULL:
+    case constants.IMPORT_UPDATE_FULL: {
       Object.assign(result, {
         id: 'test',
         kind: 'test',
-        reference: 'testRef',
         owner: 'a@a.com',
+      });
+      result.addDefaultAnalysis({
+        reference: 'testRef',
         jpath: ['jpath', 'in', 'document'],
-        field: 'text',
-        content_type: 'text/plain',
         metadata: {
           metaField: 'test',
         },
+        attachment: {
+          field: 'text',
+          content_type: 'text/plain',
+        },
       });
-      result.addAttachment({
+
+      const otherAnalysis = result.addAnalysis({
         jpath: ['jpath'],
-        content_type: 'text/plain',
+        reference: 'ref',
+      });
+      otherAnalysis.addAttachment({
         contents: Buffer.from('the contents', 'utf-8'),
         filename: 'filename.txt',
         field: 'field',
-        reference: 'ref',
+        content_type: 'text/plain',
       });
       result.addGroup('group2');
       break;
+    }
     default:
       throw new Error('Invalid import type');
   }
@@ -72,7 +77,7 @@ function getValidResult(importType) {
   return result;
 }
 
-describe('LegacyImportResult', () => {
+describe('EntryImportResult', () => {
   it('valid import results', () => {
     // Valid results shouldn't throw
     getValidResult(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT).check();
@@ -80,52 +85,36 @@ describe('LegacyImportResult', () => {
     getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY).check();
   });
 
-  it('valid update type', () => {
-    // Check type of update
-    expect(getValidResult(constants.IMPORT_UPDATE_FULL).getUpdateType()).toBe(
-      constants.IMPORT_UPDATE_FULL,
-    );
-    expect(
-      getValidResult(
-        constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT,
-      ).getUpdateType(),
-    ).toBe(constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT);
-    expect(
-      getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY).getUpdateType(),
-    ).toBe(constants.IMPORT_UPDATE_$CONTENT_ONLY);
-  });
-
   it('throws when fields are missing - full upload', () => {
     // Mandotory fields
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'id',
       'id must be defined',
       constants.IMPORT_UPDATE_FULL,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'kind',
       'kind must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'owner',
       'owner must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'groups',
       'groups must be of type Array',
       constants.IMPORT_UPDATE_FULL,
     );
 
     // Additional attachments
-    // Filename of the context (imported file) is used by default
     checkWithoutAttachmentPropShouldThrow(
       'filename',
       'filename must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
-    checkWithoutAttachmentPropShouldThrow(
+    checkWithoutAnalysisPropShouldThrow(
       'jpath',
       'jpath must be of type Array',
       constants.IMPORT_UPDATE_FULL,
@@ -135,7 +124,7 @@ describe('LegacyImportResult', () => {
       'field must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
-    checkWithoutAttachmentPropShouldThrow(
+    checkWithoutAnalysisPropShouldThrow(
       'reference',
       'reference must be of type String',
       constants.IMPORT_UPDATE_FULL,
@@ -145,7 +134,7 @@ describe('LegacyImportResult', () => {
       'content_type must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
-    checkWithoutAttachmentPropShouldThrow(
+    checkWithoutAnalysisPropShouldThrow(
       'metadata',
       'metadata must be of type Object',
       constants.IMPORT_UPDATE_FULL,
@@ -163,22 +152,22 @@ describe('LegacyImportResult', () => {
     );
 
     // Full import
-    checkWithoutPropShouldThrow(
+    checkWithoutAttachmentPropShouldThrow(
       'content_type',
       'content_type must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'metadata',
       'metadata must be of type Object',
       constants.IMPORT_UPDATE_FULL,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutAttachmentPropShouldThrow(
       'field',
       'field must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutAnalysisPropShouldThrow(
       'reference',
       'reference must be of type String',
       constants.IMPORT_UPDATE_FULL,
@@ -188,22 +177,22 @@ describe('LegacyImportResult', () => {
   });
 
   it('throws when fields are missing - without attachment', () => {
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'id',
       'id must be defined',
       constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'kind',
       'kind must be of type String',
       constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'owner',
       'owner must be of type String',
       constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'groups',
       'groups must be of type Array',
       constants.IMPORT_UPDATE_WITHOUT_ATTACHMENT,
@@ -211,51 +200,50 @@ describe('LegacyImportResult', () => {
   });
 
   it('throws when fields are missing - content only', () => {
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'id',
       'id must be defined',
       constants.IMPORT_UPDATE_$CONTENT_ONLY,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'kind',
       'kind must be of type String',
       constants.IMPORT_UPDATE_$CONTENT_ONLY,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'owner',
       'owner must be of type String',
       constants.IMPORT_UPDATE_$CONTENT_ONLY,
     );
-    checkWithoutPropShouldThrow(
+    checkWithoutEntryPropShouldThrow(
       'groups',
       'groups must be of type Array',
       constants.IMPORT_UPDATE_$CONTENT_ONLY,
     );
   });
 
-  it('Cannot skip metadata without skipping attachment', () => {
-    const result = new LegacyImportResult(context);
-    result.skipMetadata();
-    expect(() => {
-      result.getUpdateType();
-    }).toThrow('Cannot skip metadata without skipping attachment');
-  });
-
   it('should fail to update the same field multiple times', () => {
-    const result = new LegacyImportResult(context);
+    const result = new EntryImportResult(context);
     result.owner = 'a@a.com';
     result.id = 'test';
     result.kind = 'sample';
-    result.reference = 'testRef';
-    result.jpath = ['jpath', 'in', 'document'];
-    result.field = 'field';
-    result.addAttachment({
+    const analysis = result.addAnalysis({
       reference: 'testRef',
       jpath: ['jpath', 'in', 'document'],
-      field: 'field',
+      metadata: {
+        metaField: 'test',
+      },
+    });
+    analysis.addAttachment({
       contents: Buffer.from('the contents', 'utf-8'),
       filename: 'one.txt',
+      field: 'field',
       content_type: 'text/plain',
+    });
+    analysis.addAttachment({
+      contents: Buffer.from('the contents', 'utf-8'),
+      filename: 'two.txt',
+      field: 'field',
     });
 
     expect(() => {
@@ -266,7 +254,7 @@ describe('LegacyImportResult', () => {
   });
 });
 
-function checkWithoutPropShouldThrow(prop, message, importType) {
+function checkWithoutEntryPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
 
   delete importResult[prop];
@@ -275,9 +263,17 @@ function checkWithoutPropShouldThrow(prop, message, importType) {
   }).toThrow(message);
 }
 
+function checkWithoutAnalysisPropShouldThrow(prop, message, importType) {
+  const importResult = getValidResult(importType);
+  delete importResult.analyses[0][prop];
+  expect(() => {
+    importResult.check();
+  }).toThrow(message);
+}
+
 function checkWithoutAttachmentPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
-  delete importResult.attachments[0][prop];
+  delete importResult.analyses[0].attachments[0][prop];
   expect(() => {
     importResult.check();
   }).toThrow(message);
@@ -290,7 +286,7 @@ function checkWithWrongTypeAttachmentPropShouldThrow(
   importType,
 ) {
   const importResult = getValidResult(importType);
-  importResult.attachments[0][prop] = value;
+  importResult.analyses[0].attachments[0][prop] = value;
   expect(() => {
     importResult.check();
   }).toThrow(message);

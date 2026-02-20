@@ -31,8 +31,12 @@ export default async function importFile(
   let uuid;
   try {
     if (dbConfig[kImportType] === 'importAnalyses') {
-      // TODO: comment in PR about the different pattern here
       result = await dbConfig(baseImport, createEntryImportResult);
+      if (result === undefined || !(result instanceof EntryImportResult)) {
+        throw new Error(
+          'The importAnalyses function did not return the expected result.\nMake sure to always return an instance of EntryImportResult, which can be created by calling the second argument of the function.',
+        );
+      }
     } else {
       await dbConfig(baseImport, result);
     }
@@ -55,8 +59,8 @@ export default async function importFile(
         fileDir,
         status: 'ERROR',
         error: {
-          message: e.message || '',
-          stack: e.stack || '',
+          message: e.message,
+          stack: e.stack,
         },
       })
       .catch((error) => {

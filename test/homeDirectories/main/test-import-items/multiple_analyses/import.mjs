@@ -1,6 +1,6 @@
-export async function importItems(ctx, createEntryImport) {
+export async function importAnalyses(ctx, createEntryImport) {
   const entry = createEntryImport();
-  entry.id = 'multiText.txt';
+  entry.id = 'multiple_analyses';
   entry.kind = 'sample';
   entry.owner = 'a@a.com';
   entry.addGroup('group1');
@@ -13,15 +13,15 @@ export async function importItems(ctx, createEntryImport) {
   const lines = contents.split('\n').filter((line) => line.trim());
 
   for (let idx = 0; idx < lines.length; idx++) {
-    const item = entry.addListItem({
+    const analysis = entry.addAnalysis({
       reference: `${idx}_${ctx.filename}`,
       jpath: ['jpath', 'in', 'document'],
       metadata: { value: idx },
     });
 
-    item.addAttachment({
+    analysis.addAttachment({
       filename: `${idx}_${ctx.filename}`,
-      contents: Buffer.from(lines[idx]),
+      contents: Buffer.from(lines[idx], 'utf-8'),
       content_type: 'text/plain',
       field: `field${idx}`,
     });

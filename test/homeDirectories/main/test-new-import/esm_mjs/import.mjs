@@ -4,5 +4,6 @@ export function importFile(ctx, result) {
   result.reference = 'esm_import';
   result.owner = 'a@a.com';
   result.jpath = ['main', 'jpath'];
-  result.field = 'field';
+  result.skipAttachment();
+  result.skipMetadata();
 }

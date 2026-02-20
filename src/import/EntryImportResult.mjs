@@ -51,15 +51,18 @@ export class EntryImportResult {
   }
 
   /**
-   * Create an item with a default attachment.
-   * @param {import("./ImportListItem.mjs").Analysis & Omit<import("./ImportAnalysis.mjs").AnalysisAttachment, 'contents'>} analysisWithAttachment
+   * Create the default analysis with the original imported attachment.
+   * If you need to specify custom attachment contents, use `.addAnalysis().addAttachment()` instead.
+   * @param {import("./ImportAnalysis.mjs").Analysis & {attachment: Omit<import("./ImportAnalysis.mjs").AnalysisAttachment, 'contents'>}} analysisWithAttachment
    * @returns {ImportAnalysis}
    */
   addDefaultAnalysis(analysisWithAttachment) {
     const { attachment, ...analysisProps } = analysisWithAttachment;
     const newAnalysis = this.addAnalysis(analysisProps);
     if (attachment.contents) {
-      throw new Error('Default item uses the import file');
+      throw new Error(
+        'An attachment contents cannot be defined on the default analysis - it uses the original import file',
+      );
     }
     newAnalysis.addAttachment({
       contents: this._context.getContentsSync(),
@@ -70,7 +73,7 @@ export class EntryImportResult {
   }
 
   /**
-   * Add or update a list item based on its jpath and reference.
+   * Add or update an analysis based on its jpath and reference.
    * @param {import("./ImportAnalysis.mjs").Analysis} analysis
    */
   addAnalysis(analysis) {

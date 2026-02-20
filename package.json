@@ -20,7 +20,7 @@
     "debug": "node --env-file=.env.dev --inspect bin/rest-on-couch-server.js",
     "dev:api": "node --watch --env-file=.env.dev bin/rest-on-couch-server.js",
     "dev:front": "vite --open",
-    "eslint": "eslint . --cache --max-warnings=4",
+    "eslint": "eslint . --cache --max-warnings=0",
     "eslint-fix": "npm run eslint -- --fix",
     "prettier": "prettier . --check",
     "prettier-write": "prettier . --write",

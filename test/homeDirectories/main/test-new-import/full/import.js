@@ -13,11 +13,15 @@ module.exports = async function fullImport(ctx, result) {
   result.content = {
     sideEffect: true,
   };
+
+  const buffer = Buffer.from('other attachment content!!', 'utf-8');
+
+  const contents = new Uint8Array(buffer.buffer, 0, buffer.length - 2);
   result.addAttachment({
     jpath: ['other', 'jpath'],
     metadata: { hasMetadata: true },
     reference: 'testRef',
-    contents: Buffer.from('other attachment content', 'utf-8'),
+    contents,
     field: 'testField',
     filename: 'testFilename.txt',
     content_type: 'text/plain',

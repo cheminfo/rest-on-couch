@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 /**
- * @typedef {import("./ImportAnalysis.mjs").Analysis & import("./ImportListItem.mjs").AnalysisAttachment} ImportAttachmentWithData
+ * @typedef {import("./ImportAnalysis.mjs").Analysis & import("./ImportAnalysis.mjs").AnalysisAttachment} ImportAttachmentWithData
  * @typedef {import("./ImportAnalysis.mjs").Analysis | ImportAttachmentWithData} ImportAttachment
  */
 
@@ -44,6 +44,9 @@ export class LegacyImportResult extends EntryImportResult {
   }
 
   check() {
+    if (this.isSkipped) {
+      return;
+    }
     // Check that required properties are set with correct type
     checkEntry(this);
     const analyses = this.getAnalyses();
@@ -61,13 +64,24 @@ export class LegacyImportResult extends EntryImportResult {
     this.#metadataIsSkipped = true;
   }
 
+  addAnalysis() {
+    throw new Error(
+      'addAnalysis is reserved to the new import API but you are using the legacy one. Change for the new API or use addAttachment() instead',
+    );
+  }
+
+  addDefaultAnalysis() {
+    throw new Error(
+      'addDefaultAnalysis is reserved to the new import API but you are using the legacy one. Change for the new API or define the default import by setting properties like `jpath`, `reference` and `field`',
+    );
+  }
+
   /**
-   * A compatibility layer which transforms this legacy class state into a regular item list.
+   * A compatibility layer which transforms the state in this legacy class into a regular list of analyses.
    * @returns {Promise<ImportAnalysis[]>}
    */
   getAnalyses() {
     const importAttachments = [];
-    // TODO: justify the use of a sync api in the PR
     switch (this.getUpdateType()) {
       case constants.IMPORT_UPDATE_FULL: {
         const mainFilename =

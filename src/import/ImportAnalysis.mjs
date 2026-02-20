@@ -31,12 +31,11 @@ export class ImportAnalysis {
   }
 
   /**
-   * Add an attachment to the list item.
+   * Add an attachment to the analysis.
    * @param {AnalysisAttachment} attachment
    */
   addAttachment(attachment) {
     this.attachments.push({
-      // TODO: add a test with a type array
       content_type: 'application/octet-stream',
       ...attachment,
       filename: attachment.filename
@@ -61,7 +60,7 @@ export class ImportAnalysis {
 
     if (usedIds.size !== total) {
       throw new Error(
-        `Several attachments target the same field on the same item`,
+        `Several attachments target the same field on the same analysis`,
       );
     }
   }

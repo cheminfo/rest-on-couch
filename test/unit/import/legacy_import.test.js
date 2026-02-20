@@ -5,6 +5,14 @@ import { expect } from 'chai';
 
 import importFile from '../../../src/import/index.mjs';
 import { resetDatabase } from '../../utils/utils.js';
+import {
+  assertDefaultAnalysis,
+  assertDefaultAnalysisDryRun,
+  assertMultipleAttachments,
+  assertMultipleJpath,
+  assertNoAttachment,
+} from './assert_import_entry.mjs';
+import { assertImportLog } from './assert_import_log.mjs';
 
 const databaseName = 'test-new-import';
 
@@ -18,10 +26,12 @@ const textFile1 = path.resolve(
 
 const textFile2 = path.resolve(
   import.meta.dirname,
-  '../../homeDirectories/main/test-new-import/changeFilename/to_process/test.txt',
+  '../../homeDirectories/main/test-new-import/change_filename/to_process/test.txt',
 );
 
-describe('import', () => {
+const testFile = path.resolve(import.meta.dirname, '../../to_process/test.txt');
+
+describe('import (legacy)', () => {
   beforeEach(async () => {
     importCouch = await resetDatabase(databaseName);
   });
@@ -72,58 +82,31 @@ describe('import', () => {
     const secondaryAttachment =
       data._attachments['other/jpath/testFilename.txt'];
     expect(mainAttachment).toBeDefined();
-    expect(secondaryAttachment).toBeDefined();
-    expect(mainAttachment.content_type).toBe('text/plain');
-    expect(secondaryAttachment.content_type).toBe('text/plain');
+    expect(secondaryAttachment).toMatchObject({
+      content_type: 'text/plain',
+      length: 24,
+    });
+    expect(mainAttachment).toMatchObject({
+      content_type: 'text/plain',
+      // 200 lines with 22 chars (and last line does not have the line feed char)
+      length: 22 * 200 - 1,
+    });
 
     // check log
-    const importLogs = await importCouch._db.queryView(
-      'importsByDate',
-      {
-        descending: true,
-        include_docs: true,
-      },
-      { onlyDoc: true },
-    );
-    expect(importLogs).toHaveLength(1);
-    expect(importLogs[0]).toMatchObject({
+    await assertImportLog(importCouch, {
       name: 'full',
       filename: 'test.txt',
       status: 'SUCCESS',
+      result: {
+        id: 'test.txt',
+        owner: 'a@a.com',
+        kind: 'sample',
+      },
     });
-    expect(importLogs[0].result).toMatchObject({
-      id: 'test.txt',
-      owner: 'a@a.com',
-      kind: 'sample',
-    });
-  });
-
-  it('no attachment', async () => {
-    await importFile(databaseName, 'no_attachment', textFile1);
-    const entry = await importCouch.getEntryById('test.txt', 'a@a.com');
-    expect(entry).toBeDefined();
-    expect(entry.$owners).toEqual(['a@a.com', 'group1', 'group2', 'group3']);
-    expect(entry.$content).toBeDefined();
-    // Check that new content has been merged
-    expect(entry.$content.sideEffect).toBe(true);
-    let metadata = entry.$content.jpath.in.document[0];
-    expect(metadata).toBeDefined();
-
-    // Automatic fields were added
-    expect(typeof metadata.$modificationDate).toBe('number');
-    expect(typeof metadata.$creationDate).toBe('number');
-
-    // Metadata was added to the jpath, without a referenced attachment
-    expect(metadata.hasMetadata).toBe(true);
-    expect(metadata.field).not.toBeDefined();
-    expect(metadata.reference).toBe('test.txt');
-
-    // No attachments
-    expect(entry._attachments).not.toBeDefined();
   });
 
   it('change filename', async () => {
-    await importFile(databaseName, 'changeFilename', textFile2);
+    await importFile(databaseName, 'change_filename', textFile2);
     const entry = await importCouch.getEntryById('test.txt', 'a@a.com');
     const attachment = entry._attachments['jpath/in/document/newFilename.txt'];
     expect(attachment).toBeDefined();
@@ -203,8 +186,16 @@ describe('import', () => {
 
   it('without reference', async () => {
     await expect(() =>
-      importFile(databaseName, 'noReference', textFile1),
+      importFile(databaseName, 'no_reference', textFile1),
     ).rejects.toThrow(/reference must be of type String/);
+
+    // Check that the error has been logged in the import database
+    await assertImportLog(importCouch, {
+      name: 'no_reference',
+      filename: 'test.txt',
+      status: 'ERROR',
+      error: { message: 'reference must be of type String' },
+    });
   });
 
   it('error when the import function throws', async () => {
@@ -212,29 +203,70 @@ describe('import', () => {
       /this import is wrong/,
     );
 
-    // check log
-    const importLogs = await importCouch._db.queryView(
-      'importsByDate',
-      {
-        descending: true,
-        include_docs: true,
-      },
-      { onlyDoc: true },
-    );
-    expect(importLogs).toHaveLength(1);
-    expect(importLogs[0]).toMatchObject({
+    await assertImportLog(importCouch, {
       name: 'error',
       filename: 'test.txt',
       status: 'ERROR',
+      error: { message: 'this import is wrong' },
     });
-    expect(importLogs[0].error.message).toBe('this import is wrong');
-    expect(typeof importLogs[0].error.stack).toBe('string');
   });
 
   it('load import.mjs using ESM syntax', async () => {
     const { result } = await importFile(databaseName, 'esm_mjs', textFile1);
     expect(result).toBeDefined();
     expect(result.id).toBe('esm_import');
+  });
+});
+
+describe('import (legacy) - shared scenarios with current import API', () => {
+  beforeEach(async () => {
+    importCouch = await resetDatabase(databaseName);
+  });
+  it(`default analysis with additional attachments`, async () => {
+    await importFile(databaseName, 'multiple_analysis_attachments', testFile);
+    const entry = await importCouch.getEntryById(
+      'multiple_analysis_attachments',
+      'a@a.com',
+    );
+    assertMultipleAttachments(entry);
+  });
+
+  it('default analysis', async () => {
+    await importFile(databaseName, 'default_analysis', testFile);
+    const entry = await importCouch.getEntryById('default_analysis', 'a@a.com');
+    assertDefaultAnalysis(entry);
+  });
+
+  it('no attachment', async () => {
+    await importFile(databaseName, 'no_attachment', testFile);
+    const entry = await importCouch.getEntryById('no_attachment', 'a@a.com');
+    assertNoAttachment(entry);
+  });
+
+  it('multiple items with different jpaths', async () => {
+    await importFile(databaseName, 'multiple_jpath', testFile);
+    const entry = await importCouch.getEntryById('multiple_jpath', 'a@a.com');
+    assertMultipleJpath(entry);
+  });
+
+  it('skip import', async () => {
+    const result = await importFile(databaseName, 'skip', testFile);
+    expect(result).toStrictEqual({
+      skip: 'skip',
+    });
+  });
+
+  it('dry run of default analysis', async () => {
+    const result = await importFile(
+      databaseName,
+      'default_analysis',
+      testFile,
+      { dryRun: true },
+    );
+    expect(() =>
+      importCouch.getEntryById('default_analysis', 'a@a.com'),
+    ).rejects.toThrow(/document not found/);
+    assertDefaultAnalysisDryRun(result);
   });
 });
 
