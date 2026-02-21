@@ -3,7 +3,7 @@ import { ImportAnalysis } from './ImportAnalysis.mjs';
 
 export class EntryImportResult {
   content = {};
-  id = null;
+  id = undefined;
   kind = null;
   owner = null;
   #isSkipped = false;
@@ -12,10 +12,6 @@ export class EntryImportResult {
   _context;
   constructor(context) {
     this._context = context;
-  }
-
-  getContents(encoding) {
-    this._context.getContents(encoding);
   }
 
   get isSkipped() {
@@ -38,12 +34,11 @@ export class EntryImportResult {
     this.groups = this.groups.concat(groups);
   }
 
+  /**
+   * Check the validity of the entry and all its analyses.
+   * Skipped entries are also checked.
+   */
   check() {
-    if (this.isSkipped) {
-      // Do not check skipped import entries
-      return;
-    }
-
     checkEntry(this);
     for (let analysis of this.analyses) {
       analysis.check();

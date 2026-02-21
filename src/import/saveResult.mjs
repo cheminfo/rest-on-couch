@@ -1,7 +1,5 @@
 export default async function saveResult(importBase, result) {
   const couch = importBase.couch;
-  if (result.isSkipped) return;
-
   const files = result.getAnalyses();
 
   // Create the new document if it does not exist

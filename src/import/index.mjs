@@ -42,23 +42,18 @@ export default async function importFile(
       if (!Array.isArray(results)) {
         results = [results];
       }
-      for (let result of results) {
-        if (result === undefined || !(result instanceof EntryImportResult)) {
-          throw new Error(
-            'The importAnalyses function did not return the expected results.\nMake sure to always return an instance of EntryImportResult, which can be created by calling the second argument of the function.',
-          );
-        }
-      }
+      checkReturnType(results);
     } else {
       await dbConfig(importContext, results[0]);
     }
+
+    if (results.some((result) => result.isSkipped)) {
+      return { skip: 'skip' };
+    }
+
     results = results.filter((result) => !result.isSkipped);
     for (let result of results) {
       result.check();
-    }
-
-    if (results.length === 0) {
-      return { skip: 'skip' };
     }
 
     // Check that required properties have been set on the results
@@ -92,7 +87,14 @@ export default async function importFile(
       } else {
         result.error = safeResult.error;
         errors.push(safeResult.error);
-        await logError(couch, logBase, safeResult.error);
+        await logError(
+          couch,
+          {
+            ...logBase,
+            result: { id: result.id, kind: result.kind, owner: result.owner },
+          },
+          safeResult.error,
+        );
       }
     }
   } catch (error) {
@@ -141,4 +143,14 @@ async function logError(couch, logBase, error) {
         error,
       );
     });
+}
+
+function checkReturnType(results) {
+  for (let result of results) {
+    if (result === undefined || !(result instanceof EntryImportResult)) {
+      throw new Error(
+        'The importAnalyses function did not return the expected results.\nMake sure to always return an instance of EntryImportResult, which can be created by calling the second argument of the function.',
+      );
+    }
+  }
 }

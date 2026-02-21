@@ -14,7 +14,7 @@ import {
   assertNoAttachment,
   assertUpdateExisting,
 } from './assert_import_entry.mjs';
-import { assertImportLog } from './assert_import_log.mjs';
+import { assertImportLog, assertImportLogs } from './assert_import_log.mjs';
 
 let importCouch;
 const databaseName = 'test-import-items';
@@ -129,6 +129,110 @@ describe('import (new)', () => {
         message:
           'The importAnalyses function did not return the expected results.\nMake sure to always return an instance of EntryImportResult, which can be created by calling the second argument of the function.',
       },
+    });
+  });
+
+  it('multiple entries', async () => {
+    const result = await importFile(databaseName, 'multiple_entries', testFile);
+    expect(result).toMatchObject({
+      ok: true,
+      results: [{ id: 'entry1' }, { id: 'entry2' }],
+    });
+
+    await assertImportLogs(importCouch, [
+      {
+        name: 'multiple_entries',
+        filename: 'test.txt',
+        status: 'SUCCESS',
+        result: { id: 'entry1' },
+      },
+      {
+        name: 'multiple_entries',
+        filename: 'test.txt',
+        status: 'SUCCESS',
+        result: { id: 'entry2' },
+      },
+    ]);
+  });
+
+  it('multiple entries one of which is invalid', async () => {
+    await expect(() =>
+      importFile(databaseName, 'multiple_entries_one_invalid', testFile),
+    ).rejects.toThrow(/id must be defined/);
+    await assertImportLog(importCouch, {
+      name: 'multiple_entries_one_invalid',
+      filename: 'test.txt',
+      status: 'ERROR',
+      error: {
+        message: 'id must be defined',
+      },
+    });
+  });
+
+  it('multiple entries but the first fails to be saved', async () => {
+    await importCouch.insertEntry(
+      {
+        $id: 'entry1',
+        $content: {
+          bad: { jpath: 'string instead of array' },
+        },
+      },
+      'a@a.com',
+    );
+    // There isn't a good way to do multiple checks on an error
+    const error = await importFile(
+      databaseName,
+      'multiple_entries_one_fails',
+      testFile,
+    ).catch((e) => e);
+
+    expect(error).toBeInstanceOf(SaveImportError);
+    expect(error).toHaveProperty(
+      'message',
+      'Some import results could not be saved',
+    );
+    expect(error).toMatchObject({
+      results: [
+        {
+          id: 'entry1',
+        },
+        {
+          id: 'entry2',
+        },
+      ],
+    });
+
+    expect(error.results[0].error).toHaveProperty(
+      'message',
+      'jpath must point to an array',
+    );
+    expect(error.results[1].error).toBeUndefined();
+
+    await assertImportLogs(importCouch, [
+      {
+        name: 'multiple_entries_one_fails',
+        filename: 'test.txt',
+        status: 'ERROR',
+        error: { message: 'jpath must point to an array' },
+        result: { id: 'entry1', kind: 'sample', owner: 'a@a.com' },
+      },
+      {
+        status: 'SUCCESS',
+        filename: 'test.txt',
+        name: 'multiple_entries_one_fails',
+        result: { id: 'entry2' },
+      },
+    ]);
+  });
+
+  it('multiple entries one skipped', async () => {
+    const result = await importFile(
+      databaseName,
+      'multiple_entries_skip_one',
+      testFile,
+    );
+    expect(result).toStrictEqual({
+      skip: 'skip',
     });
   });
 });

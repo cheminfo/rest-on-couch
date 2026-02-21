@@ -42,11 +42,11 @@ export class LegacyImportResult extends EntryImportResult {
       metadata: attachment.metadata || {},
     });
   }
-
+  /**
+   * Check the validity the result.
+   * Skipped entries are also checked.
+   */
   check() {
-    if (this.isSkipped) {
-      return;
-    }
     // Check that required properties are set with correct type
     checkEntry(this);
     const analyses = this.getAnalyses();

@@ -252,6 +252,29 @@ describe('EntryImportResult', () => {
       'Several attachments target the same field on the same analysis',
     );
   });
+
+  it('invalid skipped results fail the check', () => {
+    const result = new EntryImportResult(context);
+    result.skip();
+    expect(() => result.check()).toThrow(/id must be defined/);
+  });
+
+  it('cannot add contents to default analysis', () => {
+    const result = new EntryImportResult(context);
+    expect(() =>
+      result.addDefaultAnalysis({
+        reference: 'testRef',
+        jpath: ['jpath', 'in', 'document'],
+        attachment: {
+          field: 'field',
+          contents: Buffer.from('the contents', 'utf-8'),
+          content_type: 'text/plain',
+        },
+      }),
+    ).toThrow(
+      /An attachment contents cannot be defined on the default analysis/,
+    );
+  });
 });
 
 function checkWithoutEntryPropShouldThrow(prop, message, importType) {

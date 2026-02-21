@@ -264,6 +264,23 @@ describe('LegacyImportResult', () => {
       'Several attachments target the same field on the same analysis',
     );
   });
+
+  it('invalid skipped results fail the check', () => {
+    const result = new LegacyImportResult(context);
+    result.skip();
+    expect(() => result.check()).toThrow(/id must be defined/);
+  });
+
+  it('cannot use non-legacy APIs', () => {
+    const result = new LegacyImportResult(context);
+    expect(() => result.addDefaultAnalysis()).toThrow(
+      /addDefaultAnalysis is reserved to the new import API/,
+    );
+
+    expect(() => result.addAnalysis()).toThrow(
+      /addAnalysis is reserved to the new import API/,
+    );
+  });
 });
 
 function checkWithoutPropShouldThrow(prop, message, importType) {
