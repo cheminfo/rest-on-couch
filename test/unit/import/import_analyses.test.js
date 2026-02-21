@@ -3,6 +3,7 @@ import path from 'node:path';
 import { beforeEach, describe, it } from 'node:test';
 import { expect } from 'chai';
 
+import { SaveImportError } from '../../../src/import/SaveImportError.mjs';
 import importFile from '../../../src/import/index.mjs';
 import { resetDatabase } from '../../utils/utils.js';
 import {
@@ -80,9 +81,30 @@ describe('import (new)', () => {
       },
       'a@a.com',
     );
-    await expect(
-      importFile(databaseName, 'default_analysis', testFile),
-    ).rejects.toThrow(/jpath must point to an array/);
+
+    // There isn't a good way to do multiple checks on an error
+    const error = await importFile(
+      databaseName,
+      'default_analysis',
+      testFile,
+    ).catch((e) => e);
+
+    expect(error).toBeInstanceOf(SaveImportError);
+    expect(error).toHaveProperty(
+      'message',
+      'Some import results could not be saved',
+    );
+    expect(error).toMatchObject({
+      results: [
+        {
+          id: 'default_analysis',
+        },
+      ],
+    });
+    expect(error.results[0].error).toHaveProperty(
+      'message',
+      'jpath must point to an array',
+    );
 
     await assertImportLog(importCouch, {
       name: 'default_analysis',
@@ -96,7 +118,7 @@ describe('import (new)', () => {
     await expect(
       importFile(databaseName, 'no_return', testFile),
     ).rejects.toThrow(
-      /The importAnalyses function did not return the expected result/,
+      /The importAnalyses function did not return the expected results/,
     );
 
     await assertImportLog(importCouch, {
@@ -105,7 +127,7 @@ describe('import (new)', () => {
       status: 'ERROR',
       error: {
         message:
-          'The importAnalyses function did not return the expected result.\nMake sure to always return an instance of EntryImportResult, which can be created by calling the second argument of the function.',
+          'The importAnalyses function did not return the expected results.\nMake sure to always return an instance of EntryImportResult, which can be created by calling the second argument of the function.',
       },
     });
   });
@@ -153,14 +175,14 @@ describe('import (current) - shared scenarios with legacy import API', () => {
   });
 
   it('skip import', async () => {
-    const result = await importFile(databaseName, 'skip', testFile);
-    expect(result).toStrictEqual({
+    const results = await importFile(databaseName, 'skip', testFile);
+    expect(results).toStrictEqual({
       skip: 'skip',
     });
   });
 
   it('dry run of default analysis', async () => {
-    const result = await importFile(
+    const results = await importFile(
       databaseName,
       'default_analysis',
       testFile,
@@ -169,6 +191,6 @@ describe('import (current) - shared scenarios with legacy import API', () => {
     expect(() =>
       importCouch.getEntryById('default_analysis', 'a@a.com'),
     ).rejects.toThrow(/document not found/);
-    assertDefaultAnalysisDryRun(result);
+    assertDefaultAnalysisDryRun(results);
   });
 });

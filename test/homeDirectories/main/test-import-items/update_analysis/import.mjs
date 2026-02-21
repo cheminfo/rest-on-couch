@@ -10,7 +10,6 @@ export async function importAnalyses(ctx, createEntryResult) {
       'update_analysis',
       'a@a.com',
     );
-    console.log('found');
     count = existingEntry.$content.count + 1;
   } catch (err) {
     if (err.reason === 'not found') {

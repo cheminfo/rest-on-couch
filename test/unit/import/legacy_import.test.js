@@ -212,9 +212,12 @@ describe('import (legacy)', () => {
   });
 
   it('load import.mjs using ESM syntax', async () => {
-    const { result } = await importFile(databaseName, 'esm_mjs', textFile1);
-    expect(result).toBeDefined();
-    expect(result.id).toBe('esm_import');
+    const { results } = await importFile(databaseName, 'esm_mjs', textFile1);
+    expect(results).toMatchObject([
+      {
+        id: 'esm_import',
+      },
+    ]);
   });
 });
 

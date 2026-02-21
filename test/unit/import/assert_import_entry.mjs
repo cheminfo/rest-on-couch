@@ -59,13 +59,16 @@ export function assertDefaultAnalysis(entry) {
 export function assertDefaultAnalysisDryRun(result) {
   expect(result).toMatchObject({
     skip: 'dryRun',
-    result: {
-      id: 'default_analysis',
-      kind: 'sample',
-      owner: 'a@a.com',
-    },
+    results: [
+      {
+        id: 'default_analysis',
+        kind: 'sample',
+        owner: 'a@a.com',
+      },
+    ],
   });
-  const analyses = result.result.getAnalyses();
+  expect(result.results).toHaveLength(1);
+  const analyses = result.results[0].getAnalyses();
   expect(analyses).toHaveLength(1);
 }
 
