@@ -8,7 +8,8 @@ const die = require('../util/die');
 
 const { getHomeDir, getHomeConfig } = require('./home');
 const { freeze } = require('immer');
-const { intersection } = require('../util/array_sets.js');
+const { intersection } = require('../util/array_sets');
+const requireImportScript = require('./require_import_script');
 
 function getDbConfigOrDie(homeDir) {
   if (!homeDir) {
@@ -248,26 +249,9 @@ function readImportConfig(databasePath, configDraft) {
   for (const importDir of imports) {
     if (shouldIgnore(importDir)) continue;
     const importPath = path.join(databasePath, importDir);
-    const importConfigPath = path.join(importPath, 'import.js');
-    const importConfigPathEsm = path.join(importPath, 'import.mjs');
+
     if (fs.statSync(importPath).isDirectory()) {
-      let importConfig = {};
-      if (fs.existsSync(importConfigPath)) {
-        importConfig = require(importConfigPath);
-      } else if (fs.existsSync(importConfigPathEsm)) {
-        let type;
-        importConfig = require(importConfigPathEsm);
-        if (importConfig.importFile) {
-          importConfig = importConfig.importFile;
-        } else if (importConfig.importAnalyses) {
-          type = 'importAnalyses';
-          importConfig = importConfig.importAnalyses;
-        }
-        if (!importConfig || typeof importConfig !== 'function') {
-          throw new Error('import.mjs must export an `importFile` function');
-        }
-        importConfig[constants.kImportType] = type;
-      }
+      const importConfig = requireImportScript(importPath);
       if (typeof importConfig === 'function') {
         // New import
         configDraft.import[importDir] = importConfig;
