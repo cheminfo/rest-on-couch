@@ -4,7 +4,7 @@
   "description": "Interface to CouchDB that allows the control of permissions on the documents",
   "exports": {
     ".": "./src/index.js",
-    "./import": "./src/import/index.js"
+    "./import": "./src/import/index.mjs"
   },
   "files": [
     "bin",
@@ -20,7 +20,7 @@
     "debug": "node --env-file=.env.dev --env-file-if-exists=.env.dev.local --inspect bin/rest-on-couch-server.js",
     "dev:api": "node --watch --env-file=.env.dev --env-file-if-exists=.env.dev.local bin/rest-on-couch-server.js",
     "dev:front": "vite --open",
-    "eslint": "eslint . --cache",
+    "eslint": "eslint . --cache --max-warnings=0",
     "eslint-fix": "npm run eslint -- --fix",
     "prettier": "prettier . --check",
     "prettier-write": "prettier . --write",
@@ -53,7 +53,7 @@
     "@ladjs/koa-views": "^9.0.0",
     "commander": "^14.0.3",
     "debug": "^4.4.3",
-    "extend": "^3.0.2",
+    "deepmerge-ts": "^7.1.5",
     "fold-to-ascii": "^5.0.1",
     "fs-extra": "^11.3.3",
     "got": "^14.6.6",

@@ -6,15 +6,15 @@ const path = require('path');
 
 const { program } = require('commander');
 const fs = require('fs-extra');
-const klaw = require('klaw');
 
 const { getImportConfig } = require('../src/config/config');
 const { getHomeDir } = require('../src/config/home');
 const connect = require('../src/connect');
-const { importFile } = require('../src/import/index');
+const { importFile } = require('../src/import/index.mjs');
 const debug = require('../src/util/debug')('bin:import');
 const die = require('../src/util/die');
 const tryMove = require('../src/util/tryMove');
+const findFiles = require('../src/import/find_files');
 
 program
   .usage('<file> <database> <kind>')
@@ -66,7 +66,7 @@ async function importAll() {
   const homeDir = getHomeDirOrDie();
   const limit = options.limit || 0;
   debug('limit is %d. Searching files...', limit);
-  const files = await findFiles(homeDir, limit);
+  const files = await findFiles(homeDir, limit, sortWalk);
   debug('found %d files to import', files.length);
   const waitingFiles = [];
   const readyFiles = [];
@@ -168,106 +168,6 @@ function wait(waitingFile) {
   });
 }
 
-async function findFiles(homeDir, limit) {
-  let files = [];
-
-  const databases = await fs.readdir(homeDir);
-  for (const database of databases) {
-    if (shouldIgnore(database)) continue;
-    const databasePath = path.join(homeDir, database);
-    const stat = await fs.stat(databasePath);
-    if (!stat.isDirectory()) continue;
-
-    const importNames = await fs.readdir(databasePath);
-    for (const importName of importNames) {
-      if (shouldIgnore(importName)) continue;
-      const importNamePath = path.join(databasePath, importName);
-      const stat = await fs.stat(importNamePath);
-      if (!stat.isDirectory()) continue;
-
-      try {
-        const importConfigPath = path.join(importNamePath, 'import');
-        const importConfig = require(importConfigPath);
-        if (importConfig && Array.isArray(importConfig.source)) {
-          for (const source of importConfig.source) {
-            try {
-              const sourcePath = path.resolve(importNamePath, source);
-              const sourceToProcessPath = path.join(sourcePath, 'to_process');
-              const stat = await fs.stat(sourceToProcessPath);
-              if (stat.isDirectory()) {
-                const maxElements = limit > 0 ? limit - files.length : 0;
-                const fileList = await getFilesToProcess(
-                  sourceToProcessPath,
-                  maxElements,
-                );
-                const objFiles = fileList.map((file) => ({
-                  database,
-                  importName,
-                  path: file,
-                }));
-                files = files.concat(objFiles);
-                if (limit > 0 && files.length >= limit) {
-                  return files;
-                }
-              }
-            } catch {
-              // ignore
-            }
-          }
-        }
-      } catch {
-        // ignore
-      }
-
-      try {
-        const toProcessPath = path.join(importNamePath, 'to_process');
-        const stat = await fs.stat(toProcessPath);
-        if (stat.isDirectory()) {
-          const maxElements = limit > 0 ? limit - files.length : 0;
-          const fileList = await getFilesToProcess(toProcessPath, maxElements);
-          const objFiles = fileList.map((file) => ({
-            database,
-            importName,
-            path: file,
-          }));
-          files = files.concat(objFiles);
-          if (limit > 0 && files.length >= limit) {
-            return files;
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }
-  }
-
-  return files;
-}
-
-function getFilesToProcess(directory, maxElements) {
-  return new Promise((resolve, reject) => {
-    const items = [];
-    const walkStream = klaw(directory, { queueMethod: sortWalk });
-    walkStream
-      .on('data', function onData(item) {
-        if (item.stats.isFile()) {
-          items.push(item.path);
-          if (maxElements > 0 && items.length >= maxElements) {
-            // eslint-disable-next-line no-invalid-this
-            this.pause();
-            resolve(items);
-          }
-        }
-      })
-      .on('end', () => resolve(items))
-      .on('error', function onError(err) {
-        // eslint-disable-next-line no-invalid-this
-        this.close();
-        reject(err);
-      });
-  });
-}
-
 function getHomeDirOrDie() {
   let homeDir = getHomeDir();
   if (!homeDir) {
@@ -337,10 +237,6 @@ function getDatePath() {
   return `${now.getUTCFullYear()}/${`0${now.getUTCMonth() + 1}`.slice(
     -2,
   )}/${`0${now.getUTCDate()}`.slice(-2)}`;
-}
-
-function shouldIgnore(name) {
-  return name === 'node_modules' || name.startsWith('.');
 }
 
 (async () => {

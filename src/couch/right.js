@@ -151,7 +151,6 @@ const methods = {
             userRights.add(right);
             break;
           }
-          // todo maybe allow global rights from groups ?
         }
       }
 

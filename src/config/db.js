@@ -8,7 +8,8 @@ const die = require('../util/die');
 
 const { getHomeDir, getHomeConfig } = require('./home');
 const { freeze } = require('immer');
-const { intersection } = require('../util/array_sets.js');
+const { intersection } = require('../util/array_sets');
+const requireImportScript = require('./require_import_script');
 
 function getDbConfigOrDie(homeDir) {
   if (!homeDir) {
@@ -236,24 +237,21 @@ function addCustomIndexes(customMap, designDocNames, databasePath) {
   }
 }
 
+/**
+ * Adds an import map per import directory found in the DB config directory.
+ * Directory which do not contain an import.js or import.mjs file are ignored.
+ * Import functions which use the new "multiple" import strategy are marked as such.
+ * @param databasePath Database configuration file to inspect.
+ * @param configDraft Configuration object to fill.
+ */
 function readImportConfig(databasePath, configDraft) {
   const imports = fs.readdirSync(databasePath);
   for (const importDir of imports) {
     if (shouldIgnore(importDir)) continue;
     const importPath = path.join(databasePath, importDir);
-    const importConfigPath = path.join(importPath, 'import.js');
-    const importConfigPathEsm = path.join(importPath, 'import.mjs');
+
     if (fs.statSync(importPath).isDirectory()) {
-      let importConfig = {};
-      if (fs.existsSync(importConfigPath)) {
-        importConfig = require(importConfigPath);
-      } else if (fs.existsSync(importConfigPathEsm)) {
-        importConfig = require(importConfigPathEsm);
-        importConfig = importConfig.importFile;
-        if (!importConfig || typeof importConfig !== 'function') {
-          throw new Error('import.mjs must export an `importFile` function');
-        }
-      }
+      const importConfig = requireImportScript(importPath);
       if (typeof importConfig === 'function') {
         // New import
         configDraft.import[importDir] = importConfig;
