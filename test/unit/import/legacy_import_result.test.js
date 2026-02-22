@@ -285,7 +285,7 @@ describe('LegacyImportResult', () => {
 
 function checkWithoutPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
-
+  expect(importResult[prop]).toBeDefined();
   delete importResult[prop];
   expect(() => {
     importResult.check();
@@ -294,6 +294,7 @@ function checkWithoutPropShouldThrow(prop, message, importType) {
 
 function checkWithoutAttachmentPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
+  expect(importResult.attachments[0][prop]).toBeDefined();
   delete importResult.attachments[0][prop];
   expect(() => {
     importResult.check();

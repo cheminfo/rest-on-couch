@@ -64,16 +64,11 @@ const methods = {
    *   - reference: the identifier of the analysis within the array pointed by the jpath. Used to determine if a pre-existing analysis can be updated, or if a new analysis should be pushed to the array.
    *   - metadata: custom metadata properties to set on the analysis. If the analysis exists it will do a deep shallow merge with the existing metadata.
    *   - attachments[] - each analysis can reference multiple attachments.
-   *     - field: field in the metadata which contains a reference to the attachment.
+   *     - field: field in the metadata which contains the reference to the couchdb attachment.
    *     - filename: name of the attachment
    *     - content_type: Content-Type of the attachment
-   *     - contents: contents of the attachment
-   *
-   *   or to merge into an existing element with the same reference
-   * - file: object containing:
-   *
-   *
-   * - newContent: object to deep-merge with the found document. New content precedes over old content
+   *     - contents: contents of the attachment (Buffer or TypedArray)
+   * - newContent: object to deep-merge with existing entry.
    */
   async addFileToJpath(id, user, analyses, newContent) {
     debug('addFileToJpath (%s, %s)', id, user);

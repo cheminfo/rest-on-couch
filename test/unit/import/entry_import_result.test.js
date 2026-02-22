@@ -57,15 +57,15 @@ function getValidResult(importType) {
         },
       });
 
-      const otherAnalysis = result.addAnalysis({
+      result.addAnalysis({
         jpath: ['jpath'],
         reference: 'ref',
-      });
-      otherAnalysis.addAttachment({
-        contents: Buffer.from('the contents', 'utf-8'),
-        filename: 'filename.txt',
-        field: 'field',
-        content_type: 'text/plain',
+        attachment: {
+          contents: Buffer.from('the contents', 'utf-8'),
+          filename: 'filename.txt',
+          field: 'field',
+          content_type: 'text/plain',
+        },
       });
       result.addGroup('group2');
       break;
@@ -157,7 +157,7 @@ describe('EntryImportResult', () => {
       'content_type must be of type String',
       constants.IMPORT_UPDATE_FULL,
     );
-    checkWithoutEntryPropShouldThrow(
+    checkWithoutAnalysisPropShouldThrow(
       'metadata',
       'metadata must be of type Object',
       constants.IMPORT_UPDATE_FULL,
@@ -280,6 +280,7 @@ describe('EntryImportResult', () => {
 function checkWithoutEntryPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
 
+  expect(importResult[prop]).toBeDefined();
   delete importResult[prop];
   expect(() => {
     importResult.check();
@@ -288,6 +289,7 @@ function checkWithoutEntryPropShouldThrow(prop, message, importType) {
 
 function checkWithoutAnalysisPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
+  expect(importResult.analyses[0][prop]).toBeDefined();
   delete importResult.analyses[0][prop];
   expect(() => {
     importResult.check();
@@ -296,6 +298,7 @@ function checkWithoutAnalysisPropShouldThrow(prop, message, importType) {
 
 function checkWithoutAttachmentPropShouldThrow(prop, message, importType) {
   const importResult = getValidResult(importType);
+  expect(importResult.analyses[0].attachments[0][prop]).toBeDefined();
   delete importResult.analyses[0].attachments[0][prop];
   expect(() => {
     importResult.check();
