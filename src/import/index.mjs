@@ -11,6 +11,12 @@ import { SaveImportError } from './SaveImportError.mjs';
 const debug = debugUtils('import');
 const { kImportType } = constants;
 
+// These types are useful for writing import scripts
+/** @typedef {InstanceType<typeof LegacyImportResult>} LegacyImportResultInstance */
+/** @typedef {InstanceType<typeof EntryImportResult>} EntryImportResultInstance */
+/** @typedef {(ctx: InstanceType<typeof ImportContext>, createEntryResult: () => EntryImportResultInstance) => Promise<EntryImportResultInstance | EntryImportResultInstance[]> } ImportAnalysesFunction */
+/** @typedef {(ctx: InstanceType<typeof ImportContext>, result: LegacyImportResultInstance) => Promise<void>} ImportFileFunction */
+
 export default async function importFile(
   database,
   importName,

@@ -1,5 +1,8 @@
-export async function importAnalyses(ctx, createEntryImport) {
-  const entry = createEntryImport();
+/**
+ * @type import('rest-on-couch/import').ImportAnalysesFunction
+ */
+export const importAnalyses = async (ctx, createEntryResult) => {
+  const entry = createEntryResult();
   entry.id = 'default_analysis';
   entry.kind = 'sample';
   entry.owner = 'a@a.com';
@@ -20,4 +23,4 @@ export async function importAnalyses(ctx, createEntryImport) {
   });
 
   return entry;
-}
+};

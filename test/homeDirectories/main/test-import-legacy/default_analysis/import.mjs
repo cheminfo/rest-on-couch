@@ -1,4 +1,7 @@
-export async function importFile(ctx, result) {
+/**
+ * @type import('rest-on-couch/import').ImportFileFunction
+ */
+export const importFile = (ctx, result) => {
   result.id = 'default_analysis';
   result.kind = 'sample';
   result.owner = 'a@a.com';
@@ -12,4 +15,4 @@ export async function importFile(ctx, result) {
   result.reference = ctx.filename;
   result.content_type = 'text/plain';
   result.field = 'field';
-}
+};
