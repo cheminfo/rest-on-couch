@@ -47,8 +47,9 @@ export class EntryImportResult {
 
   /**
    * Create the default analysis with the original imported attachment.
-   * If you need to specify custom attachment contents, use `.addAnalysis().addAttachment()` instead.
-   * @param {import("./ImportAnalysis.mjs").Analysis & {attachment?: Omit<import("./ImportAnalysis.mjs").AnalysisAttachment, 'contents'>}} analysisWithAttachment
+   * It uses the original filename by default, but this can be overridden.
+   * If you need to specify custom attachment contents, use `.addAnalysis()` instead.
+   * @param {import("./ImportAnalysis.mjs").Analysis & {attachment: Omit<import("./ImportAnalysis.mjs").AnalysisAttachment, 'contents'>}} analysisWithAttachment
    * @returns {ImportAnalysis}
    */
   addDefaultAnalysis(analysisWithAttachment) {

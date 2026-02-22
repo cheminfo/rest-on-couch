@@ -17,7 +17,7 @@ import {
 import { assertImportLog, assertImportLogs } from './assert_import_log.mjs';
 
 let importCouch;
-const databaseName = 'test-import-items';
+const databaseName = 'test-import-analyses';
 
 const testFile = path.resolve(import.meta.dirname, '../../to_process/test.txt');
 

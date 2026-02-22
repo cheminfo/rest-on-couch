@@ -14,19 +14,19 @@ import {
 } from './assert_import_entry.mjs';
 import { assertImportLog } from './assert_import_log.mjs';
 
-const databaseName = 'test-new-import';
+const databaseName = 'test-import-legacy';
 
 var importCouch;
 // The file in most test cases does not matter
 // We just have to pick an existing file
 const textFile1 = path.resolve(
   import.meta.dirname,
-  '../../homeDirectories/main/test-new-import/full/to_process/test.txt',
+  '../../homeDirectories/main/test-import-legacy/full/to_process/test.txt',
 );
 
 const textFile2 = path.resolve(
   import.meta.dirname,
-  '../../homeDirectories/main/test-new-import/change_filename/to_process/test.txt',
+  '../../homeDirectories/main/test-import-legacy/change_filename/to_process/test.txt',
 );
 
 const testFile = path.resolve(import.meta.dirname, '../../to_process/test.txt');
@@ -84,6 +84,7 @@ describe('import (legacy)', () => {
     expect(mainAttachment).toBeDefined();
     expect(secondaryAttachment).toMatchObject({
       content_type: 'text/plain',
+      // Length of: "other attachment content", passed as a TypedArray
       length: 24,
     });
     expect(mainAttachment).toMatchObject({

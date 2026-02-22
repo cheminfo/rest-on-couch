@@ -9,9 +9,9 @@ import ImportContext from '../../../src/import/ImportContext.mjs';
 const context = new ImportContext(
   path.join(
     import.meta.dirname,
-    '../../homeDirectories/main/test-new-import/full/to_process/test.txt',
+    '../../homeDirectories/main/test-import-legacy/full/to_process/test.txt',
   ),
-  'test-new-import',
+  'test-import-legacy',
 );
 
 function getValidResult(importType) {

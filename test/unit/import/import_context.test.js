@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import ImportContext from '../../../src/import/ImportContext.mjs';
 import { resetDatabase } from '../../utils/utils.js';
 
-const databaseName = 'test-new-import';
+const databaseName = 'test-import-legacy';
 
 describe('ImportContext', () => {
   beforeEach(async () => {
@@ -16,14 +16,14 @@ describe('ImportContext', () => {
   it('should instantiate a new import context', async () => {
     const file = path.join(
       import.meta.dirname,
-      '../../homeDirectories/main/test-new-import/full/to_process/test.txt',
+      '../../homeDirectories/main/test-import-legacy/full/to_process/test.txt',
     );
     const fileContents = await fs.readFileSync(file, 'utf-8');
     const ctx = new ImportContext(file, databaseName);
     expect(ctx.filename).toBe('test.txt');
     expect(ctx.fileExt).toBe('.txt');
     expect(ctx.fileDir).toMatch(
-      path.normalize('homeDirectories/main/test-new-import/full/to_process'),
+      path.normalize('homeDirectories/main/test-import-legacy/full/to_process'),
     );
     expect(ctx.couch).toBeDefined();
     await ctx.couch.open();
