@@ -16,22 +16,34 @@ export async function importAnalyses(ctx, createEntryResult) {
       count = 0;
     }
   }
-  result.content = {
+
+  // Entry content
+  const content = {
     count,
     deep: {
       count,
     },
   };
+  if (count === 0) {
+    content.deep.other = 'other';
+  }
 
+  result.content = content;
+
+  // Attachment metadata
+  const metadata = {
+    count,
+    deep: {
+      count,
+    },
+  };
+  if (count === 0) {
+    metadata.deep.other = 'other';
+  }
   result.addDefaultAnalysis({
     jpath: ['jpath'],
     reference: 'ref',
-    metadata: {
-      count,
-      deep: {
-        count,
-      },
-    },
+    metadata,
     attachment: {
       field: 'field',
       content_type: 'text/plain',

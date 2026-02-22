@@ -2,7 +2,7 @@
 
 'use strict';
 
-const extend = require('extend');
+const { deepmergeInto } = require('deepmerge-ts');
 
 const CouchError = require('../util/CouchError');
 const debug = require('../util/debug')('main:attachment');
@@ -60,11 +60,11 @@ const methods = {
    * - id: used to find the appropriate document. Method will throw if document is not found.
    * - user: user modifying the entry
    * - analyses[]:
-   *   - jpath: The jpath to which the analysis should be added or updated (based on the reference existing or not). The jpath should always point to an array.
-   *   - metadata: custom metadata fields
-   *   - reference: the unique identifier of the analysis. Used to identify a pre-existing analysis with the same reference.
-   *   - attachments[]:
-   *     - field: field in the metadata which contains a reference to the attachment. An analysis can contain multiple fields which reference different attachments.
+   *   - jpath: The jpath to which the analysis should be added or updated. The jpath should point to an array or a non-existing property (will create the array).
+   *   - reference: the identifier of the analysis within the array pointed by the jpath. Used to determine if a pre-existing analysis can be updated, or if a new analysis should be pushed to the array.
+   *   - metadata: custom metadata properties to set on the analysis. If the analysis exists it will do a deep shallow merge with the existing metadata.
+   *   - attachments[] - each analysis can reference multiple attachments.
+   *     - field: field in the metadata which contains a reference to the attachment.
    *     - filename: name of the attachment
    *     - content_type: Content-Type of the attachment
    *     - contents: contents of the attachment
@@ -82,9 +82,9 @@ const methods = {
     const entry = await this.getEntryById(id, user);
     const current = entry.$content || {};
 
-    debug.trace('extend current content with new content');
     if (newContent) {
-      extend(current, newContent);
+      debug.trace('extend current content with new content');
+      deepmergeInto(current, newContent);
     }
 
     debug.trace('prepare entry and attachments data');

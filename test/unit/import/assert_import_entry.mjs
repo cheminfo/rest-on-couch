@@ -144,6 +144,8 @@ export function assertUpdateExisting(entry, count) {
     count,
     deep: {
       count,
+      // Entry deep merge, the `other` property is not deleted
+      other: 'other',
     },
     jpath: [
       {
@@ -154,4 +156,11 @@ export function assertUpdateExisting(entry, count) {
       },
     ],
   });
+
+  if (count === 0) {
+    expect(entry.$content.jpath[0].deep.other).toBe('other');
+  } else {
+    // Shallow merge, the property gets deleted
+    expect(entry.$content.jpath[0].deep).not.toHaveProperty('other');
+  }
 }
