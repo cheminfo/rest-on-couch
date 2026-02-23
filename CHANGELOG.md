@@ -1,5 +1,21 @@
 # Changelog
 
+## [20.0.0](https://github.com/cheminfo/rest-on-couch/compare/v19.1.2...v20.0.0) (2026-02-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* Make import result validation slightly stricter. `couch.addFileToJpath` has been renamed to `couch._addFileToJpath` to reflect that it should be considered private. The method also expect different parameters now.
+
+### Features
+
+* add new `importAnalyses` API ([#501](https://github.com/cheminfo/rest-on-couch/issues/501)) ([675e688](https://github.com/cheminfo/rest-on-couch/commit/675e688cb495240ddbbbd6503d6604e3bfb8d787))
+
+
+### Bug Fixes
+
+* update dependencies ([3c21184](https://github.com/cheminfo/rest-on-couch/commit/3c21184c6a05c6560f4da25c8960015f152503de))
+
 ## [19.1.2](https://github.com/cheminfo/rest-on-couch/compare/v19.1.1...v19.1.2) (2026-02-10)
 
 
