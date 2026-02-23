@@ -2,10 +2,10 @@
 
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 
 const { program } = require('commander');
-const fs = require('fs-extra');
 
 const { getImportConfig } = require('../src/config/config');
 const { getHomeDir } = require('../src/config/home');

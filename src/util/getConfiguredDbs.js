@@ -1,8 +1,8 @@
 'use strict';
 
+const { existsSync } = require('fs');
+const fs = require('fs/promises');
 const path = require('path');
-
-const fs = require('fs-extra');
 
 const { getGlobalConfig } = require('../config/config');
 
@@ -25,7 +25,7 @@ async function readConfiguredDbs(homeDir) {
   for (const file of files) {
     const stat = await fs.stat(path.join(homeDir, file));
     if (stat.isDirectory()) {
-      if (await fs.exists(path.join(homeDir, file, 'config.js'))) {
+      if (existsSync(path.join(homeDir, file, 'config.js'))) {
         debug.trace('found database config file: %s', file);
         result.push(file);
       }
