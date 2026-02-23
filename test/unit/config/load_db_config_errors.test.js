@@ -89,6 +89,6 @@ it('failEsmWrongExport - loading import.mjs with a default export instead of nam
   );
   assert(fs.existsSync(dir));
   expect(() => getDbConfig(dir)).toThrow(
-    /import.mjs must export an `importFile` function/,
+    'import.mjs must export an `importAnalyses` or `importFile` (legacy) function',
   );
 });

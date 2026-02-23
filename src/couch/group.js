@@ -82,7 +82,6 @@ const methods = {
       );
     }
 
-    // TODO Change entries which have this group
     return this._db.destroyDocument(doc._id);
   },
 

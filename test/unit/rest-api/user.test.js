@@ -12,8 +12,6 @@ describe('User REST-api (data, anonymous)', () => {
   it('Should return 404 if anonymous', () => {
     return request.get('/db/test/user/_me').expect(404);
   });
-
-  // TODO: save user as anonymous. What status code?
 });
 
 describe('User REST-api (token)', () => {
