@@ -15,12 +15,15 @@ module.exports = function requireImportScript(importPath) {
     importConfig = require(importConfigPathEsm);
     if (importConfig.importFile) {
       importConfig = importConfig.importFile;
+      type = 'importFile';
     } else if (importConfig.importAnalyses) {
       type = 'importAnalyses';
       importConfig = importConfig.importAnalyses;
     }
     if (!importConfig || typeof importConfig !== 'function') {
-      throw new Error('import.mjs must export an `importFile` function');
+      throw new Error(
+        'import.mjs must export an `importAnalyses` or `importFile` (legacy) function',
+      );
     }
     importConfig[constants.kImportType] = type;
   }

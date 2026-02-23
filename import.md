@@ -17,9 +17,13 @@ kind of hierarchy:
 | rest-on-couch-home/eln/nmr/processed  | find here the processed files                                                        |
 | rest-on-couch-home/eln/nmr/errored    | find here the errored files                                                          |
 
+## import.mjs
+
+`import.mjs` must export an `importAnalysis` or `importFile` (legacy) function.
+
 ## import.js
 
-`import.js` must export an async function that will be used to process files to import.
+`import.js` must export a function that will be used to process files to import.
 
 ```js
 nmrImport.source = ['/mnt/nmr1', '/mnt/nmr2'];

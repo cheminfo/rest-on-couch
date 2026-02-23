@@ -22,7 +22,7 @@ export default async function saveResult(importBase, result) {
     );
   }
 
-  await couch.addFileToJpath(result.id, result.owner, files, result.content);
+  await couch._addFileToJpath(result.id, result.owner, files, result.content);
 
   return document.id;
 }

@@ -57,7 +57,6 @@ export default async function importFile(
       return { skip: 'skip' };
     }
 
-    results = results.filter((result) => !result.isSkipped);
     for (let result of results) {
       result.check();
     }

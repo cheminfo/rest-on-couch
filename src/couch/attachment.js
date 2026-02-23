@@ -70,8 +70,8 @@ const methods = {
    *     - contents: contents of the attachment (Buffer or TypedArray)
    * - newContent: object to deep-merge with existing entry.
    */
-  async addFileToJpath(id, user, analyses, newContent) {
-    debug('addFileToJpath (%s, %s)', id, user);
+  async _addFileToJpath(id, user, analyses, newContent) {
+    debug('_addFileToJpath (%s, %s)', id, user);
     const dateNow = Date.now();
 
     const entry = await this.getEntryById(id, user);
