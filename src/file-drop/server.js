@@ -2,11 +2,12 @@
 
 'use strict';
 
+const { createWriteStream } = require('fs');
+const fs = require('fs/promises');
 const http = require('http');
 const path = require('path');
 
 const { Router } = require('@koa/router');
-const fs = require('fs-extra');
 const Koa = require('koa');
 
 const { getGlobalConfig } = require('../config/config');
@@ -34,11 +35,11 @@ router.get('/', (ctx) => {
 async function writeUpload(ctx, database, kind, filename) {
   const dir = path.join(ctx.state.homeDir, database, kind, 'to_process');
   const tmpDir = path.join(ctx.state.homeDir, database, kind, 'tmp');
-  await fs.mkdirp(tmpDir);
+  await fs.mkdir(tmpDir, { recursive: true });
   const uploadDir = await fs.mkdtemp(path.join(tmpDir, 'roc-upload-'));
   const uploadPath = path.join(uploadDir, filename);
   const file = path.join(dir, filename);
-  const write = fs.createWriteStream(uploadPath);
+  const write = createWriteStream(uploadPath);
   try {
     await new Promise((resolve, reject) => {
       write.on('finish', async () => {

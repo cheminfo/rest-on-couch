@@ -1,8 +1,9 @@
 'use strict';
 
-const klaw = require('klaw');
+const fs = require('node:fs/promises');
 const path = require('node:path');
-const fs = require('fs-extra');
+
+const klaw = require('klaw');
 const requireImportScript = require('../config/require_import_script');
 
 module.exports = async function findFiles(homeDir, limit, sortWalk = 'shift') {
