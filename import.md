@@ -160,8 +160,7 @@ In order to keep both file take care that the result.field is different !
 const fs = require('fs');
 
 module.exports = async function import(ctx, result) {
-  let reference = ctx.filename.replace(/(.fid|.jdx)$/,'');
-  result.reference = ctx.filename;
+  result.reference = ctx.filename.replace(/(.fid|.jdx)$/,'');
   if (ctx.fileExt === 'fid') {
     result.field = 'jcampFID';
   } else if (ctx.fileExt === 'jdx') {
