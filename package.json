@@ -46,7 +46,7 @@
   },
   "homepage": "https://github.com/cheminfo/rest-on-couch#readme",
   "volta": {
-    "node": "24.13.1"
+    "node": "24.14.0"
   },
   "dependencies": {
     "@koa/router": "^15.3.0",
@@ -84,7 +84,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@fontsource-variable/roboto": "^5.2.9",
+    "@fontsource-variable/roboto": "^5.2.10",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
@@ -101,7 +101,7 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^7.13.0",
+    "react-router-dom": "^7.13.1",
     "redux": "^5.0.1",
     "redux-actions": "^3.0.3",
     "redux-persist": "^6.0.0",
