@@ -51,7 +51,7 @@ export class EntryImportResult {
     );
     if (references.size !== this.analyses.length) {
       throw new Error(
-        'There are analyses referencing the same element in the same jpath',
+        'There are analyses referencing the same element in the same jpath. Make sure each analysis has a unique `reference` + `jpath` combination.',
       );
     }
   }
