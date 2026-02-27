@@ -43,6 +43,17 @@ export class EntryImportResult {
     for (let analysis of this.analyses) {
       analysis.check();
     }
+
+    const references = new Set(
+      this.analyses.map(
+        (analysis) => analysis.reference + String(analysis.jpath),
+      ),
+    );
+    if (references.size !== this.analyses.length) {
+      throw new Error(
+        'There are analyses referencing the same element in the same jpath',
+      );
+    }
   }
 
   /**
