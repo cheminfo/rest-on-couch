@@ -48,20 +48,16 @@ export class ImportAnalysis {
   }
 
   check() {
-    const usedIds = new Set();
-    let total = 0;
     checkAnalysis(this);
-    const analysisId = this.reference + String(this.jpath);
     for (let attachment of this.attachments) {
-      total++;
       checkAttachment(attachment);
-      usedIds.add(analysisId + attachment.field);
     }
+    const fields = new Set(
+      this.attachments.map((attachment) => attachment.field),
+    );
 
-    if (usedIds.size !== total) {
-      throw new Error(
-        `Several attachments target the same field on the same analysis`,
-      );
+    if (fields.size !== this.attachments.length) {
+      throw new Error(`Several attachments target the same field`);
     }
   }
 }
