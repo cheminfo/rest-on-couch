@@ -260,9 +260,7 @@ describe('LegacyImportResult', () => {
 
     expect(() => {
       result.check();
-    }).toThrow(
-      'Several attachments target the same field on the same analysis',
-    );
+    }).toThrow('Several attachments target the same field');
   });
 
   it('invalid skipped results fail the check', () => {

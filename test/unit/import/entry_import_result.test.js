@@ -248,8 +248,30 @@ describe('EntryImportResult', () => {
 
     expect(() => {
       result.check();
+    }).toThrow('Several attachments target the same field');
+  });
+
+  it('should fail to add multiple analyses with the same reference', () => {
+    const result = new EntryImportResult(context);
+    result.owner = 'a@a.com';
+    result.id = 'test';
+    result.kind = 'sample';
+    result.addAnalysis({
+      reference: 'testRef',
+      jpath: ['jpath', 'in', 'document'],
+      metadata: {},
+    });
+
+    result.addAnalysis({
+      reference: 'testRef',
+      jpath: ['jpath', 'in', 'document'],
+      metadata: {},
+    });
+
+    expect(() => {
+      result.check();
     }).toThrow(
-      'Several attachments target the same field on the same analysis',
+      'There are analyses referencing the same element in the same jpath',
     );
   });
 
