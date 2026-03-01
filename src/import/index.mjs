@@ -17,12 +17,7 @@ const { kImportType } = constants;
 /** @typedef {(ctx: InstanceType<typeof ImportContext>, createEntryResult: () => EntryImportResultInstance) => Promise<EntryImportResultInstance | EntryImportResultInstance[]> } ImportAnalysesFunction */
 /** @typedef {(ctx: InstanceType<typeof ImportContext>, result: LegacyImportResultInstance) => Promise<void>} ImportFileFunction */
 
-export default async function importFile(
-  database,
-  importName,
-  filePath,
-  options = {},
-) {
+export async function importFile(database, importName, filePath, options = {}) {
   debug('import %s (%s, %s)', filePath, database, importName);
 
   const dryRun = !!options.dryRun;

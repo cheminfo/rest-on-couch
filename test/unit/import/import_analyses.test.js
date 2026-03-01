@@ -4,7 +4,7 @@ import { beforeEach, describe, it } from 'node:test';
 import { expect } from 'chai';
 
 import { SaveImportError } from '../../../src/import/SaveImportError.mjs';
-import importFile from '../../../src/import/index.mjs';
+import { importFile } from '../../../src/import/index.mjs';
 import { resetDatabase } from '../../utils/utils.js';
 import {
   assertDefaultAnalysis,
