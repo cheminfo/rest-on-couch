@@ -1,5 +1,14 @@
 # Changelog
 
+## [20.0.1](https://github.com/cheminfo/rest-on-couch/compare/v20.0.0...v20.0.1) (2026-03-01)
+
+
+### Bug Fixes
+
+* check duplicate analysis references ([#511](https://github.com/cheminfo/rest-on-couch/issues/511)) ([c9c27bb](https://github.com/cheminfo/rest-on-couch/commit/c9c27bb5321ef19d1027fd3860c3379c9f3d4d70))
+* export importFile as named export ([#515](https://github.com/cheminfo/rest-on-couch/issues/515)) ([ead2ba7](https://github.com/cheminfo/rest-on-couch/commit/ead2ba7d670d0512f03e93be3dae50195171393e))
+* update dependencies ([#508](https://github.com/cheminfo/rest-on-couch/issues/508)) ([919a56d](https://github.com/cheminfo/rest-on-couch/commit/919a56d20a6f8d456748c8d43ba6634326678ec0))
+
 ## [20.0.0](https://github.com/cheminfo/rest-on-couch/compare/v19.1.2...v20.0.0) (2026-02-23)
 
 
