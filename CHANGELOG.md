@@ -1,5 +1,12 @@
 # Changelog
 
+## [20.1.0](https://github.com/cheminfo/rest-on-couch/compare/v20.0.1...v20.1.0) (2026-04-15)
+
+
+### Features
+
+* support loading esm config files ([#524](https://github.com/cheminfo/rest-on-couch/issues/524)) ([709090e](https://github.com/cheminfo/rest-on-couch/commit/709090e4688ff2bc7c93aeb95a5ce9a9ac1b92bf))
+
 ## [20.0.1](https://github.com/cheminfo/rest-on-couch/compare/v20.0.0...v20.0.1) (2026-03-01)
 
 
