@@ -10,6 +10,7 @@ const { getHomeDir, getHomeConfig } = require('./home');
 const { freeze } = require('immer');
 const { intersection } = require('../util/array_sets');
 const requireImportScript = require('./require_import_script');
+const { loadConfigFileFromDir } = require('./utils');
 
 function getDbConfigOrDie(homeDir) {
   if (!homeDir) {
@@ -84,7 +85,6 @@ function getDbConfig(homeDir) {
     const databasePath = path.join(homeDir, database);
     const indexDesignDocNames = {};
     const viewDesignDocNames = {};
-    const databaseConfigPath = path.join(databasePath, 'config.js');
 
     // Extend parent config
     extendConfig(
@@ -94,15 +94,13 @@ function getDbConfig(homeDir) {
       indexDesignDocNames,
     );
 
-    if (fs.existsSync(databaseConfigPath)) {
-      const dbConfig = require(databaseConfigPath);
-      extendConfig(
-        configDraft,
-        dbConfig,
-        viewDesignDocNames,
-        indexDesignDocNames,
-      );
-    }
+    const dbFileConfig = loadConfigFileFromDir(databasePath);
+    extendConfig(
+      configDraft,
+      dbFileConfig,
+      viewDesignDocNames,
+      indexDesignDocNames,
+    );
 
     const views = configDraft.customDesign.views;
     const indexes = configDraft.customDesign.indexes;
