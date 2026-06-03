@@ -185,6 +185,17 @@ describe('import (legacy)', () => {
     expect(metadata2.reference).toBe('ref2');
   });
 
+  it('should accept attachment without metadata', async () => {
+    await importFile(databaseName, 'no_metadata', textFile1);
+
+    // Check that the error has been logged in the import database
+    await assertImportLog(importCouch, {
+      name: 'no_metadata',
+      filename: 'test.txt',
+      status: 'SUCCESS',
+    });
+  });
+
   it('without reference', async () => {
     await expect(() =>
       importFile(databaseName, 'no_reference', textFile1),

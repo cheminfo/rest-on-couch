@@ -146,11 +146,6 @@ describe('LegacyImportResult', () => {
       constants.IMPORT_UPDATE_FULL,
     );
     checkWithoutAttachmentPropShouldThrow(
-      'metadata',
-      'metadata must be of type Object',
-      constants.IMPORT_UPDATE_FULL,
-    );
-    checkWithoutAttachmentPropShouldThrow(
       'contents',
       'contents must be a Buffer or TypedArray',
       constants.IMPORT_UPDATE_FULL,
@@ -166,11 +161,6 @@ describe('LegacyImportResult', () => {
     checkWithoutPropShouldThrow(
       'content_type',
       'content_type must be of type String',
-      constants.IMPORT_UPDATE_FULL,
-    );
-    checkWithoutPropShouldThrow(
-      'metadata',
-      'metadata must be of type Object',
       constants.IMPORT_UPDATE_FULL,
     );
     checkWithoutPropShouldThrow(
