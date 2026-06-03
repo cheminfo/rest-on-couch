@@ -131,12 +131,10 @@ export class LegacyImportResult extends EntryImportResult {
       });
       for (let attachment of attachments) {
         const { field, filename, contents, content_type } = attachment;
-        if (analysis.metadata || attachment.metadata) {
-          analysis.metadata = {
-            ...analysis.metadata,
-            ...attachment.metadata,
-          };
-        }
+        analysis.metadata = {
+          ...analysis.metadata,
+          ...attachment.metadata,
+        };
 
         if (filename || field || contents) {
           analysis.addAttachment({
