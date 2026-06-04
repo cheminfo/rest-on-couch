@@ -1,7 +1,7 @@
-export async function skipIfCouchV1(context) {
+export async function couchV1SkipMessage() {
   const version = await getVersion();
   if (version.startsWith('1.')) {
-    context.skip('CouchDB 1.x does not support mango queries');
+    return 'Test unsupported by CouchDB v1';
   }
 }
 
