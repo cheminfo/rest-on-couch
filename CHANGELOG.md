@@ -1,5 +1,12 @@
 # Changelog
 
+## [20.1.1](https://github.com/cheminfo/rest-on-couch/compare/v20.1.0...v20.1.1) (2026-06-04)
+
+
+### Bug Fixes
+
+* allow legacy import without metadata ([53be788](https://github.com/cheminfo/rest-on-couch/commit/53be788abce745e14e5b9dcc5db44b4a78a49b1a))
+
 ## [20.1.0](https://github.com/cheminfo/rest-on-couch/compare/v20.0.1...v20.1.0) (2026-04-15)
 
 
