@@ -3,185 +3,85 @@ import { expect } from 'chai';
 
 import anyuser from '../data/anyuser.js';
 import noRights from '../data/noRights.js';
+import { couchV1SkipMessage } from '../utils/couch.js';
 
-import { skipIfCouchV1 } from '../utils/couch.js';
+describe(
+  'no rights mango queries',
+  { skip: await couchV1SkipMessage() },
+  () => {
+    beforeEach(noRights);
+    it('users should get all entries with read access', async () => {
+      const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
+        query: {
+          selector: {},
+        },
+      });
+      expect(data1.docs).toHaveLength(5);
 
-describe('no rights mango queries', () => {
-  beforeEach(skipIfCouchV1);
-  beforeEach(noRights);
-  it('users should get all entries with read access', async () => {
-    const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
-      query: {
-        selector: {},
-      },
-    });
-    expect(data1.docs).toHaveLength(5);
-
-    const data2 = await couch.findEntriesByRight('b@b.com', 'read', {
-      query: {
-        selector: {},
-      },
-    });
-    expect(data2.docs).toHaveLength(5);
-  });
-
-  it('anonymous should get all entries with the defaultAnonymousRead group', async () => {
-    const anonymousData = await couch.findEntriesByRight('anonymous', 'read', {
-      query: {},
+      const data2 = await couch.findEntriesByRight('b@b.com', 'read', {
+        query: {
+          selector: {},
+        },
+      });
+      expect(data2.docs).toHaveLength(5);
     });
 
-    expect(anonymousData.docs).toHaveLength(2);
-    expect(
-      anonymousData.docs.every((doc) =>
-        doc.$owners.includes('defaultAnonymousRead'),
-      ),
-    ).toBe(true);
-  });
+    it('anonymous should get all entries with the defaultAnonymousRead group', async () => {
+      const anonymousData = await couch.findEntriesByRight(
+        'anonymous',
+        'read',
+        {
+          query: {},
+        },
+      );
 
-  it('should get owned entries', async () => {
-    const dataA = await couch.findEntriesByRight('a@a.com', 'owner', {
-      query: {
-        selector: {},
-      },
+      expect(anonymousData.docs).toHaveLength(2);
+      expect(
+        anonymousData.docs.every((doc) =>
+          doc.$owners.includes('defaultAnonymousRead'),
+        ),
+      ).toBe(true);
     });
-    expect(dataA.docs).toHaveLength(1);
 
-    const dataB = await couch.findEntriesByRight('b@b.com', 'owner', {
-      query: {
-        selector: {},
-      },
+    it('should get owned entries', async () => {
+      const dataA = await couch.findEntriesByRight('a@a.com', 'owner', {
+        query: {
+          selector: {},
+        },
+      });
+      expect(dataA.docs).toHaveLength(1);
+
+      const dataB = await couch.findEntriesByRight('b@b.com', 'owner', {
+        query: {
+          selector: {},
+        },
+      });
+      expect(dataB.docs).toHaveLength(2);
+
+      const dataX = await couch.findEntriesByRight('x@x.com', 'owner', {
+        query: {
+          selector: {},
+        },
+      });
+      expect(dataX.docs).toHaveLength(3);
     });
-    expect(dataB.docs).toHaveLength(2);
 
-    const dataX = await couch.findEntriesByRight('x@x.com', 'owner', {
-      query: {
-        selector: {},
-      },
-    });
-    expect(dataX.docs).toHaveLength(3);
-  });
-
-  it('use selector to get specific entry', async () => {
-    const data = await couch.findEntriesByRight('a@a.com', 'read', {
-      query: {
-        selector: {
-          '\\$id': {
-            $eq: 'entryWithDefaultAnonymousRead',
+    it('use selector to get specific entry', async () => {
+      const data = await couch.findEntriesByRight('a@a.com', 'read', {
+        query: {
+          selector: {
+            '\\$id': {
+              $eq: 'entryWithDefaultAnonymousRead',
+            },
           },
         },
-      },
-    });
-    expect(data.docs).toHaveLength(1);
-    expect(data.warning).toMatch(/No matching index found/);
-  });
-
-  it('return field selection', async () => {
-    const data = await couch.findEntriesByRight('a@a.com', 'read', {
-      query: {
-        selector: {
-          '\\$content.x': {
-            $eq: 3,
-          },
-        },
-        fields: ['\\$content.x'],
-      },
+      });
+      expect(data.docs).toHaveLength(1);
+      expect(data.warning).toMatch(/No matching index found/);
     });
 
-    expect(data.docs).toHaveLength(1);
-    expect(data.docs).toEqual([{ $content: { x: 3 } }]);
-    expect(data.warning).toMatch(
-      /No matching index found, create an index to optimize query time/,
-    );
-  });
-
-  it('filter with mine=true', async () => {
-    const data = await couch.findEntriesByRight('a@a.com', 'read', {
-      query: {
-        fields: ['\\$content.x'],
-      },
-      mine: true,
-    });
-
-    expect(data.docs).toHaveLength(1);
-    expect(data.docs).toStrictEqual([{ $content: { x: 3 } }]);
-  });
-
-  it('filter with groups', async () => {
-    const data = await couch.findEntriesByRight('a@a.com', 'read', {
-      groups: ['groupA'],
-      query: {
-        fields: ['\\$content.x'],
-      },
-    });
-
-    expect(data.docs).toHaveLength(1);
-    expect(data.docs).toStrictEqual([{ $content: { x: 1 } }]);
-  });
-
-  it('use an index', async () => {
-    const data = await couch.findEntriesByRight('a@a.com', 'read', {
-      query: {
-        selector: {
-          '\\$content.x': {
-            $eq: 3,
-          },
-        },
-        fields: ['\\$content.x'],
-        use_index: 'x',
-      },
-    });
-
-    expect(data.docs).toHaveLength(1);
-    expect(data.warning).toBe(undefined);
-  });
-
-  it('query with limit', async () => {
-    const data = await couch.findEntriesByRight('a@a.com', 'read', {
-      query: {
-        limit: 1,
-        fields: ['\\$content.x'],
-        use_index: 'x',
-      },
-    });
-
-    expect(data.docs).toHaveLength(1);
-  });
-
-  it('query and sorting', async () => {
-    const dataAsc = await couch.findEntriesByRight('a@a.com', 'read', {
-      query: {
-        selector: {
-          '\\$content.x': {
-            $lte: 3,
-          },
-        },
-        fields: ['\\$content.x'],
-        use_index: 'x',
-      },
-    });
-    expect(dataAsc.docs).toHaveLength(2);
-    expect(dataAsc.docs[0].$content.x).toBe(1);
-
-    const data = await couch.findEntriesByRight('a@a.com', 'read', {
-      query: {
-        selector: {
-          '\\$content.x': {
-            $lte: 3,
-          },
-        },
-        sort: [{ '\\$content.x': 'desc' }],
-        fields: ['\\$content.x'],
-        use_index: 'x',
-      },
-    });
-
-    expect(data.docs).toHaveLength(2);
-    expect(data.docs[0].$content.x).toBe(3);
-  });
-
-  it('use an index which does not exist', async () => {
-    return expect(() =>
-      couch.findEntriesByRight('a@a.com', 'read', {
+    it('return field selection', async () => {
+      const data = await couch.findEntriesByRight('a@a.com', 'read', {
         query: {
           selector: {
             '\\$content.x': {
@@ -189,44 +89,147 @@ describe('no rights mango queries', () => {
             },
           },
           fields: ['\\$content.x'],
-          use_index: 'y',
         },
-      }),
-    ).rejects.toThrow(/index y does not exist/);
-  });
-});
+      });
 
-it('use sort without index is forbidden', async (context) => {
-  skipIfCouchV1(context);
-  return expect(() =>
-    couch.findEntriesByRight('a@a.com', 'read', {
-      query: {
-        sort: [{ '\\$content.x': 'desc' }],
-      },
-    }),
-  ).rejects.toThrow(/query with sort must use index/);
-});
+      expect(data.docs).toHaveLength(1);
+      expect(data.docs).toEqual([{ $content: { x: 3 } }]);
+      expect(data.warning).toMatch(
+        /No matching index found, create an index to optimize query time/,
+      );
+    });
 
-it('bookmark', async (context) => {
-  await skipIfCouchV1(context);
-  const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
-    query: { limit: 1 },
-  });
+    it('filter with mine=true', async () => {
+      const data = await couch.findEntriesByRight('a@a.com', 'read', {
+        query: {
+          fields: ['\\$content.x'],
+        },
+        mine: true,
+      });
 
-  expect(data1.docs).toHaveLength(1);
-  const data2 = await couch.findEntriesByRight('a@a.com', 'read', {
-    query: {
-      limit: 1,
-      bookmark: data1.bookmark,
-    },
-  });
+      expect(data.docs).toHaveLength(1);
+      expect(data.docs).toStrictEqual([{ $content: { x: 3 } }]);
+    });
 
-  expect(data2.docs).toHaveLength(1);
-  expect(data2.docs[0]._id).not.toBe(data1.docs[0]._id);
-});
+    it('filter with groups', async () => {
+      const data = await couch.findEntriesByRight('a@a.com', 'read', {
+        groups: ['groupA'],
+        query: {
+          fields: ['\\$content.x'],
+        },
+      });
 
-describe('anyuser mango queries', () => {
-  beforeEach(skipIfCouchV1);
+      expect(data.docs).toHaveLength(1);
+      expect(data.docs).toStrictEqual([{ $content: { x: 1 } }]);
+    });
+
+    it('use an index', async () => {
+      const data = await couch.findEntriesByRight('a@a.com', 'read', {
+        query: {
+          selector: {
+            '\\$content.x': {
+              $eq: 3,
+            },
+          },
+          fields: ['\\$content.x'],
+          use_index: 'x',
+        },
+      });
+
+      expect(data.docs).toHaveLength(1);
+      expect(data.warning).toBe(undefined);
+    });
+
+    it('query with limit', async () => {
+      const data = await couch.findEntriesByRight('a@a.com', 'read', {
+        query: {
+          limit: 1,
+          fields: ['\\$content.x'],
+          use_index: 'x',
+        },
+      });
+
+      expect(data.docs).toHaveLength(1);
+    });
+
+    it('query and sorting', async () => {
+      const dataAsc = await couch.findEntriesByRight('a@a.com', 'read', {
+        query: {
+          selector: {
+            '\\$content.x': {
+              $lte: 3,
+            },
+          },
+          fields: ['\\$content.x'],
+          use_index: 'x',
+        },
+      });
+      expect(dataAsc.docs).toHaveLength(2);
+      expect(dataAsc.docs[0].$content.x).toBe(1);
+
+      const data = await couch.findEntriesByRight('a@a.com', 'read', {
+        query: {
+          selector: {
+            '\\$content.x': {
+              $lte: 3,
+            },
+          },
+          sort: [{ '\\$content.x': 'desc' }],
+          fields: ['\\$content.x'],
+          use_index: 'x',
+        },
+      });
+
+      expect(data.docs).toHaveLength(2);
+      expect(data.docs[0].$content.x).toBe(3);
+    });
+
+    it('use an index which does not exist', async () => {
+      return expect(() =>
+        couch.findEntriesByRight('a@a.com', 'read', {
+          query: {
+            selector: {
+              '\\$content.x': {
+                $eq: 3,
+              },
+            },
+            fields: ['\\$content.x'],
+            use_index: 'y',
+          },
+        }),
+      ).rejects.toThrow(/index y does not exist/);
+    });
+
+    it('use sort without index is forbidden', async () => {
+      return expect(() =>
+        couch.findEntriesByRight('a@a.com', 'read', {
+          query: {
+            sort: [{ '\\$content.x': 'desc' }],
+          },
+        }),
+      ).rejects.toThrow(/query with sort must use index/);
+    });
+
+    it('bookmark', async () => {
+      const data1 = await couch.findEntriesByRight('a@a.com', 'read', {
+        query: { limit: 1 },
+      });
+
+      expect(data1.docs).toHaveLength(1);
+      const data2 = await couch.findEntriesByRight('a@a.com', 'read', {
+        query: {
+          limit: 1,
+          bookmark: data1.bookmark,
+        },
+      });
+
+      expect(data2.docs).toHaveLength(1);
+      expect(data2.docs[0]._id).not.toBe(data1.docs[0]._id);
+    });
+  },
+);
+
+describe('anyuser mango queries', { skip: await couchV1SkipMessage() }, () => {
   beforeEach(anyuser);
   it('should get all entries with any user (global right)', async () => {
     const data = await couch.findEntriesByRight('a@a.com', 'read', {
