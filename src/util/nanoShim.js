@@ -274,7 +274,6 @@ class NanoDbShim {
     if (asStream) {
       return this.client.stream(attachmentPath, {
         searchParams,
-        responseType: 'buffer',
         decompress: false,
       });
     } else {
@@ -282,7 +281,8 @@ class NanoDbShim {
         searchParams,
         responseType: 'buffer',
       });
-      return response.body;
+      const { body: uint8 } = response;
+      return Buffer.from(uint8.buffer, uint8.byteOffset, uint8.byteLength);
     }
   }
 
