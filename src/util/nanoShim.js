@@ -272,10 +272,9 @@ class NanoDbShim {
     searchParams = prepareSearchParams(searchParams);
     const attachmentPath = `${docId}/${attName}`;
     if (asStream) {
-      return this.client.get(attachmentPath, {
+      return this.client.stream(attachmentPath, {
         searchParams,
         responseType: 'buffer',
-        isStream: true,
         decompress: false,
       });
     } else {
