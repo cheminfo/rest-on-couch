@@ -20,7 +20,7 @@ const composeStoreWithMiddleware = applyMiddleware(
 const rootReducer = persistCombineReducers(
   {
     key: 'reduxPersist',
-    storage,
+    storage: storage.default,
     whitelist: ['dbName'],
     throttle: 1000,
   },
