@@ -1,5 +1,17 @@
 # Changelog
 
+## [20.2.0](https://github.com/cheminfo/rest-on-couch/compare/v20.1.1...v20.2.0) (2026-06-19)
+
+
+### Features
+
+* update dependencies ([#536](https://github.com/cheminfo/rest-on-couch/issues/536)) ([7af408b](https://github.com/cheminfo/rest-on-couch/commit/7af408b2f592d85cc0e3deeada269c8b7dd63e9d))
+
+
+### Bug Fixes
+
+* redux-persist initialization ([#538](https://github.com/cheminfo/rest-on-couch/issues/538)) ([992567c](https://github.com/cheminfo/rest-on-couch/commit/992567cfbac16d80453f2cc546af19bcf787e4ee))
+
 ## [20.1.1](https://github.com/cheminfo/rest-on-couch/compare/v20.1.0...v20.1.1) (2026-06-04)
 
 
