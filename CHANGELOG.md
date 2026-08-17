@@ -1,5 +1,12 @@
 # Changelog
 
+## [20.2.1](https://github.com/cheminfo/rest-on-couch/compare/v20.2.0...v20.2.1) (2026-08-17)
+
+
+### Bug Fixes
+
+* update dependencies ([#543](https://github.com/cheminfo/rest-on-couch/issues/543)) ([ce74aba](https://github.com/cheminfo/rest-on-couch/commit/ce74aba9424bc38e13dbf79d3daced9a2b456151))
+
 ## [20.2.0](https://github.com/cheminfo/rest-on-couch/compare/v20.1.1...v20.2.0) (2026-06-19)
 
 
