@@ -3,7 +3,7 @@
   "nodeOptions": {
     "import": "./test/setup.js"
   },
-  "testRunner": {
+  "test": {
     "experimental-test-coverage": true,
     "test-coverage-include": "src/**/*",
     "test-coverage-exclude": "src/client/**/*",
