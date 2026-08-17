@@ -2,7 +2,7 @@
 
 const bodyParser = require('koa-bodyparser');
 const compose = require('koa-compose');
-const rawBody = require('raw-body');
+const { default: rawBody } = require('raw-body');
 
 const { getGlobalConfig } = require('../../config/config');
 const debug = require('../../util/debug')('middleware:util');
