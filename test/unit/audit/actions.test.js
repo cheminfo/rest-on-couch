@@ -8,14 +8,13 @@ import { open } from '../../../src/connect.js';
 import { resetDatabaseWithoutCouch } from '../../utils/utils.js';
 
 const databaseName = 'test-audit-actions';
-let database;
+let nano;
 
 before(async () => {
   const config = getGlobalConfig();
   config.auditActions = true;
   config.auditActionsDb = databaseName;
-  const nano = await open();
-  database = nano.useDb(databaseName);
+  nano = await open();
 });
 
 beforeEach(async () => {
@@ -59,7 +58,15 @@ describe('auditLogin', () => {
 });
 
 async function getAuditDocument(action) {
-  const result = await database.queryMango({ selector: { action } });
-  expect(result.docs).toHaveLength(1);
-  return result.docs[0];
+  const response = await nano.request({
+    method: 'GET',
+    db: databaseName,
+    doc: '_all_docs',
+    searchParams: { include_docs: true },
+  });
+  const documents = response.body.rows
+    .map((row) => row.doc)
+    .filter((document) => document.action === action);
+  expect(documents).toHaveLength(1);
+  return documents[0];
 }
