@@ -43,7 +43,6 @@ async function auditAction(action, username, ip, meta) {
 }
 
 async function auditLogin(username, success, provider, ctx) {
-  if (!auditEnabled) return;
   const action = success ? 'login.success' : 'login.failed';
   await auditAction(action, username, ctx.ip, { provider });
 }
