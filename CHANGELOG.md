@@ -1,5 +1,12 @@
 # Changelog
 
+## [20.2.2](https://github.com/cheminfo/rest-on-couch/compare/v20.2.1...v20.2.2) (2026-08-19)
+
+
+### Bug Fixes
+
+* login audit recording ([#545](https://github.com/cheminfo/rest-on-couch/issues/545)) ([f45a601](https://github.com/cheminfo/rest-on-couch/commit/f45a6018d853aeddde5cca546c32128ab3c2885e))
+
 ## [20.2.1](https://github.com/cheminfo/rest-on-couch/compare/v20.2.0...v20.2.1) (2026-08-17)
 
 
