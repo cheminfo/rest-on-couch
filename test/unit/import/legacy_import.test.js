@@ -223,6 +223,95 @@ describe('import (legacy)', () => {
     });
   });
 
+  it('import log data is saved on success', async () => {
+    await importFile(databaseName, 'import_log_data', textFile1);
+
+    await assertImportLog(importCouch, {
+      name: 'import_log_data',
+      filename: 'test.txt',
+      status: 'SUCCESS',
+      result: { id: 'import_log_data' },
+      data: { from: 'legacy', values: [1, 2, 3], nested: { ok: true } },
+    });
+  });
+
+  it('import log data is saved when the script throws an ImportError', async () => {
+    await expect(
+      importFile(databaseName, 'import_log_data_throws', textFile1),
+    ).rejects.toThrow(/this import is wrong/);
+
+    await assertImportLog(importCouch, {
+      name: 'import_log_data_throws',
+      filename: 'test.txt',
+      status: 'ERROR',
+      error: { message: 'this import is wrong' },
+      data: { parsedLines: 12 },
+    });
+  });
+
+  it('import log data is not saved when the check of the result fails', async () => {
+    await expect(
+      importFile(databaseName, 'import_log_data_check_error', textFile1),
+    ).rejects.toThrow(/kind must be of type String/);
+
+    await assertImportLog(importCouch, {
+      name: 'import_log_data_check_error',
+      filename: 'test.txt',
+      status: 'ERROR',
+      error: { message: 'kind must be of type String' },
+    });
+  });
+
+  it('import log data is not saved when the script throws unexpectedly', async () => {
+    await expect(
+      importFile(databaseName, 'import_log_data_unexpected_throw', textFile1),
+    ).rejects.toThrow(/this import is wrong/);
+
+    // The result never reached the check phase
+    await assertImportLog(importCouch, {
+      name: 'import_log_data_unexpected_throw',
+      status: 'ERROR',
+      error: { message: 'this import is wrong' },
+    });
+  });
+
+  it('import log data is saved when the entry cannot be saved', async () => {
+    await importCouch.insertEntry(
+      {
+        $id: 'import_log_data_save_error',
+        $content: {
+          jpath: 'string instead of array',
+        },
+      },
+      'a@a.com',
+    );
+
+    await expect(
+      importFile(databaseName, 'import_log_data_save_error', textFile1),
+    ).rejects.toThrow(/Some import results could not be saved/);
+
+    await assertImportLog(importCouch, {
+      name: 'import_log_data_save_error',
+      filename: 'test.txt',
+      status: 'ERROR',
+      error: { message: 'jpath must point to an array' },
+      result: { id: 'import_log_data_save_error' },
+      data: { parsedLines: 12 },
+    });
+  });
+
+  it('import log data must be a plain JSON object', async () => {
+    await expect(
+      importFile(databaseName, 'import_log_data_invalid', textFile1),
+    ).rejects.toThrow(/importLogData must be a plain JSON object/);
+
+    await assertImportLog(importCouch, {
+      name: 'import_log_data_invalid',
+      status: 'ERROR',
+      error: { message: 'importLogData must be a plain JSON object' },
+    });
+  });
+
   it('load import.mjs using ESM syntax', async () => {
     const { results } = await importFile(databaseName, 'esm_mjs', textFile1);
     expect(results).toMatchObject([

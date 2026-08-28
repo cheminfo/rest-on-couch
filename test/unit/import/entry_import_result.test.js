@@ -281,6 +281,20 @@ describe('EntryImportResult', () => {
     expect(() => result.check()).toThrow(/id must be defined/);
   });
 
+  it('accepts a plain JSON object as importLogData', () => {
+    const result = getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY);
+    result.importLogData = { a: 1, b: [2, { c: 'three' }] };
+    expect(() => result.check()).not.toThrow();
+  });
+
+  it('rejects an importLogData which is not a plain JSON object', () => {
+    const result = getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY);
+    result.importLogData = new Date();
+    expect(() => result.check()).toThrow(
+      'importLogData must be a plain JSON object',
+    );
+  });
+
   it('cannot add contents to default analysis', () => {
     const result = new EntryImportResult(context);
     expect(() =>

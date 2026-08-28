@@ -1,12 +1,13 @@
 /* eslint-disable camelcase */
 
 export function checkEntry(entry) {
-  const { id, kind, owner, content, groups } = entry;
+  const { id, kind, owner, content, groups, importLogData } = entry;
   assertDefined(id, 'id');
   assertType(owner, 'String', 'owner');
   assertType(kind, 'String', 'kind');
   assertType(content, 'Object', 'content');
   checkGroups(groups);
+  assertIsPlainJSONObject(importLogData, 'importLogData');
 }
 
 export function checkAnalysis(analysis) {
@@ -51,4 +52,44 @@ function assertTypedArray(data, errorPrefix) {
 
 function getType(data) {
   return Object.prototype.toString.call(data).slice(8, -1);
+}
+
+export function assertIsPlainJSONObject(data, errorPrefix) {
+  if (data !== undefined && !isPlainJSONObject(data)) {
+    throw new Error(`${errorPrefix || ''} must be a plain JSON object`);
+  }
+}
+
+function isPlainJSONObject(value) {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+
+  // Reject non-plain objects (TypedArrays, Date, Map, Set, etc.)
+  if (Object.getPrototypeOf(value) !== Object.prototype) {
+    return false;
+  }
+
+  return Object.values(value).every(isJSONSerializable);
+}
+
+function isJSONSerializable(value) {
+  if (value === null || value === undefined) return true;
+  if (
+    typeof value === 'boolean' ||
+    typeof value === 'number' ||
+    typeof value === 'string'
+  ) {
+    return true;
+  }
+
+  if (Array.isArray(value)) return value.every(isJSONSerializable);
+
+  if (typeof value === 'object') {
+    if (Object.getPrototypeOf(value) !== Object.prototype) return false;
+    return Object.values(value).every(isJSONSerializable);
+  }
+
+  // Rejects: undefined, function, symbol, bigint
+  return false;
 }

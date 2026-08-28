@@ -4,6 +4,8 @@ import fsSync from 'node:fs';
 
 import Couch from '../couch/index.js';
 
+import { ImportError } from './ImportError.mjs';
+
 const kFilePath = Symbol('filePath');
 const kContents = Symbol('contents');
 const kDB = Symbol('db');
@@ -13,6 +15,7 @@ export default class ImportContext {
     this[kFilePath] = filePath;
     this[kContents] = {};
     this[kDB] = database;
+    this.ImportError = ImportError;
   }
 
   static getSource() {
