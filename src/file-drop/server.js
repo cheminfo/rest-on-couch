@@ -32,13 +32,29 @@ router.get('/', (ctx) => {
   ctx.status = 200;
 });
 
+function toSafeName(value) {
+  const name = path.basename(String(value ?? ''));
+  if (!name || name === '.' || name === '..') {
+    return null;
+  }
+  return name;
+}
+
 async function writeUpload(ctx, database, kind, filename) {
-  const dir = path.join(ctx.state.homeDir, database, kind, 'to_process');
-  const tmpDir = path.join(ctx.state.homeDir, database, kind, 'tmp');
+  const safeDatabase = toSafeName(database);
+  const safeKind = toSafeName(kind);
+  const safeFilename = toSafeName(filename);
+  if (!safeDatabase || !safeKind || !safeFilename) {
+    ctx.body = 'Invalid path parameter';
+    ctx.status = 400;
+    return;
+  }
+  const dir = path.join(ctx.state.homeDir, safeDatabase, safeKind, 'to_process');
+  const tmpDir = path.join(ctx.state.homeDir, safeDatabase, safeKind, 'tmp');
   await fs.mkdir(tmpDir, { recursive: true });
   const uploadDir = await fs.mkdtemp(path.join(tmpDir, 'roc-upload-'));
-  const uploadPath = path.join(uploadDir, filename);
-  const file = path.join(dir, filename);
+  const uploadPath = path.join(uploadDir, safeFilename);
+  const file = path.join(dir, safeFilename);
   const write = createWriteStream(uploadPath);
   try {
     await new Promise((resolve, reject) => {
