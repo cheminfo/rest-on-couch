@@ -86,8 +86,7 @@ function isJSONSerializable(value) {
   if (Array.isArray(value)) return value.every(isJSONSerializable);
 
   if (typeof value === 'object') {
-    if (Object.getPrototypeOf(value) !== Object.prototype) return false;
-    return Object.values(value).every(isJSONSerializable);
+    return isPlainJSONObject(value);
   }
 
   // Rejects: undefined, function, symbol, bigint
