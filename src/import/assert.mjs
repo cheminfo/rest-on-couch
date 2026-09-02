@@ -89,6 +89,6 @@ function isJSONSerializable(value) {
     return isPlainJSONObject(value);
   }
 
-  // Rejects: undefined, function, symbol, bigint
+  // Rejects function, symbol, bigint
   return false;
 }
