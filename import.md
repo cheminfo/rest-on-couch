@@ -81,6 +81,8 @@ The second argument is `importResult` and allows to manipulate the result that w
 - content: corresponds to the full entry. If you put an object in the `content` property it will be merged with the existing
   data
 - filename: override filename. By default the actual name of the file being imported is used when saving the attachment, and this property allows to override it.
+- importLogData: custom data saved in the `data` property of the import log entry.
+  It must be an object with simple primitives. See [Import log data](#import-log-data).
 
 Result object also has the following functions:
 
@@ -92,6 +94,27 @@ Result object also has the following functions:
 - skipMetadata(): call this to prevent the importation of the metadata
 - addAttachment(): add an attachment. This can be called multiple times to add more attachments
 - skip(): skip this importation for now. The file will stay in the `to_process` directory
+
+### Import log data
+
+The `importLogData` property of a result is saved in the `data` property of the
+import log entry. It is the custom part of an import entry: you can use it to keep
+track of any information extracted from the file while it was processed.
+
+You can also record this data for errored import by throwing an `ImportError`
+
+Any validation or unexpected failure during the import process will not record any import log data.
+
+```js
+export async function importAnalyses(ctx, createEntryResult) {
+  const contents = await ctx.getContents('utf8');
+  if (!contents.startsWith('##TITLE=')) {
+    throw new ctx.ImportError('the file is not a jcamp', {
+      importLogData: { firstLine: contents.split('\n')[0] },
+    });
+  }
+}
+```
 
 ## Examples
 

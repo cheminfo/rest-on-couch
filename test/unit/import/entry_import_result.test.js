@@ -281,6 +281,40 @@ describe('EntryImportResult', () => {
     expect(() => result.check()).toThrow(/id must be defined/);
   });
 
+  it('accepts object of simple primitives as importLogData', () => {
+    const result = getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY);
+    result.importLogData = { a: 1, b: [2, { c: 'three' }] };
+    expect(() => result.check()).not.toThrow();
+  });
+
+  it('rejects an importLogData which is not an object of simple primitives', () => {
+    const result = getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY);
+    result.importLogData = new Date();
+    expect(() => result.check()).toThrow(
+      /must be an object made of simple primitives/,
+    );
+  });
+
+  it('rejects an importLogData which is not an object of simple primitives (nested)', () => {
+    const result1 = getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY);
+    result1.importLogData = { property: new Date() };
+    expect(() => result1.check()).toThrow(
+      /must be an object made of simple primitives/,
+    );
+
+    const result2 = getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY);
+    result2.importLogData = { property: [new Date()] };
+    expect(() => result2.check()).toThrow(
+      /must be an object made of simple primitives/,
+    );
+
+    const result3 = getValidResult(constants.IMPORT_UPDATE_$CONTENT_ONLY);
+    result3.importLogData = { property: [{ date: new Date() }] };
+    expect(() => result3.check()).toThrow(
+      /must be an object made of simple primitives/,
+    );
+  });
+
   it('cannot add contents to default analysis', () => {
     const result = new EntryImportResult(context);
     expect(() =>

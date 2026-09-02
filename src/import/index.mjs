@@ -7,6 +7,10 @@ import constants from '../constants.js';
 import { EntryImportResult } from './EntryImportResult.mjs';
 import { LegacyImportResult } from './LegacyImportResult.mjs';
 import { SaveImportError } from './SaveImportError.mjs';
+import { ImportError } from './ImportError.mjs';
+import { assertIsObjectOfSimplePrimitives } from './assert.mjs';
+
+export { ImportError } from './ImportError.mjs';
 
 const debug = debugUtils('import');
 const { kImportType } = constants;
@@ -76,6 +80,7 @@ export async function importFile(database, importName, filePath, options = {}) {
               kind: result.kind,
               owner: result.owner,
             },
+            data: result.importLogData,
           })
           .catch((error) => {
             debug.error(
@@ -92,13 +97,21 @@ export async function importFile(database, importName, filePath, options = {}) {
           {
             ...logBase,
             result: { id: result.id, kind: result.kind, owner: result.owner },
+            data: result.importLogData,
           },
           safeResult.error,
         );
       }
     }
   } catch (error) {
-    await logError(couch, logBase, error);
+    await logError(
+      couch,
+      {
+        ...logBase,
+        data: getErrorImportLogData(error),
+      },
+      error,
+    );
     throw error;
   }
 
@@ -143,6 +156,25 @@ async function logError(couch, logBase, error) {
         error,
       );
     });
+}
+
+/**
+ * Import scripts explicitly record data along with a failed import by throwing
+ * an `ImportError`. Unexpected errors never record any data.
+ */
+function getErrorImportLogData(error) {
+  if (!(error instanceof ImportError)) {
+    return undefined;
+  }
+  try {
+    assertIsObjectOfSimplePrimitives(error.importLogData, 'importLogData');
+    return error.importLogData;
+  } catch {
+    debug.error(
+      'ignoring invalid importLogData while logging the import error',
+    );
+    return undefined;
+  }
 }
 
 function checkReturnType(results) {
