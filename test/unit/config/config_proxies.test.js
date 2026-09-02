@@ -54,6 +54,20 @@ describe('Accessing and mutating $owners', () => {
     expect(proxied.$owners[1]).toBe('other_group');
   });
 
+  it('validates mutated group', () => {
+    const proxied = createProxy();
+    expect(() => {
+      proxied.$owners[1] = 'new+group';
+    }).toThrow('new+group is not a valid owner');
+  });
+
+  it('validates added group', () => {
+    const proxied = createProxy();
+    expect(() => {
+      proxied.$owners.push('new+group');
+    }).toThrow('new+group is not a valid owner');
+  });
+
   it('can add group', () => {
     const proxied = createProxy();
     proxied.$owners.push('new_group');
