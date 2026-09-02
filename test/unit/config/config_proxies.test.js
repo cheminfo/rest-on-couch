@@ -65,6 +65,15 @@ describe('Accessing and mutating $owners', () => {
     expect(proxied.$owners.length).toBe(2);
   });
 
+  it('can iterate over $owners with the iterator', () => {
+    const proxied = createProxy();
+    let charCount = 0;
+    for (let owner of proxied.$owners) {
+      charCount += owner.length;
+    }
+    expect(charCount).toBe(28);
+  });
+
   it('cannot mutate primary owner', () => {
     const proxied = createProxy();
 

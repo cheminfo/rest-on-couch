@@ -49,4 +49,5 @@ const allowedMethods = [
   'reduce',
   'forEach',
   'push',
+  Symbol.iterator,
 ];
