@@ -73,6 +73,7 @@ module.exports = {
   },
   beforeCreateHook(document, groups) {
     const owner = document.$owners[0];
+
     const groupsToAdd = groups.filter(
       (group) =>
         !document.$owners.some((owner) => owner === group.name) &&
