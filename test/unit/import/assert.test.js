@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 import {
   assertDefined,
-  assertIsPlainJSONObject,
+  assertIsObjectOfSimplePrimitives,
   assertType,
 } from '../../../src/import/assert.mjs';
 
@@ -47,24 +47,26 @@ describe('assertDefined', () => {
   });
 });
 
-describe('assertIsPlainJSONObject', () => {
+describe('assertIsObjectOfSimplePrimitives', () => {
   it('should accept undefined anywhere', () => {
-    expect(() => assertIsPlainJSONObject(undefined, 'value')).not.toThrow();
     expect(() =>
-      assertIsPlainJSONObject({ a: undefined }, 'value'),
+      assertIsObjectOfSimplePrimitives(undefined, 'value'),
     ).not.toThrow();
     expect(() =>
-      assertIsPlainJSONObject({ a: [undefined] }, 'value'),
+      assertIsObjectOfSimplePrimitives({ a: undefined }, 'value'),
     ).not.toThrow();
     expect(() =>
-      assertIsPlainJSONObject({ a: { b: undefined } }, 'value'),
+      assertIsObjectOfSimplePrimitives({ a: [undefined] }, 'value'),
+    ).not.toThrow();
+    expect(() =>
+      assertIsObjectOfSimplePrimitives({ a: { b: undefined } }, 'value'),
     ).not.toThrow();
   });
 
-  it('should accept plain JSON objects', () => {
-    expect(() => assertIsPlainJSONObject({}, 'value')).not.toThrow();
+  it('should accept object of simple primitives', () => {
+    expect(() => assertIsObjectOfSimplePrimitives({}, 'value')).not.toThrow();
     expect(() =>
-      assertIsPlainJSONObject(
+      assertIsObjectOfSimplePrimitives(
         { a: 1, b: 'two', c: null, d: true, e: [1, { f: 2 }] },
         'value',
       ),
@@ -72,29 +74,29 @@ describe('assertIsPlainJSONObject', () => {
   });
 
   it('should throw for non plain objects', () => {
-    expect(() => assertIsPlainJSONObject(null, 'value')).toThrow(
-      'value must be a plain JSON object',
+    expect(() => assertIsObjectOfSimplePrimitives(null, 'value')).toThrow(
+      /must be an object made of simple primitives/,
     );
-    expect(() => assertIsPlainJSONObject([], 'value')).toThrow(
-      'value must be a plain JSON object',
+    expect(() => assertIsObjectOfSimplePrimitives([], 'value')).toThrow(
+      /must be an object made of simple primitives/,
     );
-    expect(() => assertIsPlainJSONObject('abc', 'value')).toThrow(
-      'value must be a plain JSON object',
+    expect(() => assertIsObjectOfSimplePrimitives('abc', 'value')).toThrow(
+      /must be an object made of simple primitives/,
     );
-    expect(() => assertIsPlainJSONObject(new Date(), 'value')).toThrow(
-      'value must be a plain JSON object',
+    expect(() => assertIsObjectOfSimplePrimitives(new Date(), 'value')).toThrow(
+      /must be an object made of simple primitives/,
     );
   });
 
   it('should throw for non JSON-serializable values', () => {
-    expect(() => assertIsPlainJSONObject({ a: Math.max }, 'value')).toThrow(
-      'value must be a plain JSON object',
-    );
-    expect(() => assertIsPlainJSONObject({ a: [1, 2n] }, 'value')).toThrow(
-      'value must be a plain JSON object',
-    );
     expect(() =>
-      assertIsPlainJSONObject({ a: { b: new Map() } }, 'value'),
-    ).toThrow('value must be a plain JSON object');
+      assertIsObjectOfSimplePrimitives({ a: Math.max }, 'value'),
+    ).toThrow(/must be an object made of simple primitives/);
+    expect(() =>
+      assertIsObjectOfSimplePrimitives({ a: [1, 2n] }, 'value'),
+    ).toThrow(/must be an object made of simple primitives/);
+    expect(() =>
+      assertIsObjectOfSimplePrimitives({ a: { b: new Map() } }, 'value'),
+    ).toThrow(/must be an object made of simple primitive/);
   });
 });

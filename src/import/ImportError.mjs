@@ -9,8 +9,8 @@ export class ImportError extends Error {
    * @param {string} message
    * @param {object} [options]
    * @param {Record<string, unknown>} [options.importLogData] - Custom data to
-   * save in the `data` property of the import log entry. It must be a plain
-   * JSON-serializable object.
+   * save in the `data` property of the import log entry.
+   * It must be an object of simple primitives (plain object, array, string, number, boolean, null, undefined).
    * @param {unknown} [options.cause]
    */
   constructor(message, options = {}) {

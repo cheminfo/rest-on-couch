@@ -4,6 +4,6 @@ export function importFile(ctx, result) {
   result.owner = 'a@a.com';
   result.skipAttachment();
   result.skipMetadata();
-  // Not a plain JSON object
-  result.importLogData = new Date();
+  // Not valid data
+  result.importLogData = "I'm not an object";
 }

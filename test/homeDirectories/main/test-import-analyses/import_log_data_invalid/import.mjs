@@ -6,8 +6,8 @@ export const importAnalyses = async (ctx, createEntryResult) => {
   entry.id = 'import_log_data_invalid';
   entry.kind = 'sample';
   entry.owner = 'a@a.com';
-  // Not a plain JSON object
-  entry.importLogData = new Date();
+  // Not valid data
+  entry.importLogData = "I'm not an object";
 
   return entry;
 };

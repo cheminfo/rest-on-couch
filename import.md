@@ -82,7 +82,7 @@ The second argument is `importResult` and allows to manipulate the result that w
   data
 - filename: override filename. By default the actual name of the file being imported is used when saving the attachment, and this property allows to override it.
 - importLogData: custom data saved in the `data` property of the import log entry.
-  It must be a plain JSON-serializable object. See [Import log data](#import-log-data).
+  It must be an object with simple primitives. See [Import log data](#import-log-data).
 
 Result object also has the following functions:
 

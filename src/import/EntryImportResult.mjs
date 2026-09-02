@@ -7,8 +7,8 @@ export class EntryImportResult {
   kind = null;
   owner = null;
   /**
-   * Custom data that will be saved in the `data` property of the import log
-   * entry. It must be a plain JSON-serializable object.
+   * Custom data that will be saved in the `data` property of the import log entry.
+   * It must be an object of simple primitives (plain object, array, string, number, boolean, null, undefined).
    * It is also recorded when the check() call on this result fails.
    * If the user's import function throws, it is not recorded, but the user can
    * throw an ImportError function with an `importLogData` property which will be recorded.

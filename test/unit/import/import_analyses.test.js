@@ -312,15 +312,20 @@ describe('import (new)', () => {
     });
   });
 
-  it('import log data must be a plain JSON object', async () => {
+  it('importLogData must be an object made of simple primitives', async () => {
     await expect(
       importFile(databaseName, 'import_log_data_invalid', testFile),
-    ).rejects.toThrow(/importLogData must be a plain JSON object/);
+    ).rejects.toThrow(
+      /importLogData must be an object made of simple primitives/,
+    );
 
     await assertImportLog(importCouch, {
       name: 'import_log_data_invalid',
       status: 'ERROR',
-      error: { message: 'importLogData must be a plain JSON object' },
+      error: {
+        message:
+          'importLogData must be an object made of simple primitives (plain object, array, string, number or boolean)',
+      },
     });
   });
 

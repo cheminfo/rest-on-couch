@@ -8,7 +8,7 @@ import { EntryImportResult } from './EntryImportResult.mjs';
 import { LegacyImportResult } from './LegacyImportResult.mjs';
 import { SaveImportError } from './SaveImportError.mjs';
 import { ImportError } from './ImportError.mjs';
-import { assertIsPlainJSONObject } from './assert.mjs';
+import { assertIsObjectOfSimplePrimitives } from './assert.mjs';
 
 export { ImportError } from './ImportError.mjs';
 
@@ -167,7 +167,7 @@ function getErrorImportLogData(error) {
     return undefined;
   }
   try {
-    assertIsPlainJSONObject(error.importLogData, 'importLogData');
+    assertIsObjectOfSimplePrimitives(error.importLogData, 'importLogData');
     return error.importLogData;
   } catch {
     debug.error(

@@ -7,7 +7,7 @@ export function checkEntry(entry) {
   assertType(kind, 'String', 'kind');
   assertType(content, 'Object', 'content');
   checkGroups(groups);
-  assertIsPlainJSONObject(importLogData, 'importLogData');
+  assertIsObjectOfSimplePrimitives(importLogData, 'importLogData');
 }
 
 export function checkAnalysis(analysis) {
@@ -54,13 +54,15 @@ function getType(data) {
   return Object.prototype.toString.call(data).slice(8, -1);
 }
 
-export function assertIsPlainJSONObject(data, errorPrefix) {
-  if (data !== undefined && !isPlainJSONObject(data)) {
-    throw new Error(`${errorPrefix || ''} must be a plain JSON object`);
+export function assertIsObjectOfSimplePrimitives(data, errorPrefix) {
+  if (data !== undefined && !isObjectOfSimplePrimitives(data)) {
+    throw new Error(
+      `${errorPrefix || ''} must be an object made of simple primitives (plain object, array, string, number or boolean)`,
+    );
   }
 }
 
-function isPlainJSONObject(value) {
+function isObjectOfSimplePrimitives(value) {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     return false;
   }
@@ -70,10 +72,10 @@ function isPlainJSONObject(value) {
     return false;
   }
 
-  return Object.values(value).every(isJSONSerializable);
+  return Object.values(value).every(isMadeOfSimplePrimitives);
 }
 
-function isJSONSerializable(value) {
+function isMadeOfSimplePrimitives(value) {
   if (value === null || value === undefined) return true;
   if (
     typeof value === 'boolean' ||
@@ -83,10 +85,10 @@ function isJSONSerializable(value) {
     return true;
   }
 
-  if (Array.isArray(value)) return value.every(isJSONSerializable);
+  if (Array.isArray(value)) return value.every(isMadeOfSimplePrimitives);
 
   if (typeof value === 'object') {
-    return isPlainJSONObject(value);
+    return isObjectOfSimplePrimitives(value);
   }
 
   // Rejects function, symbol, bigint
