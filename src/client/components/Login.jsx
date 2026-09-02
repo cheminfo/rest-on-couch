@@ -39,7 +39,11 @@ const LoginImpl = (props) => {
             <h4 className="card-title">{ldapProvider.title}</h4>
           </div>
           <div className="card-body">
-            <LoginGeneric error={props.errors.ldap} login={props.loginLDAP} />
+            <LoginGeneric
+              userLabel="Username"
+              error={props.errors.ldap}
+              login={props.loginLDAP}
+            />
           </div>
         </div>
       )}
@@ -50,6 +54,7 @@ const LoginImpl = (props) => {
           </div>
           <div className="card-body">
             <LoginGeneric
+              userLabel="Email"
               error={props.errors.couchdb}
               login={props.loginCouchDB}
             />

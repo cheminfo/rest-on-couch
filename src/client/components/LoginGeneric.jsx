@@ -37,7 +37,7 @@ class LoginGeneric extends Component {
         <div className="row">
           <div className="col-md-4">
             <div className="mb-3">
-              <label>Username</label>
+              <label>{this.props.userLabel}</label>
               <input
                 name="username"
                 type="text"
