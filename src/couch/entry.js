@@ -9,6 +9,7 @@ const ensureStringArray = require('../util/ensureStringArray');
 const nanoMethods = require('./nano');
 const util = require('./util');
 const validateMethods = require('./validate');
+const { alterEntryProxyHandler } = require('../config/config_proxies.mjs');
 
 const methods = {
   async getEntryWithRights(uuid, user, rights, options = {}) {
@@ -476,53 +477,3 @@ function lockify(fun, getKey) {
     return result;
   };
 }
-
-const alterEntryProxyHandler = {
-  get(target, prop) {
-    switch (prop) {
-      case '$content':
-        return target.$content;
-      case '$owners':
-        return new Proxy(target.$owners, alterOwnersProxyHandler);
-      default:
-        throw new Error(`altering ${prop} is not allowed`);
-    }
-  },
-};
-
-const allowedMethods = [
-  'map',
-  'findIndex',
-  'find',
-  'filter',
-  'every',
-  'includes',
-  'some',
-  'reduce',
-  'forEach',
-  'push',
-];
-const alterOwnersProxyHandler = {
-  get(target, prop) {
-    const value = target[prop];
-    if (typeof value === 'function') {
-      if (!allowedMethods.includes(prop)) {
-        throw new Error(`You cannot use ${prop}`);
-      }
-    }
-    return target[prop];
-  },
-  set(target, prop, value) {
-    if (prop === '0') {
-      throw new Error(
-        `You cannot set the first element of $owners (primary user)`,
-      );
-    }
-
-    if (!util.isValidOwner(value)) {
-      throw new Error(`${value} is not a valid owner`);
-    }
-    target[prop] = value;
-    return true;
-  },
-};
