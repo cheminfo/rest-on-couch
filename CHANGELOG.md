@@ -1,5 +1,18 @@
 # Changelog
 
+## [20.3.0](https://github.com/cheminfo/rest-on-couch/compare/v20.2.2...v20.3.0) (2026-09-02)
+
+
+### Features
+
+* allow iterator symbol in document owners proxy ([#551](https://github.com/cheminfo/rest-on-couch/issues/551)) ([100fc6e](https://github.com/cheminfo/rest-on-couch/commit/100fc6e279f2184059515271acd34e6ee35a924f))
+* save custom data in import log ([#548](https://github.com/cheminfo/rest-on-couch/issues/548)) ([00c2ed8](https://github.com/cheminfo/rest-on-couch/commit/00c2ed87f707a614ce0160502957b9676a955e8d))
+
+
+### Bug Fixes
+
+* use "Email" as username label when logging in with couchdb ([#550](https://github.com/cheminfo/rest-on-couch/issues/550)) ([af6b27d](https://github.com/cheminfo/rest-on-couch/commit/af6b27d322c5d5d1742bdc263a24334eccf74396))
+
 ## [20.2.2](https://github.com/cheminfo/rest-on-couch/compare/v20.2.1...v20.2.2) (2026-08-19)
 
 
