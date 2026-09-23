@@ -63,6 +63,7 @@ const methods = {
    *   - jpath: The jpath to which the analysis should be added or updated. The jpath should point to an array or a non-existing property (will create the array).
    *   - reference: the identifier of the analysis within the array pointed by the jpath. Used to determine if a pre-existing analysis can be updated, or if a new analysis should be pushed to the array.
    *   - metadata: custom metadata properties to set on the analysis. If the analysis exists it will do a deep shallow merge with the existing metadata.
+   *   - shouldSkipWhenReferenceExists: if true and an analysis with the same reference already exists in the jpath, the analysis is left untouched (neither its metadata nor its attachments are updated).
    *   - attachments[] - each analysis can reference multiple attachments.
    *     - field: field in the metadata which contains the reference to the couchdb attachment.
    *       If the field already references a different attachment, that attachment is removed from the entry.
@@ -88,7 +89,13 @@ const methods = {
     const documentAttachments = [];
     for (let analysis of analyses) {
       let currentAnalysis = current;
-      const { jpath, reference, metadata = {}, attachments } = analysis;
+      const {
+        jpath,
+        reference,
+        metadata = {},
+        attachments,
+        shouldSkipWhenReferenceExists = false,
+      } = analysis;
 
       let analysisMetadata = metadata ? structuredClone(metadata) : {};
       analysisMetadata.$modificationDate = dateNow;
@@ -111,6 +118,9 @@ const methods = {
       }
 
       const found = currentAnalysis.find((el) => el.reference === reference);
+      if (found && shouldSkipWhenReferenceExists) {
+        continue;
+      }
 
       // Filenames currently referenced by the fields we are about to set.
       const previousFilenames = new Map();
