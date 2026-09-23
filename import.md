@@ -86,7 +86,7 @@ The second argument is `importResult` and allows to manipulate the result that w
 
 Result object also has the following functions:
 
-**Important note**: The filename of the attachment in the couchdb document will be generated from both the jpath and the filename. For example if the jpath is `['path','to','metadata']`, and the filename is `myFile.txt`, the couchdb attachment name will be `path/to/metadata/myFile.txt`. Therefore keep in mind that if you reimport a file, the old attachment might be replaced by the new one.
+**Important note**: The filename of the attachment in the couchdb document will be generated from both the jpath and the filename. For example if the jpath is `['path','to','metadata']`, and the filename is `myFile.txt`, the couchdb attachment name will be `path/to/metadata/myFile.txt`. Therefore keep in mind that if you reimport a file, the old attachment might be replaced by the new one. When a field of an existing reference is reimported with a different filename, the attachment it previously pointed to is removed from the document. The import fails if the same attachment name is used by several fields, either within the import result or in the entry stored in the database.
 
 - addGroup(group): allows to add a group to the entry (eg `result.addGroup('group1')`);
 - addGroups(groups): allows to add many groups at once to the entry (eg `result.addGroups(['group2', 'group3'])`)
