@@ -141,14 +141,21 @@ const methods = {
               'conflict',
             );
           }
-        } else if (previousFilename !== filename) {
-          // The field now references a different attachment. Remove the old one to avoid an unreferenced attachment.
-          delete entry._attachments?.[previousFilename];
         }
 
         analysisMetadata[field] = {
           filename,
         };
+
+        if (
+          previousFilename !== undefined &&
+          previousFilename !== filename &&
+          !isFilenameReferenced(currentAnalysis, previousFilename)
+        ) {
+          // The field now references a different attachment. Remove the old one to avoid an unreferenced attachment.
+          delete entry._attachments?.[previousFilename];
+        }
+
         const documentAttachment = {
           reference,
           field,
@@ -172,6 +179,25 @@ const methods = {
 };
 
 methods.addAttachment = methods.addAttachments;
+
+/**
+ * Check whether a filename is referenced anywhere in the array of analyses
+ * @param {object[]} analyses
+ * @param {string} filename
+ * @returns {boolean}
+ */
+function isFilenameReferenced(analyses, filename) {
+  for (const analysis of analyses) {
+    // Should always be an object, but be defensive about it
+    if (typeof analysis !== 'object') continue;
+    for (const value of Object.values(analysis)) {
+      if (value && typeof value === 'object' && value.filename === filename) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 async function getAttachmentFromEntry(entry, ctx, name, asStream) {
   if (entry._attachments && entry._attachments[name]) {
