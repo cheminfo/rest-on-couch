@@ -382,6 +382,69 @@ describe('import (current) - shared scenarios with legacy import API', () => {
     assertUpdateExisting(entry, 1);
   });
 
+  it('replaced attachment is removed when the filename changes (no orphan attachment)', async () => {
+    await importFile(databaseName, 'orphan_attachment', testFile);
+    let entry = await importCouch.getEntryById('orphan_attachment', 'a@a.com');
+    expect(entry.$content.jpath).toHaveLength(1);
+    expect(entry.$content.jpath[0].field.filename).toBe('jpath/first.txt');
+    expect(Object.keys(entry._attachments)).toStrictEqual(['jpath/first.txt']);
+
+    // Re-import the same reference and field with a different filename
+    await importFile(databaseName, 'orphan_attachment', testFile);
+    entry = await importCouch.getEntryById('orphan_attachment', 'a@a.com');
+    expect(entry.$content.jpath).toHaveLength(1);
+    // The metadata now points to the new attachment
+    expect(entry.$content.jpath[0].field.filename).toBe('jpath/second.txt');
+    // The previous attachment is no longer referenced by any field
+    // and must not be left behind as an orphan attachment
+    expect(Object.keys(entry._attachments)).toStrictEqual(['jpath/second.txt']);
+  });
+
+  it('attachments of an analysis cannot share the same filename', async () => {
+    // Two fields of the same analysis would resolve to the same couchdb
+    // attachment name (jpath + filename), so one of the contents would be lost
+    await expect(
+      importFile(databaseName, 'duplicate_filename', testFile),
+    ).rejects.toThrow(/TBD/);
+    await expect(
+      importCouch.getEntryById('duplicate_filename', 'a@a.com'),
+    ).rejects.toThrow(/TBD/);
+  });
+
+  it('attachments of an analysis cannot share the same filename across imports', async () => {
+    await importFile(databaseName, 'duplicate_filename_two_steps', testFile);
+    let entry = await importCouch.getEntryById(
+      'duplicate_filename_two_steps',
+      'a@a.com',
+    );
+    expect(entry.$content.jpath).toHaveLength(1);
+    expect(entry.$content.jpath[0].fieldA.filename).toBe('jpath/same.txt');
+    expect(Object.keys(entry._attachments)).toStrictEqual(['jpath/same.txt']);
+
+    // Re-import the same reference with another field targeting the same
+    // filename. It would overwrite the attachment referenced by `fieldA`.
+    await expect(
+      importFile(databaseName, 'duplicate_filename_two_steps', testFile),
+    ).rejects.toThrow(/TBD/);
+
+    // The entry must be left untouched
+    entry = await importCouch.getEntryById(
+      'duplicate_filename_two_steps',
+      'a@a.com',
+    );
+    expect(entry.$content.jpath).toHaveLength(1);
+    expect(entry.$content.jpath[0].fieldA.filename).toBe('jpath/same.txt');
+    expect(entry.$content.jpath[0]).not.toHaveProperty('fieldB');
+    expect(Object.keys(entry._attachments)).toStrictEqual(['jpath/same.txt']);
+    const contents = await importCouch.getAttachmentByName(
+      entry._id,
+      'jpath/same.txt',
+      'a@a.com',
+      false,
+    );
+    expect(contents.toString('utf-8')).toBe('contents A');
+  });
+
   it('skip import', async () => {
     const results = await importFile(databaseName, 'skip', testFile);
     expect(results).toStrictEqual({
