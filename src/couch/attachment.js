@@ -134,7 +134,7 @@ const methods = {
         const { field, filename, contents, content_type } = attachment;
         const previousFilename = previousFilenames.get(field);
         if (previousFilename === undefined) {
-          // New filename, so the filename should not pre-exist
+          // New filename, so the attachment should not pre-exist
           if (entry._attachments?.[filename]) {
             throw new CouchError(
               `Cannot add attachment "${filename}" to field "${field}": an attachment with the same filename already exists on the entry`,

@@ -254,8 +254,6 @@ describe('LegacyImportResult', () => {
   });
 
   it('should fail when several attachments of an analysis have the same filename', () => {
-    // The main attachment and an additional attachment of the same analysis
-    // would resolve to the same couchdb attachment name (jpath + filename)
     const result = new LegacyImportResult(context);
     Object.assign(result, {
       id: 'test',

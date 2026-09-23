@@ -402,7 +402,7 @@ describe('import (current) - shared scenarios with legacy import API', () => {
 
   it('attachments of an analysis cannot share the same filename across imports', async () => {
     await importFile(databaseName, 'duplicate_filename_two_steps', testFile);
-    let entry = await importCouch.getEntryById(
+    const entry = await importCouch.getEntryById(
       'duplicate_filename_two_steps',
       'a@a.com',
     );
@@ -423,22 +423,13 @@ describe('import (current) - shared scenarios with legacy import API', () => {
       'Cannot add attachment "jpath/same.txt" to field "fieldB": an attachment with the same filename already exists on the entry',
     );
 
-    // The entry must be left untouched
-    entry = await importCouch.getEntryById(
+    // Entry should not be updated
+    const entryAfterError = await importCouch.getEntryById(
       'duplicate_filename_two_steps',
       'a@a.com',
     );
-    expect(entry.$content.jpath).toHaveLength(1);
-    expect(entry.$content.jpath[0].fieldA.filename).toBe('jpath/same.txt');
-    expect(entry.$content.jpath[0]).not.toHaveProperty('fieldB');
-    expect(Object.keys(entry._attachments)).toStrictEqual(['jpath/same.txt']);
-    const contents = await importCouch.getAttachmentByName(
-      entry._id,
-      'jpath/same.txt',
-      'a@a.com',
-      false,
-    );
-    expect(contents.toString('utf-8')).toBe('contents A');
+
+    expect(entry._rev).toBe(entryAfterError._rev);
   });
 
   it('skip import', async () => {
