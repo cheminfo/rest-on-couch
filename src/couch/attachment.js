@@ -65,6 +65,8 @@ const methods = {
    *   - metadata: custom metadata properties to set on the analysis. If the analysis exists it will do a deep shallow merge with the existing metadata.
    *   - attachments[] - each analysis can reference multiple attachments.
    *     - field: field in the metadata which contains the reference to the couchdb attachment.
+   *       If the field already references a different attachment, that attachment is removed from the entry.
+   *       If the field does not reference an attachment yet, the filename must not already exist in the entry.
    *     - filename: name of the attachment
    *     - content_type: Content-Type of the attachment
    *     - contents: contents of the attachment (Buffer or TypedArray)
@@ -108,8 +110,17 @@ const methods = {
         throw new CouchError('jpath must point to an array');
       }
 
-      let found = currentAnalysis.find((el) => el.reference === reference);
+      const found = currentAnalysis.find((el) => el.reference === reference);
+
+      // Filenames currently referenced by the fields we are about to set.
+      const previousFilenames = new Map();
       if (found) {
+        for (const { field } of attachments) {
+          const previousFilename = found[field]?.filename;
+          if (typeof previousFilename === 'string') {
+            previousFilenames.set(field, previousFilename);
+          }
+        }
         Object.assign(found, analysisMetadata);
         analysisMetadata = found;
       } else {
@@ -121,9 +132,30 @@ const methods = {
 
       for (let attachment of attachments) {
         const { field, filename, contents, content_type } = attachment;
+        const previousFilename = previousFilenames.get(field);
+        if (previousFilename === undefined) {
+          // New filename, so the attachment should not pre-exist
+          if (entry._attachments?.[filename]) {
+            throw new CouchError(
+              `Cannot add attachment "${filename}" to field "${field}": an attachment with the same filename already exists on the entry`,
+              'conflict',
+            );
+          }
+        }
+
         analysisMetadata[field] = {
           filename,
         };
+
+        if (
+          previousFilename !== undefined &&
+          previousFilename !== filename &&
+          !isFilenameReferenced(currentAnalysis, previousFilename)
+        ) {
+          // The field now references a different attachment. Remove the old one to avoid an unreferenced attachment.
+          delete entry._attachments?.[previousFilename];
+        }
+
         const documentAttachment = {
           reference,
           field,
@@ -147,6 +179,25 @@ const methods = {
 };
 
 methods.addAttachment = methods.addAttachments;
+
+/**
+ * Check whether a filename is referenced anywhere in the array of analyses
+ * @param {object[]} analyses
+ * @param {string} filename
+ * @returns {boolean}
+ */
+function isFilenameReferenced(analyses, filename) {
+  for (const analysis of analyses) {
+    // Should always be an object, but be defensive about it
+    if (typeof analysis !== 'object') continue;
+    for (const value of Object.values(analysis)) {
+      if (value && typeof value === 'object' && value.filename === filename) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 async function getAttachmentFromEntry(entry, ctx, name, asStream) {
   if (entry._attachments && entry._attachments[name]) {

@@ -253,6 +253,64 @@ describe('LegacyImportResult', () => {
     }).toThrow('Several attachments target the same field');
   });
 
+  it('should fail when several attachments of an analysis have the same filename', () => {
+    const result = new LegacyImportResult(context);
+    Object.assign(result, {
+      id: 'test',
+      kind: 'sample',
+      owner: 'a@a.com',
+      reference: 'testRef',
+      jpath: ['jpath', 'in', 'document'],
+      field: 'text',
+      filename: 'same.txt',
+      content_type: 'text/plain',
+      metadata: {},
+    });
+    result.addAttachment({
+      reference: 'testRef',
+      jpath: ['jpath', 'in', 'document'],
+      field: 'other',
+      filename: 'same.txt',
+      content_type: 'text/plain',
+      contents: Buffer.from('the contents', 'utf-8'),
+    });
+
+    expect(() => {
+      result.check();
+    }).toThrow(
+      'Several attachments have the same filename "jpath/in/document/same.txt"',
+    );
+  });
+
+  it('should fail when attachments of different analyses have the same filename', () => {
+    const result = new LegacyImportResult(context);
+    Object.assign(result, {
+      id: 'test',
+      kind: 'sample',
+      owner: 'a@a.com',
+      reference: 'testRef',
+      jpath: ['jpath', 'in', 'document'],
+      field: 'text',
+      filename: 'same.txt',
+      content_type: 'text/plain',
+      metadata: {},
+    });
+    result.addAttachment({
+      reference: 'otherRef',
+      jpath: ['jpath', 'in', 'document'],
+      field: 'text',
+      filename: 'same.txt',
+      content_type: 'text/plain',
+      contents: Buffer.from('the contents', 'utf-8'),
+    });
+
+    expect(() => {
+      result.check();
+    }).toThrow(
+      'Several attachments have the same filename "jpath/in/document/same.txt"',
+    );
+  });
+
   it('invalid skipped results fail the check', () => {
     const result = new LegacyImportResult(context);
     result.skip();

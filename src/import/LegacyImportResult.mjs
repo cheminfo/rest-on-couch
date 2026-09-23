@@ -6,7 +6,7 @@
  */
 
 import constants from '../constants.js';
-import { checkEntry } from './assert.mjs';
+import { checkEntry, checkUniqueAttachmentFilenames } from './assert.mjs';
 import { ImportAnalysis } from './ImportAnalysis.mjs';
 import { EntryImportResult } from './EntryImportResult.mjs';
 
@@ -53,6 +53,7 @@ export class LegacyImportResult extends EntryImportResult {
     for (let analysis of analyses) {
       analysis.check();
     }
+    checkUniqueAttachmentFilenames(analyses);
   }
 
   // Don't add the main attachment to the database

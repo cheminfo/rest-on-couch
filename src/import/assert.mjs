@@ -94,3 +94,22 @@ function isMadeOfSimplePrimitives(value) {
   // Rejects function, symbol, bigint
   return false;
 }
+
+/**
+ * Ensure filename uniqueness
+ * @param {import('./ImportAnalysis.mjs').ImportAnalysis[]} analyses
+ */
+export function checkUniqueAttachmentFilenames(analyses) {
+  const filenames = new Set();
+  for (const analysis of analyses) {
+    for (const attachment of analysis.attachments) {
+      const { filename } = attachment;
+      if (filenames.has(filename)) {
+        throw new Error(
+          `Several attachments have the same filename "${filename}". Each attachment of an entry must have a unique filename.`,
+        );
+      }
+      filenames.add(filename);
+    }
+  }
+}

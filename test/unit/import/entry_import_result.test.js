@@ -275,6 +275,102 @@ describe('EntryImportResult', () => {
     );
   });
 
+  it('should fail when several attachments of an analysis have the same filename', () => {
+    const result = new EntryImportResult(context);
+    result.owner = 'a@a.com';
+    result.id = 'test';
+    result.kind = 'sample';
+    const analysis = result.addAnalysis({
+      reference: 'testRef',
+      jpath: ['jpath', 'in', 'document'],
+      metadata: {},
+    });
+    analysis.addAttachment({
+      contents: Buffer.from('contents A', 'utf-8'),
+      filename: 'same.txt',
+      field: 'fieldA',
+      content_type: 'text/plain',
+    });
+    analysis.addAttachment({
+      contents: Buffer.from('contents B', 'utf-8'),
+      filename: 'same.txt',
+      field: 'fieldB',
+      content_type: 'text/plain',
+    });
+
+    expect(() => {
+      result.check();
+    }).toThrow(
+      'Several attachments have the same filename "jpath/in/document/same.txt"',
+    );
+  });
+
+  it('should fail when attachments of different analyses have the same filename', () => {
+    const result = new EntryImportResult(context);
+    result.owner = 'a@a.com';
+    result.id = 'test';
+    result.kind = 'sample';
+    result.addAnalysis({
+      reference: 'ref1',
+      jpath: ['jpath', 'in', 'document'],
+      metadata: {},
+      attachment: {
+        contents: Buffer.from('contents A', 'utf-8'),
+        filename: 'same.txt',
+        field: 'field',
+        content_type: 'text/plain',
+      },
+    });
+    result.addAnalysis({
+      reference: 'ref2',
+      jpath: ['jpath', 'in', 'document'],
+      metadata: {},
+      attachment: {
+        contents: Buffer.from('contents B', 'utf-8'),
+        filename: 'same.txt',
+        field: 'field',
+        content_type: 'text/plain',
+      },
+    });
+
+    expect(() => {
+      result.check();
+    }).toThrow(
+      'Several attachments have the same filename "jpath/in/document/same.txt"',
+    );
+  });
+
+  it('accepts the same filename in different jpaths', () => {
+    const result = new EntryImportResult(context);
+    result.owner = 'a@a.com';
+    result.id = 'test';
+    result.kind = 'sample';
+    result.addAnalysis({
+      reference: 'testRef',
+      jpath: ['jpath', 'one'],
+      metadata: {},
+      attachment: {
+        contents: Buffer.from('contents A', 'utf-8'),
+        filename: 'same.txt',
+        field: 'field',
+        content_type: 'text/plain',
+      },
+    });
+    result.addAnalysis({
+      reference: 'testRef',
+      jpath: ['jpath', 'two'],
+      metadata: {},
+      attachment: {
+        contents: Buffer.from('contents B', 'utf-8'),
+        filename: 'same.txt',
+        field: 'field',
+        content_type: 'text/plain',
+      },
+    });
+
+    expect(() => result.check()).not.toThrow();
+  });
+
   it('invalid skipped results fail the check', () => {
     const result = new EntryImportResult(context);
     result.skip();
