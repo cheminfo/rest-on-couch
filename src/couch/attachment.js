@@ -65,6 +65,8 @@ const methods = {
    *   - metadata: custom metadata properties to set on the analysis. If the analysis exists it will do a deep shallow merge with the existing metadata.
    *   - attachments[] - each analysis can reference multiple attachments.
    *     - field: field in the metadata which contains the reference to the couchdb attachment.
+   *       If the field already references a different attachment, that attachment is removed from the entry.
+   *       If the field does not reference an attachment yet, the filename must not already exist in the entry.
    *     - filename: name of the attachment
    *     - content_type: Content-Type of the attachment
    *     - contents: contents of the attachment (Buffer or TypedArray)
@@ -108,8 +110,17 @@ const methods = {
         throw new CouchError('jpath must point to an array');
       }
 
-      let found = currentAnalysis.find((el) => el.reference === reference);
+      const found = currentAnalysis.find((el) => el.reference === reference);
+
+      // Filenames currently referenced by the fields we are about to set.
+      const previousFilenames = new Map();
       if (found) {
+        for (const { field } of attachments) {
+          const previousFilename = found[field]?.filename;
+          if (typeof previousFilename === 'string') {
+            previousFilenames.set(field, previousFilename);
+          }
+        }
         Object.assign(found, analysisMetadata);
         analysisMetadata = found;
       } else {
@@ -121,6 +132,20 @@ const methods = {
 
       for (let attachment of attachments) {
         const { field, filename, contents, content_type } = attachment;
+        const previousFilename = previousFilenames.get(field);
+        if (previousFilename === undefined) {
+          // New filename, so the filename should not pre-exist
+          if (entry._attachments?.[filename]) {
+            throw new CouchError(
+              `Cannot add attachment "${filename}" to field "${field}": an attachment with the same filename already exists on the entry`,
+              'conflict',
+            );
+          }
+        } else if (previousFilename !== filename) {
+          // The field now references a different attachment. Remove the old one to avoid an unreferenced attachment.
+          delete entry._attachments?.[previousFilename];
+        }
+
         analysisMetadata[field] = {
           filename,
         };

@@ -1,4 +1,4 @@
-import { checkEntry } from './assert.mjs';
+import { checkEntry, checkUniqueAttachmentFilenames } from './assert.mjs';
 import { ImportAnalysis } from './ImportAnalysis.mjs';
 
 export class EntryImportResult {
@@ -63,6 +63,8 @@ export class EntryImportResult {
         'There are analyses referencing the same element in the same jpath. Make sure each analysis has a unique `reference` + `jpath` combination.',
       );
     }
+
+    checkUniqueAttachmentFilenames(this.analyses);
   }
 
   /**

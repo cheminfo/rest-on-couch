@@ -400,17 +400,6 @@ describe('import (current) - shared scenarios with legacy import API', () => {
     expect(Object.keys(entry._attachments)).toStrictEqual(['jpath/second.txt']);
   });
 
-  it('attachments of an analysis cannot share the same filename', async () => {
-    // Two fields of the same analysis would resolve to the same couchdb
-    // attachment name (jpath + filename), so one of the contents would be lost
-    await expect(
-      importFile(databaseName, 'duplicate_filename', testFile),
-    ).rejects.toThrow(/TBD/);
-    await expect(
-      importCouch.getEntryById('duplicate_filename', 'a@a.com'),
-    ).rejects.toThrow(/TBD/);
-  });
-
   it('attachments of an analysis cannot share the same filename across imports', async () => {
     await importFile(databaseName, 'duplicate_filename_two_steps', testFile);
     let entry = await importCouch.getEntryById(
@@ -423,9 +412,16 @@ describe('import (current) - shared scenarios with legacy import API', () => {
 
     // Re-import the same reference with another field targeting the same
     // filename. It would overwrite the attachment referenced by `fieldA`.
-    await expect(
-      importFile(databaseName, 'duplicate_filename_two_steps', testFile),
-    ).rejects.toThrow(/TBD/);
+    const error = await importFile(
+      databaseName,
+      'duplicate_filename_two_steps',
+      testFile,
+    ).catch((e) => e);
+    expect(error).toBeInstanceOf(SaveImportError);
+    expect(error.results[0].error).toHaveProperty(
+      'message',
+      'Cannot add attachment "jpath/same.txt" to field "fieldB": an attachment with the same filename already exists on the entry',
+    );
 
     // The entry must be left untouched
     entry = await importCouch.getEntryById(
