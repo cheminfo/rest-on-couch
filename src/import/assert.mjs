@@ -104,7 +104,6 @@ export function checkUniqueAttachmentFilenames(analyses) {
   for (const analysis of analyses) {
     for (const attachment of analysis.attachments) {
       const { filename } = attachment;
-      if (!filename) continue;
       if (filenames.has(filename)) {
         throw new Error(
           `Several attachments have the same filename "${filename}". Each attachment of an entry must have a unique filename.`,
