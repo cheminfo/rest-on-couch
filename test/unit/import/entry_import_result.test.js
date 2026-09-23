@@ -371,6 +371,26 @@ describe('EntryImportResult', () => {
     expect(() => result.check()).not.toThrow();
   });
 
+  it('skipExistingReference is set per analysis', () => {
+    const result = new EntryImportResult(context);
+    const analysis1 = result.addAnalysis({
+      reference: 'ref1',
+      jpath: ['jpath'],
+      metadata: {},
+    });
+    const analysis2 = result.addAnalysis({
+      reference: 'ref2',
+      jpath: ['jpath'],
+      metadata: {},
+    });
+    expect(analysis1.shouldSkipWhenReferenceExists).toBe(false);
+    expect(analysis2.shouldSkipWhenReferenceExists).toBe(false);
+
+    analysis1.skipWhenReferenceExists();
+    expect(analysis1.shouldSkipWhenReferenceExists).toBe(true);
+    expect(analysis2.shouldSkipWhenReferenceExists).toBe(false);
+  });
+
   it('invalid skipped results fail the check', () => {
     const result = new EntryImportResult(context);
     result.skip();

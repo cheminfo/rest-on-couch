@@ -19,6 +19,8 @@ import ASCIIFolder from 'fold-to-ascii';
  */
 
 export class ImportAnalysis {
+  #shouldSkipWhenReferenceExists = false;
+
   /**
    * ImportAnalysis constructor
    * @param {Analysis} analysis
@@ -28,6 +30,18 @@ export class ImportAnalysis {
     this.jpath = analysis.jpath;
     this.metadata = analysis.metadata;
     this.attachments = [];
+  }
+
+  get shouldSkipWhenReferenceExists() {
+    return this.#shouldSkipWhenReferenceExists;
+  }
+
+  /**
+   * Don't process the analysis when the reference already exists
+   * Useful when analyses are regularly re-imported
+   */
+  skipWhenReferenceExists() {
+    this.#shouldSkipWhenReferenceExists = true;
   }
 
   /**

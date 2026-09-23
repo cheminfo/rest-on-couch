@@ -432,6 +432,58 @@ describe('import (current) - shared scenarios with legacy import API', () => {
     expect(entry._rev).toBe(entryAfterError._rev);
   });
 
+  it('skip existing references', async () => {
+    await importFile(databaseName, 'skip_existing_references', testFile);
+    let entry = await importCouch.getEntryById(
+      'skip_existing_references',
+      'a@a.com',
+    );
+    expect(entry.$content.jpath).toHaveLength(1);
+    expect(entry.$content.jpath[0]).toMatchObject({
+      reference: 'ref',
+      count: 0,
+      field: { filename: 'jpath/file_0.txt' },
+    });
+    expect(Object.keys(entry._attachments)).toStrictEqual(['jpath/file_0.txt']);
+
+    await importFile(databaseName, 'skip_existing_references', testFile);
+    entry = await importCouch.getEntryById(
+      'skip_existing_references',
+      'a@a.com',
+    );
+    expect(entry.$content.jpath).toHaveLength(1);
+    expect(entry.$content.jpath[0]).toMatchObject({
+      count: 0,
+      field: { filename: 'jpath/file_0.txt' },
+    });
+    expect(Object.keys(entry._attachments)).toStrictEqual(['jpath/file_0.txt']);
+  });
+
+  it('skip existing references does not skip new references', async () => {
+    await importFile(
+      databaseName,
+      'skip_existing_references_new_ref',
+      testFile,
+    );
+    const second = await importFile(
+      databaseName,
+      'skip_existing_references_new_ref',
+      testFile,
+    );
+    expect(second).toMatchObject({ ok: true });
+    const entry = await importCouch.getEntryById(
+      'skip_existing_references_new_ref',
+      'a@a.com',
+    );
+    expect(
+      entry.$content.jpath.map((analysis) => analysis.reference),
+    ).toStrictEqual(['ref_0', 'ref_1']);
+    expect(Object.keys(entry._attachments).sort()).toStrictEqual([
+      'jpath/file_0.txt',
+      'jpath/file_1.txt',
+    ]);
+  });
+
   it('skip import', async () => {
     const results = await importFile(databaseName, 'skip', testFile);
     expect(results).toStrictEqual({
