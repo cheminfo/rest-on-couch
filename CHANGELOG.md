@@ -1,5 +1,17 @@
 # Changelog
 
+## [20.4.0](https://github.com/cheminfo/rest-on-couch/compare/v20.3.0...v20.4.0) (2026-09-23)
+
+
+### Features
+
+* **import:** optionally skip saving import result when reference already exists ([#557](https://github.com/cheminfo/rest-on-couch/issues/557)) ([f2497b8](https://github.com/cheminfo/rest-on-couch/commit/f2497b8ae302b3dcbc968e21c66d5465c2c20a6a))
+
+
+### Bug Fixes
+
+* **import:** avoid orphan attachments and multiple references to the same attachment ([#555](https://github.com/cheminfo/rest-on-couch/issues/555)) ([cb45012](https://github.com/cheminfo/rest-on-couch/commit/cb45012e2a5f6d86d0f8787568a1f25e6d43e9a7))
+
 ## [20.3.0](https://github.com/cheminfo/rest-on-couch/compare/v20.2.2...v20.3.0) (2026-09-02)
 
 
