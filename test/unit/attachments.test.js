@@ -49,14 +49,13 @@ describe('entries with attachments', () => {
       { $id: 'attach_files_order', $content: {} },
       user,
     );
-    
+
     await couch.addAttachments(info.id, user, {
       name: 'b.txt',
       data: Buffer.from('BBBB'),
       content_type: 'text/plain',
     });
 
-    
     const entry = await couch.getEntry(info.id, user);
 
     // b.txt already exists in _attachments before a.txt is added, so it is enumerated first.
@@ -132,8 +131,6 @@ describe('entries with attachments', () => {
       },
     ]);
 
-    
-
     const entry = await couch.getEntryById('jpath_attachment_order', user);
     expect(entry.$content.jpath).toMatchObject([
       { reference: 'ref1', file: { filename: 'jpath/one.txt' } },
@@ -144,7 +141,7 @@ describe('entries with attachments', () => {
     ).resolves.toEqual(Buffer.from('first - updated'));
     await expect(
       couch.getAttachmentByName(info.id, 'jpath/two.txt', user),
-    ).resolves.toEqual(Buffer.from('second '));
+    ).resolves.toEqual(Buffer.from('second'));
   });
 
   it('_addFileToJpath keeps the previous attachment when another element of the jpath still references it', async () => {

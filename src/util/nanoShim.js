@@ -293,14 +293,22 @@ class NanoDbShim {
     searchParams = prepareSearchParams(searchParams);
     const boundary = getBoundary();
     const prefixedBoundary = Buffer.from(`--${boundary}`, 'utf8');
-    const multipart = [];
+    const dataByName = new Map();
     for (const att of attachments) {
       doc._attachments[att.name] = {
         follows: true,
         content_type: att.content_type,
         length: att.data.length,
       };
-      multipart.push(CRLFCRLF, att.data, CRLF, prefixedBoundary);
+      dataByName.set(att.name, att.data);
+    }
+    // CouchDB assigns the multipart bodies to the attachments with `follows: true`
+    // in the order they are enumerated in `_attachments`
+    const multipart = [];
+    for (const [name, att] of Object.entries(doc._attachments)) {
+      if (att.follows) {
+        multipart.push(CRLFCRLF, dataByName.get(name), CRLF, prefixedBoundary);
+      }
     }
     const docString = JSON.stringify(doc);
     multipart.unshift(
