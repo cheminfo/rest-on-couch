@@ -1,5 +1,12 @@
 # Changelog
 
+## [20.4.1](https://github.com/cheminfo/rest-on-couch/compare/v20.4.0...v20.4.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* respect attachment order when uploading multiple attachments with multipart request ([#558](https://github.com/cheminfo/rest-on-couch/issues/558)) ([ebb072a](https://github.com/cheminfo/rest-on-couch/commit/ebb072a5b5ab7d72ff84b34beae86c2e12d27b9c))
+
 ## [20.4.0](https://github.com/cheminfo/rest-on-couch/compare/v20.3.0...v20.4.0) (2026-09-23)
 
 
