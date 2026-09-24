@@ -1,95 +1,74 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { createCouchDBUser } from '../actions/login';
 
-class CreateUserImpl extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: '',
-      password: '',
-    };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-  }
+function CreateUserImplementation(props) {
+  const [state, setState] = useState(() => ({ email: '', password: '' }));
+  const isEmpty = state.email === '' || state.password === '';
 
-  handleChange(event) {
-    this.setState({
+  function handleChange(event) {
+    setState((previousState) => ({
+      ...previousState,
       [event.target.name]: event.target.value,
-    });
+    }));
   }
 
-  handleSubmit() {
-    if (this.isEmpty()) return;
-    this.props.createCouchDBUser(this.state.email, this.state.password);
+  function handleSubmit() {
+    if (isEmpty) return;
+    props.createCouchDBUser(state.email, state.password);
   }
 
-  handleKeyPress(event) {
-    if (event.key === 'Enter') this.handleSubmit();
+  function handleKeyPress(event) {
+    if (event.key === 'Enter') handleSubmit();
   }
 
-  isEmpty() {
-    return this.state.email === '' || this.state.password === '';
-  }
-
-  render() {
-    return (
-      <div>
-        <h3>Create a new user</h3>
-        <form>
-          <div className="row">
-            <div className="col-md-4">
-              <div className="mb-3">
-                <label>Email</label>
-                <input
-                  name="email"
-                  type="email"
-                  className="form-control"
-                  value={this.state.username}
-                  onChange={this.handleChange}
-                  onKeyPress={this.handleKeyPress}
-                />
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="mb-3">
-                <label>Password</label>
-                <input
-                  name="password"
-                  type="password"
-                  className="form-control"
-                  value={this.state.password}
-                  onChange={this.handleChange}
-                  onKeyPress={this.handleKeyPress}
-                />
-              </div>
+  return (
+    <div>
+      <h3>Create a new user</h3>
+      <form>
+        <div className="row">
+          <div className="col-md-4">
+            <div className="mb-3">
+              <label>Email</label>
+              <input
+                name="email"
+                type="email"
+                className="form-control"
+                value={state.username}
+                onChange={handleChange}
+                onKeyPress={handleKeyPress}
+              />
             </div>
           </div>
-          {this.props.error ? (
-            <p className="text-danger">{this.props.error}</p>
-          ) : (
-            ''
-          )}
-          {this.props.success ? (
-            <p className="text-success">{this.props.success}</p>
-          ) : (
-            ''
-          )}
-          <button
-            disabled={this.isEmpty()}
-            type="button"
-            className="btn btn-info btn-fill"
-            onClick={this.handleSubmit}
-          >
-            Create user
-          </button>
-          <div className="clearfix" />
-        </form>
-      </div>
-    );
-  }
+          <div className="col-md-4">
+            <div className="mb-3">
+              <label>Password</label>
+              <input
+                name="password"
+                type="password"
+                className="form-control"
+                value={state.password}
+                onChange={handleChange}
+                onKeyPress={handleKeyPress}
+              />
+            </div>
+          </div>
+        </div>
+        {props.error ? <p className="text-danger">{props.error}</p> : ''}
+        {props.success ? <p className="text-success">{props.success}</p> : ''}
+        <button
+          disabled={isEmpty}
+          type="button"
+          className="btn btn-info btn-fill"
+          onClick={handleSubmit}
+        >
+          Create user
+        </button>
+        <div className="clearfix" />
+      </form>
+    </div>
+  );
 }
 
 function mapStateToProps(state) {
@@ -101,7 +80,7 @@ function mapStateToProps(state) {
 }
 
 const CreateUser = connect(mapStateToProps, { createCouchDBUser })(
-  CreateUserImpl,
+  CreateUserImplementation,
 );
 
 export default CreateUser;

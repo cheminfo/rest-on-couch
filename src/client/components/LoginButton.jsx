@@ -13,13 +13,12 @@ const LoginButtonImpl = ({ message = 'Login', logout, username, isNav }) => {
         {`${username} - Logout`}
       </a>
     );
-  } else {
-    return (
-      <Link className={className} to="/login">
-        {message}
-      </Link>
-    );
   }
+  return (
+    <Link className={className} to="/login">
+      {message}
+    </Link>
+  );
 };
 
 LoginButtonImpl.propTypes = {

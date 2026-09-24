@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { clearGroupError, clearGroupSuccess } from '../actions/db';
+import { clearGroupError, clearGroupSuccess } from '../actions/database.js';
 
 import EditableTextField from './EditableTextField';
 import GroupDataEditor from './group_data_editor.tsx';

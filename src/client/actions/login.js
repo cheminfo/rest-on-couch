@@ -1,5 +1,5 @@
 import { apiFetchForm, apiFetchFormJSON, apiFetchJSON } from '../api.ts';
-import { dbManager } from '../store';
+import { databaseManager } from '../store';
 
 export const CHECK_LOGIN = 'CHECK_LOGIN';
 export function checkLogin(dispatch, provider) {
@@ -9,17 +9,16 @@ export function checkLogin(dispatch, provider) {
   });
 }
 
-export function checkTheLogin(provider) {
-  return apiFetchJSON('auth/session').then((session) => {
-    if (!session.provider) session.provider = provider;
-    return session;
-  });
+export async function checkTheLogin(provider) {
+  const session = await apiFetchJSON('auth/session');
+  if (!session.provider) session.provider = provider;
+  return session;
 }
 
 export const LOGOUT = 'LOGOUT';
 export function logout() {
   const logoutRequest = doLogout();
-  logoutRequest.then(() => dbManager.syncDb());
+  void logoutRequest.then(() => databaseManager.syncDb());
   return {
     type: LOGOUT,
     payload: logoutRequest,
@@ -33,7 +32,7 @@ async function doLogout() {
 export function loginLDAP(dispatch) {
   return (username, password) => {
     const loginRequest = doLDAPLogin(username, password);
-    loginRequest.then(() => dbManager.syncDb());
+    void loginRequest.then(() => databaseManager.syncDb());
     dispatch({
       type: CHECK_LOGIN,
       payload: loginRequest,
@@ -44,7 +43,7 @@ export function loginLDAP(dispatch) {
 export function loginCouchDB(dispatch) {
   return (username, password) => {
     const loginRequest = doCouchDBLogin(username, password);
-    loginRequest.then(() => dbManager.syncDb());
+    void loginRequest.then(() => databaseManager.syncDb());
     dispatch({
       type: CHECK_LOGIN,
       payload: loginRequest,

@@ -83,7 +83,7 @@ export default function GroupDataEditor(props: GroupDataEditorProps) {
       </ResponsiveTable>
       {limit < data.length ? (
         <button
-          onClick={() => (showAll ? setShowAll(false) : setShowAll(true))}
+          onClick={() => setShowAll(!showAll)}
           type="button"
           className="btn btn-fill"
         >
@@ -94,12 +94,12 @@ export default function GroupDataEditor(props: GroupDataEditorProps) {
   );
 }
 
-function isEditable(type: EditableValue, idx: number) {
+function isEditable(type: EditableValue, index: number) {
   if (typeof type === 'number') {
-    return idx < type;
+    return index < type;
   }
   return match(type)
-    .with('all-except-first', () => idx !== 0)
+    .with('all-except-first', () => index !== 0)
     .with('none', () => false)
     .with('all', () => true)
     .exhaustive();

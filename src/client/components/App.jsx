@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 
-import { dbManager } from '../store';
+import { databaseManager } from '../store';
 
 import ChangePassword from './ChangePassword';
 import CreateUser from './CreateUser';
@@ -16,9 +16,13 @@ import GroupsPage from './pages/GroupsPage';
 import { LoginPage } from './pages/LoginPage';
 import ManageDatabasePage from './pages/ManageDatabasePage';
 
+function handleDatabaseSelected(event) {
+  databaseManager.switchDb(event.target.value);
+}
+
 function AppImpl(props) {
   const { rocOnline } = props;
-  const handleDbSelected = (event) => dbManager.switchDb(event.target.value);
+
   return (
     <HashRouter>
       <div>
@@ -45,7 +49,7 @@ function AppImpl(props) {
                         <DatabaseSelector
                           dbName={props.dbName}
                           dbList={props.dbList}
-                          onDbSelected={handleDbSelected}
+                          onDbSelected={handleDatabaseSelected}
                         />
                       </li>
                       <li className="nav-item">
@@ -68,7 +72,7 @@ function AppImpl(props) {
                         <Home
                           dbName={props.dbName}
                           dbList={props.dbList}
-                          onDbSelected={handleDbSelected}
+                          onDbSelected={handleDatabaseSelected}
                           user={props.loggedUser}
                           provider={props.loginProvider}
                           isAdmin={props.isAdmin}
@@ -124,7 +128,9 @@ AppImpl.propTypes = {
 };
 
 const App = connect((state) => {
-  const dbName = state.db.dbList.includes(state.dbName) ? state.dbName : '';
+  const databaseName = state.db.dbList.includes(state.dbName)
+    ? state.dbName
+    : '';
   return {
     rocOnline: state.main.rocOnline,
     loggedUser: state.login.username,
@@ -132,10 +138,10 @@ const App = connect((state) => {
     loginProvider: state.login.provider,
     isAdmin: state.login.admin,
     userRights: state.db.userRights,
-    isGroupOwner: state.db.userGroups.length !== 0,
+    isGroupOwner: state.db.userGroups.length > 0,
     dbList: state.db.dbList,
-    dbName,
-    hasDb: !!dbName,
+    dbName: databaseName,
+    hasDb: !!databaseName,
   };
 })(AppImpl);
 

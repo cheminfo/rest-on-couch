@@ -25,8 +25,8 @@ export async function apiFetchJSON(
   options: RequestInit,
 ): Promise<unknown> {
   path = path.replace(/^\/+/, '');
-  const req = await apiFetch(path, options);
-  return req.json();
+  const request = await apiFetch(path, options);
+  return request.json();
 }
 
 export async function apiFetchJSONOptional(
@@ -34,21 +34,18 @@ export async function apiFetchJSONOptional(
   options: RequestInit,
 ): Promise<null | unknown> {
   path = path.replace(/^\/+/, '');
-  const req = await apiFetch(path, options);
-  if (req.status === 404) {
+  const request = await apiFetch(path, options);
+  if (request.status === 404) {
     return null;
-  } else if (req.status < 300) {
-    return req.json();
-  } else {
-    throw new Error(`Unexpected status code ${req.status}`);
   }
+  if (request.status < 300) {
+    return request.json();
+  }
+  throw new Error(`Unexpected status code ${request.status}`);
 }
 
 export function apiFetchForm(path: string, data: Record<string, string>) {
-  const formData = new URLSearchParams();
-  for (const [key, value] of Object.entries(data)) {
-    formData.set(key, value);
-  }
+  const formData = new URLSearchParams(data);
   return apiFetch(path, {
     method: 'POST',
     body: formData,
@@ -61,6 +58,6 @@ export async function apiFetchFormJSON(
   path: string,
   data: Record<string, string>,
 ): Promise<unknown> {
-  const req = await apiFetchForm(path, data);
-  return req.json();
+  const request = await apiFetchForm(path, data);
+  return request.json();
 }

@@ -13,32 +13,29 @@ export default function Home(props) {
         </p>
       </div>
     );
+  }
+  let databaseContent;
+  if (!props.dbName) {
+    databaseContent = (
+      <DatabaseSelector
+        dbName={props.dbName}
+        dbList={props.dbList}
+        onDbSelected={props.onDbSelected}
+      />
+    );
   } else {
-    let dbContent;
-    if (!props.dbName) {
-      dbContent = (
-        <DatabaseSelector
-          dbName={props.dbName}
-          dbList={props.dbList}
-          onDbSelected={props.onDbSelected}
-        />
-      );
-    } else {
-      dbContent = (
-        <p>
-          <span>Currently selected database is </span>
-          <code>{props.dbName}</code>
-        </p>
-      );
-    }
-    return (
-      <div>
-        <p>{`You are logged in as ${props.user}.`}</p>
-        {dbContent}
-        <p>
-          {props.isAdmin && <span>You are an admin of this database.</span>}
-        </p>
-      </div>
+    databaseContent = (
+      <p>
+        <span>Currently selected database is </span>
+        <code>{props.dbName}</code>
+      </p>
     );
   }
+  return (
+    <div>
+      <p>{`You are logged in as ${props.user}.`}</p>
+      {databaseContent}
+      <p>{props.isAdmin && <span>You are an admin of this database.</span>}</p>
+    </div>
+  );
 }

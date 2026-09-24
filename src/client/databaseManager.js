@@ -1,14 +1,14 @@
 import {
-  setDbName,
+  setDatabaseName,
   setDefaultGroups,
   setGlobalRights,
   setMemberships,
   setUserGroups,
   setUserRights,
-} from './actions/db';
+} from './actions/database.js';
 import { apiFetchJSONOptional } from './api.ts';
 
-export default class DbManager {
+export default class DatabaseManager {
   constructor(store) {
     this.store = store;
   }
@@ -17,29 +17,33 @@ export default class DbManager {
     return this.store.getState().dbName;
   }
 
-  switchDb(newDb) {
-    if (typeof newDb !== 'string') {
+  switchDb(newDatabase) {
+    if (typeof newDatabase !== 'string') {
       throw new TypeError('db must be a string');
     }
-    if (this.currentDb !== newDb) {
-      this.store.dispatch(setDbName(newDb));
-      this.syncDb();
+    if (this.currentDb === newDatabase) {
+      return;
     }
+
+    this.store.dispatch(setDatabaseName(newDatabase));
+    this.syncDb();
   }
 
   async syncDb() {
-    if (this.currentDb) {
-      const rights = await this.syncRights();
-      this.syncGroups();
-      if (rights?.includes('admin')) {
-        this.syncDefaultGroups();
-        this.syncGlobalRights();
-      } else {
-        this.resetDefaultGroups();
-        this.resetGlobalRights();
-      }
-      this.syncMemberships();
+    if (!this.currentDb) {
+      return;
     }
+
+    const rights = await this.syncRights();
+    this.syncGroups();
+    if (rights?.includes('admin')) {
+      this.syncDefaultGroups();
+      this.syncGlobalRights();
+    } else {
+      this.resetDefaultGroups();
+      this.resetGlobalRights();
+    }
+    this.syncMemberships();
   }
 
   async syncRights() {

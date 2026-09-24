@@ -2,6 +2,7 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import { globals } from 'eslint-config-zakodium';
 import ts from 'eslint-config-zakodium/ts';
 import react from 'eslint-config-zakodium/react';
+import unicorn from 'eslint-config-zakodium/unicorn';
 
 export default defineConfig(
   globalIgnores([
@@ -26,6 +27,7 @@ export default defineConfig(
         { packageDir: import.meta.dirname },
       ],
       'import/order': 'off',
+      'unicorn/prefer-await': 'off',
     },
   },
   {
@@ -53,7 +55,7 @@ export default defineConfig(
         ...globals.browser,
       },
     },
-    extends: [react],
+    extends: [unicorn, react],
   },
   {
     files: ['scripts/**'],

@@ -1,10 +1,10 @@
 import { createAction } from 'redux-actions';
 
 import { apiFetchJSON } from '../api.ts';
-import { dbManager } from '../store';
+import { databaseManager } from '../store';
 
 export const GET_DB_LIST = 'GET_DB_LIST';
-export function getDbList(dispatch) {
+export function getDatabaseList(dispatch) {
   dispatch({
     type: GET_DB_LIST,
     payload: apiFetchJSON('db/_all_dbs'),
@@ -12,7 +12,7 @@ export function getDbList(dispatch) {
 }
 
 export const SET_DB_NAME = 'SET_DB_NAME';
-export const setDbName = createAction(SET_DB_NAME);
+export const setDatabaseName = createAction(SET_DB_NAME);
 
 export const SET_USER_RIGHTS = 'SET_USER_RIGHTS';
 export const setUserRights = createAction(SET_USER_RIGHTS);
@@ -70,7 +70,7 @@ async function doUpdateGroup(groupName, type, value, method) {
     throw new Error('wrong method');
   }
   const encodedValue = encodeURIComponent(value);
-  const groupUrl = `db/${dbManager.currentDb}/group/${encodeURIComponent(groupName)}`;
+  const groupUrl = `db/${databaseManager.currentDb}/group/${encodeURIComponent(groupName)}`;
   let url;
   if (type === 'owners') {
     url = `${groupUrl}/_owner/${encodedValue}`;
@@ -82,16 +82,16 @@ async function doUpdateGroup(groupName, type, value, method) {
     throw new Error('unreachable');
   }
 
-  const res = await apiFetchJSON(url, { method });
-  if (!res.error) {
+  const response = await apiFetchJSON(url, { method });
+  if (!response.error) {
     return apiFetchJSON(groupUrl);
   }
-  return res;
+  return response;
 }
 
 export const CREATE_GROUP = 'CREATE_GROUP';
 export function createGroup(groupName) {
-  const groupUrl = `db/${dbManager.currentDb}/group/${encodeURIComponent(groupName)}`;
+  const groupUrl = `db/${databaseManager.currentDb}/group/${encodeURIComponent(groupName)}`;
   return {
     type: CREATE_GROUP,
     payload: doCreateGroup(groupUrl),
@@ -99,16 +99,16 @@ export function createGroup(groupName) {
 }
 
 async function doCreateGroup(groupUrl) {
-  const res = await apiFetchJSON(groupUrl, { method: 'PUT' });
-  if (res.error) {
-    return res;
+  const response = await apiFetchJSON(groupUrl, { method: 'PUT' });
+  if (response.error) {
+    return response;
   }
   return apiFetchJSON(groupUrl);
 }
 
 export const REMOVE_GROUP = 'REMOVE_GROUP';
 export function removeGroup(groupName) {
-  const groupUrl = `db/${dbManager.currentDb}/group/${encodeURIComponent(groupName)}`;
+  const groupUrl = `db/${databaseManager.currentDb}/group/${encodeURIComponent(groupName)}`;
   return {
     type: REMOVE_GROUP,
     meta: { groupName },
@@ -117,7 +117,7 @@ export function removeGroup(groupName) {
 }
 
 export function setGroupProperties(groupName, properties) {
-  const groupUrl = `db/${dbManager.currentDb}/group/${encodeURIComponent(groupName)}`;
+  const groupUrl = `db/${databaseManager.currentDb}/group/${encodeURIComponent(groupName)}`;
   const setPropUrl = `${groupUrl}/properties`;
   return {
     type: UPDATE_GROUP,
@@ -143,7 +143,7 @@ export function removeDefaultGroup(user, group) {
 }
 
 function editDefaultGroup(user, group, action) {
-  const defaultGroupsUrl = `db/${dbManager.currentDb}/rights/defaultGroups`;
+  const defaultGroupsUrl = `db/${databaseManager.currentDb}/rights/defaultGroups`;
   const url = `${defaultGroupsUrl}/${user}/${group}`;
   return async function editGroup(dispatch) {
     if (action === 'add') {
@@ -165,7 +165,7 @@ export function removeGlobalRight(right, user) {
 }
 
 function editGlobalRight(right, user, action) {
-  const globalRightsUrl = `db/${dbManager.currentDb}/rights/doc`;
+  const globalRightsUrl = `db/${databaseManager.currentDb}/rights/doc`;
   const url = `${globalRightsUrl}/${right}/${user}`;
   return async function editRight(dispatch) {
     if (action === 'add') {

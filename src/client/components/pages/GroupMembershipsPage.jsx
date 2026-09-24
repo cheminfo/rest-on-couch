@@ -1,23 +1,19 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { dbManager } from '../../store';
+import { databaseManager } from '../../store';
 import DisplayGroupList from '../DisplayGroupList';
 
-class GroupMembershipsImpl extends Component {
-  componentDidMount() {
-    // Because if the user changed groups, then memberships need to be updated
-    // Easier to do here than each time groups are updated
-    dbManager.syncMemberships();
-  }
+function GroupMembershipsImplementation(props) {
+  useEffect(() => {
+    databaseManager.syncMemberships();
+  }, []);
 
-  render() {
-    return (
-      <div>
-        <DisplayGroupList groups={this.props.groups} />
-      </div>
-    );
-  }
+  return (
+    <div>
+      <DisplayGroupList groups={props.groups} />
+    </div>
+  );
 }
 
 const mapStateToProps = (state) => {
@@ -26,6 +22,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-const GroupMembershipsPage = connect(mapStateToProps)(GroupMembershipsImpl);
+const GroupMembershipsPage = connect(mapStateToProps)(
+  GroupMembershipsImplementation,
+);
 
 export default GroupMembershipsPage;

@@ -12,7 +12,7 @@ const LoginImpl = (props) => {
   const [redirectURL] = useState(() => {
     const url = new URL(window.location.href);
     url.hash = '';
-    return url.toString();
+    return url.href;
   });
   const googleProvider = props.loginProviders.find((p) => p.name === 'google');
   const couchdbProvider = props.loginProviders.find(

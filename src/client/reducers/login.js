@@ -15,7 +15,7 @@ const initialState = {
   success: {},
 };
 
-const loginReducer = (state = initialState, action = {}) => {
+export default function loginReducer(state = initialState, action = {}) {
   switch (action.type) {
     case `${CHECK_LOGIN}_FULFILLED`: {
       return { ...state, ...onLogin(action.payload) };
@@ -51,19 +51,16 @@ const loginReducer = (state = initialState, action = {}) => {
     default:
       return state;
   }
-};
-
-export default loginReducer;
+}
 
 function onLogin(result) {
   if (!result.authenticated) {
     return { errors: { [result.provider]: true } };
-  } else {
-    return {
-      errors: {},
-      username: result.username,
-      provider: result.provider,
-      admin: result.admin,
-    };
   }
+  return {
+    errors: {},
+    username: result.username,
+    provider: result.provider,
+    admin: result.admin,
+  };
 }

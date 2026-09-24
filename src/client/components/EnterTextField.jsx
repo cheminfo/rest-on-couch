@@ -6,11 +6,10 @@ export default function EnterTextField(props) {
   const { onSubmit } = props;
 
   const handleSubmit = useCallback(
-    (fieldValue) => {
+    async (fieldValue) => {
       if (!fieldValue) return;
-      onSubmit(fieldValue).then(() => {
-        setValue('');
-      });
+      await onSubmit(fieldValue);
+      setValue('');
     },
     [onSubmit],
   );

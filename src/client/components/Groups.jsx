@@ -7,7 +7,7 @@ import {
   removeGroup,
   removeValueFromGroup,
   setGroupProperties,
-} from '../actions/db';
+} from '../actions/database.js';
 
 import GroupCreator from './GroupCreator';
 import GroupEditor from './GroupEditor';

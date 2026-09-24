@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import { addDefaultGroup, removeDefaultGroup } from '../actions/db';
+import { addDefaultGroup, removeDefaultGroup } from '../actions/database.js';
 
 import DefaultGroupsEditor from './default_groups_editor.tsx';
 

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { checkLogin } from '../actions/login';
 import { API_ROOT } from '../api.ts';
-import { dbManager } from '../store';
+import { databaseManager } from '../store';
 
 // eslint-disable-next-line import/no-absolute-path
 import googleSigninImage from '/assets/img/logo/google_signin.png?url';
@@ -35,7 +35,7 @@ const LoginGoogle = connect(null, (dispatch) => ({
     function checkWindowStatus() {
       if (win.closed) {
         checkLogin(dispatch, 'google');
-        dbManager.syncDb();
+        databaseManager.syncDb();
       } else {
         setTimeout(checkWindowStatus, 250);
       }

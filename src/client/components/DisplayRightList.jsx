@@ -7,9 +7,9 @@ const rightImportance = {
   delete: 4,
 };
 
-const DisplayRightList = (props) => {
+export default function DisplayRightList(props) {
   if (!props.rights) return null;
-  const rights = props.rights.slice().sort((a, b) => {
+  const rights = props.rights.toSorted((a, b) => {
     return (rightImportance[a] || 0) - (rightImportance[b] || 0);
   });
 
@@ -20,6 +20,4 @@ const DisplayRightList = (props) => {
       ))}
     </div>
   );
-};
-
-export default DisplayRightList;
+}
