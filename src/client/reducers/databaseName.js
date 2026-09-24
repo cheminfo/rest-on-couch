@@ -5,4 +5,4 @@ export default function databaseNameReducer(state = '', action = {}) {
     return action.payload;
   }
   return state;
-};
+}

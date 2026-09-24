@@ -4,8 +4,8 @@ export function Modal({ open, onClose, title, body, footer }) {
   useEffect(() => {
     if (!open) return;
 
-    const onKeyDown = (error) => {
-      if (error.key === 'Escape') {
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
         onClose();
       }
     };
@@ -31,7 +31,7 @@ export function Modal({ open, onClose, title, body, footer }) {
       >
         <div
           className="modal-dialog-centered modal-dialog"
-          onClick={(error) => error.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
         >
           <div className="modal-content">
             <div className="modal-header">

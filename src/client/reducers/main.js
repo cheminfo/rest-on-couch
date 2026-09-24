@@ -11,4 +11,4 @@ export default function mainReducer(state = initialState, action = {}) {
     default:
       return state;
   }
-};
+}
