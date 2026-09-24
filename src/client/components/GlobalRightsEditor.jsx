@@ -9,7 +9,7 @@ const GlobalRightsEditor = ({ globalRights, addRight, removeRight }) => (
   <div>
     <div className="content">
       <div className="container-fluid row">
-        {globalRightTypes.map((right, idx) => {
+        {globalRightTypes.map((right, index) => {
           return (
             <Fragment key={right}>
               <div className="col-md-6">
@@ -21,7 +21,7 @@ const GlobalRightsEditor = ({ globalRights, addRight, removeRight }) => (
                   lightTable
                 />
               </div>
-              {idx % 2 === 1 ? <div className="clearfix" /> : null}
+              {index % 2 === 1 ? <div className="clearfix" /> : null}
             </Fragment>
           );
         })}

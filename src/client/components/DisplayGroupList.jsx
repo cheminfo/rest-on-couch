@@ -1,6 +1,6 @@
 import DisplayGroup from './DisplayGroup';
 
-const DisplayGroupList = (props) => {
+export default function DisplayGroupList(props) {
   if (!props.groups) return null;
   if (props.groups.length === 0) {
     return <h3>No group memberships</h3>;
@@ -13,6 +13,4 @@ const DisplayGroupList = (props) => {
       })}
     </div>
   );
-};
-
-export default DisplayGroupList;
+}

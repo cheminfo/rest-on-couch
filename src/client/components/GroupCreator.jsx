@@ -6,13 +6,12 @@ function GroupCreatorImpl(props) {
   const { createGroup, error } = props;
 
   const handleCreateGroup = useCallback(
-    (groupName) => {
+    async (groupName) => {
       if (!groupName) return;
-      createGroup(groupName).then(({ action }) => {
-        if (!action.payload.error) {
-          setValue('');
-        }
-      });
+      const { action } = await createGroup(groupName);
+      if (!action.payload.error) {
+        setValue('');
+      }
     },
     [createGroup],
   );

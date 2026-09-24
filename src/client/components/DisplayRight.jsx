@@ -5,13 +5,11 @@ const badgeTypes = {
   delete: 'danger',
 };
 
-const DisplayRight = (props) => {
+export default function DisplayRight(props) {
   const badgeType = badgeTypes[props.right] || 'secondary';
   return (
     <span style={props.style} className={`badge bg-${badgeType}`}>
       {` ${props.right} `}
     </span>
   );
-};
-
-export default DisplayRight;
+}

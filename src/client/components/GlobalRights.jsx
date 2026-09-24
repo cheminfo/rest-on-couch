@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import { addGlobalRight, removeGlobalRight } from '../actions/db';
+import { addGlobalRight, removeGlobalRight } from '../actions/database.js';
 
 import GlobalRightsEditor from './GlobalRightsEditor';
 

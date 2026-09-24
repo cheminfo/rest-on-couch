@@ -1,116 +1,85 @@
 import PropTypes from 'prop-types';
-import { Component, createRef } from 'react';
+import { useCallback, useState } from 'react';
 
-class EditableTextField extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      editedValue: props.value || '',
-      isEdited: false,
-      focus: false,
-    };
-    this.textInput = createRef();
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.cancelEdit = this.cancelEdit.bind(this);
-    this.makeEditable = this.makeEditable.bind(this);
+function EditableTextField(props) {
+  const { label, value, onSubmit } = props;
+  const [editedValue, setEditedValue] = useState(value || '');
+  const [isEdited, setIsEdited] = useState(false);
+
+  // The input is only mounted while editing, so this runs once per edit session.
+  const inputRef = useCallback((node) => {
+    if (!node) return;
+    node.focus();
+    node.select();
+  }, []);
+
+  function handleChange(event) {
+    setEditedValue(event.target.value);
   }
 
-  componentDidUpdate() {
-    if (this.state.focus) {
-      this.textInput.current.focus();
-      this.textInput.current.select();
-    }
+  function handleSubmit() {
+    if (editedValue === '') return;
+    onSubmit(editedValue);
+    setIsEdited(false);
   }
 
-  handleChange(event) {
-    this.setState({
-      editedValue: event.target.value,
-      focus: false,
-    });
-  }
-
-  handleSubmit() {
-    if (this.isEmpty()) return;
-    this.props.onSubmit(this.state.editedValue);
-    this.setState({
-      isEdited: false,
-      focus: false,
-    });
-  }
-
-  handleKeyDown(event) {
+  function handleKeyDown(event) {
     // For some reason escape key is not handled by key press
     if (event.key === 'Escape') {
-      this.cancelEdit();
+      cancelEdit();
     }
   }
 
-  handleKeyPress(event) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.handleSubmit();
+  function handleKeyPress(event) {
+    if (event.key !== 'Enter') {
+      return;
     }
+    event.preventDefault();
+    handleSubmit();
   }
 
-  cancelEdit() {
-    this.setState({
-      isEdited: false,
-      editedValue: this.props.value,
-      focus: false,
-    });
+  function cancelEdit() {
+    setIsEdited(false);
+    setEditedValue(value);
   }
 
-  makeEditable() {
-    this.setState({
-      isEdited: true,
-      focus: true,
-    });
+  function makeEditable() {
+    setIsEdited(true);
   }
 
-  isEmpty() {
-    return this.state.editedValue === '';
-  }
-
-  render() {
-    const { label, value } = this.props;
-    return (
-      <form>
-        <label>{label}</label>
-        {this.state.isEdited ? (
-          <input
-            ref={this.textInput}
-            type="text"
-            className="form-control"
-            value={this.state.editedValue}
-            onChange={this.handleChange}
-            onKeyPress={this.handleKeyPress}
-            onKeyDown={this.handleKeyDown}
-            onBlur={this.cancelEdit}
-          />
-        ) : (
-          <div>
-            {value ? (
-              value
-            ) : (
-              <span style={{ color: 'grey', fontStyle: 'italic' }}>
-                (no value)
-              </span>
-            )}
-            &nbsp;&nbsp;
-            <a onClick={this.makeEditable} style={{ cursor: 'pointer' }}>
-              <i className="fa fa-edit" />
-            </a>
-          </div>
-        )}
-      </form>
-    );
-  }
+  return (
+    <form>
+      <label>{label}</label>
+      {isEdited ? (
+        <input
+          ref={inputRef}
+          type="text"
+          className="form-control"
+          value={editedValue}
+          onChange={handleChange}
+          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
+          onBlur={cancelEdit}
+        />
+      ) : (
+        <div>
+          {value || (
+            <span style={{ color: 'grey', fontStyle: 'italic' }}>
+              (no value)
+            </span>
+          )}
+          &nbsp;&nbsp;
+          <a onClick={makeEditable} style={{ cursor: 'pointer' }}>
+            <i className="fa fa-edit" />
+          </a>
+        </div>
+      )}
+    </form>
+  );
 }
 
 EditableTextField.propTypes = {
+  label: PropTypes.string,
   onSubmit: PropTypes.func.isRequired,
   value: PropTypes.string,
 };

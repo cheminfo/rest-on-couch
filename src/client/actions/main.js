@@ -1,6 +1,6 @@
 import { apiFetchJSON } from '../api.ts';
 
-import { getDbList } from './db';
+import { getDatabaseList } from './database.js';
 import { checkLogin, getLoginProviders } from './login';
 
 export const ROC_ONLINE = 'ROC_ONLINE';
@@ -16,7 +16,7 @@ export function getRocStatus() {
           dispatch({ type: ROC_ONLINE, payload: true });
           checkLogin(dispatch);
           getLoginProviders(dispatch);
-          getDbList(dispatch);
+          getDatabaseList(dispatch);
         }
       } else {
         dispatch({ type: ROC_ONLINE, payload: false });
