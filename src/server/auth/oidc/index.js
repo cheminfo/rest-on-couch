@@ -21,7 +21,8 @@ exports.init = function initOidc(passport, router, authConfig, globalConfig) {
         callbackURL:
           authConfig.callbackURL ||
           `${globalConfig.publicAddress}/auth/login/oidc/callback`,
-        scope: ['openid', 'profile', 'email'],
+        // The openid scope is always included, even if not passed here
+        scope: authConfig.scope || ['profile', 'email'],
         passReqToCallback: true,
       },
       function verify(
