@@ -1,5 +1,12 @@
 # Changelog
 
+## [20.5.0](https://github.com/cheminfo/rest-on-couch/compare/v20.4.1...v20.5.0) (2026-10-06)
+
+
+### Features
+
+* allow to customize oidc scope ([#562](https://github.com/cheminfo/rest-on-couch/issues/562)) ([cfc2d47](https://github.com/cheminfo/rest-on-couch/commit/cfc2d470ba38e91d0172cf29c7a7bef8334a451b))
+
 ## [20.4.1](https://github.com/cheminfo/rest-on-couch/compare/v20.4.0...v20.4.1) (2026-09-24)
 
 
