@@ -321,6 +321,15 @@ async function _createNew(ctx, entry, user, options) {
 
   const userSet = new Set(options.groups || []);
 
+  const autoSharedGroups = await ctx._db.queryView(
+    'autoSharedGroupByUser',
+    { key: user },
+    { onlyValue: true },
+  );
+  for (const group of autoSharedGroups.toSorted()) {
+    userSet.add(group);
+  }
+
   // user is special because it needs to be the first owner
   userSet.delete(user);
   debug.trace('has right, create new');

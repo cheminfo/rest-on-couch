@@ -180,18 +180,21 @@ describe('group methods', () => {
           description: 'groupA description',
           users: ['a@a.com'],
           rights: ['create', 'write', 'delete', 'read'],
+          autoShare: false,
         },
         {
           name: 'groupB',
           description: undefined,
           users: ['a@a.com'],
           rights: ['create'],
+          autoShare: false,
         },
         {
           name: 'groupC',
           description: 'groupC is not used in entries',
           users: ['c@c.com'],
           rights: ['create', 'write', 'delete', 'read'],
+          autoShare: false,
         },
       ]);
     });
@@ -207,18 +210,21 @@ describe('group methods', () => {
           description: 'groupA description',
           users: ['a@a.com'],
           rights: ['create', 'write', 'delete', 'read'],
+          autoShare: false,
         },
         {
           name: 'groupB',
           description: undefined,
           users: ['a@a.com'],
           rights: ['create'],
+          autoShare: false,
         },
         {
           name: 'groupC',
           description: 'groupC is not used in entries',
           users: ['c@c.com'],
           rights: ['create', 'write', 'delete', 'read'],
+          autoShare: false,
         },
       ]);
     });
@@ -243,6 +249,7 @@ describe('group methods', () => {
           description: 'groupC is not used in entries',
           users: ['c@c.com'],
           rights: ['create', 'write', 'delete', 'read'],
+          autoShare: false,
         },
       ]);
     });
@@ -323,6 +330,7 @@ describe('ldap group methods', () => {
       description: undefined,
       users: ['developer@zakodium.com', 'maintainer@zakodium.com'],
       rights: [],
+      autoShare: false,
     });
 
     groups = await couch.getGroupsInfo('a@a.com', { ldapInfo: true });
@@ -333,6 +341,7 @@ describe('ldap group methods', () => {
       description: undefined,
       users: ['developer@zakodium.com', 'maintainer@zakodium.com'],
       rights: [],
+      autoShare: false,
       ldapInfo: [
         { displayName: 'Developer User', email: 'developer@zakodium.com' },
         { displayName: 'Maintainer User', email: 'maintainer@zakodium.com' },

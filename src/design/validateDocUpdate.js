@@ -132,6 +132,12 @@ module.exports = function (newDoc, oldDoc, userCtx) {
     validateOwners(newDoc);
     validateUsers(newDoc.users);
     validateDates(newDoc, oldDoc);
+    if (
+      newDoc.autoShare !== undefined &&
+      typeof newDoc.autoShare !== 'boolean'
+    ) {
+      throw { forbidden: 'autoShare must be a boolean' };
+    }
   } else if (newDoc.$type === 'entry') {
     validateOwners(newDoc);
     if (newDoc.$id === undefined) {
