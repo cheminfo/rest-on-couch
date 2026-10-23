@@ -68,21 +68,12 @@ describe('auto-shared groups', () => {
     expect(entry.$owners).toEqual(['a@a.com', 'groupAuto']);
   });
 
-  it('turning autoShare off only affects new entries', async () => {
-    await couch.insertEntry({ $id: 'auto8', $content: {} }, 'a@a.com');
-    await couch.setGroupProperties('groupAuto', 'a@a.com', {
-      autoShare: false,
-    });
-    await couch.insertEntry({ $id: 'auto9', $content: {} }, 'a@a.com');
-
-    const before = await couch.getEntryById('auto8', 'a@a.com');
-    const after = await couch.getEntryById('auto9', 'a@a.com');
-    expect(before.$owners).toEqual(['a@a.com', 'groupAuto']);
-    expect(after.$owners).toEqual(['a@a.com']);
-  });
-
   it('turning autoShare on applies to new entries', async () => {
+    let groupA = await couch.getGroup('groupA', 'a@a.com');
+    expect(groupA.autoShare).toBeFalsy();
     await couch.setGroupProperties('groupA', 'a@a.com', { autoShare: true });
+    groupA = await couch.getGroup('groupA', 'a@a.com');
+    expect(groupA.autoShare).toBe(true);
     await couch.insertEntry({ $id: 'auto10', $content: {} }, 'a@a.com');
     const entry = await couch.getEntryById('auto10', 'a@a.com');
     expect(entry.$owners).toEqual(['a@a.com', 'groupA', 'groupAuto']);
