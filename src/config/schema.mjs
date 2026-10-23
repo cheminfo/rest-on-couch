@@ -18,6 +18,7 @@ export const globalRightType = z.enum([
 
 const authPlugin = z.looseObject({
   title: z.string().trim().optional(),
+  loginButtonText: z.string().trim().optional(),
   showLogin: z.boolean().default(false),
 });
 

@@ -79,6 +79,12 @@ Type: object
 Default: `{couchdb:{}}`  
 Object describing the authentication strategies that are available and providing options to them.
 
+Each strategy accepts the following common options:
+
+- `title`: name of the strategy shown on the login page.
+- `loginButtonText`: text of the login button.
+- `showLogin`: show the login on the main login page. This does not disable the login strategy, it is still available from the react app.
+
 #### proxy
 
 Type: boolean  

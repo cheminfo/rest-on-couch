@@ -20,6 +20,16 @@ const util = require('../middleware/util');
 
 const authPlugins = ['couchdb', 'google', 'facebook', 'github', 'ldap', 'oidc'];
 
+function getDefaultLoginButtonText(authPlugin, title) {
+  switch (authPlugin) {
+    case 'couchdb':
+    case 'ldap':
+      return 'Login';
+    default:
+      return `Login with ${title}`;
+  }
+}
+
 function getAuthRouter() {
   const config = getGlobalConfig();
 
@@ -52,10 +62,15 @@ function getAuthRouter() {
         debug('plugin %s not configured', authPlugin);
         return;
       }
-      authPluginConfig[authPlugin] = {
+      const mergedConfig = {
         ...defaultAuthPluginConfig[authPlugin],
         ...pluginConfig,
       };
+      mergedConfig.loginButtonText ??= getDefaultLoginButtonText(
+        authPlugin,
+        mergedConfig.title || authPlugin,
+      );
+      authPluginConfig[authPlugin] = mergedConfig;
       try {
         debug('loading auth plugin: %s', authPlugin);
         require(`../auth/${authPlugin}/index.js`).init(
@@ -85,6 +100,7 @@ function getAuthRouter() {
       return {
         name: plugin,
         title: pluginConfig.title || plugin,
+        loginButtonText: pluginConfig.loginButtonText,
         visible: enabledAuthPlugins.includes(plugin),
       };
     });

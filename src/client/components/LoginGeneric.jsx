@@ -60,7 +60,7 @@ export default function LoginGeneric(props) {
         className="btn btn-info btn-fill"
         onClick={handleSubmit}
       >
-        Login
+        {props.buttonText}
       </button>
       <div className="clearfix" />
     </form>
