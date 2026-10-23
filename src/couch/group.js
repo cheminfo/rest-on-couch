@@ -371,6 +371,9 @@ const methods = {
       resync = true;
       group.DN = properties.DN;
     }
+    if (properties.autoShare !== undefined) {
+      group.autoShare = properties.autoShare;
+    }
     if (resync) {
       return syncOneGroup(this, group, user, false);
     } else {
@@ -521,6 +524,7 @@ async function getGroupInfoResult(
       ? {
           users: group.users,
           rights: group.rights,
+          autoShare: group.autoShare === true,
         }
       : {};
   if (ldapInfo) {

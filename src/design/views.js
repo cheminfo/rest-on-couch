@@ -131,6 +131,15 @@ views.groupByUserAndRight = {
   },
 };
 
+views.autoSharedGroupByUser = {
+  map: function (doc) {
+    if (doc.$type !== 'group' || doc.autoShare !== true) return;
+    for (var i = 0; i < doc.users.length; i++) {
+      emit(doc.users[i], doc.name);
+    }
+  },
+};
+
 views.globalRight = {
   map: function (doc) {
     if (doc._id !== 'rights') return;

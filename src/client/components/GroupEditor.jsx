@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { clearGroupError, clearGroupSuccess } from '../actions/database.js';
 
+import CheckboxField from './checkbox_field.tsx';
 import EditableTextField from './EditableTextField';
 import GroupDataEditor from './group_data_editor.tsx';
 import { useState } from 'react';
@@ -23,7 +24,7 @@ function GroupEditorImpl({
   const sortedUsers = Array.from(new Set([...customUsers, ...users]));
 
   return (
-    <div>
+    <form>
       <div className="card-header">
         <h4 className="card-title">
           {`${group.name} `}
@@ -64,6 +65,16 @@ function GroupEditorImpl({
         }
       />
       <div className="card-body">
+        <CheckboxField
+          label="Auto-share"
+          description="Share new entries with this group when created by one of its member."
+          isChecked={group.autoShare === true}
+          onChange={(isChecked) =>
+            setGroupProperties(group.name, {
+              autoShare: isChecked,
+            })
+          }
+        />
         <EditableTextField
           label="Description"
           value={group.description}
@@ -73,6 +84,7 @@ function GroupEditorImpl({
             })
           }
         />
+
         <div>
           <EditableTextField
             label="DN"
@@ -93,6 +105,7 @@ function GroupEditorImpl({
             }
           />
         </div>
+
         <div className="container-fluid mt-4">
           <div className="row">
             <div className="col-md-4">
@@ -179,7 +192,7 @@ function GroupEditorImpl({
           ) : null}
         </div>
       </div>
-    </div>
+    </form>
   );
 }
 

@@ -48,7 +48,7 @@ function EditableTextField(props) {
   }
 
   return (
-    <form>
+    <div>
       <label>{label}</label>
       {isEdited ? (
         <input
@@ -74,7 +74,7 @@ function EditableTextField(props) {
           </a>
         </div>
       )}
-    </form>
+    </div>
   );
 }
 

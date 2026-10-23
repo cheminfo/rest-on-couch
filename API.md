@@ -64,6 +64,7 @@
 |  GET   | `/db/:dbname/group/:name`              |          Get a group by name          |                                                                                                                                    |
 |  PUT   | `/db/:dbname/group/:name`              |            Create a group             |                                                                                                                                    |
 | DELETE | `/db/:dbname/group/:name`              |            Remove a group             |                                                                                                                                    |
+|  PUT   | `/db/:dbname/group/:name/properties`   |         Set group properties          |                                Updatable properties: `description`, `DN`, `filter` and `autoShare`                                 |
 |  PUT   | `/db/:dbname/group/:name/user/:user`   |    Add a user to an existing group    |                                        Group must exist. No-op if user is already in group                                         |
 | DELETE | `/db/:dbname/group/:name/user/:user`   | Remove a user from an existing group  |                                          Group must exist. No-op if user is not in group                                           |
 |  PUT   | `/db/:dbname/group/:name/right/:right` |   Add a right to an existing group    |                                         Group must exist. No-op if group already has right                                         |
