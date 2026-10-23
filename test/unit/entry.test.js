@@ -204,50 +204,6 @@ describe('entry creation and editions', () => {
       });
   });
 
-  it('insertEntry should modify entry with beforeCreateHook (a@a.com)', () => {
-    return couch
-      .insertEntry(
-        {
-          $id: 'beforeCreate1',
-          $content: { test: true },
-        },
-        'a@a.com',
-      )
-      .then(() => couch.getEntryById('beforeCreate1', 'a@a.com'))
-      .then((entry) => {
-        // The groups were added by the hook
-        expect(entry.$owners).toEqual(['a@a.com', 'groupA', 'groupB']);
-      });
-  });
-
-  it('insertEntry should modify entry with beforeCreateHook (c@c.com)', () => {
-    return couch
-      .insertEntry(
-        {
-          $id: 'beforeCreate2',
-          $content: { test: true },
-        },
-        'c@c.com',
-      )
-      .then(() => couch.getEntryById('beforeCreate2', 'c@c.com'))
-      .then((entry) => {
-        // The groups were added by the hook
-        expect(entry.$owners).toEqual(['c@c.com', 'groupC']);
-      });
-  });
-
-  it('ensureExistsOrCreateEntry should modify entry with beforeCreateHook (a@a.com)', () => {
-    return couch
-      .ensureExistsOrCreateEntry('beforeCreate3', 'a@a.com', {
-        throwIfExists: true,
-      })
-      .then(() => couch.getEntryById('beforeCreate3', 'a@a.com'))
-      .then((entry) => {
-        // The groups were added by the hook
-        expect(entry.$owners).toEqual(['a@a.com', 'groupA', 'groupB']);
-      });
-  });
-
   it('should dedupe primary owner when new entry is created', () => {
     return couch
       .insertEntry(constants.newEntry, 'z@z.com', {

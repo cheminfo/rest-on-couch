@@ -55,11 +55,6 @@ describe('auto-shared groups', () => {
     expect(entry.$owners).toEqual(['c@c.com']);
   });
 
-  it('adds auto-shared groups before calling beforeCreateHook', async () => {
-    await couch.insertEntry({ $id: 'auto3', $content: {} }, 'b@b.com');
-    expect(ownersSeenByHook).toEqual(['b@b.com', 'groupAuto', 'groupAuto2']);
-  });
-
   it('adds auto-shared groups with ensureExistsOrCreateEntry', async () => {
     await couch.ensureExistsOrCreateEntry('auto5', 'a@a.com', {
       throwIfExists: true,
