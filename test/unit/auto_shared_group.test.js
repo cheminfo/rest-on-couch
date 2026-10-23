@@ -1,15 +1,9 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { beforeEach, describe, it } from 'node:test';
 import { expect } from 'chai';
-
-import { getGlobalConfig } from '../../src/config/config.js';
 import data from '../data/data.js';
 import insertDocument from '../data/insertDocument.js';
 
 describe('auto-shared groups', () => {
-  const globalConfig = getGlobalConfig();
-  const fixtureHook = globalConfig.beforeCreateHook;
-  let ownersSeenByHook;
-
   beforeEach(async () => {
     await data();
     await Promise.all([
@@ -32,15 +26,6 @@ describe('auto-shared groups', () => {
         autoShare: true,
       }),
     ]);
-
-    ownersSeenByHook = undefined;
-    globalConfig.beforeCreateHook = (document) => {
-      ownersSeenByHook = [...document.$owners];
-    };
-  });
-
-  afterEach(() => {
-    globalConfig.beforeCreateHook = fixtureHook;
   });
 
   it('adds only auto-shared groups the creator is a member of', async () => {
