@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -13,7 +14,12 @@ import GroupCreator from './GroupCreator';
 import GroupEditor from './GroupEditor';
 
 const GroupsImpl = (props) => {
-  const groups = props.userGroups.map((group) => (
+  const [search, setSearch] = useState('');
+  const lowerSearch = search.toLowerCase();
+  const filteredGroups = props.userGroups.filter((group) =>
+    group.name.toLowerCase().includes(lowerSearch),
+  );
+  const groups = filteredGroups.map((group) => (
     <div className="card" key={group.name}>
       <GroupEditor
         group={group}
@@ -29,6 +35,13 @@ const GroupsImpl = (props) => {
       {props.hasCreateGroupRight ? (
         <GroupCreator createGroup={props.createGroup} />
       ) : null}
+      <input
+        type="text"
+        className="form-control my-2"
+        placeholder="Filter groups by name..."
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+      />
       {groups}
     </div>
   );
