@@ -1,5 +1,14 @@
 # Changelog
 
+## [20.6.0](https://github.com/cheminfo/rest-on-couch/compare/v20.5.0...v20.6.0) (2026-10-23)
+
+
+### Features
+
+* add a search input to filter groups in the UI ([#571](https://github.com/cheminfo/rest-on-couch/issues/571)) ([732320f](https://github.com/cheminfo/rest-on-couch/commit/732320f85c42b357a1664dad62c7e8f74a312cbc))
+* allow groups to be added automatically to new entries ([#570](https://github.com/cheminfo/rest-on-couch/issues/570)) ([7a319b2](https://github.com/cheminfo/rest-on-couch/commit/7a319b285faee4f29f96eb6d690718f7cf2a9126))
+* improve and customize login buttons ([#572](https://github.com/cheminfo/rest-on-couch/issues/572)) ([3d06db6](https://github.com/cheminfo/rest-on-couch/commit/3d06db6fabf58fc1e30d6d2203cbdf861cdd0eb4))
+
 ## [20.5.0](https://github.com/cheminfo/rest-on-couch/compare/v20.4.1...v20.5.0) (2026-10-06)
 
 
