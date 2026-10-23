@@ -41,6 +41,7 @@ const LoginImpl = (props) => {
           <div className="card-body">
             <LoginGeneric
               userLabel="Username"
+              buttonText={ldapProvider.loginButtonText}
               error={props.errors.ldap}
               login={props.loginLDAP}
             />
@@ -55,6 +56,7 @@ const LoginImpl = (props) => {
           <div className="card-body">
             <LoginGeneric
               userLabel="Email"
+              buttonText={couchdbProvider.loginButtonText}
               error={props.errors.couchdb}
               login={props.loginCouchDB}
             />
@@ -68,9 +70,11 @@ const LoginImpl = (props) => {
           </div>
           <div className="card-body">
             <a
+              className="btn btn-primary btn-fill d-inline-flex align-items-center gap-2"
               href={`${API_ROOT}auth/login/oidc?continue=${encodeURIComponent(redirectURL)}`}
             >
-              Click here to login with {oidcProvider.title}
+              <i className="fa fa-sign-in" aria-hidden="true" />
+              {oidcProvider.loginButtonText}
             </a>
           </div>
         </div>

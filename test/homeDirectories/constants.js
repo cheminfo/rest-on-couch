@@ -8,6 +8,7 @@ if (oidcClient && oidcClientSecret) {
   // This dev app is configured on id.zakodium.com
   oidcAuthConfig = {
     title: 'Zakodium SSO',
+    loginButtonText: 'Login with Zakodium',
     showLogin: true,
     issuer: 'https://id.zakodium.com',
     authorizationURL: 'https://id.zakodium.com/oauth/v2/authorize',
