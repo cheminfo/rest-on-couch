@@ -276,6 +276,17 @@ describe('group methods', () => {
 
   it('should get list of groups user is member of', async () => {
     const users = await couch.getUserGroups('a@a.com');
+    expect(users).toStrictEqual([
+      {
+        name: 'groupA',
+        description: 'groupA description',
+        rights: ['create', 'write', 'delete', 'read'],
+      },
+      {
+        name: 'groupB',
+        rights: ['create'],
+      },
+    ]);
     expect(users.map((g) => g.name).sort()).toEqual(['groupA', 'groupB']);
   });
 });

@@ -114,6 +114,7 @@ views.groupByUser = {
       emit(doc.users[i], {
         name: doc.name,
         rights: doc.rights,
+        description: doc.description,
       });
     }
   },
