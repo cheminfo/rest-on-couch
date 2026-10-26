@@ -11,7 +11,8 @@ const updates = require('./updates');
 const validateDocUpdate = require('./validateDocUpdate');
 const views = require('./views');
 
-/* istanbul ignore next */
+// Executed by CouchDB
+/* node:coverage disable */
 const mapTpl = function (doc) {
   if (doc.$type !== 'entry') return;
   var emitWithOwner = function (key, data) {
@@ -26,6 +27,7 @@ const mapTpl = function (doc) {
   var customMap = CUSTOM_MAP;
   customMap(doc);
 }.toString();
+/* node:coverage enable */
 
 // Extends design doc with default views
 // Adds the special lib view to the design doc

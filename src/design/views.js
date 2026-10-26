@@ -1,7 +1,5 @@
 'use strict';
 
-/* istanbul ignore file  */
-
 const views = (module.exports = {});
 
 views.documentByType = {
