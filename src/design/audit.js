@@ -1,7 +1,5 @@
 'use strict';
 
-/* istanbul ignore file  */
-
 const auditDesignDoc = {
   version: 2, // CHANGE THIS NUMBER IF YOU UPDATE THE DESIGN DOC
   _id: '_design/audit',

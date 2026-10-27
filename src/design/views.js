@@ -1,7 +1,5 @@
 'use strict';
 
-/* istanbul ignore file  */
-
 const views = (module.exports = {});
 
 views.documentByType = {
@@ -114,6 +112,8 @@ views.groupByUser = {
       emit(doc.users[i], {
         name: doc.name,
         rights: doc.rights,
+        description: doc.description,
+        autoShare: doc.autoShare,
       });
     }
   },

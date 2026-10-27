@@ -6,7 +6,13 @@
   "test": {
     "experimental-test-coverage": true,
     "test-coverage-include": "src/**/*",
-    "test-coverage-exclude": "src/client/**/*",
+    "test-coverage-exclude": [
+      "src/client/**/*",
+      "src/design/audit.js",
+      "src/design/filters.js",
+      "src/design/validateDocUpdate.js",
+      "src/design/views.js"
+    ],
     "test-concurrency": 1,
     "test-timeout": 20000,
     "test-reporter": ["lcov", "spec"],

@@ -58,7 +58,11 @@ describe('Couch user API', () => {
       email: 'a@a.com',
       value: 42,
       groups: [
-        { name: 'groupA', rights: ['create', 'write', 'delete', 'read'] },
+        {
+          name: 'groupA',
+          rights: ['create', 'write', 'delete', 'read'],
+          description: 'groupA description',
+        },
         { name: 'groupB', rights: ['create'] },
       ],
       sessionData: null,
