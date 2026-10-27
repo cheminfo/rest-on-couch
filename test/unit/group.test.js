@@ -287,7 +287,6 @@ describe('group methods', () => {
         rights: ['create'],
       },
     ]);
-    expect(users.map((g) => g.name).sort()).toEqual(['groupA', 'groupB']);
   });
 });
 

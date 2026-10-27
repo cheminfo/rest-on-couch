@@ -113,6 +113,7 @@ views.groupByUser = {
         name: doc.name,
         rights: doc.rights,
         description: doc.description,
+        autoShare: doc.autoShare,
       });
     }
   },

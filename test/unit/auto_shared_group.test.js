@@ -90,4 +90,20 @@ describe('auto-shared groups', () => {
     const info = await couch.getGroupInfo('groupAuto', 'c@c.com');
     expect(info).not.toHaveProperty('autoShare');
   });
+
+  it('getUserGroup should return the autoShare property', async () => {
+    const userGroups = await couch.getUserGroups('b@b.com');
+    expect(userGroups).toStrictEqual([
+      {
+        name: 'groupAuto',
+        rights: ['read'],
+        autoShare: true,
+      },
+      {
+        name: 'groupAuto2',
+        rights: ['read'],
+        autoShare: true,
+      },
+    ]);
+  });
 });
