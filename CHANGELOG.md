@@ -1,5 +1,12 @@
 # Changelog
 
+## [20.7.0](https://github.com/cheminfo/rest-on-couch/compare/v20.6.0...v20.7.0) (2026-10-27)
+
+
+### Features
+
+* return group description and autoShare in getUserGroups ([#574](https://github.com/cheminfo/rest-on-couch/issues/574)) ([5b0c927](https://github.com/cheminfo/rest-on-couch/commit/5b0c92737dcc4b984ca4cb1e9d211480886af94b))
+
 ## [20.6.0](https://github.com/cheminfo/rest-on-couch/compare/v20.5.0...v20.6.0) (2026-10-23)
 
 
